@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.JarFile;
 
 import org.osgi.framework.Bundle;
@@ -119,19 +120,33 @@ public class SchedulingServer
             /* Install mandatory scheduling server bundles in order. */
             for (int i = 0; i < SchedulingServer.SS_Bundles.size(); i++)
             {
-                String symName = SchedulingServer.SS_Bundles.get(0);
+                String symName = SchedulingServer.SS_Bundles.get(i);
                 File bundleJar = jars.remove(symName);
                 if (bundleJar == null)
                 {
                     throw new Exception("Bundle " + symName + " not found.");
                 }
-                this.installOrUpdateBundle(context, symName, bundleJar);
+                System.out.println("Installing bundle " + symName + " from " + bundleJar.toURI().toString() + ".");
+                this.installOrUpdateBundle(context, symName, bundleJar, true);
             }
             
             /* Install the rest of the detected bundles. */
+            for (Entry<String, File> e : jars.entrySet())
+            {
+                System.out.println("Installing bundle " + e.getKey() + " from " + 
+                        e.getValue().toURI().toString() + ".");
+                this.installOrUpdateBundle(context, e.getKey(), e.getValue(), false);
+            }
             
-            
-            
+            /* Start any bundles that haven't already been started. */
+            for (Bundle b : context.getBundles())
+            {
+                if (!(b.getState() == Bundle.ACTIVE || b.getState() == Bundle.STARTING))
+                {
+                    System.out.println("Starting bundle " + b.getSymbolicName() + " (id " + b.getBundleId() + ").");
+                    b.start();
+                }
+            }
  
             this.framework.waitForStop(0);
         }
@@ -161,14 +176,15 @@ public class SchedulingServer
     
     /**
      * Installs the specified bundle if it is not already installed. If it is, 
-     * the bundle is updated with the jar file.
+     * the bundle is updated with the provided bundle jar. 
      *     
-     * @param context
-     * @param name
-     * @param bundleJar
-     * @throws Exception 
+     * @param context a bundle context
+     * @param name symbolic name of a bundle
+     * @param bundleJar bundle file 
+     * @param doStart whether to start the bundle immediately
+     * @throws Exception error installing or updating a bundle
      */
-    private void installOrUpdateBundle(BundleContext context, String name, File bundleJar) throws Exception
+    private void installOrUpdateBundle(BundleContext context, String name, File bundleJar, boolean doStart) throws Exception
     {
         Bundle bundle = null;
         
@@ -204,9 +220,9 @@ public class SchedulingServer
             }
         }
         
-        /* If the bundle isn't running, start it. */
-        if (!(bundle.getState() == Bundle.ACTIVE && bundle.getState() == Bundle.STARTING))
+        if (doStart &&  !(bundle.getState() == Bundle.ACTIVE || bundle.getState() == Bundle.STARTING))
         {
+            System.out.println("Starting bundle " + bundle.getSymbolicName() + " (id " + bundle.getBundleId() + ").");
             bundle.start();
         }
     }
