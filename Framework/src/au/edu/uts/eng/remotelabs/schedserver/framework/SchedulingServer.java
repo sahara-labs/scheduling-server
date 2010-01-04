@@ -38,13 +38,25 @@
 package au.edu.uts.eng.remotelabs.schedserver.framework;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * Starts the Scheduling Server OSGi framework instance and shutdown it down 
@@ -52,9 +64,6 @@ import org.osgi.framework.launch.FrameworkFactory;
  */
 public class SchedulingServer
 {
-    /** Whether this Scheduling Server is to shutdown. */
-    private static boolean shutdown = false;
-    
     /** OSGi framework instance. */
     private Framework framework;
     
@@ -67,23 +76,47 @@ public class SchedulingServer
         
         try
         {
-            /* Load framework properties. */
-            Map<String, String> props = new HashMap<String, String>();
-            
             /* Load and start framework. */
             FrameworkFactory frmFactory = this.getFrameworkFactory();
-            this.framework = frmFactory.newFramework(props);
+            this.framework = frmFactory.newFramework(new FrameworkProperties().getProperties());
             this.framework.init();
             this.framework.start();
             
-            System.out.println(this.framework.getSymbolicName());
+            /* Add a shutdown hook to shutdown the framework cleanly. */
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run()
+                {
+                    if (SchedulingServer.this.framework != null)
+                    {
+
+                        try
+                        {
+                            System.err.println("Shutting down Scheduling Server...");
+                            SchedulingServer.this.framework.stop();
+                            SchedulingServer.this.framework.waitForStop(0);
+                        }
+                        catch (Exception e)
+                        {
+                            System.err.println("Unable to shutdown framework cleanly.");
+                        }
+                    }
+                }
+            });
+            
+            /* Install or update bundles. */
+            BundleContext context = this.framework.getBundleContext();
+            Map<String, File> jars = this.getBundleJars(FrameworkProperties.BUNDLE_DIR);
+            
+            
+ 
+            this.framework.waitForStop(0);
         }
         catch (Exception ex)
         {
-            System.out.println("Failed because of exception " + ex.getClass().getCanonicalName() + ", with message " + 
+            System.out.println("Failed... Exception " + ex.getClass().getCanonicalName() + ", with message " + 
                     ex.getMessage() + ".");
         }
-
     }
     
     /**
@@ -100,7 +133,75 @@ public class SchedulingServer
      */
     public static void stop()
     {
-        SchedulingServer.shutdown = true;
+        System.exit(0);
+    }
+    
+    /**
+     * Installs the specified bundle if it is not already installed. If it is, 
+     * the bundle is updated with the jar file.
+     *     
+     * @param context
+     * @param name
+     * @param bundle
+     * @return
+     * @throws Exception 
+     */
+    private void installOrUpdateBundle(BundleContext context, String name, File bundle) throws Exception
+    {
+        /* Search for the bundle. */
+        for (Bundle bun : context.getBundles())
+        {
+            if (bun.getSymbolicName().equals(name))
+            {
+                /* Going to update the bundle. */
+                bun.update(new FileInputStream(bundle));
+                ServiceReference ref = context.getServiceReference(PackageAdmin.class.getCanonicalName());
+                if (ref != null)
+                {
+                    PackageAdmin adm = (PackageAdmin)context.getService(ref);
+                    adm.refreshPackages(new Bundle[]{bun});
+                }
+            }
+        }
+        
+        /* Going to install the bundle. */
+        context.installBundle(bundle.toURI().toString());
+    }
+    
+    /**
+     * Gets the JAR files in a specified directory. The JAR files which do not
+     * have the <code>Bundle-SymbolicName</code> field in their manifest are
+     * ignored as these are not OSGi bundles.
+     * 
+     * @param bundlePath bundle directory
+     * @return map of jar files in directory keyed by their symbolic name
+     * @throws IOException error opening jar file
+     */
+    private Map<String, File> getBundleJars(String bundlePath) throws IOException
+    {
+        Map<String, File> jars = new HashMap<String, File>();
+        
+        File path = new File(bundlePath);
+        for (File file : path.listFiles())
+        {
+            if (file.getName().endsWith(".jar"))
+            {
+                JarFile jar = new JarFile(file);
+                String name = jar.getManifest().getMainAttributes().getValue("Bundle-SymbolicName");
+                
+                if (name != null) /* Ignore Jars that aren't OSGi bundles as they cannot be installed. */
+                {
+                    /* Remove any directives. */
+                    if (name.indexOf(';') > 0)
+                    {
+                        name = name.split(";", 2)[0];
+                    }
+                    jars.put(name, file);
+                }
+            }
+        }
+        
+        return jars;
     }
     
     /**
