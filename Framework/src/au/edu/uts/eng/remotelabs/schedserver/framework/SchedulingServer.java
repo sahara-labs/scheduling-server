@@ -40,19 +40,17 @@ package au.edu.uts.eng.remotelabs.schedserver.framework;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
@@ -66,6 +64,16 @@ public class SchedulingServer
 {
     /** OSGi framework instance. */
     private Framework framework;
+    
+    /** Ordered list of bundles symbolic names  which must be started in the specified
+     *  order. */
+    private final static List<String> SS_Bundles = new ArrayList<String>();
+    
+    static
+    {
+        SS_Bundles.add("SchedulingServer-Configuration");
+        SS_Bundles.add("SchedulingServer-Logger");
+    }
     
     /**
      * Runs the scheduling server until the static <code>stop</code> method
@@ -108,6 +116,21 @@ public class SchedulingServer
             BundleContext context = this.framework.getBundleContext();
             Map<String, File> jars = this.getBundleJars(FrameworkProperties.BUNDLE_DIR);
             
+            /* Install mandatory scheduling server bundles in order. */
+            for (int i = 0; i < SchedulingServer.SS_Bundles.size(); i++)
+            {
+                String symName = SchedulingServer.SS_Bundles.get(0);
+                File bundleJar = jars.remove(symName);
+                if (bundleJar == null)
+                {
+                    throw new Exception("Bundle " + symName + " not found.");
+                }
+                this.installOrUpdateBundle(context, symName, bundleJar);
+            }
+            
+            /* Install the rest of the detected bundles. */
+            
+            
             
  
             this.framework.waitForStop(0);
@@ -142,30 +165,50 @@ public class SchedulingServer
      *     
      * @param context
      * @param name
-     * @param bundle
-     * @return
+     * @param bundleJar
      * @throws Exception 
      */
-    private void installOrUpdateBundle(BundleContext context, String name, File bundle) throws Exception
+    private void installOrUpdateBundle(BundleContext context, String name, File bundleJar) throws Exception
     {
+        Bundle bundle = null;
+        
         /* Search for the bundle. */
-        for (Bundle bun : context.getBundles())
+        for (Bundle b : context.getBundles())
         {
-            if (bun.getSymbolicName().equals(name))
+            if (b.getSymbolicName().equals(name))
             {
-                /* Going to update the bundle. */
-                bun.update(new FileInputStream(bundle));
-                ServiceReference ref = context.getServiceReference(PackageAdmin.class.getCanonicalName());
-                if (ref != null)
-                {
-                    PackageAdmin adm = (PackageAdmin)context.getService(ref);
-                    adm.refreshPackages(new Bundle[]{bun});
-                }
+                bundle = b;
+                break;
             }
         }
         
-        /* Going to install the bundle. */
-        context.installBundle(bundle.toURI().toString());
+        if (bundle == null)
+        {
+            bundle = context.installBundle(bundleJar.toURI().toString());
+        }
+        else
+        {
+            /* Bundle previously installed so going to update it. Updating a bundle
+             * is a two set process. 
+             *   1) The bundle is 'updated', replacing the old bundle with the new
+             *      bundle.
+             *   2) The bundle is 'refreshed', ensuring all dependent bundles use
+             *      the newly updated bundle.*/
+            bundle.update(new FileInputStream(bundleJar));
+            ServiceReference ref = context.getServiceReference(PackageAdmin.class.getCanonicalName());
+            if (ref != null)
+            {
+                PackageAdmin adm = (PackageAdmin)context.getService(ref);
+                adm.refreshPackages(new Bundle[]{bundle});
+                context.ungetService(ref);
+            }
+        }
+        
+        /* If the bundle isn't running, start it. */
+        if (!(bundle.getState() == Bundle.ACTIVE && bundle.getState() == Bundle.STARTING))
+        {
+            bundle.start();
+        }
     }
     
     /**
