@@ -1,0 +1,12 @@
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.logger
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.logger.impl
+Include-Resource: lib/log4j-1.2.15.jar
+Import-Package: !com.sun.*,!javax.*, !org.w3c.dom, !org.xml.sax.*, *
+
+Bundle-Name: Logger
+Bundle-SymbolicName: SchedulingServer-Logger;singleton:=true
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .,log4j-1.2.15.jar

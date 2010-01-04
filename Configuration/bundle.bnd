@@ -1,0 +1,9 @@
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.config
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.config.impl
+
+Bundle-Name: Configuration
+Bundle-SymbolicName: SchedulingServer-Configuration;singleton:=true
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.config.Activator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
