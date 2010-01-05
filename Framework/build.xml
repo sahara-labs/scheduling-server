@@ -33,45 +33,12 @@ Date: 28th December 2009
 
 -->
 <project name="Scheduling Server Framework" default="build" basedir=".">
+	
+	<import file="../common.xml" />
+	
 	<!-- Properties -->
-	<property name="component.name" value="Scheduling Server Framework Bundle" />
-	<property name="build.classes.dir" location="bin" /> <!-- Build classes location. -->
-	<property name="lib.dir" location="lib" /> <!-- Library location. -->
-	<property name="javadoc.dir" location="doc" /> <!-- Javadoc location. -->
-	<property name="src.dir" location="src" /> <!-- Source code locatiom. -->
-	<property name="common.lib" location="../lib" /> <!-- Common libs. -->
-	<property name="test.lib.dir" location="../test/lib" /> <!-- Test library location. -->
-	<property name="tool.lib.dir" location="../test/tools" /> <!-- Static analysis tools. -->
-	<property name="reports.junit.xml.dir" location="test/reports/junit" /> <!-- JUnit reports -->
-	<property name="reports.junit.html.dir" location="test/reports/junit/html" /> <!-- JUnit HTML reports -->
-	<property name="reports.pmd.xml.dir" location="test/reports/pmd" /> <!-- PMD reports -->
-	<property name="reports.bugs.xml.dir" location="test/reports/bugs" /> <!-- Findbugs reports -->
-	<property name="reports.emma.dir" location="test/reports/coverage" /> <!-- Emma coverage report -->
+	<property name="component.name" value="Scheduling Server Framework" />
 	<property name="dist.dir" location="dist" />
-	
-	<!-- Classpath -->
-	<path id="project.classpath">
-		<pathelement location="${build.classes.dir}" />
-		<fileset dir="${lib.dir}">
-			<include name="**/*.jar" />
-		</fileset>
-		<fileset dir="${common.lib}">
-			<include name="**/*.jar" />
-		</fileset>
-		<fileset dir="${test.lib.dir}">
-			<include name="**/*.jar" />
-		</fileset>
-	</path>
-	
-	<!-- Tools classpath -->
-	<path id="project.tools">
-		<fileset dir="${tool.lib.dir}">
-			<include name="**/*.jar" />
-		</fileset>
-	</path>
-	
-	<!-- Everything! -->
-	<target name="all" depends="clean,build,dist,test,pmd,bugs,doc"/>
 	
 	<!-- Code compilation -->
 	<target name="build">
@@ -119,115 +86,5 @@ Date: 28th December 2009
 		<delete dir="${reports.emma.dir}" verbose="no" />
 		<delete dir="${dist.dir}" />
 	</target>
-	
-	<!-- Execute unit test suite with EMMA code coverage. -->
-	<property name="instr.dir" location="test/reports/instr" />
-	<path id="project.emma.classpath">
-		<pathelement location="${instr.dir}" />
-		<fileset dir="${tool.lib.dir}">
-			<include name="emma*/*.jar" />
-		</fileset>
-		<path refid="project.classpath" />
-	</path>
-	<path id="emma.instrumented">
-		<pathelement location="${build.classes.dir}" />
-	</path>
-	<target name="test" depends="build">
-		<taskdef resource="emma_ant.properties" classpathref="project.tools" />
-		<mkdir dir="${reports.emma.dir}" />
-		<mkdir dir="${instr.dir}" />
-		<mkdir dir="${reports.junit.html.dir}" />
-		<mkdir dir="${reports.junit.xml.dir}" />
-		
-		<!-- Set up EMMA for code instrumentation. -->
-		<emma enabled="true" >
-		     <instr instrpathref="emma.instrumented" destdir="${instr.dir}" metadatafile="${reports.emma.dir}/metadata.emma" />
-	    </emma>
-			
-		<!-- Execute JUnit test cases. -->
-		<junit printsummary="on" fork="on" failureproperty="junit.failure">
-			<classpath refid="project.emma.classpath" />
-			<jvmarg value="-Demma.coverage.out.file=${reports.emma.dir}/coverage.emma" />
-			<batchtest todir="${reports.junit.xml.dir}">
-				<formatter type="xml" />
-				<fileset dir="${build.classes.dir}">
-					<include name="**/*Tester.class" />
-				</fileset>
-			</batchtest>
-		</junit>
-		
-		<!-- Generate JUnit report. -->
-		<junitreport>
-			 <fileset dir="${reports.junit.xml.dir}"/>
-			 <report todir="${reports.junit.html.dir}"/>
-		</junitreport>
-			 	
-		<!-- Generate EMMA reports. -->
-		<emma enabled="true" >
-			<report sourcepath="${src.dir}" >
-				<fileset dir="${reports.emma.dir}" >
-			 		<include name="*.emma" />
-			 	</fileset>
-			 	<txt outfile="${reports.emma.dir}/coverage.txt" />
-			 	<html outfile="${reports.emma.dir}/index.html" depth="method" />
-			 	<xml outfile="${reports.emma.dir}/coverage.xml" depth="method" />
-			</report>
-		</emma>
-			 	        	
-		<delete file="TESTS-TestSuites.xml" />
-		<delete dir="${instr.dir}" />
-	</target>
-	
-	<!-- PMD results. -->
-	<target name="pmd" depends="build">
-		<mkdir dir="${reports.pmd.xml.dir}"/>
-		<taskdef name="pmd" classpathref="project.tools" classname="net.sourceforge.pmd.ant.PMDTask"/>
-		<pmd shortFilenames="true" targetjdk="1.6">
-		 	<ruleset>basic</ruleset>
-		 	<!-- <ruleset>braces</ruleset> --> <!-- False positives with curly braces. -->
-		 	<ruleset>codesize</ruleset>
-		 	<!-- <ruleset>controversial</ruleset>-->
-		 	<ruleset>coupling</ruleset>
-			<ruleset>migrating</ruleset>
-		 	<ruleset>optimizations</ruleset>
-		  	<formatter type="xml" toFile="${reports.pmd.xml.dir}/pmd_report.xml" />
-		  	<fileset dir="${src.dir}">
-		   		<include name="**/*.java" />
-		  		<exclude name="**/*Tester.java" />
-		  		<exclude name="**/*TestSuite.java" />
-			</fileset>
-		</pmd>
-		<xslt in="${reports.pmd.xml.dir}/pmd_report.xml" style="${tool.lib.dir}/pmd-4.2.5/etc/xslt/pmd-report-per-class.xslt" out="${reports.pmd.xml.dir}/pmd_report.html" />
-		<echo>PMD execution successful, report ${pmd-report} generated</echo>
-	</target>
-	
-	<!-- Find bugs -->
-	<property name="findbugs.report.xml" value="${reports.bugs.xml.dir}/bug_report.xml" />
-	<property name="findbugs.report.html" value="${reports.bugs.xml.dir}/bug_report.html" />
-	<property name="findbugs.home" value="${tool.lib.dir}/findbugs-1.3.9" />
-	<target name="bugs" depends="build">
-		<mkdir dir="${reports.bugs.xml.dir}"/>
-		<taskdef name="findbugs" classpathref="project.tools" 
-				classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-		<findbugs home="${findbugs.home}" output="xml:withMessages" outputFile="${findbugs.report.xml}">
-		    <sourcePath path="${src.dir}" /> 
-			<class location="${build.classes.dir}" />
-		</findbugs>
-		<findbugs home="${findbugs.home}" output="html" stylesheet="fancy-hist.xsl" outputFile="${findbugs.report.html}">
-			<sourcePath path="${src.dir}" /> 
-			<class location="${build.classes.dir}" />
-		</findbugs>
-	</target>
-	
-	<!-- Javadoc -->
-	<target name="doc">
-		<javadoc access="public" destdir="${javadoc.dir}" classpathref="project.classpath" version="true" use="true" windowtitle="Sahara Rig Client">
-			<fileset dir="${src.dir}" defaultexcludes="yes">
-				<include name="**/*.java"/>
-				<exclude name="**/*Tester.java" />
-				<exclude name="**/*TestSuite.java" />
-				<exclude name="**/Mock*.java" />
-			</fileset>
-		</javadoc>
-	</target>
+
 </project>
