@@ -35,6 +35,9 @@ Date: 28th December 2009
     
     <!-- Generate bundle location. -->
     <property name="bundles.dir" location="bundles" />
+    <property name="bin.dir" location="bin" />
+    <property name="package.name" location="SchedulingServer" />
+    <property name="package.dir" location="package" />
     
     <macrodef name="iterate">
       <attribute name="target"/>
@@ -48,15 +51,61 @@ Date: 28th December 2009
     <!-- Build all source and generate all bundles. -->
     <target name="build">
         <iterate target="bundle" />
+	<mkdir dir="${bundles.dir}" />
         <copy todir="${bundles.dir}" flatten="yes">
             <fileset dir=".">
                 <include name="**/bundle/*.jar" />
             </fileset>
         </copy>
+	<subant target="dist" verbose="true">
+            <fileset dir="." includes="Framework/build.xml"/>
+        </subant>
+	<mkdir dir="${bin.dir}" />
+	<copy todir="${bin.dir}" flatten="yes">
+            <fileset dir=".">
+                <include name="**/dist/*.jar" />
+            </fileset>
+        </copy>
+    </target>
+    
+    <!-- Move all the built system to a seperate directory. -->
+    <target name="package" depends="build">
+        <tstamp>
+	    <format property="package.time" pattern="MM-dd-yyyy_hh.mm"/>
+	</tstamp>
+	<mkdir dir="${package.dir}" />
+	<tar destfile="${package.name}_${package.time}.tar.gz" compression="gzip">
+	<tarfileset prefix="SchedulingServer/bin" dir="${bin.dir}" username="${user.name}" group="${user.name}">
+	        <include name="*" />
+		<exclude name="**/.svn/* "/>
+		<exclude name="**/.*" />
+	    </tarfileset>
+	    <tarfileset prefix="SchedulingServer/bundles" dir="${bundles.dir}" username="${user.name}" group="${user.name}">
+	        <include name="*" />
+		<exclude name="**/.svn/* "/>
+		<exclude name="**/.*" />
+	    </tarfileset>
+	    <tarfileset prefix="SchedulingServer/conf" dir="conf" username="${user.name}" group="${user.name}">
+	        <include name="*" />
+		<exclude name="**/.svn/* "/>
+		<exclude name="**/.*" />
+	    </tarfileset>
+	    <tarfileset prefix="SchedulingServer/doc" dir="doc" username="${user.name}" group="${user.name}">
+	        <include name="*" />
+		<exclude name="**/.svn/* "/>
+		<exclude name="**/.*" />
+	    </tarfileset>
+	    <tarfileset prefix="SchedulingServer" dir="." username="${user.name}" group="${user.name}">
+	        <include name="LICENSE" />
+		<exclude name="**/.svn/* "/>
+		<exclude name="**/.*" />
+	    </tarfileset>
+	</tar>
+	<move file="${package.name}_${package.time}.tar.gz" todir="${package.dir}" />
     </target>
     
     <!-- Do all tasks on all nested ant build files. -->
-    <target name="all">
+    <target name="all" depends="package">
         <iterate target="all" />
 	<copy todir="${bundles.dir}" flatten="yes">
             <fileset dir=".">
@@ -68,12 +117,10 @@ Date: 28th December 2009
     <!-- Clean all. -->
     <target name="clean">
         <iterate target="clean" />
-        <delete verbose="no">
-            <fileset dir="${bundles.dir}">
-                <include name="*" />
-            </fileset>
-        </delete>
+        <delete dir="${bundles.dir}" />
+	<delete dir="${bin.dir}" />
 	<delete dir="cache" />
+	<delete dir="${package.dir}" />
     </target>
     
 </project>
