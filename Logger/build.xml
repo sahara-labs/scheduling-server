@@ -88,8 +88,9 @@ Date: 28th December 2009
 	
 	<!-- Bundle generation. --> 
 	<target name="bundle" depends="build">
-		   <taskdef resource="aQute/bnd/ant/taskdef.properties"  classpathref="project.tools"/>
-		   <bnd classpath="${build.classes.dir}" eclipse="false" failok="false" exceptions="true" 
+		<mkdir dir="${bundle.dir}" />
+		<taskdef resource="aQute/bnd/ant/taskdef.properties"  classpathref="project.tools"/>
+		<bnd classpath="${build.classes.dir}" eclipse="false" failok="false" exceptions="true" 
 		      files="bundle.bnd" output="${bundle.dir}" /> 
 	</target>
 	
@@ -115,6 +116,7 @@ Date: 28th December 2009
 				<include name="*" />
 			</fileset>
 		</delete>
+		<delete dir="${bundle.dir}" />
 	</target>
 	
 	<!-- Execute unit test suite with EMMA code coverage. -->

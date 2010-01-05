@@ -1,0 +1,9 @@
+Directory for Scheduling Server Logger libraries. The required library is:
+
+  - log4j - Log4J (http://logging.apache.org/log4j/1.2/index.html)
+            Logging library which outputs log statements to a variety of 
+            output targets. Tested with version version 1.2.15. 
+            NOTE: The name of the log4j Jar library is hard coded 
+            in the bundle bnd file so the properties 'Bundle-ClassPath'
+            and 'Include-Resource' must be modified to specify the correct
+            log4j file.
