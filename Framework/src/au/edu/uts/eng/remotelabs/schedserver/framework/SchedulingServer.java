@@ -41,8 +41,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +82,7 @@ public class SchedulingServer
      */
     public void runSchedulingServer()
     {
-        
+        System.out.println("Classpath:" + System.getProperty("java.class.path"));
         try
         {
             /* Load and start framework. */
@@ -98,7 +98,6 @@ public class SchedulingServer
                 {
                     if (SchedulingServer.this.framework != null)
                     {
-
                         try
                         {
                             System.err.println("Shutting down Scheduling Server...");
@@ -124,7 +123,7 @@ public class SchedulingServer
                 File bundleJar = jars.remove(symName);
                 if (bundleJar == null)
                 {
-                    throw new Exception("Bundle " + symName + " not found.");
+                    throw new IllegalStateException("Bundle " + symName + " not found");
                 }
                 System.out.println("Installing bundle " + symName + " from " + bundleJar.toURI().toString() + ".");
                 this.installOrUpdateBundle(context, symName, bundleJar, true);
@@ -152,8 +151,9 @@ public class SchedulingServer
         }
         catch (Exception ex)
         {
-            System.out.println("Failed... Exception " + ex.getClass().getCanonicalName() + ", with message " + 
+            System.out.println("Failed... Exception: " + ex.getClass().getCanonicalName() + ", Message: " + 
                     ex.getMessage() + ".");
+            System.exit(-1);
         }
     }
     
@@ -241,6 +241,9 @@ public class SchedulingServer
         Map<String, File> jars = new HashMap<String, File>();
         
         File path = new File(bundlePath);
+        
+        if (!path.exists()) return jars;
+        
         for (File file : path.listFiles())
         {
             if (file.getName().endsWith(".jar"))
@@ -280,11 +283,11 @@ public class SchedulingServer
          * framework Jar file and should contain the name of the 
          * FrameworkFactory implementation class on the first non-blank, 
          * non-comment line. */
-        URL url = SchedulingServer.class.getClassLoader().getResource(
+        InputStream input = SchedulingServer.class.getClassLoader().getResourceAsStream(
                 "META-INF/services/org.osgi.framework.launch.FrameworkFactory");
-        if (url != null)
+        if (input != null)
         {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
             Object obj = null;
             try
             {

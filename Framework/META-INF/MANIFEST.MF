@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Framework
-Bundle-SymbolicName: SchedulingServer-Framework
-Bundle-Version: 1.0.0.alpha
-Bundle-Vendor: UTS:FEIT Remote Laboratory
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
