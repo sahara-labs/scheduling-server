@@ -58,6 +58,11 @@ Date: 28th December 2009
     <!-- Do all tasks on all nested ant build files. -->
     <target name="all">
         <iterate target="all" />
+	<copy todir="${bundles.dir}" flatten="yes">
+            <fileset dir=".">
+                <include name="**/bundle/*.jar" />
+            </fileset>
+        </copy>
     </target>
     
     <!-- Clean all. -->
@@ -68,5 +73,7 @@ Date: 28th December 2009
                 <include name="*" />
             </fileset>
         </delete>
+	<delete dir="cache" />
     </target>
+    
 </project>
