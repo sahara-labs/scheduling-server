@@ -48,6 +48,8 @@ import javax.persistence.Table;
 
 /**
  * Config entity which maps to the config table.
+ * <p />
+ * The config table stores Scheduling Server key value pairs.
  */
 @Entity
 @Table(name = "config")

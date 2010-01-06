@@ -59,7 +59,12 @@ import javax.persistence.Table;
  *  may be viewed by the user.</li>
  *  <li>Control - Whether in progress sessions from the user class 
  *  may be controlled by the user.</li>
- *  <li>Kick - Whether in progress sessions from the user  </li>
+ *  <li>Kick - Whether in progress sessions from the user class may be 
+ *  terminated by the user.</li>
+ *  <li>Modify - Whether the user may modify academic permissions for
+ *  the user class.</li>
+ *  <li>Generate reports - Whether the user may generate reports about the
+ *  user class sessions.</li>
  * <ul>
  */
 @Entity
