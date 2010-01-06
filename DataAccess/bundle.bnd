@@ -1,0 +1,12 @@
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess
+Private-Package:
+Include-Resource: 
+Import-Package:
+
+Bundle-Name: DataAccess
+Bundle-SymbolicName: SchedulingServer-DataAccess
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+

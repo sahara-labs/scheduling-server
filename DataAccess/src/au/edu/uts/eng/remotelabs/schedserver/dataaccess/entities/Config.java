@@ -32,66 +32,83 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 5th January 2010
+ * @date 6th January 2010
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+// Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl.DataAccessConfiguration;
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
- * Data Access bundle activator. The data access bundle is used to load and 
- * persist entity classes into a databases.
- * <br />
- * The activator is used to set up the Hibernate session factory.
+ * Config entity which maps to the config table.
  */
-public class DataAccessActivator implements BundleActivator 
+@Entity
+@Table(name = "config")
+public class Config implements java.io.Serializable
 {
-    /** Session factory to obtains sessions from. */
-    private static SessionFactory sessionFactory;
+    /** Serializable class. */
+    private static final long serialVersionUID = 1L;
+
+    /** Record primary key. */ 
+    private Integer id;
     
-    /** Logger. */
-    private Logger logger;
+    /** Configuration key. */
+    private String key;
+    
+    /** Configuration value. */
+    private String value;
 
-	@Override
-	public void start(BundleContext context) throws Exception 
-	{
-	    this.logger = LoggerActivator.getLogger();
-	    this.logger.info("Starting the Data Access bundle.");
-	    
-	    /* Configure Hibernate for use with annotations. */
-		AnnotationConfiguration cfg = new AnnotationConfiguration();
-		cfg.setProperties(new DataAccessConfiguration(context).getProperties());
-		
-		this.logger.debug("Hibernate properties: " + cfg.getProperties().toString());
-		
-		DataAccessActivator.sessionFactory = cfg.buildSessionFactory();
-	}
-	
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-		System.out.println("Goodbye World!!");
-	}
+    public Config()
+    {
+        /* Bean style constructor. */
+    }
 
-	/**
-	 * Returns a Hibernate session. Returns null if a session cannot be 
-	 * opened.
-	 * 
-	 * @return session or null
-	 */
-	public Session getSession()
-	{
-	    if (sessionFactory == null) return null;
-	    
-	    return DataAccessActivator.sessionFactory.openSession();
-	}
+    public Config(String key, String value)
+    {
+        this.key = key;
+        this.value = value;
+    }
+
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id", unique = true, nullable = false)
+    public Integer getId()
+    {
+        return this.id;
+    }
+
+    public void setId(Integer id)
+    {
+        this.id = id;
+    }
+
+    @Column(name = "key", nullable = false, length = 200)
+    public String getKey()
+    {
+        return this.key;
+    }
+
+    public void setKey(String key)
+    {
+        this.key = key;
+    }
+
+    @Column(name = "value", nullable = false, length = 65535)
+    public String getValue()
+    {
+        return this.value;
+    }
+
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
+
 }
