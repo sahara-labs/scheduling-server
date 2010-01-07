@@ -19,5 +19,9 @@
 	<classpathentry kind="lib" path="lib/jta-1.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Configuration"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Logger"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/SchedServer-Framework/bin"/>
+	<classpathentry kind="lib" path="/SchedServer-Logger/bin"/>
+	<classpathentry kind="lib" path="/home/mdiponio/workspace/SchedServer/test/lib/easymock-2.5.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

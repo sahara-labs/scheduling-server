@@ -123,9 +123,12 @@ public class DataAccessActivator implements BundleActivator
 	 * 
 	 * @return session or null
 	 */
-	public Session getSession()
+	public static Session getSession()
 	{
-	    if (sessionFactory == null) return null;
+	    if (sessionFactory == null) 
+	    {
+	        return null;
+	    }
 	    
 	    return DataAccessActivator.sessionFactory.openSession();
 	}

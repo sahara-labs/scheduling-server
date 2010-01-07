@@ -110,7 +110,7 @@ public class DataAccessConfiguration
         this.props.setProperty("hibernate.connection.url", "jdbc:mysql://127.0.0.1:3306/sahara");
         this.props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect");
         this.props.setProperty("hibernate.connection.username", "sahara");
-        this.props.setProperty("hibernate.connection.username", "saharapasswd");
+        this.props.setProperty("hibernate.connection.password", "saharapasswd");
         
         /* hibernate.c3p0 connection pool defaults. */
         this.props.setProperty("hibernate.c3p0.min_size", "3");

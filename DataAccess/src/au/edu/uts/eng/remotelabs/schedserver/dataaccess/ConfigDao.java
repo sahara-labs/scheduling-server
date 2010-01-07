@@ -1,5 +1,5 @@
 /**
-  * SAHARA Scheduling Server
+ * SAHARA Scheduling Server
  *
  * Schedules and assigns local laboratory rigs.
  *
@@ -32,85 +32,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 6th January 2010
+ * @date 7th January 2010
  */
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
 
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
-
-// Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 
 /**
- * Config entity which maps to the config table.
- * <p />
- * The config table stores Scheduling Server key value pairs.
+ * Data access object for the {@link Config} class.
  */
-@Entity
-@Table(name = "config")
-public class Config implements java.io.Serializable
+public class ConfigDao extends GenericDao<Config>
 {
-    /** Serializable class. */
-    private static final long serialVersionUID = 1L;
-
-    /** Record primary key. */ 
-    private Integer id;
     
-    /** Configuration key. */
-    private String key;
-    
-    /** Configuration value. */
-    private String value;
-
-    public Config()
-    {
-        /* Bean style constructor. */
-    }
-
-    public Config(String key, String value)
-    {
-        this.key = key;
-        this.value = value;
-    }
-
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
-    public Integer getId()
-    {
-        return this.id;
-    }
-
-    public void setId(Integer id)
-    {
-        this.id = id;
-    }
-
-    @Column(name = "config_key", nullable = false, length = 200)
-    public String getKey()
-    {
-        return this.key;
-    }
-
-    public void setKey(String key)
-    {
-        this.key = key;
-    }
-
-    @Column(name = "value", nullable = false, length = 65535)
-    public String getValue()
-    {
-        return this.value;
-    }
-
-    public void setValue(String value)
-    {
-        this.value = value;
-    }
-
 }
