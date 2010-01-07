@@ -43,5 +43,22 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
  */
 public class ConfigDao extends GenericDao<Config>
 {
-    
+    /**
+     * Creates a config record with the specified key and value. Returned 
+     * is the persistant config object.
+     * 
+     * @param key configuration key
+     * @param value configuration value
+     * @return persistant config
+     */
+    public Config create(String key, String value)
+    {
+        Config config = new Config(key, value);
+        
+        this.begin();
+        this.session.saveOrUpdate(config);
+        this.commit();
+        
+        return config;
+    }
 }

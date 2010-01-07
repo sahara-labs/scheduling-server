@@ -73,7 +73,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 public class ConfigDaoTester extends TestCase
 {
     /** Object of class under test. */
-    private ConfigDao genericDao;
+    private ConfigDao dao;
     
     @Before
     @Override
@@ -117,28 +117,38 @@ public class ConfigDaoTester extends TestCase
         f.setAccessible(true);
         f.set(null, cfg.buildSessionFactory());
         
-        this.genericDao = new ConfigDao();
+        this.dao = new ConfigDao();
     }
     
     @Test
     public void testCreate()
     {
-        Config conf = new Config("confkey", "confVal");
+        String key = "testkey";
+        String val = "testval";
+    
+        Config conf = this.dao.create(key, val);
+        assertEquals(key, conf.getKey());
+        assertEquals(val, conf.getValue());
+        assertTrue(conf.getId() > 0);
         
-        this.genericDao.persist(conf);
+        this.dao.closeSession();
         
-        conf.setValue("foo");
-        Session sess = this.genericDao.getSession();
-        System.out.println(sess.getFlushMode());
-        if (sess.isDirty()) System.out.println("Dirty");
-        this.genericDao.flush();
-
+        Session ses = DataAccessActivator.getNewSession();
+        Config loaded = (Config) ses.load(Config.class, conf.getId());
+        assertNotNull(loaded);
+        assertEquals(conf.getId(), loaded.getId());
+        assertEquals(conf.getKey(), loaded.getKey());
+        assertEquals(conf.getValue(), loaded.getValue());
+        
+        ses.beginTransaction();
+        ses.delete(loaded);
+        ses.getTransaction().commit();
     }
     
     @Override
     @After
     public void tearDown()
     {
-        this.genericDao.closeSession();
+        this.dao.closeSession();
     }
 }

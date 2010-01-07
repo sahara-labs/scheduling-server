@@ -123,7 +123,7 @@ public class DataAccessActivator implements BundleActivator
 	 * 
 	 * @return session or null
 	 */
-	public static Session getSession()
+	public static Session getNewSession()
 	{
 	    if (sessionFactory == null) 
 	    {

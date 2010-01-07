@@ -36,28 +36,47 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
 
+import java.io.Serializable;
+
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Generic data access object.
+ * Generic data access object. Implements generic CRUD operations
+ * for using database entity classes.
+ * <p />
+ * NOTE 1: All the generic DAO methods may throw an unchecked 
+ * {@link HibernateException} if they fail. It is probably safe to not
+ * catch these to implement normal unchecked exception fail-fast 
+ * behaviour.
+ * <p />
+ * Note 2: This class can not be assumed to be thread safe as the Hibernate 
+ * documentation specifically states sessions are not thread safe.
  */
 public class GenericDao<T>
 {
     /** Database session. */
     protected Session session;
+    
     /** Logger. */
     protected Logger logger;
 
+    /**
+     * Constructor that opens a new session.
+     * 
+     * @throws IllegalStateException if a session factory cannot be obtained
+     */
     public GenericDao()
     {
-        this(DataAccessActivator.getSession());
+        this(DataAccessActivator.getNewSession());
     }
     
     /**
-     * Constructor which allows a session to provided.
+     * Constructor that uses the provided session. The session must be 
+     * not-null and open.
      * 
      * @param ses open session
      * @throws IllegalStateException if the provided use session is null or
@@ -92,23 +111,36 @@ public class GenericDao<T>
     }
     
     /**
-     * Returns a persistent instance of an detached object.
+     * Loads a persistent instance of the record with supplied idenitifer.
      * 
-     * @param detached instance
-     * @return persistent instance
+     * @param clazz class object of the entity type
+     * @param id record identifier 
+     * @return instance of record
      */
     @SuppressWarnings("unchecked")
-    public T merge(T detached)
+    public T load(Class<T> clazz, Serializable id)
     {
-        this.begin();
-        T t = (T) this.session.merge(detached);
-        this.commit();
-        
-        return t;
+        return (T) this.session.load(clazz, id);
     }
     
     /**
+     * Returns a persistent instance of a detached object.
      * 
+     * @param obj transitent instance
+     * @return persistent instance
+     */
+    @SuppressWarnings("unchecked")
+    public T merge(T obj)
+    {
+        this.begin();
+        T persistent = (T) this.session.merge(obj);
+        this.commit();
+        
+        return persistent;
+    }
+    
+    /**
+     * Flushes any changes to the database.
      */
     public void flush()
     {
@@ -143,7 +175,18 @@ public class GenericDao<T>
      */
     protected void commit()
     {
-        this.session.getTransaction().commit();
+        try
+        {
+            this.session.getTransaction().commit();
+        }
+        catch (HibernateException ex)
+        {
+            this.logger.error("Failed to commit database changes because of error " + ex.getMessage() + 
+                    ". Going to close database session.");
+            this.rollBack();
+            this.session.close();
+            throw ex;
+        }
     }
 
     /**
@@ -151,15 +194,34 @@ public class GenericDao<T>
      */
     protected void rollBack()
     {
-        this.session.getTransaction().rollback();
+        try
+        {
+            this.session.getTransaction().rollback();
+        }
+        catch (HibernateException ex)
+        {
+            this.logger.error("Failed to roll back changes because of error " + ex.getMessage() +
+                    ". Going to close database session.");
+            this.session.close();
+            throw ex;
+        }
     }
 
     /**
-     * Closes the held session.
+     * Closes the session. If the session is dirty, any changes are 
+     * flushed to the database.
      */
     public void closeSession()
     {
-        this.session.close();
+        if (this.session.isConnected())
+        {
+            if (this.session.isDirty())
+            {
+                this.flush();
+            }
+            
+            this.session.close();
+        }
     }
 
     /**
