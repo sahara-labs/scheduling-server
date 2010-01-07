@@ -125,5 +125,4 @@ public class MatchingCapabilities implements java.io.Serializable
     {
         this.rigCapabilities = rigCapabilities;
     }
-
 }

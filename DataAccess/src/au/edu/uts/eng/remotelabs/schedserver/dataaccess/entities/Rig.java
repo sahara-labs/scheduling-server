@@ -103,8 +103,6 @@ public class Rig implements java.io.Serializable
     
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Session> sessions = new HashSet<Session>(0);
-    private Set<Session> sessions_1 = new HashSet<Session>(0);
-    private Set<ResourcePermission> resourcePermissions_1 = new HashSet<ResourcePermission>(0);
 
     public Rig()
     {
@@ -132,8 +130,7 @@ public class Rig implements java.io.Serializable
             final boolean online, final boolean inSession,
             final boolean active,
             final Set<ResourcePermission> resourcePermissions,
-            final Set<Session> sessions, final Set<Session> sessions_1,
-            final Set<ResourcePermission> resourcePermissions_1)
+            final Set<Session> sessions)
     {
         this.rigType = rigType;
         this.session = session;
@@ -146,8 +143,6 @@ public class Rig implements java.io.Serializable
         this.active = active;
         this.resourcePermissions = resourcePermissions;
         this.sessions = sessions;
-        this.sessions_1 = sessions_1;
-        this.resourcePermissions_1 = resourcePermissions_1;
     }
 
     @Id
@@ -287,27 +282,4 @@ public class Rig implements java.io.Serializable
     {
         this.sessions = sessions;
     }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rig")
-    public Set<Session> getSessions_1()
-    {
-        return this.sessions_1;
-    }
-
-    public void setSessions_1(final Set<Session> sessions_1)
-    {
-        this.sessions_1 = sessions_1;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rig")
-    public Set<ResourcePermission> getResourcePermissions_1()
-    {
-        return this.resourcePermissions_1;
-    }
-
-    public void setResourcePermissions_1(final Set<ResourcePermission> resourcePermissions_1)
-    {
-        this.resourcePermissions_1 = resourcePermissions_1;
-    }
-
 }

@@ -40,9 +40,24 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.stat.Statistics;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl.DataAccessConfiguration;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -70,7 +85,21 @@ public class DataAccessActivator implements BundleActivator
 	    /* Configure Hibernate for use with annotations. */
 		AnnotationConfiguration cfg = new AnnotationConfiguration();
 		cfg.setProperties(new DataAccessConfiguration(context).getProperties());
-		
+		cfg.addAnnotatedClass(AcademicPermission.class);
+		cfg.addAnnotatedClass(Config.class);
+		cfg.addAnnotatedClass(MatchingCapabilities.class);
+		cfg.addAnnotatedClass(MatchingCapabilitiesId.class);
+		cfg.addAnnotatedClass(RequestCapabilities.class);
+		cfg.addAnnotatedClass(ResourcePermission.class);
+		cfg.addAnnotatedClass(Rig.class);
+		cfg.addAnnotatedClass(RigCapabilities.class);
+		cfg.addAnnotatedClass(RigType.class);
+		cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
+		cfg.addAnnotatedClass(User.class);
+		cfg.addAnnotatedClass(UserAssociation.class);
+		cfg.addAnnotatedClass(UserAssociationId.class);
+		cfg.addAnnotatedClass(UserClass.class);
+		cfg.addAnnotatedClass(UserLock.class);
 		this.logger.debug("Hibernate properties: " + cfg.getProperties().toString());
 		
 		DataAccessActivator.sessionFactory = cfg.buildSessionFactory();
@@ -79,7 +108,13 @@ public class DataAccessActivator implements BundleActivator
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
-		System.out.println("Goodbye World!!");
+		this.logger.debug("Shutting down the Data Access bundle.");
+		
+		Statistics stats = DataAccessActivator.sessionFactory.getStatistics();
+		this.logger.info("Hibernate statistics: " + stats.toString());
+		
+		DataAccessActivator.sessionFactory.close();
+		DataAccessActivator.sessionFactory = null;
 	}
 
 	/**

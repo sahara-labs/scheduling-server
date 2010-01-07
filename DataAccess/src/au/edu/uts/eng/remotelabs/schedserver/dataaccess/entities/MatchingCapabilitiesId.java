@@ -110,8 +110,7 @@ public class MatchingCapabilitiesId implements java.io.Serializable
         final MatchingCapabilitiesId castOther = (MatchingCapabilitiesId) other;
 
         return (this.getRigCapabilities() == castOther.getRigCapabilities())
-                && (this.getRequestCapabilities() == castOther
-                        .getRequestCapabilities());
+                && (this.getRequestCapabilities() == castOther.getRequestCapabilities());
     }
 
     @Override
