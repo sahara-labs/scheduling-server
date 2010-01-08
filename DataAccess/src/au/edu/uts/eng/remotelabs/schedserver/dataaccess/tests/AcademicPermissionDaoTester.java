@@ -43,13 +43,12 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.hibernate.Session;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.ConfigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.GenericDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
@@ -70,14 +69,27 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
 /**
- * Tests the {@link GenericDao} class.
+ * Tests the {@link AcademicPermissionDao} class.
  */
-public class ConfigDaoTester extends TestCase
+public class AcademicPermissionDaoTester extends TestCase
 {
     /** Object of class under test. */
-    private ConfigDao dao;
+    private AcademicPermissionDao dao;
     
-    public ConfigDaoTester(String name) throws Exception
+    /** Users. */
+    private GenericDao<User> userDao;
+    private User mUser;
+    private User tUser;
+    
+    /** User classes. */
+    private GenericDao<UserClass> classDao;
+    private UserClass mClass;
+    private UserClass tClass;
+    
+    /** Permissions. */
+    private List<AcademicPermission> permissions;
+    
+    public AcademicPermissionDaoTester(String name) throws Exception
     {
         super(name);
         
@@ -120,76 +132,133 @@ public class ConfigDaoTester extends TestCase
         f.set(null, cfg.buildSessionFactory());
     }
     
-    @Before
     @Override
+    @Before
     public void setUp() throws Exception
     {
-        this.dao = new ConfigDao();
+        this.dao = new AcademicPermissionDao();
+        
+        this.userDao = new GenericDao<User>(User.class);
+        this.mUser = new User("mdiponio", "UTS", "ADMIN");
+        this.tUser = new User("tmachet", "UTS", "STUDENT");
+        this.mUser = this.userDao.persist(this.mUser);
+        this.tUser = this.userDao.persist(this.tUser);
+        
+        this.classDao = new GenericDao<UserClass>(UserClass.class);
+        UserClass uc = new UserClass();
+        uc.setName("mdClass");
+        this.mClass = this.classDao.persist(uc);
+        uc = new UserClass();
+        uc.setName("tmClass");
+        this.tClass = this.classDao.persist(uc);
+        
+        this.permissions = new ArrayList<AcademicPermission>(4);
+        AcademicPermission perm = new AcademicPermission();
+        perm.setUser(this.mUser);
+        perm.setUserClass(this.mClass);
+        this.permissions.add(this.dao.persist(perm));
+        perm = new AcademicPermission();
+        perm.setUser(this.tUser);
+        perm.setUserClass(this.mClass);
+        this.permissions.add(this.dao.persist(perm));
+        perm = new AcademicPermission();
+        perm.setUser(this.tUser);
+        perm.setUserClass(this.tClass);
+        this.permissions.add(this.dao.persist(perm));
+        perm = new AcademicPermission();
+        perm.setUser(this.mUser);
+        perm.setUserClass(this.tClass);
+        this.permissions.add(this.dao.persist(perm));
     }
     
-    @Test
-    public void testCreate()
+    @After
+    @Override
+    public void tearDown() throws Exception
     {
-        String key = "testkey";
-        String val = "testval";
-    
-        Config conf = this.dao.create(key, val);
-        assertEquals(key, conf.getKey());
-        assertEquals(val, conf.getValue());
-        assertTrue(conf.getId() > 0);
-        
-        this.dao.closeSession();
-        
-        Session ses = DataAccessActivator.getNewSession();
-        Config loaded = (Config) ses.get(Config.class, conf.getId());
-        assertNotNull(loaded);
-        assertEquals(conf.getId(), loaded.getId());
-        assertEquals(conf.getKey(), loaded.getKey());
-        assertEquals(conf.getValue(), loaded.getValue());
-        
-        ses.beginTransaction();
-        ses.delete(loaded);
-        ses.getTransaction().commit();
-    }
-    
-    @Test
-    public void testGetConfig()
-    {
-        Config p1 = this.dao.persist(new Config("conf_test_key", "val1"));
-        Config p2 = this.dao.persist(new Config("conf_test_key", "val2"));
-        Config p3 = this.dao.persist(new Config("conf_test_key", "val3"));
-        
-        List<Config> conf = this.dao.getConfig("conf_test_key");
-        assertEquals(3, conf.size());
-        System.out.println(conf);
-        
-        List<String> str = new ArrayList<String>();
-        for (Config c : conf)
+        for (AcademicPermission p : this.permissions)
         {
-            str.add(c.getValue());
+            this.dao.delete(p);
         }
         
-        assertTrue(str.contains("val1"));
-        assertTrue(str.contains("val2"));
-        assertTrue(str.contains("val3"));
- 
-        this.dao.delete(p1);
-        this.dao.delete(p2);
-        this.dao.delete(p3);
+        this.userDao.delete(this.mUser);
+        this.userDao.delete(this.tUser);
+        this.userDao.closeSession();
+        
+        this.classDao.delete(this.mClass);
+        this.classDao.delete(this.tClass);
+        this.classDao.closeSession();
     }
-    
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getByUser(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User)}.
+     */
     @Test
-    public void testGetConfigNotFound()
+    public void testGetByUser()
+    { 
+        List<AcademicPermission> per = this.dao.getByUser(this.mUser);
+        assertNotNull(per);
+        assertEquals(2, per.size());
+        
+        assertEquals(this.mUser.getName(), per.get(0).getUser().getName());
+        List<String> names = new ArrayList<String>();
+        names.add(per.get(0).getUserClass().getName());
+        names.add(per.get(1).getUserClass().getName());
+        assertTrue(names.contains(this.mClass.getName()));
+        assertTrue(names.contains(this.tClass.getName()));
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getByUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     */
+    @Test
+    public void testGetByUserClass()
     {
-        List<Config> conf = this.dao.getConfig("does_not_exist");
-        assertNotNull(conf);
-        assertEquals(0, conf.size());
+        List<AcademicPermission> per = this.dao.getByUserClass(this.mClass);
+        assertNotNull(per);
+        assertEquals(2, per.size());
+        
+        assertEquals(this.mClass.getName(), per.get(0).getUserClass().getName());
+        List<String> names = new ArrayList<String>();
+        names.add(per.get(0).getUser().getName());
+        names.add(per.get(1).getUser().getName());
+        assertTrue(names.contains(this.mUser.getName()));
+        assertTrue(names.contains(this.tUser.getName()));
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     */
+    @Test
+    public void testGetForUserAndUserClass()
+    {
+        AcademicPermission perm = this.dao.getForUserAndUserClass(this.mUser, this.mClass);
+        assertNotNull(perm);
+        assertEquals(this.mUser.getName(), perm.getUser().getName());
+        assertEquals(this.mClass.getName(), perm.getUserClass().getName());
     }
     
-    @Override
-    @After
-    public void tearDown()
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     */
+    @Test
+    public void testGetForUserAndUserClassT()
     {
-        this.dao.closeSession();
+        AcademicPermission perm = this.dao.getForUserAndUserClass(this.tUser, this.tClass);
+        assertNotNull(perm);
+        assertEquals(this.tUser.getName(), perm.getUser().getName());
+        assertEquals(this.tClass.getName(), perm.getUserClass().getName());
     }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     */
+    @Test
+    public void testGetForUserAndUserClassTM()
+    {
+        AcademicPermission perm = this.dao.getForUserAndUserClass(this.tUser, this.mClass);
+        assertNotNull(perm);
+        assertEquals(this.tUser.getName(), perm.getUser().getName());
+        assertEquals(this.mClass.getName(), perm.getUserClass().getName());
+    }
+
 }

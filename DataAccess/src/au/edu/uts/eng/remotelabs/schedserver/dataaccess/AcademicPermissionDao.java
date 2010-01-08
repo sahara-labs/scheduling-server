@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 7th January 2010
+ * @date 4th January 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
 
@@ -42,21 +42,23 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 
 /**
- * Data access object for the {@link Config} class.
+ * Data access object for the {@link AcademicPermission} class.
  */
-public class ConfigDao extends GenericDao<Config>
+public class AcademicPermissionDao extends GenericDao<AcademicPermission>
 {
     /**
      * Constructor that opens a new session.
      * 
      * @throws IllegalStateException if a session factory cannot be obtained
      */
-    public ConfigDao()
+    public AcademicPermissionDao()
     {
-        super(Config.class);
+        super(AcademicPermission.class);
     }
     
     /**
@@ -67,41 +69,65 @@ public class ConfigDao extends GenericDao<Config>
      * @throws IllegalStateException if the provided use session is null or
      *         closed
      */
-    public ConfigDao(Session ses)
+    public AcademicPermissionDao(Session ses)
     {
-        super(ses, Config.class);
+        super(ses, AcademicPermission.class);
     }
     
     /**
-     * Creates a config record with the specified key and value. Returned 
-     * is the persistent config object.
+     * Gets all the academic permissions for the specified user. 
      * 
-     * @param key configuration key
-     * @param value configuration value
-     * @return persistent config
-     */
-    public Config create(String key, String value)
-    {
-        Config config = new Config(key, value);
-        
-        this.begin();
-        this.session.saveOrUpdate(config);
-        this.commit();
-        
-        return config;
-    }
-    
-    /**
-     * Returns the configuration values with the specified configuration key.
-     * 
-     * @param key configuration key
-     * @return list of matching configuration values
+     * @param user user to find permissions for 
+     * @return list of academic permissions 
      */
     @SuppressWarnings("unchecked")
-    public List<Config> getConfig(String key)
+    public List<AcademicPermission> getByUser(User user)
     {
-        Criteria crit = this.session.createCriteria(this.clazz);
-        crit.add(Restrictions.eq("key", key));
-        return  crit.list();
+        Criteria cri = this.session.createCriteria(AcademicPermission.class);
+        cri.add(Restrictions.eq("user", user));
+        return cri.list();
+    }
+    
+    /**
+     * Gets all the academic permissions for the specified user class.
+     * 
+     * @param uClass user class to find permissions for
+     * @return list of academic permissions 
+     */
+    @SuppressWarnings("unchecked")
+    public List<AcademicPermission> getByUserClass(UserClass uClass)
+    {
+        Criteria cri = this.session.createCriteria(AcademicPermission.class);
+        cri.add(Restrictions.eq("userClass", uClass));
+        return cri.list();
+    }
+    
+    /**
+     * Gets the academic permission for the specified user and user class. If it is
+     * not found <code>null</code>. If more than one permission is found, the first
+     * is used.
+     * 
+     * @param user user constraint
+     * @param uClass user class constraint
+     * @return permission or <code>null</code>
+     */
+    @SuppressWarnings("unchecked")
+    public AcademicPermission getForUserAndUserClass(User user, UserClass uClass)
+    {
+        Criteria cri = this.session.createCriteria(AcademicPermission.class);
+        cri.add(Restrictions.eq("user", user))
+           .add(Restrictions.eq("userClass", uClass));
+        
+        List<AcademicPermission> perms = cri.list();
+        if (perms.size() == 0)
+        {
+            return null;
+        }
+        else if (perms.size() > 1)
+        {
+            this.logger.warn("Found more than one academic permission for the user " + user.getName() + " and " +
+            		"user class " + uClass.getName() + ". Using the first found permission.");
+        }
+        return perms.get(0);
     }
 }

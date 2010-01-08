@@ -61,17 +61,21 @@ public class GenericDao<T>
     /** Database session. */
     protected Session session;
     
+    /** Class object of parameterized type. */
+    protected Class<T> clazz;
+    
     /** Logger. */
     protected Logger logger;
 
     /**
      * Constructor that opens a new session.
      * 
+     * @param cls parameter type class
      * @throws IllegalStateException if a session factory cannot be obtained
      */
-    public GenericDao()
+    public GenericDao(Class<T> cls)
     {
-        this(DataAccessActivator.getNewSession());
+        this(DataAccessActivator.getNewSession(), cls);
     }
     
     /**
@@ -79,12 +83,14 @@ public class GenericDao<T>
      * not-null and open.
      * 
      * @param ses open session
+     * @param cls parameter type class
      * @throws IllegalStateException if the provided use session is null or
      *         closed
      */
-    public GenericDao(Session ses) throws IllegalStateException
+    public GenericDao(Session ses, Class<T> cls) throws IllegalStateException
     {
-       this.logger = LoggerActivator.getLogger();
+        this.logger = LoggerActivator.getLogger();
+        this.clazz = cls;
         
         if (ses == null || !ses.isOpen())
         {
@@ -101,32 +107,34 @@ public class GenericDao<T>
      * @param obj transient object
      * @return persistent object
      */
+    @SuppressWarnings("unchecked")
     public T persist(T obj)
     {        
         this.begin();
-        this.session.saveOrUpdate(obj);
+        Serializable id = this.session.save(obj);
         this.commit();
         
-        return obj;
+        return (T) this.session.load(this.clazz, id);
     }
     
     /**
-     * Loads a persistent instance of the record with supplied idenitifer.
-     * 
-     * @param clazz class object of the entity type
+     * Gets a persistent instance of the record with supplied identifier. If
+     * the record with supplied identifier does not exits, <code>null</code>
+     * is returned.
+     *
      * @param id record identifier 
-     * @return instance of record
+     * @return persistent instance of record or null if not found
      */
     @SuppressWarnings("unchecked")
-    public T load(Class<T> clazz, Serializable id)
+    public T get(Serializable id)
     {
-        return (T) this.session.load(clazz, id);
+        return (T) this.session.get(this.clazz, id);
     }
     
     /**
      * Returns a persistent instance of a detached object.
      * 
-     * @param obj transitent instance
+     * @param obj transient instance
      * @return persistent instance
      */
     @SuppressWarnings("unchecked")
@@ -150,8 +158,7 @@ public class GenericDao<T>
     }
     
     /**
-     * Delete the provided object from the database. The object
-     * may either be transient or persistent.
+     * Deletes the provided persistent object from the database.
      * 
      * @param obj persistent object to delete
      */
@@ -159,6 +166,18 @@ public class GenericDao<T>
     {
         this.begin();
         this.session.delete(obj);
+        this.commit();
+    }
+    
+    /**
+     * Deletes the record with the provided identifier from the database.
+     *  
+     * @param id record identifier
+     */
+    public void delete(Serializable id)
+    {
+        this.begin();
+        this.session.delete(this.session.load(this.clazz, id));
         this.commit();
     }
 

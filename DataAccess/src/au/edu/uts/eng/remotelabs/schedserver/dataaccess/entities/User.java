@@ -44,6 +44,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -167,14 +168,13 @@ public class User implements java.io.Serializable
         this.userLocks = userLocks;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
     public Set<AcademicPermission> getAcademicPermissions()
     {
         return this.academicPermissions;
     }
 
-    public void setAcademicPermissions(
-            final Set<AcademicPermission> academicPermissions)
+    public void setAcademicPermissions(final Set<AcademicPermission> academicPermissions)
     {
         this.academicPermissions = academicPermissions;
     }

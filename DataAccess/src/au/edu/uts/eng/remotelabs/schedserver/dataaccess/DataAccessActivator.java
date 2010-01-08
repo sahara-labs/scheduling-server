@@ -78,58 +78,59 @@ public class DataAccessActivator implements BundleActivator
 
 	@Override
 	public void start(BundleContext context) throws Exception 
-	{
-	    this.logger = LoggerActivator.getLogger();
-	    this.logger.info("Starting the Data Access bundle.");
-	    
-	    /* Configure Hibernate for use with annotations. */
-		AnnotationConfiguration cfg = new AnnotationConfiguration();
-		cfg.setProperties(new DataAccessConfiguration(context).getProperties());
-		cfg.addAnnotatedClass(AcademicPermission.class);
-		cfg.addAnnotatedClass(Config.class);
-		cfg.addAnnotatedClass(MatchingCapabilities.class);
-		cfg.addAnnotatedClass(MatchingCapabilitiesId.class);
-		cfg.addAnnotatedClass(RequestCapabilities.class);
-		cfg.addAnnotatedClass(ResourcePermission.class);
-		cfg.addAnnotatedClass(Rig.class);
-		cfg.addAnnotatedClass(RigCapabilities.class);
-		cfg.addAnnotatedClass(RigType.class);
-		cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
-		cfg.addAnnotatedClass(User.class);
-		cfg.addAnnotatedClass(UserAssociation.class);
-		cfg.addAnnotatedClass(UserAssociationId.class);
-		cfg.addAnnotatedClass(UserClass.class);
-		cfg.addAnnotatedClass(UserLock.class);
-		this.logger.debug("Hibernate properties: " + cfg.getProperties().toString());
-		
-		DataAccessActivator.sessionFactory = cfg.buildSessionFactory();
-	}
+    {
+        this.logger = LoggerActivator.getLogger();
+        this.logger.info("Starting the Data Access bundle.");
+
+        /* Configure Hibernate for use with annotations. */
+        AnnotationConfiguration cfg = new AnnotationConfiguration();
+        cfg.setProperties(new DataAccessConfiguration(context).getProperties());
+        cfg.addAnnotatedClass(AcademicPermission.class);
+        cfg.addAnnotatedClass(Config.class);
+        cfg.addAnnotatedClass(MatchingCapabilities.class);
+        cfg.addAnnotatedClass(MatchingCapabilitiesId.class);
+        cfg.addAnnotatedClass(RequestCapabilities.class);
+        cfg.addAnnotatedClass(ResourcePermission.class);
+        cfg.addAnnotatedClass(Rig.class);
+        cfg.addAnnotatedClass(RigCapabilities.class);
+        cfg.addAnnotatedClass(RigType.class);
+        cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
+        cfg.addAnnotatedClass(User.class);
+        cfg.addAnnotatedClass(UserAssociation.class);
+        cfg.addAnnotatedClass(UserAssociationId.class);
+        cfg.addAnnotatedClass(UserClass.class);
+        cfg.addAnnotatedClass(UserLock.class);
+        this.logger.debug("Hibernate properties: "
+                + cfg.getProperties().toString());
+
+        DataAccessActivator.sessionFactory = cfg.buildSessionFactory();
+    }
 	
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
-		this.logger.debug("Shutting down the Data Access bundle.");
-		
-		Statistics stats = DataAccessActivator.sessionFactory.getStatistics();
-		this.logger.info("Hibernate statistics: " + stats.toString());
-		
-		DataAccessActivator.sessionFactory.close();
-		DataAccessActivator.sessionFactory = null;
+        this.logger.debug("Shutting down the Data Access bundle.");
+
+        Statistics stats = DataAccessActivator.sessionFactory.getStatistics();
+        this.logger.info("Hibernate statistics: " + stats.toString());
+
+        DataAccessActivator.sessionFactory.close();
+        DataAccessActivator.sessionFactory = null;
 	}
 
-	/**
-	 * Returns a Hibernate session. Returns null if a session cannot be 
-	 * opened.
-	 * 
-	 * @return session or null
-	 */
-	public static Session getNewSession()
-	{
-	    if (sessionFactory == null) 
-	    {
-	        return null;
-	    }
-	    
-	    return DataAccessActivator.sessionFactory.openSession();
-	}
+    /**
+     * Returns a Hibernate session. Returns null if a session cannot be
+     * opened.
+     * 
+     * @return session or null
+     */
+    public static Session getNewSession()
+    {
+        if (sessionFactory == null)
+        {
+            return null;
+        }
+
+        return DataAccessActivator.sessionFactory.openSession();
+    }
 }
