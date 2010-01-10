@@ -25,4 +25,6 @@ Bundle-ClassPath: lib/antlr-2.7.6.jar,
  lib/jta-1.1.jar,
  .
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess,
- au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities
+ au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
+ org.hibernate,
+ org.hibernate.criterion
