@@ -74,6 +74,7 @@ public class SchedulingServer
     {
         SS_Bundles.add("SchedulingServer-Configuration");
         SS_Bundles.add("SchedulingServer-Logger");
+        SS_Bundles.add("SchedulingServer-DataAccess");
     }
     
     /**
