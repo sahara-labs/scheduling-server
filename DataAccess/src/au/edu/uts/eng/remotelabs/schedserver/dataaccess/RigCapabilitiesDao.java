@@ -136,6 +136,7 @@ public class RigCapabilitiesDao extends GenericDao<RigCapabilities>
             }
         }
 
+        this.session.refresh(rigCaps);
         return rigCaps;
     }
 }

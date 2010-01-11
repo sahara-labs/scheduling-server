@@ -37,7 +37,10 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -64,7 +67,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl.Capabilities;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
@@ -194,7 +196,30 @@ public class RigCapabilitiesDaoTester extends TestCase
         assertNotNull(caps);
         assertEquals("a,b,d,f", caps.getCapabilities());
 
+        Set<MatchingCapabilities> matches = caps.getMatchingCapabilitieses();
+        List<String> matchingReq = new ArrayList<String>();
+        for (MatchingCapabilities m : matches)
+        {
+            matchingReq.add(m.getRequestCapabilities().getCapabilities());
+        }
         
+        assertEquals(3, matchingReq.size());
+        assertTrue(matchingReq.contains("a,b"));
+        assertTrue(matchingReq.contains("d,f"));
+        assertTrue(matchingReq.contains("f"));
+        
+        Session ses = this.dao.getSession();
+        ses.beginTransaction();
+        for (MatchingCapabilities m : matches)
+        {
+            ses.delete(m);
+        }
+        ses.getTransaction().commit();
+        for (RequestCapabilities r : req)
+        {
+            reqDao.delete(r);
+        }
+        this.dao.delete(caps);
     }
 
 }
