@@ -51,6 +51,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * RigCapabilities entity class which maps to the rig_capabilities table.
@@ -59,7 +60,7 @@ import javax.persistence.Table;
  * been provided.
  */
 @Entity
-@Table(name = "rig_capabilities")
+@Table(name = "rig_capabilities", uniqueConstraints = {@UniqueConstraint(columnNames = "capabilities")})
 public class RigCapabilities implements java.io.Serializable
 {
     /** Serializable class. */
@@ -106,7 +107,7 @@ public class RigCapabilities implements java.io.Serializable
         this.id = id;
     }
 
-    @Column(name = "capabilities", nullable = false, length = 65535)
+    @Column(name = "capabilities", nullable = false, length = 512)
     public String getCapabilities()
     {
         return this.capabilities;

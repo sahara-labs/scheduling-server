@@ -51,6 +51,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * RequestCapabilities entity which maps to the request_capabilities table.
@@ -58,7 +59,7 @@ import javax.persistence.Table;
  * The request capabilities table holds requested capabilities strings.  
  */
 @Entity
-@Table(name = "request_capabilities")
+@Table(name = "request_capabilities", uniqueConstraints = {@UniqueConstraint(columnNames = "capabilities")})
 public class RequestCapabilities implements java.io.Serializable
 {
     /** Serializable class. */
@@ -105,7 +106,7 @@ public class RequestCapabilities implements java.io.Serializable
         this.id = id;
     }
 
-    @Column(name = "capabilities", nullable = false, length = 65535)
+    @Column(name = "capabilities", nullable = false, length = 512)
     public String getCapabilities()
     {
         return this.capabilities;
