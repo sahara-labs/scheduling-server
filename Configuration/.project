@@ -31,4 +31,11 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.api.tools.apiAnalysisNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>schedulingserver.properties</name>
+			<type>1</type>
+			<location>/home/mdiponio/workspace/SchedServer/conf/schedulingserver.properties</location>
+		</link>
+	</linkedResources>
 </projectDescription>
