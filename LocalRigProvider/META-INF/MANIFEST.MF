@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Local Rig Provider
+Bundle-SymbolicName: SchedulingServer-LocalRigProvider
+Bundle-Version: 1.0.0.alpha
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
