@@ -51,6 +51,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * RigType entity class which maps to the rig_type table.
@@ -58,7 +59,7 @@ import javax.persistence.Table;
  * The rig type class holds all the defined rig types.
  */
 @Entity
-@Table(name = "rig_type")
+@Table(name = "rig_type", uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
 public class RigType implements java.io.Serializable
 {
     /** Serializable class. */

@@ -64,7 +64,7 @@ import javax.persistence.UniqueConstraint;
  * The rig class contains list of laboratory rigs.
  */
 @Entity
-@Table(name = "rig", uniqueConstraints = {@UniqueConstraint(columnNames = "name") })
+@Table(name = "rig", uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
 public class Rig implements java.io.Serializable
 {
     /** Serializable class. */
