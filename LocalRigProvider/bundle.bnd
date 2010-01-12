@@ -1,0 +1,9 @@
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl
+
+Bundle-Name: Local Rig Provider
+Bundle-SymbolicName: SchedulingServer-LocalRigProvider;singleton:=true
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
