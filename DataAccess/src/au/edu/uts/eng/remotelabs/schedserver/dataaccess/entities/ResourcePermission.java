@@ -86,6 +86,9 @@ public class ResourcePermission implements java.io.Serializable
      *  a permission granting access to a specific request capabilities. */
     private RequestCapabilities requestCapabilities;
     
+    /** The resource permission resource type, either RIG, TYPE or CAP 
+     *  for a rig permission, rig type permission or rig capabilities
+     *  permission respectively. */
     private String type;
     
     /** The maximum guaranteed session duration in seconds. */
@@ -101,7 +104,7 @@ public class ResourcePermission implements java.io.Serializable
      *  this period */
     private int queueActivityTimeout;
     
-    /** Timeout to terminate sessions if no presenece is detected within this
+    /** Timeout to terminate sessions if no presence is detected within this
      *  period. */
     private int sessionActivityTimeout;
     

@@ -55,7 +55,7 @@ import javax.persistence.Table;
  * <p />
  */
 @Entity
-@Table(name = "user_lock", catalog = "sahara")
+@Table(name = "user_lock")
 public class UserLock implements java.io.Serializable
 {
     /** Serializable class. */

@@ -61,7 +61,7 @@ import javax.persistence.UniqueConstraint;
  * and a name space (e.g institution).
  */
 @Entity
-@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "namespace" }))
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "namespace" }))
 public class User implements java.io.Serializable
 {
     /** Serilizable class. */

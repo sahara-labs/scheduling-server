@@ -107,7 +107,7 @@ public class RigCapabilities implements java.io.Serializable
         this.id = id;
     }
 
-    @Column(name = "capabilities", nullable = false, length = 512)
+    @Column(name = "capabilities", nullable = false, length = 255)
     public String getCapabilities()
     {
         return this.capabilities;
