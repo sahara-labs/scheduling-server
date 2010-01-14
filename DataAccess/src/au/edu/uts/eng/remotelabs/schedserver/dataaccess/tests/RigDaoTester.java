@@ -161,6 +161,8 @@ public class RigDaoTester extends TestCase
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         ts.setNanos(0); // Need to trunc time as nanoseconds aren't stored in the DB.
         rig.setLastUpdateTimestamp(ts);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
         ses.save(rig);
         ses.getTransaction().commit();
         ses.close();
@@ -174,6 +176,8 @@ public class RigDaoTester extends TestCase
         
         assertEquals(rig.getRigType().getName(), fRig.getRigType().getName());
         assertEquals(rig.getRigCapabilities().getCapabilities(), fRig.getRigCapabilities().getCapabilities());
+        assertEquals(rig.getManaged(), fRig.getManaged());
+        assertEquals(rig.getMeta(), fRig.getMeta());
         
         /* Delete all. */
         this.dao.delete(fRig);
@@ -213,6 +217,7 @@ public class RigDaoTester extends TestCase
         rig.setLastUpdateTimestamp(ts);
         rig.setOnline(true);
         rig.setActive(true);
+        rig.setManaged(true);
         this.dao.persist(rig);
         ids[0] = rig.getId();
 
@@ -224,6 +229,7 @@ public class RigDaoTester extends TestCase
         rig.setLastUpdateTimestamp(ts);
         rig.setOnline(true);
         rig.setActive(true);
+        rig.setManaged(true);
         this.dao.persist(rig);
         ids[1] = rig.getId();
         
@@ -272,10 +278,14 @@ public class RigDaoTester extends TestCase
         assertTrue(fr.isActive());
         assertTrue(fr.isOnline());
         assertFalse(fr.isInSession());
+        assertTrue(fr.getManaged());
+        assertNull(fr.getMeta());
         fr = free.get(1);
         assertTrue(fr.isActive());
         assertTrue(fr.isOnline());
         assertFalse(fr.isInSession());
+        assertTrue(fr.getManaged());
+        assertNull(fr.getMeta());
         
         List<String> names = new ArrayList<String>(2);
         for (Rig r : free)

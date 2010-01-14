@@ -101,6 +101,14 @@ public class Rig implements java.io.Serializable
      * actively providing it's status. */
     private boolean active;
     
+    /** Whether the rig is managed, that is whether the rig has its status
+     *  periodically updated, so should have its status put to off-line 
+     *  because of a lack of such message. */
+    private boolean managed;
+    
+    /** Meta-information to find the providing rig service. */
+    private String meta;
+    
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Session> sessions = new HashSet<Session>(0);
 
@@ -259,6 +267,28 @@ public class Rig implements java.io.Serializable
     public void setActive(final boolean active)
     {
         this.active = active;
+    }
+    
+    @Column(name="managed", nullable = false)
+    public boolean getManaged()
+    {
+        return this.managed;
+    }
+    
+    public void setManaged(final boolean managed)
+    {
+        this.managed = managed;
+    }
+    
+    @Column(name="meta", length=255)
+    public String getMeta()
+    {
+        return this.meta;
+    }
+    
+    public void setMeta(final String meta)
+    {
+        this.meta = meta;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "rig")
