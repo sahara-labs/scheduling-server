@@ -43,5 +43,29 @@ Date: 28th December 2009
 	<target name="build" depends="configurationBundle,loggerBundle">
 		<buildProject />
 	</target>
+	
+	<!-- Generate the database schema in DDL from the mapping entity 
+         annotations. -->
+	<target name="schema">
+		<taskdef name="hibernatetool" classpathref="classpath.all" 
+				classname="org.hibernate.tool.ant.HibernateToolTask" />
+		<mkdir dir="../doc/db/schema" />
+		<mkdir dir="../doc/db/doc" />
+		<!-- MySQL Schema -->
+		<hibernatetool destdir="../doc/db/schema">
+			<annotationconfiguration configurationfile="test/mysql.cfg.xml" />
+			<hbm2ddl export="false" format="true" outputfilename="mysql-schema.sql" />
+		</hibernatetool>
+		<!-- PostgreSQL Schema. -->
+		<hibernatetool destdir="../doc/db/schema">
+			<annotationconfiguration configurationfile="test/postgresql.cfg.xml" />
+			<hbm2ddl export="false" format="true" outputfilename="postgresql-schema.sql" />
+		</hibernatetool>
+		<!-- Database documentation -->
+		<hibernatetool destdir="../doc/db/doc">
+			<annotationconfiguration configurationfile="test/mysql.cfg.xml" />
+			<hbm2doc />
+		</hibernatetool>
+	</target>
 
 </project>
