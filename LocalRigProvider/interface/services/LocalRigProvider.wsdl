@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.example.org/NewWSDLFile/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="LocalRigProvider" targetNamespace="http://www.example.org/NewWSDLFile/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.example.org/NewWSDLFile/">
+      <xsd:element name="registerRig">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="in" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="registerRigResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="out" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="updateRigStatus"
+      	type="tns:UpdateRigStatusType">
+      </xsd:element>
+      <xsd:element name="updateRigStatusResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="out" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="removeRig">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="in" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="removeRigResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="out" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+    
+      <xsd:complexType name="UpdateRigStatusType">
+      	<xsd:sequence>
+      		<xsd:element name="name" type="xsd:string"></xsd:element>
+      		<xsd:element name="status" type="tns:StatusType"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="StatusType">
+      	<xsd:sequence>
+      		<xsd:element name="online" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="errorReason" type="xsd:string"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="registerRigRequest">
+    <wsdl:part element="tns:registerRig" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="registerRigResponse">
+    <wsdl:part element="tns:registerRigResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="updateRigStatusRequest">
+  	<wsdl:part name="parameters" element="tns:updateRigStatus"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateRigStatusResponse">
+  	<wsdl:part name="parameters" element="tns:updateRigStatusResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeRigRequest">
+  	<wsdl:part name="parameters" element="tns:removeRig"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeRigResponse">
+  	<wsdl:part name="parameters" element="tns:removeRigResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="LocalRigProvider">
+    <wsdl:operation name="registerRig">
+      <wsdl:input message="tns:registerRigRequest"/>
+      <wsdl:output message="tns:registerRigResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="updateRigStatus">
+    	<wsdl:input message="tns:updateRigStatusRequest"></wsdl:input>
+    	<wsdl:output message="tns:updateRigStatusResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeRig">
+    	<wsdl:input message="tns:removeRigRequest"></wsdl:input>
+    	<wsdl:output message="tns:removeRigResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LocalRigProviderSOAP" type="tns:LocalRigProvider">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="registerRig">
+      <soap:operation soapAction="http://www.example.org/NewWSDLFile/registerRig"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LocalRigProvider">
+    <wsdl:port binding="tns:LocalRigProviderSOAP" name="LocalRigProviderSOAP">
+      <soap:address location="http://remotelabs.eng.uts.edu.au:8080/schedulingserver/localrigprovider"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
