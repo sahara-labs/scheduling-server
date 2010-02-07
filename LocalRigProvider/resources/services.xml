@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.4.1  Built on : Aug 19, 2008 (10:13:39 LKT) -->
+<serviceGroup>
+    <service name="LocalRigProvider">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.localrigprovider.LocalRigProviderMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.localrigprovider.LocalRigProviderSkeleton</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="registerRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/NewOperation</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/registerRigResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

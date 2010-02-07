@@ -151,17 +151,40 @@ Date: 5th February 2009
     </wsdl:operation>
   </wsdl:portType>
   
-  <wsdl:binding name="LocalRigProviderSOAP" type="lrp:LocalRigProvider">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="registerRig">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/NewOperation"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
+  <wsdl:binding name="LocalRigProviderSOAP"
+  	type="lrp:LocalRigProvider">
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="registerRig">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/registerRig" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="updateRigStatus">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/updateRigStatus" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="removeRig">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/removeRig" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="LocalRigProvider">
     <wsdl:port binding="lrp:LocalRigProviderSOAP" name="LocalRigProviderSOAP">
