@@ -53,12 +53,20 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletServerService;
 
 /**
- * The server implementation. 
+ * The server implementation. Listens for service events filter by the 
+ * <tt>ServletServerService<tt> object classes to dynamically add and
+ * remove request handling servlets.
+ * <br />
+ * Added or removing a servlet requires the context to be reset, thus
+ * requires the server to briefly stop listening.
  */
 public class ServerImpl
 {
      /** Address post-fix for the service URL. */
     public static final String URL_POSTFIX = "/services/SchedulingServer";
+    
+    /** Bundle context of the Server bundle. */
+    private final BundleContext bundleContext;
     
     /** Jetty server. */
     private Server server;
@@ -74,8 +82,14 @@ public class ServerImpl
 
     /** Logger. */
     private Logger logger;
+    
+    public ServerImpl(BundleContext _context)
+    {
+        this.logger = LoggerActivator.getLogger();
+        this.bundleContext = _context;
+    }
 
-    public void start(BundleContext context) throws Exception 
+    public void init() throws Exception
 	{
 	    this.logger = LoggerActivator.getLogger();
 	    this.logger.debug("Starting the Scheduling Server server up.");
@@ -85,9 +99,9 @@ public class ServerImpl
 	        this.connectors = new ArrayList<Connector>();
 	        
 	        /* Get the configuration service. */
-	        ServiceReference ref = context.getServiceReference(Config.class.getName());
+	        ServiceReference ref = this.bundleContext.getServiceReference(Config.class.getName());
 	        Config config = null;
-	        if (ref == null || (config = (Config)context.getService(ref)) == null)
+	        if (ref == null || (config = (Config)this.bundleContext.getService(ref)) == null)
 	        {
 	            this.logger.error("Unable to get configuration service reference so unable " +
 	            		"to load server configuration.");
@@ -124,7 +138,7 @@ public class ServerImpl
 	        this.connectors.add(http);
 	        
 	        /* HTTPS connector. */
-	        // TODO HTTP connector
+	        // TODO Add HTTPS connector for the Scheduling Server Server
 	        
 	        this.server.setConnectors(this.connectors.toArray(new Connector[this.connectors.size()]));
 
@@ -152,14 +166,17 @@ public class ServerImpl
 	        /* The handler routes the requests to the Apache Axis 2 servlet. This 
 	         * registers all the HTTP servlets that are registered as OSGI services. */
 	        this.context = new Context(this.server, "/", Context.SESSIONS);
+	        this.server.addHandler(this.context);
 	        
-	        ServiceReference httpServletRefs[] = context.getServiceReferences(ServletServerService.class.getName(), null);
-	        for (ServiceReference httpServletRef : httpServletRefs)
-	        {
-	            ServletServerService servlet = (ServletServerService) context.getService(httpServletRef);
-
-///C	            this.context.addServlet(servlet, pathSpec)
-	        }
+	        
+	        
+//	        ServiceReference httpServletRefs[] = context.getServiceReferences(ServletServerService.class.getName(), null);
+//	        for (ServiceReference httpServletRef : httpServletRefs)
+//	        {
+//	            ServletServerService servlet = (ServletServerService) context.getService(httpServletRef);
+//
+//              this.context.addServlet(servlet, pathSpec)
+//	        }
 	        
 //	        ServletHolder holder = new ServletHolder(new AxisServlet());
 //
@@ -171,6 +188,39 @@ public class ServerImpl
 	        this.server.start();
 	    }
 	}
+    
+    public void addService(ServiceReference service)
+    {   
+        // TODO add service
+    }
+    
+    public void removeService(ServiceReference service)
+    {
+        // TODO remove service
+    }
+    
+    /**
+     * Starts the listening server.
+     * 
+     * @throws Exception
+     */
+    public void start() throws Exception
+    {
+        synchronized (this)
+        {
+            try
+            {
+                this.server.start();
+            }
+            catch (Exception e)
+            {
+                this.logger.error("Exception thrown when starting the listening server with message: " +
+                        e.getMessage() + '.');
+                throw e;
+            }
+        }
+    }
+    
 
     /**
      * Stops the server listening.
@@ -183,7 +233,16 @@ public class ServerImpl
 	    {
 	        if (this.server != null)
 	        {
-	            this.server.stop();
+	            try
+                {
+                    this.server.stop();
+                }
+                catch (Exception e)
+                {
+                    this.logger.error("Exception thrown when stopping the listening server with message: " + 
+                            e.getMessage() + '.');
+                    throw e;
+                }
 	        }
 	    }
 	}

@@ -34,61 +34,49 @@
  * @author Michael Diponio (mdiponio)
  * @date 8th February 2010
  */
+package au.edu.uts.eng.remotelabs.schedserver.server.impl;
 
-package au.edu.uts.eng.remotelabs.schedserver.server;
-
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceListener;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.server.impl.ServerImpl;
-import au.edu.uts.eng.remotelabs.schedserver.server.impl.ServerServiceListener;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Activator for the Server bundle which is a Jetty server to host the Axis2
- * SOAP interface.
+ * Listener for <tt>ServletServerService</tt> service events. If the service
+ * is registered, the servlet is added to the server context to handle 
+ * requests. If the service is being unregistered, the servlet is
+ * removed.
  */
-public class ServerActivator implements BundleActivator 
+public class ServerServiceListener implements ServiceListener
 {
-    /** The server implementation. */
-    private ServerImpl server;
-    
     /** Logger. */
     private Logger logger;
-
-    @Override
-    public void start(BundleContext context) throws Exception
+    
+    /** Server implementation. */
+    private ServerImpl server;
+    
+    public ServerServiceListener(ServerImpl srv)
     {
-        this.server = new ServerImpl(context);
-        
-        /* Register a service listener for servlet services. */
-        this.logger.debug("Adding a service listener for the object class " + ServletServerService.class.getName() + '.');
-        ServerServiceListener listener = new ServerServiceListener(this.server);
-        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + ServletServerService.class.getName() + ')');
-        
-        /* Fire pseudo events for already registered servers. */
-        ServiceReference[] refs = context.getServiceReferences(ServletServerService.class.getName(), null);
-        for (ServiceReference ref : refs)
-        {
-            this.logger.debug("Firing registered event for servlet service from bundle " + 
-                    ref.getBundle().getSymbolicName() + '.');
-            listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-        }
-        
-        /* Start the server. */
-        this.server.start();
+        this.logger = LoggerActivator.getLogger();
+        this.server = srv;
     }
 
-
     @Override
-    public void stop(BundleContext arg0) throws Exception
+    public void serviceChanged(ServiceEvent event)
     {
-        // TODO Auto-generated method stub
-        
-    } 
-   
+        switch (event.getType())
+        {
+            case ServiceEvent.REGISTERED:
+                this.logger.debug("Received a registered service event for a servlet service.");
+                this.server.addService(event.getServiceReference());
+                break;
+                
+            case ServiceEvent.UNREGISTERING:
+                this.logger.debug("Received a unregistering service event for a shutting down servlet service.");
+                this.server.removeService(event.getServiceReference());
+                break;
+        }
 
+    }
 }
