@@ -1,282 +1,193 @@
-/**
- * LocalRigProviderMessageReceiverInOut.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:39 LKT)
- */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
+import org.apache.axis2.util.JavaUtils;
+
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse;
+
 /**
- * LocalRigProviderMessageReceiverInOut message receiver
+ * LocalRigProviderMessageReceiverInOut message receiver.
  */
-
-public class LocalRigProviderMessageReceiverInOut extends
-org.apache.axis2.receivers.AbstractInOutMessageReceiver
+public class LocalRigProviderMessageReceiverInOut extends AbstractInOutMessageReceiver
 {
-
     @Override
-    public void invokeBusinessLogic(
-            final org.apache.axis2.context.MessageContext msgContext,
-            final org.apache.axis2.context.MessageContext newMsgContext)
-    throws org.apache.axis2.AxisFault
+    public void invokeBusinessLogic(final MessageContext msgContext, final MessageContext newMsgContext) 
+            throws AxisFault
     {
-
         try
         {
-
-            // get the implementation class for the Web Service
             final Object obj = this.getTheImplementationObject(msgContext);
-
             final LocalRigProviderSkeletonInterface skel = (LocalRigProviderSkeletonInterface) obj;
-            //Out Envelop
-            org.apache.axiom.soap.SOAPEnvelope envelope = null;
-            //Find the axisOperation that has been set by the Dispatch phase.
-            final org.apache.axis2.description.AxisOperation op = msgContext
-            .getOperationContext().getAxisOperation();
+
+            
+            SOAPEnvelope envelope = null;
+            final AxisOperation op = msgContext.getOperationContext().getAxisOperation();
             if (op == null)
             {
-                throw new org.apache.axis2.AxisFault(
-                "Operation is not located, if this is doclit style the SOAP-ACTION should specified via the SOAP Action to use the RawXMLProvider");
+                throw new AxisFault("Operation is not located, if this is doclit style the SOAP-ACTION should " +
+                		"specified via the SOAP Action to use the RawXMLProvider");
             }
 
             String methodName;
-            if ((op.getName() != null)
-                    && ((methodName = org.apache.axis2.util.JavaUtils
-                            .xmlNameToJava(op.getName().getLocalPart())) != null))
+            if ((op.getName() != null) && ((methodName = JavaUtils.xmlNameToJava(op.getName().getLocalPart())) != null))
             {
-
                 if ("removeRig".equals(methodName))
                 {
 
-                    au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse removeRigResponse7 = null;
-                    final au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig wrappedParam = (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig) this.fromOM(
-                            msgContext.getEnvelope().getBody()
-                            .getFirstElement(),
-                            au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig.class,
+                    RemoveRigResponse removeRigResponse = null;
+                    final RemoveRig wrappedParam = (RemoveRig) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), RemoveRig.class, 
                             this.getEnvelopeNamespaces(msgContext.getEnvelope()));
-
-                    removeRigResponse7 =
-
-                        skel.removeRig(wrappedParam);
-
-                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext),
-                            removeRigResponse7, false);
+                    removeRigResponse = skel.removeRig(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), removeRigResponse, false);
+                }
+                else if ("updateRigStatus".equals(methodName))
+                {
+                    UpdateRigStatusResponse updateRigStatusResponse = null;
+                    final UpdateRigStatus wrappedParam = (UpdateRigStatus) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), UpdateRigStatus.class, 
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    updateRigStatusResponse = skel.updateRigStatus(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), updateRigStatusResponse, false);
+                }
+                else if ("registerRig".equals(methodName))
+                {
+                    RegisterRigResponse registerRigResponse = null;
+                    final RegisterRig wrappedParam = (RegisterRig) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), RegisterRig.class, 
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    registerRigResponse = skel.registerRig(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), registerRigResponse, false);
                 }
                 else
-
-                    if ("updateRigStatus".equals(methodName))
-                    {
-
-                        au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse updateRigStatusResponse9 = null;
-                        final au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus wrappedParam = (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus) this.fromOM(
-                                msgContext.getEnvelope().getBody()
-                                .getFirstElement(),
-                                au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus.class,
-                                this.getEnvelopeNamespaces(msgContext.getEnvelope()));
-
-                        updateRigStatusResponse9 =
-
-                            skel.updateRigStatus(wrappedParam);
-
-                        envelope = this.toEnvelope(this.getSOAPFactory(msgContext),
-                                updateRigStatusResponse9, false);
-                    }
-                    else
-
-                        if ("registerRig".equals(methodName))
-                        {
-
-                            au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse registerRigResponse11 = null;
-                            final au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig wrappedParam = (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig) this.fromOM(
-                                    msgContext.getEnvelope().getBody()
-                                    .getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig.class,
-                                    this.getEnvelopeNamespaces(msgContext.getEnvelope()));
-
-                            registerRigResponse11 =
-
-                                skel.registerRig(wrappedParam);
-
-                            envelope = this.toEnvelope(this.getSOAPFactory(msgContext),
-                                    registerRigResponse11, false);
-
-                        }
-                        else
-                        {
-                            throw new RuntimeException("method not found");
-                        }
+                {
+                    throw new RuntimeException("method not found");
+                }
 
                 newMsgContext.setEnvelope(envelope);
             }
         }
         catch (final Exception e)
         {
-            throw org.apache.axis2.AxisFault.makeFault(e);
+            throw AxisFault.makeFault(e);
         }
     }
 
-    private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
-            final org.apache.axiom.soap.SOAPFactory factory,
-            final au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse param,
-            final boolean optimizeContent) throws org.apache.axis2.AxisFault
-            {
-        try
-        {
-            final org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory
-            .getDefaultEnvelope();
-
-            emptyEnvelope
-            .getBody()
-            .addChild(
-                    param
-                    .getOMElement(
-                            au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse.MY_QNAME,
-                            factory));
-
-            return emptyEnvelope;
-        }
-        catch (final org.apache.axis2.databinding.ADBException e)
-        {
-            throw org.apache.axis2.AxisFault.makeFault(e);
-        }
-            }
-
-    private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
-            final org.apache.axiom.soap.SOAPFactory factory,
-            final au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse param,
-            final boolean optimizeContent) throws org.apache.axis2.AxisFault
-            {
-        try
-        {
-            final org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory
-            .getDefaultEnvelope();
-
-            emptyEnvelope
-            .getBody()
-            .addChild(
-                    param
-                    .getOMElement(
-                            au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse.MY_QNAME,
-                            factory));
-
-            return emptyEnvelope;
-        }
-        catch (final org.apache.axis2.databinding.ADBException e)
-        {
-            throw org.apache.axis2.AxisFault.makeFault(e);
-        }
-            }
-
-    private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
-            final org.apache.axiom.soap.SOAPFactory factory,
-            final au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse param,
-            final boolean optimizeContent) throws org.apache.axis2.AxisFault
-            {
-        try
-        {
-            final org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory
-            .getDefaultEnvelope();
-
-            emptyEnvelope
-            .getBody()
-            .addChild(
-                    param
-                    .getOMElement(
-                            au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse.MY_QNAME,
-                            factory));
-
-            return emptyEnvelope;
-        }
-        catch (final org.apache.axis2.databinding.ADBException e)
-        {
-            throw org.apache.axis2.AxisFault.makeFault(e);
-        }
-            }
-
-    private Object fromOM(final org.apache.axiom.om.OMElement param,
-            final Class type, final java.util.Map extraNamespaces)
-    throws org.apache.axis2.AxisFault
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final RemoveRigResponse param, final boolean optimizeContent)
+            throws AxisFault
     {
-
         try
         {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(RemoveRigResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig.class
-                    .equals(type))
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final UpdateRigStatusResponse param, final boolean optimizeContent)
+            throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(UpdateRigStatusResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final RegisterRigResponse param, final boolean optimizeContent)
+            throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(RegisterRigResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private Object fromOM(final OMElement param, final Class<? extends ADBBean> type, final Map<String, String> extraNamespaces) 
+            throws AxisFault
+    {
+        try
+        {
+            if (RemoveRig.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig.Factory
-                .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return RemoveRig.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse.class
-                    .equals(type))
+            if (RemoveRigResponse.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse.Factory
-                .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return RemoveRigResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus.class
-                    .equals(type))
+            if (UpdateRigStatus.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus.Factory
-                .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return UpdateRigStatus.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse.class
-                    .equals(type))
+            if (UpdateRigStatusResponse.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse.Factory
-                .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return UpdateRigStatusResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig.class
-                    .equals(type))
+            if (RegisterRig.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig.Factory
-                .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return RegisterRig.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse.class
-                    .equals(type))
+            if (RegisterRigResponse.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse.Factory
-                .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return RegisterRigResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
-
         }
         catch (final Exception e)
         {
-            throw org.apache.axis2.AxisFault.makeFault(e);
+            throw AxisFault.makeFault(e);
         }
         return null;
     }
 
-    /**
-     * A utility method that copies the namepaces from the SOAPEnvelope
-     */
-     private java.util.Map getEnvelopeNamespaces(
-             final org.apache.axiom.soap.SOAPEnvelope env)
-     {
-         final java.util.Map returnMap = new java.util.HashMap();
-         final java.util.Iterator namespaceIterator = env.getAllDeclaredNamespaces();
-         while (namespaceIterator.hasNext())
-         {
-             final org.apache.axiom.om.OMNamespace ns = (org.apache.axiom.om.OMNamespace) namespaceIterator
-             .next();
-             returnMap.put(ns.getPrefix(), ns.getNamespaceURI());
-         }
-         return returnMap;
-     }
-
-}//end of class
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
+    {
+        final Map<String, String> returnMap = new HashMap<String, String>();
+        final Iterator namespaceIterator = env.getAllDeclaredNamespaces();
+        while (namespaceIterator.hasNext())
+        {
+            final OMNamespace ns = (OMNamespace) namespaceIterator.next();
+            returnMap.put(ns.getPrefix(), ns.getNamespaceURI());
+        }
+        return returnMap;
+    }
+}
