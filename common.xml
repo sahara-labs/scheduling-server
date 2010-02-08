@@ -81,6 +81,25 @@ Date: 5th January 2009
 		</fileset>
 	</path>
 	
+	<path id="classpath.all">
+		<pathelement location="${build.classes.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${common.lib}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${test.lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="../">
+			<include name="**/bundle/**/*.jar" />
+		</fileset>
+		<fileset dir="${tool.lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
 	<!-- ##################################################################
 	  ##########  Marcros  ################################################
 	  ##################################################################-->
@@ -207,7 +226,7 @@ Date: 5th January 2009
 		  		<exclude name="**/*Tester.java" />
 		  		<exclude name="**/*TestSuite.java" />
 			</fileset>
-		</pmd>
+		bugs</pmd>
 		<xslt in="${reports.pmd.xml.dir}/pmd_report.xml" style="${tool.lib.dir}/pmd-4.2.5/etc/xslt/pmd-report-per-class.xslt" out="${reports.pmd.xml.dir}/pmd_report.html" />
 		<echo>PMD execution successful, report ${pmd-report} generated</echo>
 	</target>
@@ -218,7 +237,7 @@ Date: 5th January 2009
 	<property name="findbugs.home" value="${tool.lib.dir}/findbugs-1.3.9" />
 	<target name="bugs" depends="build">
 		<mkdir dir="${reports.bugs.xml.dir}"/>
-		<taskdef name="findbugs" classpathref="project.tools" 
+		<taskclasdef name="findbugs" classpathref="project.tools" 
 				classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
 		<findbugs home="${findbugs.home}" output="xml:withMessages" outputFile="${findbugs.report.xml}">
 		    <sourcePath path="${src.dir}" /> 
