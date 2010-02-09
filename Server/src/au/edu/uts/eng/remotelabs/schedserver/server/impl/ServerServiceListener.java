@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.server.impl;
 
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -65,18 +66,22 @@ public class ServerServiceListener implements ServiceListener
     @Override
     public void serviceChanged(ServiceEvent event)
     {
+        ServiceReference ref;
         switch (event.getType())
         {
             case ServiceEvent.REGISTERED:
-                this.logger.debug("Received a registered service event for a servlet service.");
-                this.server.addService(event.getServiceReference());
+                ref = event.getServiceReference();
+                this.logger.debug("Received a registered service event for a servlet service of bundle " + 
+                        ref.getBundle().getSymbolicName() + '.');
+                this.server.addService(ref);
                 break;
                 
             case ServiceEvent.UNREGISTERING:
-                this.logger.debug("Received a unregistering service event for a shutting down servlet service.");
-                this.server.removeService(event.getServiceReference());
+                ref = event.getServiceReference();
+                this.logger.debug("Received a unregistering service event for a shutting down servlet service of " +
+                		"bundle " + ref.getBundle().getSymbolicName() + '.');
+                this.server.removeService(ref);
                 break;
         }
-
     }
 }

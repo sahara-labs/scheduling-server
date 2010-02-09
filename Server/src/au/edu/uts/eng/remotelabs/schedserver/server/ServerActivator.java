@@ -44,6 +44,7 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.impl.ServerImpl;
 import au.edu.uts.eng.remotelabs.schedserver.server.impl.ServerServiceListener;
 
@@ -62,7 +63,10 @@ public class ServerActivator implements BundleActivator
     @Override
     public void start(BundleContext context) throws Exception
     {
+        this.logger = LoggerActivator.getLogger();
+        
         this.server = new ServerImpl(context);
+        this.server.init();
         
         /* Register a service listener for servlet services. */
         this.logger.debug("Adding a service listener for the object class " + ServletServerService.class.getName() + '.');
@@ -71,24 +75,28 @@ public class ServerActivator implements BundleActivator
         
         /* Fire pseudo events for already registered servers. */
         ServiceReference[] refs = context.getServiceReferences(ServletServerService.class.getName(), null);
-        for (ServiceReference ref : refs)
+        if (refs != null)
         {
-            this.logger.debug("Firing registered event for servlet service from bundle " + 
-                    ref.getBundle().getSymbolicName() + '.');
-            listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+            for (ServiceReference ref : refs)
+            {
+                this.logger.debug("Firing registered event for servlet service from bundle " + 
+                        ref.getBundle().getSymbolicName() + '.');
+                listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+            }
+        }
+        else
+        {
+            this.logger.debug("There are no currently registered services to host a servlet.");
         }
         
         /* Start the server. */
         this.server.start();
     }
 
-
     @Override
     public void stop(BundleContext arg0) throws Exception
     {
-        // TODO Auto-generated method stub
-        
+        /* The framework will cleanup any services in use and remove the service listener. */
+        this.server.stop();
     } 
-   
-
 }
