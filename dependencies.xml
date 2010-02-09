@@ -71,6 +71,12 @@ Date: 28th December 2009
 		<buildRequiredBundle bundle="SchedulingServer-Logger.jar" bundleProject="Logger" />
 	</target>
 	
+	<!-- ### Server Bundle. -->
+	<detectIfBundlePresent property="missing.server" bundle="SchedulingServer-Server.jar" />
+	<target name="serverBundle" if="missing.server" >
+		<buildRequiredBundle bundle="SchedulingServer-Server.jar" bundleProject="Server" />
+	</target>
+	
 	<!-- ### Data Access Bundle. -->
 	<detectIfBundlePresent property="missing.dataaccess" bundle="SchedulingServer-DataAccess.jar" />
 	<target name="dataAccessBundle" if="missing.dataacess">
