@@ -177,7 +177,7 @@ public class ServerImpl
 	     * ------------------------------------------------------------------*/
 	    /* The handler routes the requests to the Apache Axis 2 servlet. This 
 	     * registers all the HTTP servlets that are registered as OSGI services. */
-	    this.serverContext = new Context(this.server, "/", Context.SESSIONS);
+//	    this.serverContext = new Context(this.server, "/", Context.SESSIONS);
 	}
     
     /**
