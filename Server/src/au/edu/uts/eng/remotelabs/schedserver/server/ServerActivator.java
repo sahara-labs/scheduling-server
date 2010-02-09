@@ -61,7 +61,7 @@ public class ServerActivator implements BundleActivator
     private Logger logger;
 
     @Override
-    public void start(BundleContext context) throws Exception
+    public void start(final BundleContext context) throws Exception
     {
         this.logger = LoggerActivator.getLogger();
         
@@ -70,12 +70,16 @@ public class ServerActivator implements BundleActivator
         
         /* Register a service listener for servlet services. */
         this.logger.debug("Adding a service listener for the object class " + ServletServerService.class.getName() + '.');
-        ServerServiceListener listener = new ServerServiceListener(this.server);
+        final ServerServiceListener listener = new ServerServiceListener(this.server);
         context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + ServletServerService.class.getName() + ')');
         
         /* Fire pseudo events for already registered servers. */
-        ServiceReference[] refs = context.getServiceReferences(ServletServerService.class.getName(), null);
-        if (refs != null)
+        final ServiceReference[] refs = context.getServiceReferences(ServletServerService.class.getName(), null);
+        if (refs == null)
+        {
+            this.logger.debug("There are no currently registered services to host a servlet.");
+        }
+        else
         {
             for (ServiceReference ref : refs)
             {
@@ -84,19 +88,16 @@ public class ServerActivator implements BundleActivator
                 listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
             }
         }
-        else
-        {
-            this.logger.debug("There are no currently registered services to host a servlet.");
-        }
         
         /* Start the server. */
         this.server.start();
     }
 
     @Override
-    public void stop(BundleContext arg0) throws Exception
+    public void stop(final BundleContext context) throws Exception
     {
         /* The framework will cleanup any services in use and remove the service listener. */
+        this.logger.warn("Stopping the server bundle.");
         this.server.stop();
     } 
 }

@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServlet;
  *  <li><tt>servlet</tt> - The servlet that should be hosted.</li>
  *  <li><tt>pathSpec</tt> - The trailing URL suffix to specify whether this
  *  servlet is to handle a request.</li>
- *  <li><tt>isAxis</tt> - Whether the servlet is a Axis 2 servlet.</li>
+ *  <li><tt>isAxisServlet</tt> - Whether the servlet is a Axis 2 servlet.</li>
  *  <li><tt>axisRepo<tt> - The Axis repository which is the path containing
  *  an Axis servlet descriptor.</li>
  * </ul>
@@ -60,12 +60,12 @@ public class ServletServerService
     
     /** Whether the servlet is an Axis servlet. If this is true, the 
      *  <tt>axisRepository</tt> field must be set. */
-    private final boolean isAxis;
+    private final boolean isAxisServlet;
     
     /** The path to the Axis repository. */
     private final String axisRepo;
     
-    public ServletServerService(HttpServlet servlet, String pathSpec)
+    public ServletServerService(final HttpServlet servlet, final String pathSpec)
     {
         this(servlet, pathSpec, false, null);
     }
@@ -74,7 +74,7 @@ public class ServletServerService
     {
         this.servlet = servlet;
         this.pathSpec = pathSpec;
-        this.isAxis = isAxis;
+        this.isAxisServlet = isAxis;
         this.axisRepo = axisRepo;
     }
 
@@ -95,11 +95,11 @@ public class ServletServerService
     }
 
     /**
-     * @return the isAxis
+     * @return the isAxisServlet
      */
     public boolean isAxis()
     {
-        return this.isAxis;
+        return this.isAxisServlet;
     }
 
     /**

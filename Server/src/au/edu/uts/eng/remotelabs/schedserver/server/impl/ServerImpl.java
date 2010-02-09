@@ -75,7 +75,7 @@ public class ServerImpl
     private Server server;
     
     /** Service services keyed by path spec. */
-    private Map<String, ServiceReference> services;
+    private final Map<String, ServiceReference> services;
     
     /** Connector which receives requests. */
     private List<Connector> connectors;
@@ -87,12 +87,12 @@ public class ServerImpl
     private QueuedThreadPool threadPool;
 
     /** Logger. */
-    private Logger logger;
+    private final Logger logger;
     
-    public ServerImpl(BundleContext _context)
+    public ServerImpl(final BundleContext context)
     {
         this.logger = LoggerActivator.getLogger();
-        this.bundleContext = _context;
+        this.bundleContext = context;
         
         this.services = new HashMap<String, ServiceReference>();
     }
@@ -106,13 +106,12 @@ public class ServerImpl
      */
     public synchronized void init() throws Exception
 	{
-	    this.logger = LoggerActivator.getLogger();
 	    this.logger.debug("Starting the Scheduling Server server up.");
 
 	    this.connectors = new ArrayList<Connector>();
 
 	    /* Get the configuration service. */
-	    ServiceReference ref = this.bundleContext.getServiceReference(Config.class.getName());
+	    final ServiceReference ref = this.bundleContext.getServiceReference(Config.class.getName());
 	    Config config = null;
 	    if (ref == null || (config = (Config)this.bundleContext.getService(ref)) == null)
 	    {
@@ -135,7 +134,7 @@ public class ServerImpl
 	     * ----------------------------------------------------------------- */
 	    /* The connectors receives requests and calls handle on handler object
 	     * to handle a request. */
-	    Connector http = new SelectChannelConnector();
+	    final Connector http = new SelectChannelConnector();
 	    String tmp = config.getProperty("Listening_Port", "8080");
 	    try
 	    {
@@ -158,19 +157,19 @@ public class ServerImpl
 	    /* --------------------------------------------------------------------
 	     * ---- 3. Create and configure the request thread pool. -------------- 
 	     * ----------------------------------------------------------------- */
-	    int concurrentRequests = 100;
+	    int concurrentReqs = 100;
 	    tmp = config.getProperty("Concurrent_Requests", "100");
 	    try
 	    {
-	        concurrentRequests = Integer.parseInt(tmp);
-	        this.logger.info("Allowable concurrent requests is " + concurrentRequests + ".");
+	        concurrentReqs = Integer.parseInt(tmp);
+	        this.logger.info("Allowable concurrent requests is " + concurrentReqs + ".");
 	    }
 	    catch (NumberFormatException nfe)
 	    {
 	        this.logger.warn(tmp + " is not a valid number of concurrent requests. Using the default of " +
-	                concurrentRequests + '.');
+	                concurrentReqs + '.');
 	    }
-	    this.threadPool = new QueuedThreadPool(concurrentRequests);
+	    this.threadPool = new QueuedThreadPool(concurrentReqs);
 	    this.server.setThreadPool(this.threadPool);
 
 	    /* --------------------------------------------------------------------
@@ -188,12 +187,12 @@ public class ServerImpl
      * 
      * @param ref service reference pointing to a ServletServerService service
      */
-    public synchronized void addService(ServiceReference ref)
+    public synchronized void addService(final ServiceReference ref)
     {
         boolean wasRunning = false;
         try
         {
-            ServletServerService serv = (ServletServerService)this.bundleContext.getService(ref);
+            final ServletServerService serv = (ServletServerService)this.bundleContext.getService(ref);
             if (serv.getServlet() == null)
             {
                 this.logger.error("Server registration from bundle " + ref.getBundle().getSymbolicName() + 
@@ -221,8 +220,8 @@ public class ServerImpl
             this.serverContext = new Context(this.server, "/", Context.SESSIONS);
             for (ServiceReference exRef : this.services.values())
             {
-                ServletServerService exSer = (ServletServerService)this.bundleContext.getService(exRef);
-                ServletHolder holder = new ServletHolder(exSer.getServlet());
+                final ServletServerService exSer = (ServletServerService)this.bundleContext.getService(exRef);
+                final ServletHolder holder = new ServletHolder(exSer.getServlet());
                 if (exSer.isAxis())
                 {
                     holder.setInitParameter("axis2.repository.path", exSer.getAxisRepo());
@@ -262,12 +261,12 @@ public class ServerImpl
      * 
      * @param ref service reference pointing to a ServletServerService service
      */
-    public synchronized void removeService(ServiceReference ref)
+    public synchronized void removeService(final ServiceReference ref)
     {
         boolean wasRunning = false;
         try
         {
-            ServletServerService serv = (ServletServerService)this.bundleContext.getService(ref);
+            final ServletServerService serv = (ServletServerService)this.bundleContext.getService(ref);
             if (serv.getPathSpec() == null)
             {
                 this.logger.warn("Unable to remove the server servlet for bundle " + ref.getBundle().getSymbolicName() +
@@ -292,8 +291,8 @@ public class ServerImpl
             this.serverContext = new Context(this.server, "/", Context.SESSIONS);
             for (ServiceReference exRef : this.services.values())
             {
-                ServletServerService exSer = (ServletServerService)this.bundleContext.getService(exRef);
-                ServletHolder holder = new ServletHolder(exSer.getServlet());
+                final ServletServerService exSer = (ServletServerService)this.bundleContext.getService(exRef);
+                final ServletHolder holder = new ServletHolder(exSer.getServlet());
                 if (exSer.isAxis())
                 {
                     holder.setInitParameter("axis2.repository.path", exSer.getAxisRepo());

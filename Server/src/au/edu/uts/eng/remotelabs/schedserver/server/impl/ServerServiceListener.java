@@ -52,19 +52,19 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 public class ServerServiceListener implements ServiceListener
 {
     /** Logger. */
-    private Logger logger;
+    private final Logger logger;
     
     /** Server implementation. */
-    private ServerImpl server;
+    private final ServerImpl server;
     
-    public ServerServiceListener(ServerImpl srv)
+    public ServerServiceListener(final ServerImpl srv)
     {
         this.logger = LoggerActivator.getLogger();
         this.server = srv;
     }
 
     @Override
-    public void serviceChanged(ServiceEvent event)
+    public void serviceChanged(final ServiceEvent event)
     {
         ServiceReference ref;
         switch (event.getType())
