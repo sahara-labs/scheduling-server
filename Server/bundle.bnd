@@ -1,0 +1,16 @@
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.server
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.server.impl
+Include-Resource: lib/jetty-6.1.22.jar, \
+lib/jetty-sslengine-6.1.22.jar, \
+lib/jetty-util-6.1.22.jar, \
+lib/servlet-api-2.5-20081211.jar
+Import-Package:!org.slf4j,!org.xml.sax,!org.xml.sax.helpers,*
+
+Bundle-Name: Server
+Bundle-SymbolicName: SchedulingServer-Server
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.server.ServerActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: ., jetty-6.1.22.jar, jetty-sslengine-6.1.22.jar, \
+jetty-util-6.1.22.jar, servlet-api-2.5-20081211.jar
