@@ -10,7 +10,6 @@
 	<classpathentry kind="lib" path="lib/axiom-impl-1.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/axis2-adb-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/axis2-adb-codegen-1.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/axis2-ant-plugin-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/axis2-clustering-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/axis2-codegen-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/axis2-corba-1.5.1.jar"/>
@@ -66,5 +65,7 @@
 	<classpathentry kind="lib" path="lib/xml-resolver-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Server"/>
+	<classpathentry kind="lib" path="/home/mdiponio/workspace/SchedServer/lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

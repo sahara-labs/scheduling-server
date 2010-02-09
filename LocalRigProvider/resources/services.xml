@@ -9,8 +9,16 @@
         <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.localrigprovider.LocalRigProviderSkeleton</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="removeRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/removeRig</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/removeRigResponse</outputActionMapping>
+        </operation>
+        <operation name="updateRigStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/updateRigStatus</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/updateRigStatusResponse</outputActionMapping>
+        </operation>
         <operation name="registerRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
-            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/NewOperation</actionMapping>
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/registerRig</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/registerRigResponse</outputActionMapping>
         </operation>
     </service>
