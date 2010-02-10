@@ -39,6 +39,7 @@ import java.io.File;
 
 import javax.servlet.http.HttpServlet;
 
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -59,9 +60,12 @@ public class LocalRigProviderActivator implements BundleActivator
         Logger logger = LoggerActivator.getLogger();
         logger.priority("Starting " + context.getBundle().getSymbolicName());
         
-        HttpServlet servlet = new AxisServlet();
+        AxisServlet servlet = new AxisServlet();
+       // servlet.getServletContext().setAttribute("contextRoot", "lrp");
+        
+        
         ServletServerService service = new ServletServerService(servlet, "/lrp/*", 
-                true, new File("./repo/").getCanonicalPath());
+                true, new File("./repo").getCanonicalPath());
         ServiceRegistration reg = context.registerService(ServletServerService.class.getName(), service, null);
         
         
