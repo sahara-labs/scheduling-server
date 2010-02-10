@@ -222,6 +222,7 @@ public class ServerImpl
             {
                 final ServletServerService exSer = (ServletServerService)this.bundleContext.getService(exRef);
                 final ServletHolder holder = new ServletHolder(exSer.getServlet());
+
                 if (exSer.isAxis())
                 {
                     holder.setInitParameter("axis2.repository.path", exSer.getAxisRepo());
