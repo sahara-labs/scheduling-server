@@ -35,11 +35,6 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
 
-import java.io.File;
-
-import javax.servlet.http.HttpServlet;
-
-import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -47,36 +42,34 @@ import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletServerService;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * Activator for the local rig provider bundle.
  */
 public class LocalRigProviderActivator implements BundleActivator
 {
+    /** Servlet container service registration. */
+    private ServiceRegistration registration;
+    
+    /** Logger. */
+    private Logger logger;
+    
     @Override
     public void start(final BundleContext context) throws Exception
     {
-        Logger logger = LoggerActivator.getLogger();
-        logger.priority("Starting " + context.getBundle().getSymbolicName());
+        this.logger = LoggerActivator.getLogger();
+        this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
         
         AxisServlet servlet = new AxisServlet();
-       // servlet.getServletContext().setAttribute("contextRoot", "lrp");
-        
-        
-        ServletServerService service = new ServletServerService(servlet, "/lrp/*", 
-                true, new File("./repo").getCanonicalPath());
-        ServiceRegistration reg = context.registerService(ServletServerService.class.getName(), service, null);
-        
-        
-
+        ServletContainerService service = new ServletContainerService(servlet, true);
+        this.registration = context.registerService(ServletContainerService.class.getName(), service, null);
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception
     {
-        // TODO Auto-generated method stub
-
+        this.logger.info("Stopping " + context.getBundle().getSymbolicName() + " bundle.");
+        this.registration.unregister();
     }
-
 }

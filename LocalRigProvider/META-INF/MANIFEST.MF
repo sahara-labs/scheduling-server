@@ -74,4 +74,3 @@ Bundle-ClassPath: lib/activation-1.1.jar,
  lib/XmlSchema-1.4.3.jar,
  .
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator
-Require-Bundle: SchedServer-Server
