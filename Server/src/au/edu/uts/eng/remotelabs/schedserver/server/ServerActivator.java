@@ -69,12 +69,12 @@ public class ServerActivator implements BundleActivator
         this.server.init();
         
         /* Register a service listener for servlet services. */
-        this.logger.debug("Adding a service listener for the object class " + ServletServerService.class.getName() + '.');
+        this.logger.debug("Adding a service listener for the object class " + ServletContainerService.class.getName() + '.');
         final ServerServiceListener listener = new ServerServiceListener(this.server);
-        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + ServletServerService.class.getName() + ')');
+        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + ServletContainerService.class.getName() + ')');
         
-        /* Fire pseudo events for already registered servers. */
-        final ServiceReference[] refs = context.getServiceReferences(ServletServerService.class.getName(), null);
+        /* Fire pseudo-events for already registered servers. */
+        final ServiceReference[] refs = context.getServiceReferences(ServletContainerService.class.getName(), null);
         if (refs == null)
         {
             this.logger.debug("There are no currently registered services to host a servlet.");

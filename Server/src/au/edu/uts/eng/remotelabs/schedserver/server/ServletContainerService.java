@@ -40,42 +40,61 @@ import javax.servlet.http.HttpServlet;
 
 /**
  * Class that should be registered as a service to allow the SchedServer-Server
- * bundle to host the servlet on the embedded Jetty Server. The parameters are:
+ * bundle to host the servlet on the embedded Jetty Server. The servlet will be
+ * hosted using the bundle symbolic name as the servlet path by default or 
+ * optionally as the specified path.The URL format is: <br />
+ * <div align="center">
+ * <tt>http(s)://&lt;hostname&gt;:&lt;port&gt'/&lt;Bundle-SymbolicName&gt;/</tt>
+ * </div>
+ * <br />For example, with an <strong>Axis</strong> service:</br />
+ * <div align="center">
+ * <tt>http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider?wsdl</tt>
+ * </div>
+ * If the <code>isAxis</code>property is set to <code>true</code>, there must be a 
+ * directory in the bundle Jar <tt>'META-INF'</tt> called <tt>'repo'</tt> 
+ * containing the following files:
  * <ul>
- *  <li><tt>servlet</tt> - The servlet that should be hosted.</li>
- *  <li><tt>pathSpec</tt> - The trailing URL suffix to specify whether this
- *  servlet is to handle a request.</li>
- *  <li><tt>isAxisServlet</tt> - Whether the servlet is a Axis 2 servlet.</li>
- *  <li><tt>axisRepo<tt> - The Axis repository which is the path containing
- *  an Axis servlet descriptor.</li>
+ *  <li>services.list - File containing the name of the Axis archive file.<li>
+ *  <li>Axis archive file (*.aar) - The Axis archive which is a zipped up 
+ *  directory containing a folder called <tt>'META-INF'</tt> and within this,
+ *  two files - the service WSDL and the service descriptor (services.xml).
+ *  For example:
+ *  <br /><br />
+ *  <ul style="list-style:none">
+ *    <li>| -META-INF/
+ *    <li>| ---LocalRigProvider.wsdl</li>
+ *    <li>| ---services.xml</li>
+ *  </ul>
  * </ul>
  */
-public class ServletServerService
+public class ServletContainerService
 {
     /** The HTTP servlet. */
     private final HttpServlet servlet;
-    
-    /** The path to specify this servlet. */
-    private final String pathSpec;
     
     /** Whether the servlet is an Axis servlet. If this is true, the 
      *  <tt>axisRepository</tt> field must be set. */
     private final boolean isAxisServlet;
     
-    /** The path to the Axis repository. */
-    private final String axisRepo;
+    /** The path spec to use. The default is to use the Bundle-SymbolicName
+     *  and this is probably the more appropriate choice. */
+    private final String overriddingPathSpec;
     
-    public ServletServerService(final HttpServlet servlet, final String pathSpec)
+    public ServletContainerService(final HttpServlet servlet)
     {
-        this(servlet, pathSpec, false, null);
+        this(servlet, false);
     }
     
-    public ServletServerService(final HttpServlet servlet, final String pathSpec, final boolean isAxis, final String axisRepo)
+    public ServletContainerService(final HttpServlet servlet, final boolean isAxis)
+    {
+        this(servlet, isAxis, null);
+    }
+
+    public ServletContainerService(final HttpServlet servlet, final boolean isAxis, final String pathSpecOverride)
     {
         this.servlet = servlet;
-        this.pathSpec = pathSpec;
         this.isAxisServlet = isAxis;
-        this.axisRepo = axisRepo;
+        this.overriddingPathSpec = pathSpecOverride;
     }
 
     /**
@@ -87,26 +106,18 @@ public class ServletServerService
     }
 
     /**
-     * @return the pathSpec
-     */
-    public String getPathSpec()
-    {
-        return this.pathSpec;
-    }
-
-    /**
      * @return the isAxisServlet
      */
     public boolean isAxis()
     {
         return this.isAxisServlet;
     }
-
+    
     /**
-     * @return the axisRepo
+     * @return the overriddingPathSpec
      */
-    public String getAxisRepo()
+    public String getOverriddingPathSpec()
     {
-        return this.axisRepo;
+        return this.overriddingPathSpec;
     }
 }

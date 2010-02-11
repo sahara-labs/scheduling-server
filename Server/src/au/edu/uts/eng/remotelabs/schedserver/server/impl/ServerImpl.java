@@ -36,28 +36,31 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.server.impl;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.thread.QueuedThreadPool;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletServerService;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * The server implementation. Listens for service events filter by the 
- * <tt>ServletServerService<tt> object classes to dynamically add and
+ * <tt>ServletContainerService<tt> object classes to dynamically add and
  * remove request handling servlets.
  * <br />
  * Added or removing a servlet requires the serverContext to be reset, thus
@@ -65,9 +68,6 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletServerService;
  */
 public class ServerImpl
 {
-     /** Address post-fix for the service URL. */
-    public static final String URL_POSTFIX = "/services/SchedulingServer";
-    
     /** Bundle serverContext of the Server bundle. */
     private final BundleContext bundleContext;
     
@@ -75,7 +75,7 @@ public class ServerImpl
     private Server server;
     
     /** Service services keyed by path spec. */
-    private final Map<String, ServiceReference> services;
+    private final Map<Object, ServiceReference> services;
     
     /** Connector which receives requests. */
     private List<Connector> connectors;
@@ -94,7 +94,7 @@ public class ServerImpl
         this.logger = LoggerActivator.getLogger();
         this.bundleContext = context;
         
-        this.services = new HashMap<String, ServiceReference>();
+        this.services = new HashMap<Object, ServiceReference>();
     }
 
     /**
@@ -171,13 +171,6 @@ public class ServerImpl
 	    }
 	    this.threadPool = new QueuedThreadPool(concurrentReqs);
 	    this.server.setThreadPool(this.threadPool);
-
-	    /* --------------------------------------------------------------------
-	     * --- 4. Create and configure the handler. ---------------------------
-	     * ------------------------------------------------------------------*/
-	    /* The handler routes the requests to the Apache Axis 2 servlet. This 
-	     * registers all the HTTP servlets that are registered as OSGI services. */
-//	    this.serverContext = new Context(this.server, "/", Context.SESSIONS);
 	}
     
     /**
@@ -185,30 +178,21 @@ public class ServerImpl
      * If the server is started, it is briefly stopped to add the servlet and is 
      * then restarted.
      * 
-     * @param ref service reference pointing to a ServletServerService service
+     * @param ref service reference pointing to a ServletContainerService service
      */
     public synchronized void addService(final ServiceReference ref)
     {
         boolean wasRunning = false;
         try
         {
-            final ServletServerService serv = (ServletServerService)this.bundleContext.getService(ref);
+            final ServletContainerService serv = (ServletContainerService)this.bundleContext.getService(ref);
             if (serv.getServlet() == null)
             {
                 this.logger.error("Server registration from bundle " + ref.getBundle().getSymbolicName() + 
                 " does not contain a servlet so it cannot be hosted. This is a bug.");
                 throw new IllegalArgumentException("Servlet is empty.");
             }
-            else if (this.services.containsKey(serv.getPathSpec()))
-            {
-                this.logger.error("Server registration from bundle " + ref.getBundle().getSymbolicName() +
-                        " uses the same path as a previous registration from bundle " + 
-                        this.services.get(serv.getPathSpec()).getBundle().getSymbolicName() + ". These must be " +
-                "unique as they resolve to the unique URL postfix for the registered servlet.");
-                throw new IllegalStateException("Path spec already in use.");
-            }
-            this.services.put(serv.getPathSpec(), ref);
-
+            this.services.put(ref.getProperty(Constants.SERVICE_ID), ref);
 
             /* If running, stop the server. */
             wasRunning = this.server.isStarted() || this.server.isStarting();
@@ -220,18 +204,35 @@ public class ServerImpl
             this.serverContext = new Context(this.server, "/", Context.SESSIONS);
             for (ServiceReference exRef : this.services.values())
             {
-                final ServletServerService exSer = (ServletServerService)this.bundleContext.getService(exRef);
+                final ServletContainerService exSer = (ServletContainerService)this.bundleContext.getService(exRef);
                 final ServletHolder holder = new ServletHolder(exSer.getServlet());
 
                 if (exSer.isAxis())
                 {
-                    holder.setInitParameter("axis2.repository.path", exSer.getAxisRepo());
+                    URL repoUrl = exSer.getServlet().getClass().getResource("/META-INF/repo");
+                    if (repoUrl != null)
+                    {
+                        this.logger.debug("Axis repository for bundle " + ref.getBundle().getSymbolicName() + 
+                                " has URI " + repoUrl.toURI().toString() + '.');
+                        holder.setInitParameter("axis2.repository.url", repoUrl.toURI().toString());
+                    }
+                    else
+                    {
+                        throw new Exception("Unable to find the repository resource from the " + 
+                                ref.getBundle().getSymbolicName() + " bundle. There must be a 'repo' folder in the " +
+                                "bundle META-INF folder containing the services list (services.list) and a service " +
+                                "archive file with the service WSDL and service descriptor (services.xml).");
+                     }
                 }
-                this.serverContext.addServlet(holder, exSer.getPathSpec());
+                this.logger.debug("Redeploying servlet service from the " + ref.getBundle().getSymbolicName() + 
+                        " bundle with service ID: " + ref.getProperty(Constants.SERVICE_ID));
+                this.serverContext.addServlet(holder, exSer.getOverriddingPathSpec() == null ? 
+                        '/' + exRef.getBundle().getSymbolicName() + "/*" : exSer.getOverriddingPathSpec());
             }
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             this.logger.error("Failed adding server service from bundle " + ref.getBundle().getSymbolicName() +
                     " because of exception with message: " + ex.getMessage() + '.');
         }
@@ -242,6 +243,7 @@ public class ServerImpl
             {
                 try
                 {
+                    this.logger.debug("Restarting Scheduling server servlet server.");
                     this.server.start();
                 }
                 catch (Exception e)
@@ -251,54 +253,66 @@ public class ServerImpl
                 }
             }
         }
-
     }
     
     /**
      * Removes a servlet from being hosted on the server based on the provided 
-     * service reference which provides a ServletServerService object. 
+     * service reference which provides a ServletContainerService object. 
      * If the server is started, it is briefly stopped to remove the servlet and is 
      * then restarted.
      * 
-     * @param ref service reference pointing to a ServletServerService service
+     * @param ref service reference pointing to a ServletContainerService service
      */
     public synchronized void removeService(final ServiceReference ref)
     {
         boolean wasRunning = false;
         try
         {
-            final ServletServerService serv = (ServletServerService)this.bundleContext.getService(ref);
-            if (serv.getPathSpec() == null)
-            {
-                this.logger.warn("Unable to remove the server servlet for bundle " + ref.getBundle().getSymbolicName() +
-                        '.');
-                return;
-            }
-            else if (this.services.containsKey(serv.getPathSpec()))
+            if (!this.services.containsKey(ref.getProperty(Constants.SERVICE_ID)))
             {
                 this.logger.warn("The server servlet for bundle " + ref.getBundle().getSymbolicName() + " is not " + 
                         " currently registered, so nothing to remove.");
                 return;
             }
-            this.services.remove(serv.getPathSpec());
+            this.services.remove(ref.getProperty(Constants.SERVICE_ID));
 
             /* If running, stop the server. */
             wasRunning = this.server.isStarted() || this.server.isStarting();
             if (wasRunning) this.server.stop();
 
+            this.serverContext.stop();
+            this.serverContext.destroy();
             this.server.removeHandler(this.serverContext);
+            this.server.setHandlers(new Handler[0]);
 
             /* Populate the servlet with all the servlets to run. */
             this.serverContext = new Context(this.server, "/", Context.SESSIONS);
             for (ServiceReference exRef : this.services.values())
             {
-                final ServletServerService exSer = (ServletServerService)this.bundleContext.getService(exRef);
+                final ServletContainerService exSer = (ServletContainerService)this.bundleContext.getService(exRef);
                 final ServletHolder holder = new ServletHolder(exSer.getServlet());
+
                 if (exSer.isAxis())
                 {
-                    holder.setInitParameter("axis2.repository.path", exSer.getAxisRepo());
+                    URL repoUrl = exSer.getServlet().getClass().getResource("/META-INF/repo");
+                    if (repoUrl != null)
+                    {              
+                        this.logger.debug("Axis repository for bundle " + ref.getBundle().getSymbolicName() + 
+                                " has URI " + repoUrl.toURI().toString() + '.');
+                        holder.setInitParameter("axis2.repository.url", repoUrl.toURI().toString());
+                    }
+                    else
+                    {
+                        throw new Exception("Unable to find the repository resource from the " + 
+                                ref.getBundle().getSymbolicName() + " bundle. There must be a 'repo' folder in the " +
+                                "bundle META-INF folder containing the services list (services.list) and a service " +
+                                "archive file with the service WSDL and service descriptor (services.xml).");
+                     }
                 }
-                this.serverContext.addServlet(holder, exSer.getPathSpec());
+                this.logger.debug("Redeploying servlet service from the " + ref.getBundle().getSymbolicName() + 
+                        " bundle with service ID: " + ref.getProperty(Constants.SERVICE_ID));
+                this.serverContext.addServlet(holder, exSer.getOverriddingPathSpec() == null ? 
+                        '/' + exRef.getBundle().getSymbolicName() + "/*" : exSer.getOverriddingPathSpec());
             }
         }
         catch (Exception ex)
@@ -313,6 +327,7 @@ public class ServerImpl
             {
                 try
                 {
+                    this.logger.debug("Restarting Scheduling server servlet server.");
                     this.server.start();
                 }
                 catch (Exception ex)
@@ -333,6 +348,7 @@ public class ServerImpl
     {
         try
         {
+            this.logger.debug("Starting the Scheduling Server server now.");
             this.server.start();
         }
         catch (Exception e)
@@ -355,6 +371,7 @@ public class ServerImpl
 	    {
 	        try
 	        {
+	            this.logger.debug("Starting the Scheduling Server server now.");
 	            this.server.stop();
 	        }
 	        catch (Exception e)

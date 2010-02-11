@@ -44,7 +44,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Listener for <tt>ServletServerService</tt> service events. If the service
+ * Listener for <tt>ServletContainerService</tt> service events. If the service
  * is registered, the servlet is added to the server context to handle 
  * requests. If the service is being unregistered, the servlet is
  * removed.
