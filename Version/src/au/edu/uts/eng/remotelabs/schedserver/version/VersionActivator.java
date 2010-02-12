@@ -36,8 +36,15 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.version;
 
+import org.apache.axis2.transport.http.AxisServlet;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * The version bundle is a simple SOAP service with one operation that lists 
@@ -46,15 +53,47 @@ import org.osgi.framework.BundleContext;
 public class VersionActivator implements BundleActivator 
 {
     /** Servlet container service registration. */
+    private ServiceRegistration registration;
     
+    /** Bundle context. */
+    private static BundleContext bundleContext;
     
+    /** Logger. */
+    private Logger logger;
+    
+    @Override
 	public void start(BundleContext context) throws Exception 
 	{
-		System.out.println("Hello World!!");
+		this.logger = LoggerActivator.getLogger();
+		this.logger.info("Bundle " + context.getBundle().getSymbolicName() + " starting up...");
+		
+		VersionActivator.bundleContext = context;
+		
+		this.registration = context.registerService(ServletContainerService.class.getName(),
+		        new ServletContainerService(new AxisServlet(), true), null);
 	}
 
+    @Override
 	public void stop(BundleContext context) throws Exception 
 	{
-		System.out.println("Goodbye World!!");
+		this.logger.info("Bundle " + context.getBundle().getSymbolicName() + " shutting down...");
+		this.registration.unregister();
+		
+		VersionActivator.bundleContext = null;
 	}
+    
+    /**
+     * Returns the list of installed bundles.
+     * 
+     * @return bundle list
+     */
+    public static Bundle[] getInstalledBundles()
+    {
+        if (VersionActivator.bundleContext == null)
+        {
+            return new Bundle[0];
+        }
+        
+        return VersionActivator.bundleContext.getBundles();
+    }
 }
