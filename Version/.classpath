@@ -5,10 +5,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/axiom-dom-1.2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axiom-impl-1.2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axis2-adb-1.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/axis2-adb-codegen-1.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/axis2-ant-plugin-1.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axis2-clustering-1.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/axis2-codegen-1.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axis2-corba-1.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axis2-fastinfoset-1.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axis2-java2wsdl-1.5.1.jar"/>

@@ -44,6 +44,7 @@ import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
@@ -69,8 +70,9 @@ public class VersionActivator implements BundleActivator
 		
 		VersionActivator.bundleContext = context;
 		
-		this.registration = context.registerService(ServletContainerService.class.getName(),
-		        new ServletContainerService(new AxisServlet(), true), null);
+		ServletContainerService service = new ServletContainerService();
+		service.addServlet(new ServletContainer(new AxisServlet(), true));
+		this.registration = context.registerService(ServletContainerService.class.getName(), service, null);
 	}
 
     @Override
