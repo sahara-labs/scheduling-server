@@ -241,7 +241,7 @@ public class ServerImpl
 	                writer.println("   <head>");
 	                writer.println("   <body>");
 	                writer.println("       <div align=\"center\">");
-	                writer.println("           <h1>Sahara: A New Hope</h1>");
+	                writer.println("           <h1>Sahara R2: A New Hope</h1>");
 	                writer.println("           <img src=\"team.jpg\" />");
 	                writer.println("           <p>The Sahara team: Michel de la Villefromoy, Tania Machet, " +
 	                		"Michael Diponio, Tejaswini Deshpande, Carlo Gianpietro.</p>");
