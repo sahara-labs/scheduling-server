@@ -215,11 +215,14 @@ public class ServerImpl
 	    this.contexts.put(new Object(), context);
 
 	    final ServletHolder holder =  new ServletHolder(new HttpServlet()
-	    { 
-
+	    {
 	        @Override
 	        public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	        {
+	            /* Setting response code to 404 Not Found because this response
+	             * occurs where an address is unbound to a servlet. */
+	            res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	            
 	            if (req.getRequestURI().endsWith("team.jpg"))
 	            {
 	                res.setContentType("image/jpeg");
@@ -229,7 +232,8 @@ public class ServerImpl
 	                    ServletOutputStream output = res.getOutputStream();
 	                    InputStream imgInput = img.openStream();
 	                    int b = -1;
-	                    while (imgInput.available() > 0 && (b = imgInput.read()) != -1) output.write(b);
+	                    byte buf[] = new byte[1024];
+	                    while (imgInput.available() > 0 && (b = imgInput.read(buf)) != -1) output.write(buf, 0, b);
 	                }
 	            }
 	            else
@@ -243,8 +247,10 @@ public class ServerImpl
 	                writer.println("       <div align=\"center\">");
 	                writer.println("           <h1>Sahara R2: A New Hope</h1>");
 	                writer.println("           <img src=\"team.jpg\" />");
-	                writer.println("           <p>The Sahara team: Michel de la Villefromoy, Tania Machet, " +
-	                		"Michael Diponio, Tejaswini Deshpande, Carlo Gianpietro.</p>");
+	                writer.println("           <p style=\"font-size:0.8em\"><strong>The Sahara team:</strong> Michel " +
+	                		"de la Villefromoy, Tania Machet, Michael Diponio, Tejaswini Deshpande, " +
+	                		"Carlo Gianpietro.<br />");
+	                writer.println("           &copy;University of Technology, Sydney 2009 - 2010</p>");
 	                writer.println("       </div>");
 	                writer.println("   </body>");
 	                writer.println("</html>");
