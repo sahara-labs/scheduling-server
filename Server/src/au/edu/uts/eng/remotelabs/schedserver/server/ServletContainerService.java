@@ -36,7 +36,8 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.server;
 
-import javax.servlet.http.HttpServlet;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that should be registered as a service to allow the SchedServer-Server
@@ -50,67 +51,46 @@ import javax.servlet.http.HttpServlet;
  * <div align="center">
  * <tt>http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider?wsdl</tt>
  * </div>
- * If the <code>isAxis</code>property is set to <code>true</code>, there must be a 
- * directory in the bundle Jar <tt>'META-INF'</tt> called <tt>'repo'</tt> 
- * containing the following files:
- * <ul>
- *  <li>services.list - File containing the name of the Axis archive file.<li>
- *  <li>Axis archive file (*.aar) - The Axis archive which is a zipped up 
- *  directory containing a folder called <tt>'META-INF'</tt> and within this,
- *  two files - the service WSDL and the service descriptor (services.xml).
- *  For example:
- *  <br /><br />
- *  <ul style="list-style:none">
- *    <li>| -META-INF/
- *    <li>| ---LocalRigProvider.wsdl</li>
- *    <li>| ---services.xml</li>
- *  </ul>
- * </ul>
  */
 public class ServletContainerService
 {
-    /** The HTTP servlet. */
-    private final HttpServlet servlet;
-    
-    /** Whether the servlet is an Axis servlet. If this is true, the 
-     *  <tt>axisRepository</tt> field must be set. */
-    private final boolean isAxisServlet;
+    /** List of servlets to host. */
+    private final List<ServletContainer> servlets;
     
     /** The path spec to use. The default is to use the Bundle-SymbolicName
      *  and this is probably the more appropriate choice. */
     private final String overriddingPathSpec;
     
-    public ServletContainerService(final HttpServlet servlet)
+    public ServletContainerService()
     {
-        this(servlet, false);
+        this(null);
     }
     
-    public ServletContainerService(final HttpServlet servlet, final boolean isAxis)
+    public ServletContainerService(final String pathSpecOverride)
     {
-        this(servlet, isAxis, null);
-    }
-
-    public ServletContainerService(final HttpServlet servlet, final boolean isAxis, final String pathSpecOverride)
-    {
-        this.servlet = servlet;
-        this.isAxisServlet = isAxis;
         this.overriddingPathSpec = pathSpecOverride;
+        
+        this.servlets = new ArrayList<ServletContainer>();
     }
-
+    
     /**
-     * @return the servlet
+     * Adds a servlet container.
+     * 
+     * @param container container to add
      */
-    public HttpServlet getServlet()
+    public void addServlet(ServletContainer container)
     {
-        return this.servlet;
+        this.servlets.add(container);
     }
-
+    
     /**
-     * @return the isAxisServlet
+     * Returns array of all servlet containers.
+
+     * @return servlet containers
      */
-    public boolean isAxis()
+    public ServletContainer[] getServlets()
     {
-        return this.isAxisServlet;
+        return this.servlets.toArray(new ServletContainer[this.servlets.size()]);
     }
     
     /**

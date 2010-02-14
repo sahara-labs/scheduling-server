@@ -36,15 +36,25 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.server.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -56,6 +66,7 @@ import org.osgi.framework.ServiceReference;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
@@ -68,20 +79,23 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
  */
 public class ServerImpl
 {
+    /** Default listening port for HTTP connections. */
+    public static final int DEFAULT_HTTP_PORT = 8080;
+    
+    /** Default listening port for HTTPS connections. */
+    public static final int DEFAULT_HTTPS_PORT = 8081;
+    
     /** Bundle serverContext of the Server bundle. */
     private final BundleContext bundleContext;
     
     /** Jetty server. */
     private Server server;
     
-    /** Service services keyed by path spec. */
-    private final Map<Object, ServiceReference> services;
-    
-    /** Connector which receives requests. */
-    private List<Connector> connectors;
-    
-    /** Context which handles a request using a servlet. */
-    private Context serverContext;
+    /** Contexts keyed by service id. */
+    private final Map<Object, Context> contexts;
+
+    /** The handler collection. */
+    private ContextHandlerCollection contextCollection;
     
     /** Request thread pool. */
     private QueuedThreadPool threadPool;
@@ -94,21 +108,21 @@ public class ServerImpl
         this.logger = LoggerActivator.getLogger();
         this.bundleContext = context;
         
-        this.services = new HashMap<Object, ServiceReference>();
+        this.contexts = new HashMap<Object, Context>();
     }
 
     /**
      * Initialize the embedded Jetty server. This sets up the server and adds 
-     * the connectors and thread pool. Currently only a HTTP connector is 
-     * supported.
+     * the connectors and a thread pool. 
      * 
      * @throws Exception error occurs initializing server
      */
+    @SuppressWarnings("serial")
     public synchronized void init() throws Exception
 	{
 	    this.logger.debug("Starting the Scheduling Server server up.");
-
-	    this.connectors = new ArrayList<Connector>();
+	    
+	    final List<Connector> connectors = new ArrayList<Connector>();
 
 	    /* Get the configuration service. */
 	    final ServiceReference ref = this.bundleContext.getServiceReference(Config.class.getName());
@@ -135,24 +149,37 @@ public class ServerImpl
 	    /* The connectors receives requests and calls handle on handler object
 	     * to handle a request. */
 	    final Connector http = new SelectChannelConnector();
-	    String tmp = config.getProperty("Listening_Port", "8080");
+	    String tmp = config.getProperty("Listening_Port", String.valueOf(ServerImpl.DEFAULT_HTTP_PORT));
 	    try
 	    {
 	        http.setPort(Integer.parseInt(tmp));
-	        this.logger.info("Listening on port " + tmp + '.');
+	        this.logger.info("Listening on port (HTTP) " + tmp + '.');
 	    }
 	    catch  (NumberFormatException nfe)
 	    {
-	        http.setPort(8080);
-	        this.logger.info("Invalid configuration for the Scheduling Server listening port. " + tmp + " is " +
-	                "not a valid port number. Using the default of " + 8080 + '.');
+	        http.setPort(ServerImpl.DEFAULT_HTTP_PORT);
+	        this.logger.error("Invalid configuration for the Scheduling Server HTTP listening port. " + tmp + " is " +
+	                "not a valid port number. Using the default of " + ServerImpl.DEFAULT_HTTP_PORT + '.');
 	    }
-	    this.connectors.add(http);
+	    connectors.add(http);
 
 	    /* HTTPS connector. */
-	    // TODO Add HTTPS connector for the Scheduling Server Server
+//	    final SslSelectChannelConnector https = new SslSelectChannelConnector();
+//	    tmp = config.getProperty("Listening_Port_HTTPS", String.valueOf(ServerImpl.DEFAULT_HTTPS_PORT));
+//	    try
+//	    {
+//	        https.setPort(Integer.parseInt(tmp));
+//	    }
+//	    catch (NumberFormatException nfe)
+//	    {
+//	        https.setPort(ServerImpl.DEFAULT_HTTPS_PORT);
+//	        this.logger.info("Invalid configuration for the Scheduling Server HTTPS listening port." + tmp + " is " +
+//	                "not a valid port number. Using the default of " + ServerImpl.DEFAULT_HTTPS_PORT + '.');
+//	    }
+//	    /* TODO Set up SSL engine. */
+//	    connectors.add(https);
 
-	    this.server.setConnectors(this.connectors.toArray(new Connector[this.connectors.size()]));
+	    this.server.setConnectors(connectors.toArray(new Connector[connectors.size()]));
 
 	    /* --------------------------------------------------------------------
 	     * ---- 3. Create and configure the request thread pool. -------------- 
@@ -171,6 +198,60 @@ public class ServerImpl
 	    }
 	    this.threadPool = new QueuedThreadPool(concurrentReqs);
 	    this.server.setThreadPool(this.threadPool);
+	    
+	    /* --------------------------------------------------------------------
+	     * ---- 4. Set up the content container and the primoridal  -----------
+	     * ----    context for the root path. ---------------------------------
+	     * ----------------------------------------------------------------- */
+	    /* The context container is used to keep each context in isolation 
+	     * from each other, stopping classes leaking across servlets and 
+	     * causing problems. */
+	    this.contextCollection = new ContextHandlerCollection();
+	    this.server.addHandler(this.contextCollection);
+	    
+	    final Context context = new Context(Context.SESSIONS);
+	    context.setContextPath("/");
+	    this.contextCollection.addHandler(context);
+	    this.contexts.put(new Object(), context);
+
+	    final ServletHolder holder =  new ServletHolder(new HttpServlet()
+	    { 
+
+	        @Override
+	        public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
+	        {
+	            if (req.getRequestURI().endsWith("team.jpg"))
+	            {
+	                res.setContentType("image/jpeg");
+	                URL img = this.getClass().getResource("/team.jpg");
+	                if (img != null)
+	                {
+	                    ServletOutputStream output = res.getOutputStream();
+	                    InputStream imgInput = img.openStream();
+	                    int b = -1;
+	                    while (imgInput.available() > 0 && (b = imgInput.read()) != -1) output.write(b);
+	                }
+	            }
+	            else
+	            {
+	                PrintWriter writer = res.getWriter();
+	                writer.println("<html>");
+	                writer.println("   <head>");
+	                writer.println("       <title>Sahara R2: A New Hope</title>");
+	                writer.println("   <head>");
+	                writer.println("   <body>");
+	                writer.println("       <div align=\"center\">");
+	                writer.println("           <h1>Sahara: A New Hope</h1>");
+	                writer.println("           <img src=\"team.jpg\" />");
+	                writer.println("           <p>The Sahara team: Michel de la Villefromoy, Tania Machet, " +
+	                		"Michael Diponio, Tejaswini Deshpande, Carlo Gianpietro.</p>");
+	                writer.println("       </div>");
+	                writer.println("   </body>");
+	                writer.println("</html>");
+ 	            }
+	        }
+	    });
+	    context.addServlet(holder, "/");
 	}
     
     /**
@@ -186,30 +267,33 @@ public class ServerImpl
         try
         {
             final ServletContainerService serv = (ServletContainerService)this.bundleContext.getService(ref);
-            if (serv.getServlet() == null)
+            ServletContainer containers[] = serv.getServlets();
+            if (containers.length == 0)
             {
                 this.logger.error("Server registration from bundle " + ref.getBundle().getSymbolicName() + 
                 " does not contain a servlet so it cannot be hosted. This is a bug.");
                 throw new IllegalArgumentException("Servlet is empty.");
             }
-            this.services.put(ref.getProperty(Constants.SERVICE_ID), ref);
 
             /* If running, stop the server. */
             wasRunning = this.server.isStarted() || this.server.isStarting();
             if (wasRunning) this.server.stop();
-
-            this.server.removeHandler(this.serverContext);
-
-            /* Populate the servlet with all the servlets to run. */
-            this.serverContext = new Context(this.server, "/", Context.SESSIONS);
-            for (ServiceReference exRef : this.services.values())
+            
+            /* Create the context. */
+            final String contextPath = serv.getOverriddingPathSpec() == null ? '/' + ref.getBundle().getSymbolicName() :
+                serv.getOverriddingPathSpec();
+            this.logger.info("The servlets for bundle " + ref.getBundle().getSymbolicName() + " will be hosted on " +
+            		"path " + contextPath + '.');
+            final Context context = new Context(this.server, contextPath, Context.SESSIONS);
+            this.contexts.put(ref.getProperty(Constants.SERVICE_ID), context);
+            
+            /* Populate a context with all the servlets to run. */
+            for (ServletContainer cont : containers)
             {
-                final ServletContainerService exSer = (ServletContainerService)this.bundleContext.getService(exRef);
-                final ServletHolder holder = new ServletHolder(exSer.getServlet());
-
-                if (exSer.isAxis())
+                final ServletHolder holder = new ServletHolder(cont.getServlet());
+                if (cont.isAxis())
                 {
-                    URL repoUrl = exSer.getServlet().getClass().getResource("/META-INF/repo");
+                    URL repoUrl = cont.getServlet().getClass().getResource("/META-INF/repo");
                     if (repoUrl != null)
                     {
                         this.logger.debug("Axis repository for bundle " + ref.getBundle().getSymbolicName() + 
@@ -218,17 +302,19 @@ public class ServerImpl
                     }
                     else
                     {
-                        throw new Exception("Unable to find the repository resource from the " + 
+                        this.logger.error("Unable to find the repository resource from the " + 
                                 ref.getBundle().getSymbolicName() + " bundle. There must be a 'repo' folder in the " +
                                 "bundle META-INF folder containing the services list (services.list) and a service " +
                                 "archive file with the service WSDL and service descriptor (services.xml).");
+                        continue;
                      }
                 }
-                this.logger.debug("Redeploying servlet service from the " + ref.getBundle().getSymbolicName() + 
+                this.logger.debug("Deploying servlet from the " + ref.getBundle().getSymbolicName() + 
                         " bundle with service ID: " + ref.getProperty(Constants.SERVICE_ID));
-                this.serverContext.addServlet(holder, exSer.getOverriddingPathSpec() == null ? 
-                        '/' + exRef.getBundle().getSymbolicName() + "/*" : exSer.getOverriddingPathSpec());
+                context.addServlet(holder, cont.getPath());
             }
+
+            this.contextCollection.addHandler(context);
         }
         catch (Exception ex)
         {
@@ -268,52 +354,23 @@ public class ServerImpl
         boolean wasRunning = false;
         try
         {
-            if (!this.services.containsKey(ref.getProperty(Constants.SERVICE_ID)))
+            if (!this.contexts.containsKey(ref.getProperty(Constants.SERVICE_ID)))
             {
                 this.logger.warn("The server servlet for bundle " + ref.getBundle().getSymbolicName() + " is not " + 
                         " currently registered, so nothing to remove.");
                 return;
             }
-            this.services.remove(ref.getProperty(Constants.SERVICE_ID));
-
+            
             /* If running, stop the server. */
             wasRunning = this.server.isStarted() || this.server.isStarting();
             if (wasRunning) this.server.stop();
-
-            this.serverContext.stop();
-            this.serverContext.destroy();
-            this.server.removeHandler(this.serverContext);
-            this.server.setHandlers(new Handler[0]);
-
-            /* Populate the servlet with all the servlets to run. */
-            this.serverContext = new Context(this.server, "/", Context.SESSIONS);
-            for (ServiceReference exRef : this.services.values())
-            {
-                final ServletContainerService exSer = (ServletContainerService)this.bundleContext.getService(exRef);
-                final ServletHolder holder = new ServletHolder(exSer.getServlet());
-
-                if (exSer.isAxis())
-                {
-                    URL repoUrl = exSer.getServlet().getClass().getResource("/META-INF/repo");
-                    if (repoUrl != null)
-                    {              
-                        this.logger.debug("Axis repository for bundle " + ref.getBundle().getSymbolicName() + 
-                                " has URI " + repoUrl.toURI().toString() + '.');
-                        holder.setInitParameter("axis2.repository.url", repoUrl.toURI().toString());
-                    }
-                    else
-                    {
-                        throw new Exception("Unable to find the repository resource from the " + 
-                                ref.getBundle().getSymbolicName() + " bundle. There must be a 'repo' folder in the " +
-                                "bundle META-INF folder containing the services list (services.list) and a service " +
-                                "archive file with the service WSDL and service descriptor (services.xml).");
-                     }
-                }
-                this.logger.debug("Redeploying servlet service from the " + ref.getBundle().getSymbolicName() + 
-                        " bundle with service ID: " + ref.getProperty(Constants.SERVICE_ID));
-                this.serverContext.addServlet(holder, exSer.getOverriddingPathSpec() == null ? 
-                        '/' + exRef.getBundle().getSymbolicName() + "/*" : exSer.getOverriddingPathSpec());
-            }
+            
+            Context con = this.contexts.remove(ref.getProperty(Constants.SERVICE_ID));
+            
+            this.contextCollection.stop();
+            this.contextCollection.destroy();
+            this.contextCollection.removeHandler(con);
+            this.contextCollection.setHandlers(this.contexts.values().toArray(new Handler[this.contexts.size()]));
         }
         catch (Exception ex)
         {
