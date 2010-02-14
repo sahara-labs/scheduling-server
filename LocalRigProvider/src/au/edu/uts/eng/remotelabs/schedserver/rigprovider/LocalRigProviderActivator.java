@@ -42,6 +42,7 @@ import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
@@ -61,8 +62,8 @@ public class LocalRigProviderActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
         
-        AxisServlet servlet = new AxisServlet();
-        ServletContainerService service = new ServletContainerService(servlet, true);
+        ServletContainerService service = new ServletContainerService();
+        service.addServlet(new ServletContainer(new AxisServlet(), true));
         this.registration = context.registerService(ServletContainerService.class.getName(), service, null);
     }
 
