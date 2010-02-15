@@ -55,20 +55,38 @@ public class ServletContainerTester extends TestCase
     
     public void testPath()
     {
-        ServletContainer cont = new ServletContainer(new HttpServlet() { }, false);
+        ServletContainer cont = new ServletContainer(new HttpServlet() { /* Mock. */ }, false);
         assertEquals("/*", cont.getPath());
     }
     
-    public void testPathNotStar()
+    public void testPathNoStar()
     {
-        ServletContainer cont = new ServletContainer(new HttpServlet() { }, false, "/");
+        ServletContainer cont = new ServletContainer(new HttpServlet() { /* Mock. */ }, false, "/");
         assertEquals("/*", cont.getPath());
     }
     
     public void testPathEmpty()
     {
-        ServletContainer cont = new ServletContainer(new HttpServlet() { }, false, "");
+        ServletContainer cont = new ServletContainer(new HttpServlet() { /* Mock. */ }, false, "");
         assertEquals("/*", cont.getPath());
+    }
+    
+    public void testPathStar()
+    {
+        ServletContainer cont = new ServletContainer(new HttpServlet() { /* Mock. */ }, false, "*");
+        assertEquals("/*", cont.getPath());
+    }
+    
+    public void testPathNoStarLong()
+    {
+        ServletContainer cont = new ServletContainer(new HttpServlet() { /* Mock. */ }, false, "/foo/");
+        assertEquals("/foo/*", cont.getPath());
+    }
+    
+    public void testPathNoPathLong()
+    {
+        ServletContainer cont = new ServletContainer(new HttpServlet() { /* Mock. */ }, false, "/foo");
+        assertEquals("/foo/*", cont.getPath());
     }
 
 }

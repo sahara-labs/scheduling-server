@@ -226,7 +226,7 @@ public class ServerImpl
 	            if (req.getRequestURI().endsWith("team.jpg"))
 	            {
 	                res.setContentType("image/jpeg");
-	                URL img = this.getClass().getResource("/team.jpg");
+	                URL img = this.getClass().getResource("/META-INF/images/team.jpg");
 	                if (img != null)
 	                {
 	                    ServletOutputStream output = res.getOutputStream();

@@ -100,20 +100,23 @@ public class ServletContainer
         this.servlet = _servlet;
         this.isAxis = axis;
         
-        if (path.charAt(path.length() - 2) != '/')
+        if (path.length() < 2)
         {
-            this.path = path + "/*";
+            this.path = "/*";
         }
-        else if (path.charAt(path.length() - 1) != '*')
+        else if (path.charAt(path.length() - 1) == '/')
         {
             this.path = path + "*";
+        }
+        else if (path.charAt(path.length() - 2) != '/')
+        {
+            this.path = path + "/*";
         }
         else
         {
             this.path = path;
         }
     }
-
 
     /**
      * @return the servlet
