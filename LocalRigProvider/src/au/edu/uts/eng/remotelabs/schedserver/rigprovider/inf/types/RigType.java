@@ -1,4 +1,4 @@
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,7 +1,6 @@
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -22,89 +21,66 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * ProviderResponse bean class.
+ * StatusType bean class.
  */
-public class ProviderResponse implements ADBBean
+public class StatusType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = ProviderResponse
+     * name = StatusType
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider
      * Namespace Prefix = ns1
      */
 
-    private static final long serialVersionUID = 4952175771939297353L;
-
-    protected boolean successful;
-    protected String errorReason;
-    protected boolean errorReasonTracker = false;
-    protected String identityToken;
-    protected boolean identityTokenTracker = false;
+    private static final long serialVersionUID = 7847146966663697656L;
+    
+    protected boolean isOnline;
+    protected String offlineReason;
+    protected boolean offlineReasonTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
-        if (namespace
-                .equals("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider"))
+        if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider"))
         {
             return "ns1";
         }
         return BeanUtil.getUniquePrefix();
     }
 
-    public boolean getSuccessful()
+    public boolean getIsOnline()
     {
-        return this.successful;
+        return this.isOnline;
     }
 
-    public void setSuccessful(final boolean param)
+    public void setIsOnline(final boolean param)
     {
-        this.successful = param;
+        this.isOnline = param;
     }
 
-    public String getErrorReason()
+    public String getOfflineReason()
     {
-        return this.errorReason;
+        return this.offlineReason;
     }
 
-    public void setErrorReason(final String param)
+    public void setOfflineReason(final String param)
     {
         if (param != null)
         {
-            this.errorReasonTracker = true;
+            this.offlineReasonTracker = true;
         }
         else
         {
-            this.errorReasonTracker = false;
+            this.offlineReasonTracker = false;
         }
-        this.errorReason = param;
-    }
-
-    public String getIdentityToken()
-    {
-        return this.identityToken;
-    }
-
-    public void setIdentityToken(final String param)
-    {
-        if (param != null)
-        {
-            this.identityTokenTracker = true;
-        }
-        else
-        {
-            this.identityTokenTracker = false;
-        }
-        this.identityToken = param;
+        this.offlineReason = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
-            isReaderMTOMAware = Boolean.TRUE.equals(reader
-                    .getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
         catch (final IllegalArgumentException e)
         {
@@ -118,11 +94,9 @@ public class ProviderResponse implements ADBBean
         final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
             @Override
-            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter)
-                    throws XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                ProviderResponse.this.serialize(this.parentQName, factory,
-                        xmlWriter);
+                StatusType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -137,6 +111,7 @@ public class ProviderResponse implements ADBBean
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
+
         String prefix = parentQName.getPrefix();
         String namespace = parentQName.getNamespaceURI();
 
@@ -151,7 +126,7 @@ public class ProviderResponse implements ADBBean
             {
                 if (prefix == null)
                 {
-                    prefix = ProviderResponse.generatePrefix(namespace);
+                    prefix = StatusType.generatePrefix(namespace);
                 }
 
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
@@ -168,15 +143,15 @@ public class ProviderResponse implements ADBBean
         {
             final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider");
-            if ((namespacePrefix != null)&& (namespacePrefix.trim().length() > 0))
+            if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                        namespacePrefix + ":ProviderResponse", xmlWriter);
+                        namespacePrefix + ":StatusType", xmlWriter);
             }
             else
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                        "ProviderResponse", xmlWriter);
+                        "StatusType", xmlWriter);
             }
         }
 
@@ -186,24 +161,24 @@ public class ProviderResponse implements ADBBean
             prefix = xmlWriter.getPrefix(namespace);
             if (prefix == null)
             {
-                prefix = ProviderResponse.generatePrefix(namespace);
-                xmlWriter.writeStartElement(prefix, "successful", namespace);
+                prefix = StatusType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "isOnline", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
             }
             else
             {
-                xmlWriter.writeStartElement(namespace, "successful");
+                xmlWriter.writeStartElement(namespace, "isOnline");
             }
         }
         else
         {
-            xmlWriter.writeStartElement("successful");
+            xmlWriter.writeStartElement("isOnline");
         }
-        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.successful));
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isOnline));
         xmlWriter.writeEndElement();
         
-        if (this.errorReasonTracker)
+        if (this.offlineReasonTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -211,69 +186,35 @@ public class ProviderResponse implements ADBBean
                 prefix = xmlWriter.getPrefix(namespace);
                 if (prefix == null)
                 {
-                    prefix = ProviderResponse.generatePrefix(namespace);
-                    xmlWriter.writeStartElement(prefix, "errorReason", namespace);
+                    prefix = StatusType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "offlineReason", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
                 }
                 else
                 {
-                    xmlWriter.writeStartElement(namespace, "errorReason");
+                    xmlWriter.writeStartElement(namespace, "offlineReason");
                 }
             }
             else
             {
-                xmlWriter.writeStartElement("errorReason");
+                xmlWriter.writeStartElement("offlineReason");
+            }
+            if (this.offlineReason == null)
+            {
+                throw new ADBException("offlineReason cannot be null!!");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(this.offlineReason);
             }
 
-            if (this.errorReason == null)
-            {
-                throw new ADBException("errorReason cannot be null!!");
-            }
-            else
-            {
-                xmlWriter.writeCharacters(this.errorReason);
-            }
-            xmlWriter.writeEndElement();
-        }
-        
-        if (this.identityTokenTracker)
-        {
-            namespace = "";
-            if (!namespace.equals(""))
-            {
-                prefix = xmlWriter.getPrefix(namespace);
-                if (prefix == null)
-                {
-                    prefix = ProviderResponse.generatePrefix(namespace);
-                    xmlWriter.writeStartElement(prefix, "identityToken", namespace);
-                    xmlWriter.writeNamespace(prefix, namespace);
-                    xmlWriter.setPrefix(prefix, namespace);
-                }
-                else
-                {
-                    xmlWriter.writeStartElement(namespace, "identityToken");
-                }
-            }
-            else
-            {
-                xmlWriter.writeStartElement("identityToken");
-            }
-
-            if (this.identityToken == null)
-            {
-                throw new ADBException("identityToken cannot be null!!");
-            }
-            else
-            {
-                xmlWriter.writeCharacters(this.identityToken);
-            }
             xmlWriter.writeEndElement();
         }
         xmlWriter.writeEndElement();
     }
 
-    private void writeAttribute(final String prefix, final String namespace, final String attName, final String attValue,
+    private void writeAttribute(final String prefix, final String namespace,  final String attName, final String attValue,
             final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
@@ -287,9 +228,10 @@ public class ProviderResponse implements ADBBean
     private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
         String prefix = xmlWriter.getPrefix(namespace);
+
         if (prefix == null)
         {
-            prefix = ProviderResponse.generatePrefix(namespace);
+            prefix = StatusType.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
@@ -305,56 +247,42 @@ public class ProviderResponse implements ADBBean
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
 
-        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
+        final java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
 
-        elementList.add(new QName("", "successful"));
-        elementList.add(ConverterUtil.convertToString(this.successful));
+        elementList.add(new QName("", "isOnline"));
+        elementList.add(ConverterUtil.convertToString(this.isOnline));
         
-        if (this.errorReasonTracker)
+        if (this.offlineReasonTracker)
         {
-            elementList.add(new QName("", "errorReason"));
-            if (this.errorReason != null)
+            elementList.add(new QName("", "offlineReason"));
+            if (this.offlineReason != null)
             {
-                elementList.add(ConverterUtil.convertToString(this.errorReason));
+                elementList.add(ConverterUtil.convertToString(this.offlineReason));
             }
             else
             {
-                throw new ADBException("errorReason cannot be null!!");
+                throw new ADBException("offlineReason cannot be null!!");
             }
         }
-        
-        if (this.identityTokenTracker)
-        {
-            elementList.add(new QName("", "identityToken"));
-            if (this.identityToken != null)
-            {
-                elementList.add(ConverterUtil.convertToString(this.identityToken));
-            }
-            else
-            {
-                throw new ADBException("identityToken cannot be null!!");
-            }
-        }
-        
+
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
     }
 
     public static class Factory
     {
-        public static ProviderResponse parse(final XMLStreamReader reader) throws Exception
+        public static StatusType parse(final XMLStreamReader reader) throws Exception
         {
-            final ProviderResponse object = new ProviderResponse();
+            final StatusType object = new StatusType();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
                     final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                                    "type");
+                            "type");
                     if (fullTypeName != null)
                     {
                         String nsPrefix = null;
@@ -366,10 +294,10 @@ public class ProviderResponse implements ADBBean
 
                         final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
-                        if (!"ProviderResponse".equals(type))
+                        if (!"StatusType".equals(type))
                         {
                             final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (ProviderResponse) ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            return (StatusType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
                     }
                 }
@@ -379,10 +307,10 @@ public class ProviderResponse implements ADBBean
                 {
                     reader.next();
                 }
-                if (reader.isStartElement()&& new QName("", "successful").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "isOnline").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setSuccessful(ConverterUtil.convertToBoolean(content));
+                    object.setIsOnline(ConverterUtil.convertToBoolean(content));
                     reader.next();
                 }
                 else
@@ -394,22 +322,10 @@ public class ProviderResponse implements ADBBean
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new QName("", "errorReason").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "offlineReason").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setErrorReason(ConverterUtil.convertToString(content));
-                    reader.next();
-                }
-                
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "identityToken").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setIdentityToken(ConverterUtil.convertToString(content));
+                    object.setOfflineReason(ConverterUtil.convertToString(content));
                     reader.next();
                 }
 
@@ -417,16 +333,16 @@ public class ProviderResponse implements ADBBean
                 {
                     reader.next();
                 }
+
                 if (reader.isStartElement())
                 {
-                    throw new ADBException("Unexpected subelement "+ reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
             }
             catch (final XMLStreamException e)
             {
                 throw new Exception(e);
             }
-
             return object;
         }
     }

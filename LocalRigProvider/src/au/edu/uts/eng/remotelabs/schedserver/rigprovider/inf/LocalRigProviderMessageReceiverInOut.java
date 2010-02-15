@@ -1,4 +1,4 @@
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,12 +16,12 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatusResponse;
 
 /**
  * LocalRigProviderMessageReceiverInOut message receiver.

@@ -1,7 +1,12 @@
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
+/**
+ * UpdateRigType.java
+ * This file was auto-generated from WSDL
+ * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
+ */
+
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -22,14 +27,19 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * RegisterRigType bean class.
+ * UpdateRigType bean class.
  */
-public class RegisterRigType extends RigType implements ADBBean
+public class UpdateRigType extends RigType implements ADBBean
 {
-    private static final long serialVersionUID = -7329577829710575306L;
+    /*
+     * This type was generated from the piece of schema that had
+     * name = UpdateRigType
+     * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider
+     * Namespace Prefix = ns1
+     */
 
-    protected String capabilities;
-    protected String type;
+    private static final long serialVersionUID = 571117408467746889L;
+    
     protected StatusType status;
 
     private static String generatePrefix(final String namespace)
@@ -40,37 +50,17 @@ public class RegisterRigType extends RigType implements ADBBean
         }
         return BeanUtil.getUniquePrefix();
     }
-
-    public String getType()
-    {
-        return this.type;
-    }
-
-    public void setType(final String param)
-    {
-        this.type = param;
-    }
-
-    public String getCapabilities()
-    {
-        return this.capabilities;
-    }
-
-    public void setCapabilities(final String param)
-    {
-        this.capabilities = param;
-    }
-
+    
     public StatusType getStatus()
     {
         return this.status;
     }
-
+    
     public void setStatus(final StatusType param)
     {
         this.status = param;
     }
-    
+
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
@@ -92,10 +82,10 @@ public class RegisterRigType extends RigType implements ADBBean
         final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
             @Override
-            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException
             {
-                RegisterRigType.this.serialize(this.parentQName, factory,
-                        xmlWriter);
+                UpdateRigType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -126,7 +116,7 @@ public class RegisterRigType extends RigType implements ADBBean
             {
                 if (prefix == null)
                 {
-                    prefix = RegisterRigType.generatePrefix(namespace);
+                    prefix = UpdateRigType.generatePrefix(namespace);
                 }
 
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
@@ -139,26 +129,25 @@ public class RegisterRigType extends RigType implements ADBBean
             xmlWriter.writeStartElement(parentQName.getLocalPart());
         }
 
-        final String namespacePrefix = this.registerPrefix(xmlWriter,
+        final String namespacePrefix = this.registerPrefix(xmlWriter, 
                 "http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider");
         if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
         {
-            this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                    namespacePrefix + ":RegisterRigType", xmlWriter);
+            this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", 
+                    namespacePrefix + ":UpdateRigType", xmlWriter);
         }
         else
         {
-            this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "RegisterRigType", xmlWriter);
+            this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "UpdateRigType", xmlWriter);
         }
 
         namespace = "";
         if (!namespace.equals(""))
         {
             prefix = xmlWriter.getPrefix(namespace);
-
             if (prefix == null)
             {
-                prefix = RegisterRigType.generatePrefix(namespace);
+                prefix = UpdateRigType.generatePrefix(namespace);
                 xmlWriter.writeStartElement(prefix, "name", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
@@ -175,7 +164,7 @@ public class RegisterRigType extends RigType implements ADBBean
 
         if (this.name == null)
         {
-            throw new ADBException("name cannot be null");
+            throw new ADBException("name cannot be null!!");
         }
         else
         {
@@ -183,98 +172,36 @@ public class RegisterRigType extends RigType implements ADBBean
         }
         xmlWriter.writeEndElement();
 
-        namespace = "";
-        if (!namespace.equals(""))
-        {
-            prefix = xmlWriter.getPrefix(namespace);
-
-            if (prefix == null)
-            {
-                prefix = RegisterRigType.generatePrefix(namespace);
-                xmlWriter.writeStartElement(prefix, "type", namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
-            }
-            else
-            {
-                xmlWriter.writeStartElement(namespace, "type");
-            }
-        }
-        else
-        {
-            xmlWriter.writeStartElement("type");
-        }
-        if (this.type == null)
-        {
-            throw new ADBException("type cannot be null");
-        }
-        else
-        {
-            xmlWriter.writeCharacters(this.type);
-        }
-        xmlWriter.writeEndElement();
-
-        namespace = "";
-        if (!namespace.equals(""))
-        {
-            prefix = xmlWriter.getPrefix(namespace);
-            if (prefix == null)
-            {
-                prefix = RegisterRigType.generatePrefix(namespace);
-                xmlWriter.writeStartElement(prefix, "capabilities", namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
-            }
-            else
-            {
-                xmlWriter.writeStartElement(namespace, "capabilities");
-            }
-        }
-        else
-        {
-            xmlWriter.writeStartElement("capabilities");
-        }
-        if (this.capabilities == null)
-        {
-            throw new ADBException("capabilities cannot be null");
-        }
-        else
-        {
-            xmlWriter.writeCharacters(this.capabilities);
-        }
-        xmlWriter.writeEndElement();
-
         if (this.status == null)
         {
-            throw new ADBException("status cannot be null");
+            throw new ADBException("status cannot be null!!");
         }
         this.status.serialize(new QName("", "status"), factory, xmlWriter);
         xmlWriter.writeEndElement();
     }
 
-    private void writeAttribute(final String prefix, final String namespace, final String attName, final String attValue,
-            final XMLStreamWriter xmlWriter) throws XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
-
         }
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
 
-    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace)
+            throws XMLStreamException
     {
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = RegisterRigType.generatePrefix(namespace);
+            prefix = UpdateRigType.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
             }
-
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
@@ -282,16 +209,14 @@ public class RegisterRigType extends RigType implements ADBBean
     }
 
     @Override
-    public XMLStreamReader getPullParser(final QName qName) throws ADBException
+    public XMLStreamReader getPullParser(final QName qName)
+            throws ADBException
     {
-
-        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
-        final ArrayList<QName> attribList = new ArrayList<QName>();
+        final java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
+        final java.util.ArrayList<QName> attribList = new java.util.ArrayList<QName>();
 
         attribList.add(new QName("http://www.w3.org/2001/XMLSchema-instance", "type"));
-        attribList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
-                        "RegisterRigType"));
-
+        attribList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider", "UpdateRigType"));
         elementList.add(new QName("", "name"));
         if (this.name != null)
         {
@@ -300,26 +225,6 @@ public class RegisterRigType extends RigType implements ADBBean
         else
         {
             throw new ADBException("name cannot be null!!");
-        }
-
-        elementList.add(new QName("", "type"));
-        if (this.type != null)
-        {
-            elementList.add(ConverterUtil.convertToString(this.type));
-        }
-        else
-        {
-            throw new ADBException("type cannot be null!!");
-        }
-
-        elementList.add(new QName("", "capabilities"));
-        if (this.capabilities != null)
-        {
-            elementList.add(ConverterUtil.convertToString(this.capabilities));
-        }
-        else
-        {
-            throw new ADBException("capabilities cannot be null!!");
         }
 
         elementList.add(new QName("", "status"));
@@ -334,15 +239,16 @@ public class RegisterRigType extends RigType implements ADBBean
 
     public static class Factory
     {
-        public static RegisterRigType parse(final XMLStreamReader reader) throws Exception
+        public static UpdateRigType parse(final XMLStreamReader reader) throws Exception
         {
-            final RegisterRigType object = new RegisterRigType();
+            final UpdateRigType object = new UpdateRigType();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
+
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
                     final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
@@ -357,11 +263,10 @@ public class RegisterRigType extends RigType implements ADBBean
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
                         final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-
-                        if (!"RegisterRigType".equals(type))
+                        if (!"UpdateRigType".equals(type))
                         {
                             final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (RegisterRigType) ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            return (UpdateRigType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
                     }
                 }
@@ -371,6 +276,7 @@ public class RegisterRigType extends RigType implements ADBBean
                 {
                     reader.next();
                 }
+
                 if (reader.isStartElement() && new QName("", "name").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
@@ -386,39 +292,7 @@ public class RegisterRigType extends RigType implements ADBBean
                 {
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "type").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setType(ConverterUtil.convertToString(content));
-                    reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement() && new QName("", "capabilities").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setCapabilities(ConverterUtil.convertToString(content));
-                    reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement() && new QName("", "status").equals(reader.getName()))
+                if (reader.isStartElement()&& new QName("", "status").equals(reader.getName()))
                 {
                     object.setStatus(StatusType.Factory.parse(reader));
                     reader.next();

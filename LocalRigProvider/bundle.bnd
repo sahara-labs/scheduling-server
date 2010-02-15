@@ -1,9 +1,17 @@
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl
-
-Bundle-Name: Local Rig Provider
-Bundle-SymbolicName: SchedulingServer-LocalRigProvider;singleton:=true
+Bundle-Name: LocalRigProvider
+Bundle-SymbolicName: SchedulingServer-LocalRigProvider
 Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
+!org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
+!org.jdom.*, !javax.*, !sun.*, !nu.xom, \
+au.edu.uts.eng.remotelabs.schedserver.server, *
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf, \
+au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types, \
+au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl
+Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
+lib/=lib/;-donotcopy=.svn
+Bundle-ClassPath: ., \
+${findpath;lib/.*.jar}

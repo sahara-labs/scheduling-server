@@ -1,17 +1,17 @@
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RegisterRigType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RemoveRigType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.StatusType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatus;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigStatusResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.UpdateRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.StatusType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigType;
 
 
 /**
