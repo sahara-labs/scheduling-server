@@ -1,4 +1,5 @@
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.server
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.server, javax.servlet, \
+javax.servlet.http
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.server.impl
 Include-Resource: META-INF/images/team.jpg=META-INF/images/team.jpg, \
 lib/=lib/;-donotcopy=.svn
