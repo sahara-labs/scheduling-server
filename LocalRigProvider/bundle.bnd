@@ -13,5 +13,6 @@ au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types, \
 au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider
 Bundle-ClassPath: ., \
 ${findpath;lib/.*.jar}
