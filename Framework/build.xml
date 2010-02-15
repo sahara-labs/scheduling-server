@@ -56,14 +56,19 @@ Date: 28th December 2009
 	
 	<target name="dist" depends="build">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/SchedulingServer.jar">
-			<zipfileset src="lib/org.apache.felix.framework-2.0.1.jar"/>
+		<jar destfile="${dist.dir}/SchedulingServer.jar" manifest="MANIFEST.MF">
+			<!-- <zipfileset src="lib/org.apache.felix.framework-2.0.1.jar"/> -->
+			<zipfileset src="lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar" dirmode="777" filemode="666">
+				<exclude name="**/*.RSA" />
+				<exclude name="**/*.SF" />
+				<exclude name="**/eclipse.inf" />
+				<exclude name="**/CDC-*.profile" />
+				<exclude name="**/J2SE-*.profile" />
+				<exclude name="**/about_files/*" />
+				<exclude name="**/.*" />
+				<exclude name="about.html" />
+			</zipfileset>
 		    <fileset dir="${build.classes.dir}"/>
-		    <manifest>
-		        <attribute name="Main-Class" value="au.edu.uts.eng.remotelabs.schedserver.framework.SchedulingServerMain"/>
-		    	<attribute name="Built-By" value="${user.name}" />
-		    	<attribute name="Vendor" value="UTS:FEIT Remote Laboratory" />
-		    </manifest>
 		</jar>
 	</target>
 	

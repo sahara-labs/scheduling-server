@@ -74,7 +74,7 @@ public class SchedulingServer
     {
         SS_Bundles.add("SchedulingServer-Configuration");
         SS_Bundles.add("SchedulingServer-Logger");
-        SS_Bundles.add("SchedulingServer-DataAccess");
+//        SS_Bundles.add("SchedulingServer-DataAccess");
         
 
         SS_Bundles.add("SchedulingServer-Server");
@@ -117,7 +117,15 @@ public class SchedulingServer
             });
             
             /* Install or update bundles. */
+            System.out.println("Framework state " + this.framework.getState() + '.');
             BundleContext context = this.framework.getBundleContext();
+            if (context == null)
+            {
+                System.out.println("Unable to obtain Framework bundle.");
+            }
+            System.out.println("Framework bundle " + context.getBundle().getSymbolicName() + '.');
+            System.out.println();
+            
             Map<String, File> jars = this.getBundleJars(FrameworkProperties.BUNDLE_DIR);
             
             /* Install mandatory scheduling server bundles in order. */
@@ -157,6 +165,7 @@ public class SchedulingServer
         {
             System.out.println("Failed... Exception: " + ex.getClass().getCanonicalName() + ", Message: " + 
                     ex.getMessage() + ".");
+            ex.printStackTrace();
             System.exit(-1);
         }
     }
