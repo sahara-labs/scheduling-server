@@ -1,0 +1,15 @@
+Directory containing the libraries that need to be on the bundles classpath
+(Bundle-ClassPath directive). The required libraries are:
+
+  - Jetty 6 - Jetty (http://jetty.codehaus.org/jetty/) provides an 
+              embeddedable HTTP server and javax.servlet container.
+              Jetty 6 & Java servlet API is released under the 
+              Apache License 2.0.
+              The required files are:
+              
+                * Core libraries (jetty-6.*.jar, jetty-util-6.*.jar,
+                  servlet-api-*.jar).
+                
+                * SSL extension library (jetty-sslengine-6.*.jar).
+              
+              Jetty has been tested with version 6.1.22.
