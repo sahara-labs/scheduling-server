@@ -15,12 +15,18 @@
 	<classpathentry exported="true" kind="lib" path="lib/axis2-transport-http-1.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axis2-transport-local-1.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axis2-xmlbeans-1.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcel-5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-httpclient-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-annotation_1.0_spec-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-jaxws_2.1_spec-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-saaj_1.3_spec-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-stax-api_1.0_spec-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-ws-metadata_2.0_spec-1.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jalopy-1.5rc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.1.jar"/>
@@ -44,11 +50,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/bcel-5.1.jar"/>
-	<classpathentry kind="lib" path="lib/geronimo-annotation_1.0_spec-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/geronimo-jaxws_2.1_spec-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/geronimo-saaj_1.3_spec-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/geronimo-stax-api_1.0_spec-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/geronimo-ws-metadata_2.0_spec-1.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
