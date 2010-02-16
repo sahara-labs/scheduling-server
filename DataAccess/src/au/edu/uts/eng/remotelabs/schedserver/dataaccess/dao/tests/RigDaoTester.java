@@ -163,6 +163,7 @@ public class RigDaoTester extends TestCase
         rig.setLastUpdateTimestamp(ts);
         rig.setManaged(false);
         rig.setMeta("iLabs");
+        rig.setOfflineReason("Tomorrows problem");
         ses.save(rig);
         ses.getTransaction().commit();
         ses.close();
@@ -178,6 +179,7 @@ public class RigDaoTester extends TestCase
         assertEquals(rig.getRigCapabilities().getCapabilities(), fRig.getRigCapabilities().getCapabilities());
         assertEquals(rig.getManaged(), fRig.getManaged());
         assertEquals(rig.getMeta(), fRig.getMeta());
+        assertEquals(rig.getOfflineReason(), fRig.getOfflineReason());
         
         /* Delete all. */
         this.dao.delete(fRig);

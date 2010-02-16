@@ -94,6 +94,9 @@ public class Rig implements java.io.Serializable
     /** Whether the rig is online (true if online). */
     private boolean online;
     
+    /** The reason is offline. This is null if the rig is currently online. */
+    private String offlineReason;
+    
     /** Whether the rig is in session. */
     private boolean inSession;
     
@@ -119,8 +122,9 @@ public class Rig implements java.io.Serializable
 
     public Rig(final RigType rigType, final RigCapabilities rigCapabilities,
             final String name, final String contactUrl,
-            final Date lastUpdateTimestamp, final boolean online,
-            final boolean inSession, final boolean active)
+            final Date lastUpdateTimestamp, final boolean online, 
+            final String offlineReason, final boolean inSession, 
+            final boolean managed, final boolean active)
     {
         this.rigType = rigType;
         this.rigCapabilities = rigCapabilities;
@@ -128,14 +132,17 @@ public class Rig implements java.io.Serializable
         this.contactUrl = contactUrl;
         this.lastUpdateTimestamp = lastUpdateTimestamp;
         this.online = online;
+        this.offlineReason = offlineReason;
         this.inSession = inSession;
         this.active = active;
+        this.managed = managed;
     }
 
     public Rig(final RigType rigType, final Session session,
             final RigCapabilities rigCapabilities, final String name,
             final String contactUrl, final Date lastUpdateTimestamp,
-            final boolean online, final boolean inSession,
+            final boolean online, final String offlineReason, 
+            final boolean inSession, final boolean managed, 
             final boolean active,
             final Set<ResourcePermission> resourcePermissions,
             final Set<Session> sessions)
@@ -147,7 +154,9 @@ public class Rig implements java.io.Serializable
         this.contactUrl = contactUrl;
         this.lastUpdateTimestamp = lastUpdateTimestamp;
         this.online = online;
+        this.offlineReason = offlineReason;
         this.inSession = inSession;
+        this.managed = managed;
         this.active = active;
         this.resourcePermissions = resourcePermissions;
         this.sessions = sessions;
@@ -245,6 +254,17 @@ public class Rig implements java.io.Serializable
     public void setOnline(final boolean online)
     {
         this.online = online;
+    }
+    
+    @Column(name = "offline_reason", nullable = true)
+    public String getOfflineReason()
+    {
+        return this.offlineReason;
+    }
+    
+    public void setOfflineReason(final String offlineReason)
+    {
+        this.offlineReason = offlineReason;
     }
 
     @Column(name = "in_session", nullable = false)

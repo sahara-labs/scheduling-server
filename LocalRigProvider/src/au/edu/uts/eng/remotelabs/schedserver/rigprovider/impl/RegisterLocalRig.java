@@ -79,6 +79,22 @@ public class RegisterLocalRig
         this.capsDao = new RigCapabilitiesDao(this.rigDao.getSession());
     }
 
+    /** 
+     * Registers a local rig with the provided parameters to the scheduling server.
+     * The response specifies registration failed, the error reason field will be
+     * set with a reason it failed.
+     * <br />
+     * The rig name must be unique in the system. If an active rig with the 
+     * same name exists, registration will fail. If the type does not exist,
+     * a new type is created. If the rig capabilities string are unqiue, 
+     * it is added as a new capabilities type.
+     * 
+     * @param name name of the rig
+     * @param type type name of the rig
+     * @param capabilities rigs capabilities strings
+     * @param contactUrl URL that points the rigs SOAP interface
+     * @return true if successful, false otherwise
+     */
     public boolean addRigToSchedServer(final String name, final String type, final String capabilities,
             final String contactUrl)
     {
@@ -123,23 +139,20 @@ public class RegisterLocalRig
         this.rig.setLastUpdateTimestamp(new Date());
         this.rig.setOnline(false);
         this.rig.setInSession(false);
-        this.rig.setManaged(true); // All local rigs are managed.
-        
-        // TODO error reason.
+        this.rig.setManaged(true); // All local rigs are managed
         
         if (this.rig.getId() < 1)
         {
             this.rig = this.rigDao.persist(this.rig);
         }
-        
         this.rigDao.flush();
 
         return this.rig.getId() > 0;
     }
-    
-    
 
     /**
+     * Returns registering a rig failed.
+     * 
      * @return the failedReason
      */
     public String getFailedReason()
