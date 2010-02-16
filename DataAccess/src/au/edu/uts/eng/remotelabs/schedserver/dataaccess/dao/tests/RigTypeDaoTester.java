@@ -157,13 +157,61 @@ public class RigTypeDaoTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao#findByName(java.lang.String)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao#findByName(String)}.
      */
     @Test
     public void testFindByNameNotFound()
     {
         RigType type = this.dao.findByName("does_not_exist");
         assertNull(type);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao#loadOrCreate(String)}
+     */
+    @Test
+    public void testLoadOrCreateExists()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        RigType type = new RigType();
+        type.setName("testType");
+        type.setLogoffGraceDuration(600);
+        type.setCodeAssignable(true);
+        ses.beginTransaction();
+        ses.save(type);
+        ses.getTransaction().commit();
+        ses.close();
+        
+     
+        RigType same = this.dao.loadOrCreate("testType");
+        assertNotNull(same);
+        assertEquals("testType", same.getName());
+        assertTrue(same.isCodeAssignable());
+        assertEquals(600, same.getLogoffGraceDuration());
+        
+        this.dao.delete(same);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao#loadOrCreate(String)}
+     */
+    @Test
+    public void testLoadOrCreateNotExist()
+    {
+        RigType type = this.dao.loadOrCreate("testType");
+        assertNotNull(type);
+        assertEquals("testType", type.getName());
+        assertFalse(type.isCodeAssignable());
+        assertEquals(180, type.getLogoffGraceDuration());
+        
+        Session ses = DataAccessActivator.getNewSession();
+        RigType same = (RigType) ses.load(RigType.class, type.getId());
+        
+        assertEquals(type.getName(), same.getName());
+        assertEquals(type.getLogoffGraceDuration(), same.getLogoffGraceDuration());
+        assertEquals(type.isCodeAssignable(), same.isCodeAssignable());
+        
+        this.dao.delete(type);
     }
 
 }

@@ -101,7 +101,8 @@ public class RigTypeDao extends GenericDao<RigType>
         {
             rigType = new RigType();
             rigType.setName(typeName);
-            rigType.setCodeAssignable(false);
+            rigType.setCodeAssignable(Boolean.parseBoolean(
+                    DataAccessActivator.getProperty("Default_Rig_Type_Is_Code_Assignable", "false")));
             
             /* Load the default log off grace period. */
             try
