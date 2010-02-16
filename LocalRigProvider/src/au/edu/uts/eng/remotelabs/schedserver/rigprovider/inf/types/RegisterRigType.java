@@ -16,6 +16,7 @@ import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
 import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.types.URI;
 import org.apache.axis2.databinding.utils.BeanUtil;
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
@@ -31,6 +32,7 @@ public class RegisterRigType extends RigType implements ADBBean
     protected String capabilities;
     protected String type;
     protected StatusType status;
+    protected URI contactUrl;
 
     private static String generatePrefix(final String namespace)
     {
@@ -69,6 +71,16 @@ public class RegisterRigType extends RigType implements ADBBean
     public void setStatus(final StatusType param)
     {
         this.status = param;
+    }
+    
+    public URI getContactUrl()
+    {
+        return this.contactUrl;
+    }
+    
+    public void setContactUrl(final URI param)
+    {
+        this.contactUrl = param;
     }
     
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -243,12 +255,43 @@ public class RegisterRigType extends RigType implements ADBBean
             xmlWriter.writeCharacters(this.capabilities);
         }
         xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = RegisterRigType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "contactUrl", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "contactUrl");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("contactUrl");
+        }
+        if (this.contactUrl == null)
+        {
+            throw new ADBException("contact URL cannot be null");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.contactUrl));
+        }
+        xmlWriter.writeEndElement();
 
         if (this.status == null)
         {
             throw new ADBException("status cannot be null");
         }
         this.status.serialize(new QName("", "status"), factory, xmlWriter);
+        
         xmlWriter.writeEndElement();
     }
 
@@ -309,7 +352,7 @@ public class RegisterRigType extends RigType implements ADBBean
         }
         else
         {
-            throw new ADBException("type cannot be null!!");
+            throw new ADBException("type cannot be null");
         }
 
         elementList.add(new QName("", "capabilities"));
@@ -319,13 +362,20 @@ public class RegisterRigType extends RigType implements ADBBean
         }
         else
         {
-            throw new ADBException("capabilities cannot be null!!");
+            throw new ADBException("capabilities cannot be null");
         }
+        
+        elementList.add(new QName("", "contactUrl"));
+        if (this.contactUrl == null)
+        {
+            throw new ADBException("contact URL cannot be null");
+        }
+        elementList.add(this.contactUrl);
 
         elementList.add(new QName("", "status"));
         if (this.status == null)
         {
-            throw new ADBException("status cannot be null!!");
+            throw new ADBException("status cannot be null");
         }
         elementList.add(this.status);
 
@@ -412,12 +462,26 @@ public class RegisterRigType extends RigType implements ADBBean
                 {
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
-
+                
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
+                if (reader.isStartElement() && new QName("", "contactUrl").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setContactUrl(ConverterUtil.convertToAnyURI(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
                 if (reader.isStartElement() && new QName("", "status").equals(reader.getName()))
                 {
                     object.setStatus(StatusType.Factory.parse(reader));
@@ -432,7 +496,6 @@ public class RegisterRigType extends RigType implements ADBBean
                 {
                     reader.next();
                 }
-
                 if (reader.isStartElement())
                 {
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());

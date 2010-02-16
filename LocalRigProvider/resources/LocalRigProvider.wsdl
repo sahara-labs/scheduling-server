@@ -60,7 +60,9 @@ Date: 5th February 2009
       				<xsd:element name="capabilities"
       					type="xsd:string">
       				</xsd:element>
-      				<xsd:element name="status"
+                            <xsd:element name="contactUrl" type="xsd:anyURI">
+      				</xsd:element>
+                            <xsd:element name="status"
       					type="lrp:StatusType">
       				</xsd:element>
       			</xsd:sequence>

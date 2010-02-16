@@ -35,7 +35,10 @@ Date: 28th December 2009
 <project name="Scheduling Server Local Rig Provider" default="build" basedir=".">
     <import file="../common.xml"/>
     <import file="../dependencies.xml"/>
-    <property name="component.name" value="Scheduling Server Local Rig Provider Bundle"/>
+    
+	<property name="component.name" value="Scheduling Server Local Rig Provider Bundle"/>
+	<property name="service.archive.name" value="LocalRigProvider.aar" />
+	
     <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,serverBundle">
         <buildProject/>
     </target>
