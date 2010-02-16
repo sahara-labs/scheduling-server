@@ -1,0 +1,149 @@
+/**
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2010, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 4th January 2010
+ */
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
+
+import java.util.Date;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+
+/**
+ * Adds a rig to the Scheduling Server.
+ */
+public class RegisterLocalRig
+{   
+    /** The rig who is being added. */
+    private Rig rig;
+    
+    /** Rig data access object. */
+    private final RigDao rigDao;
+    
+    /** Rig Type data access object. */
+    private final RigTypeDao typeDao;
+    
+    /** Rig Capabilities data access object. */
+    private final RigCapabilitiesDao capsDao;
+    
+    /** Reason adding the rig failed. */
+    private String failedReason;
+    
+    /** Logger. */
+    private final Logger logger;
+
+    public RegisterLocalRig()
+    {   
+        this.logger = LoggerActivator.getLogger();
+        
+        this.rigDao = new RigDao();
+        this.typeDao = new RigTypeDao(this.rigDao.getSession());
+        this.capsDao = new RigCapabilitiesDao(this.rigDao.getSession());
+    }
+
+    public boolean addRigToSchedServer(final String name, final String type, final String capabilities,
+            final String contactUrl)
+    {
+        this.logger.debug("Attempting to add a new rig with name " + name + ", of type " + type + " with " +
+        		"capabilities " + capabilities + '.');
+        
+        this.rig = this.rigDao.findByName(name);
+        if (this.rig != null && this.rig.isActive())
+        {
+            /* Case 1: Rig exists and is active - cannot register rig because another RC owns it. */
+            this.logger.warn("Failed registering rig with name " + name + " as it already exists and " +
+            		"is active. Rig names must be unqiue.");
+            this.failedReason = "Exists";
+            return false;
+        }
+        else if (this.rig != null)
+        {
+            /* Case 2: Rig exists, but does not exist, so the new RC is free to take it. */
+            this.logger.info("Registering an inactive exist rig with name " + name + "and existing " +
+            		"identifier " + this.rig.getId() + ".");
+        }
+        else
+        {
+            /* Case 3: Rig does not exist. */
+            this.logger.debug("Registering a new rig with name " + name + '.');
+            this.rig = new Rig();
+            this.rig.setName(name);
+        }
+        
+        RigType rigType = this.typeDao.loadOrCreate(type);
+        this.rig.setRigType(rigType);
+        
+        RigCapabilities caps = this.capsDao.findCapabilites(capabilities);
+        if (caps == null)
+        {
+            caps = this.capsDao.addCapabilities(capabilities);
+        }
+        this.rig.setRigCapabilities(caps);
+        
+        this.rig.setContactUrl(contactUrl);
+        this.rig.setActive(true);
+        this.rig.setLastUpdateTimestamp(new Date());
+        this.rig.setOnline(false);
+        this.rig.setInSession(false);
+        this.rig.setManaged(true); // All local rigs are managed.
+        
+        // TODO error reason.
+        
+        if (this.rig.getId() < 1)
+        {
+            this.rig = this.rigDao.persist(this.rig);
+        }
+        
+        this.rigDao.flush();
+
+        return this.rig.getId() > 0;
+    }
+    
+    
+
+    /**
+     * @return the failedReason
+     */
+    public String getFailedReason()
+    {
+        return this.failedReason;
+    }
+}
