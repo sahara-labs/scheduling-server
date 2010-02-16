@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 11th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -51,7 +51,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -137,7 +137,7 @@ public class RigDaoTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigDao#findByName(java.lang.String)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao#findByName(java.lang.String)}.
      */
     @Test
     public void testFindByName()
@@ -189,7 +189,7 @@ public class RigDaoTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigDao#findFreeinType(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao#findFreeinType(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType)}.
      */
     @Test
     public void testFindFreeinType()

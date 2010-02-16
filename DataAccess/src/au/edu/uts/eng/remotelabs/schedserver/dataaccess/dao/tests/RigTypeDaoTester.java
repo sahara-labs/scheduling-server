@@ -32,19 +32,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 5th January 2010
+ * @date 11th January 2010
  */
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
+import java.lang.reflect.Field;
+import java.util.Properties;
+
+import junit.framework.TestCase;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.stat.Statistics;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -59,36 +63,39 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl.DataAccessConfiguration;
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
 /**
- * Data Access bundle activator. The data access bundle is used to load and 
- * persist entity classes into a databases.
- * <br />
- * The activator is used to set up the Hibernate session factory.
+ * Tests the {@link RigTypeDao} class.
  */
-public class DataAccessActivator implements BundleActivator 
+public class RigTypeDaoTester extends TestCase
 {
-    /** Session factory to obtains sessions from. */
-    private static SessionFactory sessionFactory;
+    /** Object of class under test. */
+    private RigTypeDao dao;
     
-    /** Configuration service tracker. */
-    private static ServiceTracker confTracker;
-    
-    /** Logger. */
-    private Logger logger;
-
-	@Override
-	public void start(BundleContext context) throws Exception 
+    public RigTypeDaoTester(String name) throws Exception
     {
-        this.logger = LoggerActivator.getLogger();
-        this.logger.info("Starting the Data Access bundle.");
-
-        /* Configure Hibernate for use with annotations. */
+        super(name);
+        
+        /* Set up the logger. */
+        Field f = LoggerActivator.class.getDeclaredField("logger");
+        f.setAccessible(true);
+        f.set(null, new SystemErrLogger());
+        
+        /* Set up the SessionFactory. */
         AnnotationConfiguration cfg = new AnnotationConfiguration();
-        cfg.setProperties(new DataAccessConfiguration(context).getProperties());
+        Properties props = new Properties();
+        props.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        props.setProperty("hibernate.connection.url", "jdbc:mysql://127.0.0.1:3306/sahara");
+        props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect");
+        props.setProperty("hibernate.connection.username", "sahara");
+        props.setProperty("hibernate.connection.password", "saharapasswd");
+        props.setProperty("hibernate.show_sql", "true");
+        props.setProperty("hibernate.format_sql", "true");
+        props.setProperty("hibernate.use_sql_comments", "true");
+        props.setProperty("hibernate.generate_statistics", "true");
+        cfg.setProperties(props);
         cfg.addAnnotatedClass(AcademicPermission.class);
         cfg.addAnnotatedClass(Config.class);
         cfg.addAnnotatedClass(MatchingCapabilities.class);
@@ -104,61 +111,59 @@ public class DataAccessActivator implements BundleActivator
         cfg.addAnnotatedClass(UserAssociationId.class);
         cfg.addAnnotatedClass(UserClass.class);
         cfg.addAnnotatedClass(UserLock.class);
-        this.logger.debug("Hibernate properties: " + cfg.getProperties().toString());
-
-        DataAccessActivator.sessionFactory = cfg.buildSessionFactory();
         
-        DataAccessActivator.confTracker = new ServiceTracker(context, 
-                au.edu.uts.eng.remotelabs.schedserver.config.Config.class.getName(), null);
+        f = DataAccessActivator.class.getDeclaredField("sessionFactory");
+        f.setAccessible(true);
+        f.set(null, cfg.buildSessionFactory());
     }
-	
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-        this.logger.debug("Shutting down the Data Access bundle.");
 
-        Statistics stats = DataAccessActivator.sessionFactory.getStatistics();
-        this.logger.info("Hibernate statistics: " + stats.toString());
-
-        DataAccessActivator.sessionFactory.close();
-        DataAccessActivator.sessionFactory = null;
-	}
-
-    /**
-     * Returns a Hibernate session. Returns null if a session cannot be
-     * opened.
-     * 
-     * @return session or null
-     */
-    public static Session getNewSession()
+    @Override
+    @Before
+    public void setUp() throws Exception
     {
-        if (sessionFactory == null)
-        {
-            return null;
-        }
+        this.dao = new RigTypeDao();
+        super.setUp();
+    }
 
-        return DataAccessActivator.sessionFactory.openSession();
+    @Override
+    @After
+    public void tearDown() throws Exception
+    {
+        this.dao.closeSession();
+        super.tearDown();
     }
 
     /**
-     * Gets the specified properties value provided this bundle is loaded and 
-     * the configuration service is registered. If not, the provided default
-     * value is returned.
-     * 
-     * @param prop property whose value to provide
-     * @param def default value
-     * @return properties value or default value if this or the configuration \
-     *         bundle not loaded
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao#findByName(java.lang.String)}.
      */
-    public static String getProperty(String prop, String def)
+    @Test
+    public void testFindByName()
     {
-        au.edu.uts.eng.remotelabs.schedserver.config.Config conf;
-        if (DataAccessActivator.confTracker == null || (conf = 
-            (au.edu.uts.eng.remotelabs.schedserver.config.Config) DataAccessActivator.confTracker.getService()) == null)
-        {
-            return def;
-        }
+        Session ses = DataAccessActivator.getNewSession();
+        RigType type = new RigType();
+        type.setName("testType");
+        type.setLogoffGraceDuration(600);
+        ses.beginTransaction();
+        ses.save(type);
+        ses.getTransaction().commit();
+        ses.close();
         
-        return conf.getProperty(prop, def);
+        RigType rigType = this.dao.findByName("testType");
+        assertNotNull(rigType);
+        assertEquals(type.getId(), rigType.getId());
+        assertEquals(type.getLogoffGraceDuration(), rigType.getLogoffGraceDuration());
+        
+        this.dao.delete(rigType);
     }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao#findByName(java.lang.String)}.
+     */
+    @Test
+    public void testFindByNameNotFound()
+    {
+        RigType type = this.dao.findByName("does_not_exist");
+        assertNull(type);
+    }
+
 }

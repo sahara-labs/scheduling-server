@@ -32,13 +32,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 4th January 2010
+ * @date 8th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -47,11 +46,9 @@ import org.hibernate.Session;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.ConfigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.GenericDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -72,12 +69,12 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 /**
  * Tests the {@link GenericDao} class.
  */
-public class ConfigDaoTester extends TestCase
+public class GenericDaoTester extends TestCase
 {
     /** Object of class under test. */
-    private ConfigDao dao;
-    
-    public ConfigDaoTester(String name) throws Exception
+    private GenericDao<Config> dao;
+
+    public GenericDaoTester(String name) throws Exception
     {
         super(name);
         
@@ -119,21 +116,33 @@ public class ConfigDaoTester extends TestCase
         f.setAccessible(true);
         f.set(null, cfg.buildSessionFactory());
     }
-    
+
     @Before
     @Override
-    public void setUp() throws Exception
+    protected void setUp() throws Exception
     {
-        this.dao = new ConfigDao();
+        this.dao = new GenericDao<Config>(Config.class);
+        super.setUp();
     }
-    
-    @Test
-    public void testCreate()
+
+    @After
+    @Override
+    protected void tearDown() throws Exception
     {
-        String key = "testkey";
-        String val = "testval";
+        this.dao.closeSession();
+        super.tearDown();
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#persist(java.lang.Object)}.
+     */
+    public void testPersist()
+    {
+        String key = "persist_test_key";
+        String val = "persist_test_val";
     
-        Config conf = this.dao.create(key, val);
+        Config conf = new Config(key, val);
+        conf = this.dao.persist(conf);
         assertEquals(key, conf.getKey());
         assertEquals(val, conf.getValue());
         assertTrue(conf.getId() > 0);
@@ -151,45 +160,170 @@ public class ConfigDaoTester extends TestCase
         ses.delete(loaded);
         ses.getTransaction().commit();
     }
-    
-    @Test
-    public void testGetConfig()
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#get(java.lang.Class, java.io.Serializable)}.
+     */
+    public void testGet()
     {
-        Config p1 = this.dao.persist(new Config("conf_test_key", "val1"));
-        Config p2 = this.dao.persist(new Config("conf_test_key", "val2"));
-        Config p3 = this.dao.persist(new Config("conf_test_key", "val3"));
+        String key = "get_test_key";
+        String val = "get_test_val";
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        Config c = new Config(key, val);
+        ses.save(c);
+        ses.getTransaction().commit();
+        ses.close();
         
-        List<Config> conf = this.dao.getConfig("conf_test_key");
-        assertEquals(3, conf.size());
-        System.out.println(conf);
+        Config got = this.dao.get(c.getId());
+        assertNotNull(got);
+        assertEquals(c.getId(), got.getId());
+        assertEquals(c.getKey(), got.getKey());
+        assertEquals(c.getValue(), got.getValue());
         
-        List<String> str = new ArrayList<String>();
-        for (Config c : conf)
-        {
-            str.add(c.getValue());
-        }
-        
-        assertTrue(str.contains("val1"));
-        assertTrue(str.contains("val2"));
-        assertTrue(str.contains("val3"));
- 
-        this.dao.delete(p1);
-        this.dao.delete(p2);
-        this.dao.delete(p3);
+        this.dao.delete(got);
     }
-    
-    @Test
-    public void testGetConfigNotFound()
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#get(java.lang.Class, java.io.Serializable)}.
+     */
+    public void testGetNotFound()
     {
-        List<Config> conf = this.dao.getConfig("does_not_exist");
-        assertNotNull(conf);
-        assertEquals(0, conf.size());
+        assertNull(this.dao.get(134567890));
     }
-    
-    @Override
-    @After
-    public void tearDown()
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#merge(java.lang.Object)}.
+     */
+    public void testMerge()
     {
+        Config conf = this.dao.persist(new Config("merge_conf_key", "merge_conf_val"));
         this.dao.closeSession();
+        
+        /* Conf is not transient. */
+        GenericDao<Config> cDao = new GenericDao<Config>(Config.class);
+        conf = cDao.merge(conf);
+        assertNotNull(conf);
+        
+        conf.setValue("new_val");
+        cDao.flush();
+        cDao.closeSession();
+        
+        cDao = new GenericDao<Config>(Config.class);
+        conf = cDao.get(conf.getId());
+        assertEquals("new_val", conf.getValue());
+        cDao.delete(conf);
     }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#flush()}.
+     */
+    public void testFlush()
+    {
+        Config conf = this.dao.persist(new Config("flush_conf_key", "val"));
+        assertNotNull(conf);
+        
+        /* Make dirty. */
+        conf.setValue("new_val");
+       
+        Session ses = this.dao.getSession();
+        assertNotNull(ses);
+        assertTrue(ses.isDirty());
+        
+        /* Close which should flush. */
+        this.dao.flush();
+        assertFalse(ses.isDirty());
+        
+        ses = DataAccessActivator.getNewSession();
+        Config c = (Config)ses.load(Config.class, conf.getId());
+        assertEquals("new_val", c.getValue());
+        
+        ses.getTransaction().begin();
+        ses.delete(c);
+        ses.getTransaction().commit();
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#delete(java.lang.Object)}.
+     */
+    public void testDelete()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        Serializable id = ses.save(new Config("delete_conf_key", "delete_conf_val"));
+        ses.getTransaction().commit();
+        ses.close();
+        
+        ses = DataAccessActivator.getNewSession();
+        assertNotNull(ses.get(Config.class, id));
+        ses.close();
+        
+        this.dao.delete(this.dao.get(id));
+        
+        ses = DataAccessActivator.getNewSession();
+        assertNull(ses.get(Config.class, id));
+        ses.close();
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#delete(java.lang.Object)}.
+     */
+    public void testDeleteId()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        Serializable id = ses.save(new Config("delete_conf_key", "delete_conf_val"));
+        ses.getTransaction().commit();
+        ses.close();
+        
+        ses = DataAccessActivator.getNewSession();
+        assertNotNull(ses.get(Config.class, id));
+        ses.close();
+        
+        this.dao.delete(id);
+        
+        ses = DataAccessActivator.getNewSession();
+        assertNull(ses.get(Config.class, id));
+        ses.close();
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#closeSession()}.
+     */
+    public void testCloseSession()
+    {
+        Config conf = this.dao.persist(new Config("close_conf_key", "val"));
+        assertNotNull(conf);
+        
+        /* Make dirty. */
+        conf.setValue("new_val");
+       
+        Session ses = this.dao.getSession();
+        assertNotNull(ses);
+        assertTrue(ses.isOpen());
+        assertTrue(ses.isDirty());
+        
+        /* Close which should flush. */
+        this.dao.closeSession();
+        assertFalse(ses.isOpen());
+        
+        ses = DataAccessActivator.getNewSession();
+        Config c = (Config)ses.load(Config.class, conf.getId());
+        assertEquals("new_val", c.getValue());
+        
+        ses.beginTransaction();
+        ses.delete(c);
+        ses.getTransaction().commit();
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao#getSession()}.
+     */
+    public void testGetSession()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        GenericDao<Config> cDao = new GenericDao<Config>(ses, Config.class);
+        assertEquals(ses, cDao.getSession());
+    }
+
 }

@@ -34,12 +34,13 @@
  * @author Michael Diponio (mdiponio)
  * @date 11th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 
 /**
@@ -82,5 +83,43 @@ public class RigTypeDao extends GenericDao<RigType>
         Criteria cri = this.session.createCriteria(this.clazz);
         cri.add(Restrictions.eq("name", name));
         return (RigType) cri.uniqueResult();
+    }
+    
+    /**
+     * If a rig type exists, a persistent instance of it's record is returned,
+     * if not a new rig type is created with all default parameters and 
+     * returned.
+     * 
+     * @param typeName the name of a rig type
+     * @return rig type persistent instance
+     */
+    public RigType loadOrCreate(final String typeName)
+    {
+        RigType rigType = this.findByName(typeName);
+        
+        if (rigType == null)
+        {
+            rigType = new RigType();
+            rigType.setName(typeName);
+            rigType.setCodeAssignable(false);
+            
+            /* Load the default log off grace period. */
+            try
+            {
+                rigType.setLogoffGraceDuration(Integer.parseInt(
+                        DataAccessActivator.getProperty("Default_Rig_Type_Logoff_Grace", "180")));
+            }
+            catch (NumberFormatException ex)
+            {
+                rigType.setLogoffGraceDuration(180);
+            }
+            
+            this.logger.debug("Rig type " + typeName + " does not exist, creating a new rig type with parameters: " +
+                    "name=" + rigType.getName() + ", code assignable=" + rigType.isCodeAssignable() + 
+                    "logoff grace=" + rigType.getLogoffGraceDuration() + '.');
+            rigType = this.persist(rigType);
+        }
+        
+        return rigType;
     }
 }

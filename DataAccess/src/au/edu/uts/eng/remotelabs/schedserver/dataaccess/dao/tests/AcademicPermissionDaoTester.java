@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 4th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -48,9 +48,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.GenericDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.AcademicPermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -190,7 +190,7 @@ public class AcademicPermissionDaoTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getByUser(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.AcademicPermissionDao#getByUser(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User)}.
      */
     @Test
     public void testGetByUser()
@@ -208,7 +208,7 @@ public class AcademicPermissionDaoTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getByUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.AcademicPermissionDao#getByUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
      */
     @Test
     public void testGetByUserClass()
@@ -226,7 +226,7 @@ public class AcademicPermissionDaoTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
      */
     @Test
     public void testGetForUserAndUserClass()
@@ -238,7 +238,7 @@ public class AcademicPermissionDaoTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
      */
     @Test
     public void testGetForUserAndUserClassT()
@@ -250,7 +250,7 @@ public class AcademicPermissionDaoTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.AcademicPermissionDao#getForUserAndUserClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass)}.
      */
     @Test
     public void testGetForUserAndUserClassTM()

@@ -34,13 +34,14 @@
  * @author Michael Diponio (mdiponio)
  * @date 7th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import java.io.Serializable;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 

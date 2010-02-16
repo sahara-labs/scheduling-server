@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 4th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -51,8 +51,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.GenericDao;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigCapabilitiesDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -138,7 +138,7 @@ public class RigCapabilitiesDaoTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigCapabilitiesDao#findCapabilites(java.lang.String)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao#findCapabilites(java.lang.String)}.
      */
     @Test
     public void testFindCapabilites()
@@ -157,7 +157,7 @@ public class RigCapabilitiesDaoTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigCapabilitiesDao#findCapabilites(java.lang.String)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao#findCapabilites(java.lang.String)}.
      */
     @Test
     public void testFindCapabilitiesNotFound()
@@ -167,7 +167,7 @@ public class RigCapabilitiesDaoTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigCapabilitiesDao#addCapabilities(java.lang.String)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao#addCapabilities(java.lang.String)}.
      */
     @Test
     public void testAddCapabilities()

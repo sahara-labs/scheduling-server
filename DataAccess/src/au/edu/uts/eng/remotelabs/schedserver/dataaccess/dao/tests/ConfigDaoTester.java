@@ -32,11 +32,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 11th January 2010
+ * @date 4th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -48,7 +50,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ConfigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -67,14 +70,14 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
 /**
- * Tests the {@link RigTypeDao} class.
+ * Tests the {@link GenericDao} class.
  */
-public class RigTypeDaoTester extends TestCase
+public class ConfigDaoTester extends TestCase
 {
     /** Object of class under test. */
-    private RigTypeDao dao;
+    private ConfigDao dao;
     
-    public RigTypeDaoTester(String name) throws Exception
+    public ConfigDaoTester(String name) throws Exception
     {
         super(name);
         
@@ -116,54 +119,77 @@ public class RigTypeDaoTester extends TestCase
         f.setAccessible(true);
         f.set(null, cfg.buildSessionFactory());
     }
-
-    @Override
+    
     @Before
+    @Override
     public void setUp() throws Exception
     {
-        this.dao = new RigTypeDao();
-        super.setUp();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception
-    {
-        this.dao.closeSession();
-        super.tearDown();
-    }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigTypeDao#findByName(java.lang.String)}.
-     */
-    @Test
-    public void testFindByName()
-    {
-        Session ses = DataAccessActivator.getNewSession();
-        RigType type = new RigType();
-        type.setName("testType");
-        type.setLogoffGraceDuration(600);
-        ses.beginTransaction();
-        ses.save(type);
-        ses.getTransaction().commit();
-        ses.close();
-        
-        RigType rigType = this.dao.findByName("testType");
-        assertNotNull(rigType);
-        assertEquals(type.getId(), rigType.getId());
-        assertEquals(type.getLogoffGraceDuration(), rigType.getLogoffGraceDuration());
-        
-        this.dao.delete(rigType);
+        this.dao = new ConfigDao();
     }
     
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.RigTypeDao#findByName(java.lang.String)}.
-     */
     @Test
-    public void testFindByNameNotFound()
+    public void testCreate()
     {
-        RigType type = this.dao.findByName("does_not_exist");
-        assertNull(type);
+        String key = "testkey";
+        String val = "testval";
+    
+        Config conf = this.dao.create(key, val);
+        assertEquals(key, conf.getKey());
+        assertEquals(val, conf.getValue());
+        assertTrue(conf.getId() > 0);
+        
+        this.dao.closeSession();
+        
+        Session ses = DataAccessActivator.getNewSession();
+        Config loaded = (Config) ses.get(Config.class, conf.getId());
+        assertNotNull(loaded);
+        assertEquals(conf.getId(), loaded.getId());
+        assertEquals(conf.getKey(), loaded.getKey());
+        assertEquals(conf.getValue(), loaded.getValue());
+        
+        ses.beginTransaction();
+        ses.delete(loaded);
+        ses.getTransaction().commit();
     }
-
+    
+    @Test
+    public void testGetConfig()
+    {
+        Config p1 = this.dao.persist(new Config("conf_test_key", "val1"));
+        Config p2 = this.dao.persist(new Config("conf_test_key", "val2"));
+        Config p3 = this.dao.persist(new Config("conf_test_key", "val3"));
+        
+        List<Config> conf = this.dao.getConfig("conf_test_key");
+        assertEquals(3, conf.size());
+        System.out.println(conf);
+        
+        List<String> str = new ArrayList<String>();
+        for (Config c : conf)
+        {
+            str.add(c.getValue());
+        }
+        
+        assertTrue(str.contains("val1"));
+        assertTrue(str.contains("val2"));
+        assertTrue(str.contains("val3"));
+ 
+        this.dao.delete(p1);
+        this.dao.delete(p2);
+        this.dao.delete(p3);
+    }
+    
+    @Test
+    public void testGetConfigNotFound()
+    {
+        List<Config> conf = this.dao.getConfig("does_not_exist");
+        assertNotNull(conf);
+        assertEquals(0, conf.size());
+    }
+    
+    @Override
+    @After
+    public void tearDown()
+    {
+        this.dao.closeSession();
+    }
 }

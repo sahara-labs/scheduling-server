@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 11th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import java.util.List;
 
