@@ -260,4 +260,14 @@ Date: 5th January 2009
 			</fileset>
 		</javadoc>
 	</target>
+	
+	<!-- Service archive. -->
+	<target name="servicearchive" >
+		<mkdir dir="META-INF/repo/services" />
+		<zip destfile="META-INF/repo/services/${service.archive.name}" update="true">
+			<zipfileset dir="resources" excludes=".svn" prefix="META-INF" />
+		</zip>
+		<!-- <delete file="META-INF/repo/services/services.list" failonerror="false" quiet="true" /> -->
+		<concat destfile="META-INF/repo/services/services.list" eol="unix" append="false" fixlastline="true">${service.archive.name}</concat>
+	</target>
 </project>
