@@ -290,7 +290,7 @@ public class Rig implements java.io.Serializable
     }
     
     @Column(name="managed", nullable = false)
-    public boolean getManaged()
+    public boolean isManaged()
     {
         return this.managed;
     }

@@ -177,7 +177,7 @@ public class RigDaoTester extends TestCase
         
         assertEquals(rig.getRigType().getName(), fRig.getRigType().getName());
         assertEquals(rig.getRigCapabilities().getCapabilities(), fRig.getRigCapabilities().getCapabilities());
-        assertEquals(rig.getManaged(), fRig.getManaged());
+        assertEquals(rig.isManaged(), fRig.isManaged());
         assertEquals(rig.getMeta(), fRig.getMeta());
         assertEquals(rig.getOfflineReason(), fRig.getOfflineReason());
         
@@ -280,13 +280,13 @@ public class RigDaoTester extends TestCase
         assertTrue(fr.isActive());
         assertTrue(fr.isOnline());
         assertFalse(fr.isInSession());
-        assertTrue(fr.getManaged());
+        assertTrue(fr.isManaged());
         assertNull(fr.getMeta());
         fr = free.get(1);
         assertTrue(fr.isActive());
         assertTrue(fr.isOnline());
         assertFalse(fr.isInSession());
-        assertTrue(fr.getManaged());
+        assertTrue(fr.isManaged());
         assertNull(fr.getMeta());
         
         List<String> names = new ArrayList<String>(2);
@@ -306,8 +306,6 @@ public class RigDaoTester extends TestCase
         ses.createSQLQuery("DELETE FROM rig_capabilities WHERE id=" + caps.getId()).executeUpdate();
         ses.createSQLQuery("DELETE FROM rig_type WHERE id=" + type.getId()).executeUpdate();
         ses.getTransaction().commit();
-        
-        
     }
 
 }
