@@ -132,6 +132,7 @@ public class RegisterLocalRig
         RigCapabilities caps = this.capsDao.findCapabilites(capabilities);
         if (caps == null)
         {
+            /* Doesn't exist so add it as a new rig capabilities. */
             caps = this.capsDao.addCapabilities(capabilities);
         }
         this.rig.setRigCapabilities(caps);
