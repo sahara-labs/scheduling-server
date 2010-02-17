@@ -38,6 +38,8 @@ package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
 
 import java.util.Date;
 
+import org.hibernate.Session;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
@@ -95,7 +97,7 @@ public class RegisterLocalRig
      * @param contactUrl URL that points the rigs SOAP interface
      * @return true if successful, false otherwise
      */
-    public boolean addRigToSchedServer(final String name, final String type, final String capabilities,
+    public boolean registerRig(final String name, final String type, final String capabilities,
             final String contactUrl)
     {
         this.logger.debug("Attempting to add a new rig with name " + name + ", of type " + type + " with " +
@@ -113,8 +115,8 @@ public class RegisterLocalRig
         else if (this.rig != null)
         {
             /* Case 2: Rig exists, but does not exist, so the new RC is free to take it. */
-            this.logger.info("Registering an inactive exist rig with name " + name + "and existing " +
-            		"identifier " + this.rig.getId() + ".");
+            this.logger.info("Registering an inactive existing rig with name " + name + " and existing " +
+            		"record identifier " + this.rig.getId() + ".");
         }
         else
         {
@@ -138,10 +140,11 @@ public class RegisterLocalRig
         this.rig.setActive(true);
         this.rig.setLastUpdateTimestamp(new Date());
         this.rig.setOnline(false);
+        this.rig.setOfflineReason("Registered but no status received.");
         this.rig.setInSession(false);
         this.rig.setManaged(true); // All local rigs are managed
         
-        if (this.rig.getId() < 1)
+        if (this.rig.getId() == null || this.rig.getId() < 1)
         {
             this.rig = this.rigDao.persist(this.rig);
         }
@@ -158,5 +161,26 @@ public class RegisterLocalRig
     public String getFailedReason()
     {
         return this.failedReason;
+    }
+    
+    /**
+     * Returns a persistent instance of the registered rig.
+     * 
+     * @return persistent rig instance
+     */
+    public Rig getRegisteredRig()
+    {
+        return this.rig;
+    }
+    
+    /**
+     * Returns the session the registered rig (as returned by 
+     * <code>getRegisteredRig</code>), is attached too. 
+     * 
+     * @return session
+     */
+    public Session getSession()
+    {
+        return this.rigDao.getSession();
     }
 }
