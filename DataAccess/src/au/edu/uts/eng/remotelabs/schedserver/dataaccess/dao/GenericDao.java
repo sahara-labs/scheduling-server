@@ -181,6 +181,17 @@ public class GenericDao<T>
         this.session.delete(this.session.load(this.clazz, id));
         this.commit();
     }
+    
+    /**
+     * Refreshes the provided record, provided it is a persistent object from
+     * this DAOs session.
+     * 
+     * @param obj object to refresh
+     */
+    public void refresh(T obj)
+    {
+        this.session.refresh(obj);
+    }
 
     /**
      * Begins a transaction.
