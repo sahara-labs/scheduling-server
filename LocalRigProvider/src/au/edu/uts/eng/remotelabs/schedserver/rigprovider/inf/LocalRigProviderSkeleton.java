@@ -26,6 +26,17 @@ public class LocalRigProviderSkeleton implements LocalRigProviderSkeletonInterfa
     {
         this.logger = LoggerActivator.getLogger();
     }
+    
+    @Override
+    public RegisterRigResponse registerRig(final RegisterRig registerRig)
+    {
+        RegisterRigType type = registerRig.getRegisterRig();
+        StatusType status = type.getStatus();
+        this.logger.info("Called " + this.getClass().getName() + "#registerRig with parameters: name=" + type.getName()
+                + ", type=" + type.getType() + ", capabilities=" + type.getCapabilities() + ", isOnline=" + 
+                status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + ".");
+        throw new UnsupportedOperationException("Mock " + this.getClass().getName() + "#registerRig implementation.");
+    }
 
     @Override
     public RemoveRigResponse removeRig(final RemoveRig removeRig)
@@ -45,16 +56,4 @@ public class LocalRigProviderSkeleton implements LocalRigProviderSkeletonInterfa
                 + ", isOnline=" + status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + '.');
         throw new UnsupportedOperationException("Mock " + this.getClass().getName() + "#updateRigStatus implementation.");
     }
-
-    @Override
-    public RegisterRigResponse registerRig(final RegisterRig registerRig)
-    {
-        RegisterRigType type = registerRig.getRegisterRig();
-        StatusType status = type.getStatus();
-        this.logger.info("Called " + this.getClass().getName() + "#registerRig with parameters: name=" + type.getName()
-                + ", type=" + type.getType() + ", capabilities=" + type.getCapabilities() + ", isOnline=" + 
-                status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + ".");
-        throw new UnsupportedOperationException("Mock " + this.getClass().getName() + "#registerRig implementation.");
-    }
-
 }
