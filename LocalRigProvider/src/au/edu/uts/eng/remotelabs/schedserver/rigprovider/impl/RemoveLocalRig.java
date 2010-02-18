@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 18th February 2010
+ * @date 17th February 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
 
@@ -46,79 +46,60 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Updates the status of an exist rig. The rig status is composed of a
- * status flag and optionally, if the status is bad (false), the reason
- * is it is bad.
+ * Removes a local rig by setting it to inactive. The provided removal reason
+ * is stored as the offline reason.
  */
-public class UpdateLocalRigStatus
+public class RemoveLocalRig
 {
-    /** Rig data access object. */
+    /** Rig DAO. */
     private final RigDao rigDao;
     
-    /** Reason updating a rigs status failed. */
+    /** Reason removing a rig failed. */
     private String failedReason;
     
     /** Logger. */
     private final Logger logger;
     
-    
-    public UpdateLocalRigStatus()
+    public RemoveLocalRig()
     {
         this.logger = LoggerActivator.getLogger();
         this.rigDao = new RigDao();
     }
     
-    public UpdateLocalRigStatus(Session ses)
+    public RemoveLocalRig(Session ses)
     {
         this.logger = LoggerActivator.getLogger();
         this.rigDao = new RigDao(ses);
     }
     
     /**
-     * Updates the rig with the provided name status. If the rig is inactive,
-     * it is reactivated, provided the contact URL is not null (removing a 
-     * rig should nullify the contact URL). If it is null, the rig is not 
-     * reactivated.
-     * <br />
-     * Activating an inactive rig, using a status update is questionable and 
-     * may lead to active uncommunicable rigs, but is left to deal with
-     * possible sloppy rig clients. 
+     * Removes the registration of a rig by setting the active flag to false 
+     * and the contact URL to null. <br />
+     * The rig record is not deleted.
      * 
-     * @param name the rigs name
-     * @param online true if the rig is online
-     * @param offlineReason reason the rig is offline, null if the rig is \ 
-     *         online
-     * @return true if successfully updated the rigs status, false otherwise
+     * @param name rig name
+     * @param reason reason the rig is being removed
+     * @return true if successful, false otherwise
      */
-    public boolean updateStatus(String name, boolean online, String offlineReason)
+    public boolean removeRig(final String name, final String reason)
     {
-        this.logger.debug("Updating the status of '" + name + "', setting it to " + (online ? "online" : 
-                "offline with reason " + offlineReason) + '.');
+        this.logger.debug("Removing the registration of rig '" + name + "' because of reason " + reason + '.');
         
         Rig rig = this.rigDao.findByName(name);
         if (rig == null)
         {
+            this.logger.warn("Trying to remove the registration of a rig with name '" + name + "' that is not " +
+            		"registered.");
             this.failedReason = "Rig '" + name + "' does not exist.";
-            this.logger.warn("Unable to update the status of rig with name '" + name + "' as it does not exist.");
             return false;
         }
         
-        if (rig.getContactUrl() == null)
-        {
-            this.failedReason = "Rig '" + name + "' is not registered, it is not active and does not have a " +
-            		"contact URL.";
-            this.logger.warn("Unable to update the status of rig with name '" + name + "' as it is not active and " +
-            		"does not have a contact URL.");
-            return false;
-        }
-        if (!rig.isActive())
-        {
-            rig.setActive(true);
-            this.logger.info("Reactivating rig with name '" + name + "' because a status update was received.");
-        }
+        /* TODO Logoff any user that may be in-session. */
         
-        rig.setOnline(online);
-        rig.setOfflineReason(offlineReason);
+        rig.setActive(false);
+        rig.setOnline(false);
+        rig.setOfflineReason(reason);
+        rig.setContactUrl(null);
         rig.setLastUpdateTimestamp(new Date());
         
         this.rigDao.flush();
@@ -131,15 +112,5 @@ public class UpdateLocalRigStatus
     public String getFailedReason()
     {
         return this.failedReason;
-    }
-    
-    /**
-     * Returns the in use database session.
-     * 
-     * @return database session
-     */
-    public Session getSession()
-    {
-        return this.getSession();
     }
 }

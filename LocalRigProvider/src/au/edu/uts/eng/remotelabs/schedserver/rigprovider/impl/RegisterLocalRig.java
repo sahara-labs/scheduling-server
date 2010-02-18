@@ -32,8 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 4th January 2010
- */
+ * @date 17th February 2010 */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
 
 import java.util.Date;
