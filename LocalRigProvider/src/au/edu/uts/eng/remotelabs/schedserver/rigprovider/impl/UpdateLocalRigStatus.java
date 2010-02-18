@@ -76,11 +76,13 @@ public class UpdateLocalRigStatus
     
     /**
      * Updates the rig with the provided name status. If the rig is inactive,
-     * it is reactivated.
+     * it is reactivated, provided the contact URL is not null (removing a 
+     * rig should nullify the contact URL). If it is null, the rig is not 
+     * reactivated.
      * <br />
      * Activating an inactive rig, using a status update is questionable and 
      * may lead to active uncommunicable rigs, but is left to deal with
-     * possible sloppy rig clients.
+     * possible sloppy rig clients. 
      * 
      * @param name the rigs name
      * @param online true if the rig is online
@@ -96,11 +98,19 @@ public class UpdateLocalRigStatus
         Rig rig = this.rigDao.findByName(name);
         if (rig == null)
         {
-            this.errorReason = "Rig " + name + " does not exist.";
-            this.logger.warn("Unable to the status of rig with name '" + name + "' as it does not exist.");
+            this.errorReason = "Rig '" + name + "' does not exist.";
+            this.logger.warn("Unable to update the status of rig with name '" + name + "' as it does not exist.");
             return false;
         }
         
+        if (rig.getContactUrl() == null)
+        {
+            this.errorReason = "Rig '" + name + "' is not registered, it is not active and does not have a " +
+            		"contact URL.";
+            this.logger.warn("Unable to update the status of rig with name '" + name + "' as it is not active and " +
+            		"does not have a contact URL.");
+            return false;
+        }
         if (!rig.isActive())
         {
             rig.setActive(true);

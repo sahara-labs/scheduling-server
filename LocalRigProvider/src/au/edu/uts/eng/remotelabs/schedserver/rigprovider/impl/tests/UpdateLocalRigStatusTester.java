@@ -302,5 +302,45 @@ public class UpdateLocalRigStatusTester extends TestCase
         ses.delete(caps);
         ses.getTransaction().commit();
     }
+    
+    @Test
+    public void testUpdateStatusInActiveNotContactURL()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        RigType type = new RigType("ulrsTypr", 180, false);
+        new RigTypeDao(ses).persist(type);
+        RigCapabilities caps = new RigCapabilities("ulrsA,urlsB");
+        new RigCapabilitiesDao(ses).persist(caps);
+        Rig rig = new Rig(type, caps, "urls", null, new Date(System.currentTimeMillis() - 86400001), // A day ago
+                true, null, false, false, true);
+        
+        /* Bad. */
+        rig.setOnline(false);
+        rig.setOfflineReason("Broken");
+        rig.setActive(false);
+        new RigDao(ses).persist(rig);
+        
+        assertFalse(this.update.updateStatus("urls", true, null));
+        assertNotNull(this.update.getErrorReason());
+        
+        ses.refresh(rig);
+        assertFalse(rig.isActive());
+        assertFalse(rig.isOnline());
+        assertNotNull(rig.getOfflineReason());
+        
+        ses.beginTransaction();
+        ses.delete(rig);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+    }
+    
+    @Test
+    public void testUpdateStatusNoRig()
+    {
+        assertFalse(this.update.updateStatus("Not_Rig", false, "Fail!"));
+        assertNotNull(this.update.getErrorReason());
+        assertEquals("Rig 'Not_Rig' does not exist.", this.update.getErrorReason());
+    }
 
 }

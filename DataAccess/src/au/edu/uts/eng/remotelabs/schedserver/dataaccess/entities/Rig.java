@@ -222,7 +222,7 @@ public class Rig implements java.io.Serializable
         this.name = name;
     }
 
-    @Column(name = "contact_url", nullable = false, length = 65535)
+    @Column(name = "contact_url", nullable = true, length = 1024)
     public String getContactUrl()
     {
         return this.contactUrl;
