@@ -35,6 +35,8 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
 
+import java.util.Properties;
+
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -42,6 +44,8 @@ import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -51,7 +55,10 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class LocalRigProviderActivator implements BundleActivator
 {
     /** Servlet container service registration. */
-    private ServiceRegistration registration;
+    private ServiceRegistration serverReg;
+
+    /** Identity token service registration. */
+    private ServiceRegistration idenTokReg;
     
     /** Logger. */
     private Logger logger;
@@ -62,15 +69,26 @@ public class LocalRigProviderActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
         
+        /* Register a service to host the local rig provider interface. */
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new AxisServlet(), true));
-        this.registration = context.registerService(ServletContainerService.class.getName(), service, null);
+        this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
+        
+        /* Register a service to allow other bundles to obtain identity tokens for rigs. */
+        final Properties idenTokProps = new Properties();
+        idenTokProps.put("provider", "local");
+        this.idenTokReg = context.registerService(IdentityToken.class.getName(), 
+                IdentityTokenRegister.getInstance(), idenTokProps);
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception
     {
         this.logger.info("Stopping " + context.getBundle().getSymbolicName() + " bundle.");
-        this.registration.unregister();
+        this.serverReg.unregister();
+        
+        /** Clean up identity tokens. */
+        this.idenTokReg.unregister();
+        IdentityTokenRegister.getInstance().expunge();
     }
 }
