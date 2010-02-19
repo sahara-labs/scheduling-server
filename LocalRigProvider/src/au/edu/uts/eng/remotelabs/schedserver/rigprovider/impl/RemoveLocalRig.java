@@ -113,4 +113,14 @@ public class RemoveLocalRig
     {
         return this.failedReason;
     }
+    
+    /**
+     * Returns the in use session.
+     * 
+     * @return session
+     */
+    public Session getSession()
+    {
+        return this.rigDao.getSession();
+    }
 }

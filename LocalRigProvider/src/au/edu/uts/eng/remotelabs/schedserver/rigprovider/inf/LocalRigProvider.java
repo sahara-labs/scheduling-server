@@ -41,6 +41,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RegisterLocalRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RemoveLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.UpdateLocalRigStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.ProviderResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRig;
@@ -48,9 +49,11 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigRe
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.StatusType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigType;
 
 /**
  * Local rig provider SOAP interface operation implementations.
@@ -79,48 +82,95 @@ public class LocalRigProvider implements LocalRigProviderSkeletonInterface
         
         /* Response parameters. */
         RegisterRigResponse response = new RegisterRigResponse();
-        ProviderResponse providerOp = new ProviderResponse();
-        response.setRegisterRigResponse(providerOp);
+        ProviderResponse providerResp = new ProviderResponse();
+        response.setRegisterRigResponse(providerResp);
 
         RegisterLocalRig register = new RegisterLocalRig();
         if (register.registerRig(rig.getName(), rig.getType(), rig.getCapabilities(), rig.getContactUrl().toString()))
         {
             Rig registeredRig = register.getRegisteredRig();
+            
             /* Rig register so update its status. */
-            UpdateLocalRigStatus update = new UpdateLocalRigStatus(register.getSession());
-            if (update.updateStatus(registeredRig.getName(), status.getIsOnline(), status.getOfflineReason()))
+            UpdateLocalRigStatus updater = new UpdateLocalRigStatus(register.getSession());
+            if (updater.updateStatus(registeredRig.getName(), status.getIsOnline(), status.getOfflineReason()))
             {
-                providerOp.setSuccessful(true);
-                providerOp.setIdentityToken(IdentityTokenRegister.getInstance().generateIdentityToken(
+                providerResp.setSuccessful(true);
+                providerResp.setIdentityToken(IdentityTokenRegister.getInstance().generateIdentityToken(
                         registeredRig.getName()));
             }
             else
             {
-                providerOp.setSuccessful(false);
-                providerOp.setErrorReason(update.getFailedReason());
+                providerResp.setSuccessful(false);
+                providerResp.setErrorReason(updater.getFailedReason());
             }
         }
         else
         {
-            providerOp.setSuccessful(false);
-            providerOp.setErrorReason(register.getFailedReason());
+            providerResp.setSuccessful(false);
+            providerResp.setErrorReason(register.getFailedReason());
         }
         
+        register.getSession().disconnect();
         return response;
     }
 
     @Override
-    public RemoveRigResponse removeRig(RemoveRig removeRig)
+    public RemoveRigResponse removeRig(RemoveRig request)
     {
-        // TODO Auto-generated method stub
-        return null;
+        /* Request parameters. */
+        RemoveRigType remRig = request.getRemoveRig();
+        this.logger.info("Called " + this.getClass().getName() + "#removeRig with parameters: name=" + remRig.getName() 
+                + ", removal " + "reason=" + remRig.getRemovalReason() + '.');
+        
+        /* Response parameters. */
+        RemoveRigResponse response = new RemoveRigResponse();
+        ProviderResponse providerResp = new ProviderResponse();
+        response.setRemoveRigResponse(providerResp);
+        
+        RemoveLocalRig remover = new RemoveLocalRig();
+        if (remover.removeRig(remRig.getName(), remRig.getRemovalReason()))
+        {
+            providerResp.setSuccessful(true);
+        }
+        else
+        {
+            providerResp.setSuccessful(false);
+            providerResp.setErrorReason(remover.getFailedReason());
+        }
+        
+        remover.getSession().disconnect();
+        return response;
     }
 
     @Override
-    public UpdateRigStatusResponse updateRigStatus(UpdateRigStatus updateRigStatus)
+    public UpdateRigStatusResponse updateRigStatus(UpdateRigStatus request)
     {
-        // TODO Auto-generated method stub
-        return null;
+        /* Request parameters. */
+        UpdateRigType upRig = request.getUpdateRigStatus();
+        StatusType status = upRig.getStatus();
+        this.logger.info("Called " + this.getClass().getName() + "#updateRigStatus with parameters: name=" + upRig.getName()
+                + ", isOnline=" + status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + '.');
+        
+        /* Response parameters. */
+        UpdateRigStatusResponse response = new UpdateRigStatusResponse();
+        ProviderResponse providerResp = new ProviderResponse();
+        response.setUpdateRigStatusResponse(providerResp);
+        
+        UpdateLocalRigStatus updater = new UpdateLocalRigStatus();
+        if (updater.updateStatus(upRig.getName(), status.getIsOnline(), status.getOfflineReason()))
+        {
+            providerResp.setSuccessful(true);
+            providerResp.setIdentityToken(IdentityTokenRegister.getInstance().getOrGenerateIdentityToken(
+                    upRig.getName()));
+        }
+        else
+        {
+            providerResp.setSuccessful(false);
+            providerResp.setErrorReason(updater.getFailedReason());
+        }
+        
+        updater.getSession().disconnect();
+        return response;
     }
 
 }

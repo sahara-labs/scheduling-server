@@ -140,6 +140,6 @@ public class UpdateLocalRigStatus
      */
     public Session getSession()
     {
-        return this.getSession();
+        return this.rigDao.getSession();
     }
 }
