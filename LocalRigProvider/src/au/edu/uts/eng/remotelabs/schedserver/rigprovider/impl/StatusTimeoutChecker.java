@@ -36,21 +36,43 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
 
 /**
  * Puts rigs offline if they have not provided a status update with the
- * configured rig timeout period.
+ * configured rig timeout period. For a rig to be considered timeout, the
+ * following conditions must hold true:
+ * <ul>
+ *  <li>The rig must be managed.</li>
+ *  <li>The rig must be active.</li>
+ *  <li>The rig must be online.</li>
+ *  <li>The rig must not be in session.</li>
+ *  <li>The last time the rig provided a status update must be before the
+ *  current time minus the timeout period.</li>
+ * </ul>
+ * If the above is true for a rig, the rig is set to be offline, with
+ * the offline reason as 'Timed out'.
  * <br />
- * The configuration property <tt>Rig_Timeout_Period</tt> sets the timeout 
- * period in minutes.  
+ * The time out period may be configured with the <tt>Rig_Timeout_Period</tt>
+ * which specifies the time out period in seconds. The default timeout period
+ * is 300 seconds.
  */
 public class StatusTimeoutChecker implements Runnable
 {
+    /** The default timeout in minutes. */
+    public static final int DEFAULT_TIMEOUT = 300;
+    
     /** Database session. */
     private Session session;
     
@@ -61,19 +83,76 @@ public class StatusTimeoutChecker implements Runnable
     /** Logger. */
     private Logger logger;
     
+    /**
+     * Constructor which loads the time out period from configuration.
+     */
     public StatusTimeoutChecker()
     {
         this.logger = LoggerActivator.getLogger();
+
+        String tmStr = LocalRigProviderActivator.getConfigurationProperty("Rig_Timeout_Period", 
+                String.valueOf(StatusTimeoutChecker.DEFAULT_TIMEOUT));
+        try
+        {
+            this.timeout = Integer.parseInt(tmStr);
+            this.logger.info("Rig time out for providing a status update is " + this.timeout + " seconds.");
+
+        }
+        catch (NumberFormatException nfe)
+        {
+            this.timeout = StatusTimeoutChecker.DEFAULT_TIMEOUT;
+            this.logger.warn("Configured rig time out period '" + tmStr + "' is not valid, using the default value " +
+                    " of " + this.timeout + " seconds.");
+        }
         
-        this.timeout = 5;
+        this.session = DataAccessActivator.getNewSession();
+    }
+    
+    /**
+     * Constructor.
+     * 
+     * @param tm timeout period in seconds
+     */
+    public StatusTimeoutChecker(int tm)
+    {
+        this.logger = LoggerActivator.getLogger();
+        
+        this.timeout = tm;
+        this.logger.info("Rig time out for providing a status update is " + this.timeout + " seconds.");
+        
         this.session = DataAccessActivator.getNewSession();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void run()
     {
-        // TODO Auto-generated method stub
-
-    }
-
+        this.logger.debug("Running the rig status update time out check.");
+        
+        /* Get all the rigs that have timed out. */
+        List<Rig> timedOut = this.session.createCriteria(Rig.class)
+            .add(Restrictions.eq("managed", true))    // Unmanaged rigs need not provide a status update
+            .add(Restrictions.eq("active", true))
+            .add(Restrictions.eq("online", true))
+            .add(Restrictions.eq("inSession", false)) // In session rigs need not provide a status update
+            .add(Restrictions.lt("lastUpdateTimestamp", new Date(System.currentTimeMillis() - this.timeout * 1000)))
+            .list();
+        
+        for (Rig rig : timedOut)
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(rig.getLastUpdateTimestamp());
+            
+            this.logger.warn("Rig " + rig.getName() + " has timed out with last status update received at " +
+                    cal.get(Calendar.HOUR_OF_DAY) + ':' + cal.get(Calendar.MINUTE) + ':' + cal.get(Calendar.SECOND) +
+                    " - " + cal.get(Calendar.DATE) + '/' + (cal.get(Calendar.MONTH)+ 1) + '/' + cal.get(Calendar.YEAR) +
+                    ". Putting rig offline.");
+            
+            rig.setOnline(false);
+            rig.setOfflineReason("Timed out");
+            this.session.beginTransaction();
+            this.session.flush();
+            this.session.getTransaction().commit();
+        }
+    } 
 }

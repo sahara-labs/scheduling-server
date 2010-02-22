@@ -41,11 +41,14 @@ import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.StatusTimeoutChecker;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -60,6 +63,15 @@ public class LocalRigProviderActivator implements BundleActivator
     /** Identity token service registration. */
     private ServiceRegistration idenTokReg;
     
+    /** Rig status messasge timeout checker. */
+    private StatusTimeoutChecker tmChecker;
+    
+    /** Runnable status timeout checker service registration. */
+    private ServiceRegistration runnableReg;
+    
+    /** Configuration service tracker. */
+    private static ServiceTracker configTracker;
+    
     /** Logger. */
     private Logger logger;
     
@@ -69,16 +81,22 @@ public class LocalRigProviderActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
         
-        /* Register a service to host the local rig provider interface. */
+        LocalRigProviderActivator.configTracker = new ServiceTracker(context, Config.class.getName(), null);
+        
+        /* Service to allow other bundles to obtain identity tokens for rigs. */
+        Properties props = new Properties();
+        props.put("provider", "local");
+        this.idenTokReg = context.registerService(IdentityToken.class.getName(), 
+                IdentityTokenRegister.getInstance(), props);
+        
+        /* Service to run the status timeout checker every 30 seconds. */
+        this.tmChecker = new StatusTimeoutChecker();
+        this.runnableReg = context.registerService(Runnable.class.getName(), this.tmChecker, props);
+        
+        /* Service to host the local rig provider interface. */
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new AxisServlet(), true));
         this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
-        
-        /* Register a service to allow other bundles to obtain identity tokens for rigs. */
-        final Properties idenTokProps = new Properties();
-        idenTokProps.put("provider", "local");
-        this.idenTokReg = context.registerService(IdentityToken.class.getName(), 
-                IdentityTokenRegister.getInstance(), idenTokProps);
     }
 
     @Override
@@ -87,8 +105,39 @@ public class LocalRigProviderActivator implements BundleActivator
         this.logger.info("Stopping " + context.getBundle().getSymbolicName() + " bundle.");
         this.serverReg.unregister();
         
-        /** Clean up identity tokens. */
+        /* Clean up identity tokens. */
         this.idenTokReg.unregister();
         IdentityTokenRegister.getInstance().expunge();
+        
+        this.runnableReg.unregister();
+        
+        /* Cleanup the configuration service tracker. */
+        LocalRigProviderActivator.configTracker.close();
+        LocalRigProviderActivator.configTracker = null;
+    }
+    
+    /**
+     * Returns the specified configuration property value or if this bundle is
+     * unloaded or the configuration property does not exist, the specified
+     * default is returned.
+     *  
+     * @param prop configuration property
+     * @param def default value
+     * @return configured value or default
+     */
+    public static String getConfigurationProperty(String prop, String def)
+    {
+        if (LocalRigProviderActivator.configTracker == null)
+        {
+            return def;
+        }
+        
+        Config config = (Config)LocalRigProviderActivator.configTracker.getService();
+        if (config == null)
+        {
+            return def;
+        }
+        
+        return config.getProperty(prop, def);
     }
 }
