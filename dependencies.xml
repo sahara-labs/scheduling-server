@@ -82,5 +82,11 @@ Date: 28th December 2009
 	<target name="dataAccessBundle" if="missing.dataacess">
 		<buildRequiredBundle bundle="SchedulingServer-DataAccess.jar" bundleProject="DataAccess" />
 	</target>
+
+	<!-- ### Task Scheduler Bundle. -->
+	<detectIfBundlePresent property="missing.taskscheduler" bundle="SchedulingServer-TaskScheduler.jar" />
+	<target name="taskSchedulerBundle" if="missing.taskscheduler">
+		<buildRequiredBundle bundle="SchedulingServer-TaskScheduler.jar" bundleProject="TaskScheduler" />
+	</target>
 	
 </project>
