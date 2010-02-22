@@ -151,9 +151,6 @@ public class StatusTimeoutChecker implements Runnable
                 .add(Restrictions.lt("lastUpdateTimestamp", new Date(System.currentTimeMillis() - this.timeout * 1000)))
                 .list();
             
-            this.logger.debug("Run rig status timeout check, there are " + timedOut.size() + 
-                    " rigs to set to inactive.");
-            
             for (Rig rig : timedOut)
             {
                 Calendar cal = Calendar.getInstance();
