@@ -151,7 +151,7 @@ public class StatusTimeoutCheckerTester extends TestCase
         ses.refresh(tmdOut);
         assertFalse(tmdOut.isOnline());
         assertEquals("Timed out", tmdOut.getOfflineReason());
-        assertTrue(tmdOut.isActive());
+        assertFalse(tmdOut.isActive());
         assertTrue(tmdOut.isManaged());
         
         ses.beginTransaction();
@@ -231,13 +231,13 @@ public class StatusTimeoutCheckerTester extends TestCase
         ses.refresh(tmdOut1);
         assertFalse(tmdOut1.isOnline());
         assertEquals("Timed out", tmdOut1.getOfflineReason());
-        assertTrue(tmdOut1.isActive());
+        assertFalse(tmdOut1.isActive());
         assertTrue(tmdOut1.isManaged());
         
         ses.refresh(tmdOut2);
         assertFalse(tmdOut2.isOnline());
         assertEquals("Timed out", tmdOut2.getOfflineReason());
-        assertTrue(tmdOut2.isActive());
+        assertFalse(tmdOut2.isActive());
         assertTrue(tmdOut2.isManaged());
         
         ses.beginTransaction();
@@ -264,10 +264,8 @@ public class StatusTimeoutCheckerTester extends TestCase
         RigDao rigDao = new RigDao(ses);
         Rig noTmdOut1 = new Rig(type, caps, "tm1", "http://tm", new Date(System.currentTimeMillis() - 295000), // Close  
                 true, null, false, true, true);
-        rigDao.persist(noTmdOut1);
         Rig tmdOut1 = new Rig(type, caps, "tm2", "http://tm", new Date(System.currentTimeMillis() - 296000),  // Closer
                 true, null, false, true, true);
-        rigDao.persist(noTmdOut1);
         Rig tmdOut2 = new Rig(type, caps, "tm3", "http://tm", new Date(System.currentTimeMillis() - 297000), // Closest 
                 true, null, false, true, true);
         rigDao.persist(noTmdOut1);
@@ -318,10 +316,9 @@ public class StatusTimeoutCheckerTester extends TestCase
         RigDao rigDao = new RigDao(ses);
         Rig noTmdOut1 = new Rig(type, caps, "tm1", "http://tm", new Date(System.currentTimeMillis() - 295000), // Close  
                 true, null, false, true, true);
-        rigDao.persist(noTmdOut1);
-        Rig tmdOut1 = new Rig(type, caps, "tm2", "http://tm", new Date(System.currentTimeMillis()),
+        Rig tmdOut1 = new Rig(type, caps, "tm2", "http://tm", new Date(System.currentTimeMillis() - 1000000),
                 true, null, false, true, true);
-        rigDao.persist(noTmdOut1);
+        tmdOut1.setActive(false);
         Rig tmdOut2 = new Rig(type, caps, "tm3", "http://tm", new Date(System.currentTimeMillis() - 1000000), 
                 true, null, false, true, true);
         rigDao.persist(noTmdOut1);
@@ -339,13 +336,13 @@ public class StatusTimeoutCheckerTester extends TestCase
         ses.refresh(tmdOut1);
         assertTrue(tmdOut1.isOnline());
         assertNull(tmdOut1.getOfflineReason());
-        assertTrue(tmdOut1.isActive());
+        assertFalse(tmdOut1.isActive());
         assertTrue(tmdOut1.isManaged());
         
         ses.refresh(tmdOut2);
         assertFalse(tmdOut2.isOnline());
         assertEquals("Timed out", tmdOut2.getOfflineReason());
-        assertTrue(tmdOut2.isActive());
+        assertFalse(tmdOut2.isActive());
         assertTrue(tmdOut2.isManaged());
         
         ses.beginTransaction();
@@ -374,10 +371,9 @@ public class StatusTimeoutCheckerTester extends TestCase
         RigDao rigDao = new RigDao(ses);
         Rig noTmdOut1 = new Rig(type, caps, "tm1", "http://tm", new Date(System.currentTimeMillis() - 119000), // Close  
                 true, null, false, true, true);
-        rigDao.persist(noTmdOut1);
-        Rig tmdOut1 = new Rig(type, caps, "tm2", "http://tm", new Date(System.currentTimeMillis()),
+        Rig tmdOut1 = new Rig(type, caps, "tm2", "http://tm", new Date(System.currentTimeMillis() - 10000000),
                 true, null, false, true, true);
-        rigDao.persist(noTmdOut1);
+        tmdOut1.setManaged(false);
         Rig tmdOut2 = new Rig(type, caps, "tm3", "http://tm", new Date(System.currentTimeMillis() - 180000), 
                 true, null, false, true, true);
         rigDao.persist(noTmdOut1);
@@ -396,12 +392,12 @@ public class StatusTimeoutCheckerTester extends TestCase
         assertTrue(tmdOut1.isOnline());
         assertNull(tmdOut1.getOfflineReason());
         assertTrue(tmdOut1.isActive());
-        assertTrue(tmdOut1.isManaged());
+        assertFalse(tmdOut1.isManaged());
         
         ses.refresh(tmdOut2);
         assertFalse(tmdOut2.isOnline());
         assertEquals("Timed out", tmdOut2.getOfflineReason());
-        assertTrue(tmdOut2.isActive());
+        assertFalse(tmdOut2.isActive());
         assertTrue(tmdOut2.isManaged());
         
         ses.beginTransaction();

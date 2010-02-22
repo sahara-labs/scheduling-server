@@ -62,7 +62,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivat
  *  current time minus the timeout period.</li>
  * </ul>
  * If the above is true for a rig, the rig is set to be offline, with
- * the offline reason as 'Timed out'.
+ * the offline reason as 'Timed out' and set to inactive.
  * <br />
  * The time out period may be configured with the <tt>Rig_Timeout_Period</tt>
  * which specifies the time out period in seconds. The default timeout period
@@ -148,6 +148,7 @@ public class StatusTimeoutChecker implements Runnable
                     " - " + cal.get(Calendar.DATE) + '/' + (cal.get(Calendar.MONTH)+ 1) + '/' + cal.get(Calendar.YEAR) +
                     ". Putting rig offline.");
             
+            rig.setActive(false);
             rig.setOnline(false);
             rig.setOfflineReason("Timed out");
             this.session.beginTransaction();
