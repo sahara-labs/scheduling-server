@@ -122,10 +122,10 @@ public class DataAccessConfiguration
                 "org.hibernate.connection.C3P0ConnectionProvider");
         
         // TODO Remove SQL debug statements.
-        this.props.setProperty("hibernate.show_sql", "true");
-        this.props.setProperty("hibernate.format_sql", "true");
-        this.props.setProperty("hibernate.use_sql_comments", "true");
-        this.props.setProperty("hibernate.generate_statistics", "true");
+        this.props.setProperty("hibernate.show_sql", "false");
+        this.props.setProperty("hibernate.format_sql", "false");
+        this.props.setProperty("hibernate.use_sql_comments", "false");
+        this.props.setProperty("hibernate.generate_statistics", "false");
     }
     
     /**
