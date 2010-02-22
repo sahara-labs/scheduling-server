@@ -36,6 +36,8 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -126,34 +128,61 @@ public class StatusTimeoutChecker implements Runnable
     @Override
     @SuppressWarnings("unchecked")
     public void run()
-    {
-        this.logger.debug("Running the rig status update time out check.");
-        
-        /* Get all the rigs that have timed out. */
-        List<Rig> timedOut = this.session.createCriteria(Rig.class)
-            .add(Restrictions.eq("managed", true))    // Unmanaged rigs need not provide a status update
-            .add(Restrictions.eq("active", true))
-            .add(Restrictions.eq("online", true))
-            .add(Restrictions.eq("inSession", false)) // In session rigs need not provide a status update
-            .add(Restrictions.lt("lastUpdateTimestamp", new Date(System.currentTimeMillis() - this.timeout * 1000)))
-            .list();
-        
-        for (Rig rig : timedOut)
+    {  
+        try
         {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(rig.getLastUpdateTimestamp());
+            if (this.session == null)
+            {
+                this.session = DataAccessActivator.getNewSession();
+                if (this.session == null)
+                {
+                    this.logger.error("Unable to obtain a database session for the rig status time out checker. " +
+                    		"Ensure the Scheduling Server data access bundle is started (ACTIVE state).");
+                    return;
+                }
+            }
             
-            this.logger.warn("Rig " + rig.getName() + " has timed out with last status update received at " +
-                    cal.get(Calendar.HOUR_OF_DAY) + ':' + cal.get(Calendar.MINUTE) + ':' + cal.get(Calendar.SECOND) +
-                    " - " + cal.get(Calendar.DATE) + '/' + (cal.get(Calendar.MONTH)+ 1) + '/' + cal.get(Calendar.YEAR) +
-                    ". Putting rig offline.");
+            /* Get all the rigs that have timed out. */
+            List<Rig> timedOut = this.session.createCriteria(Rig.class)
+                .add(Restrictions.eq("managed", true))    // Unmanaged rigs need not provide a status update
+                .add(Restrictions.eq("active", true))
+                .add(Restrictions.eq("online", true))
+                .add(Restrictions.eq("inSession", false)) // In session rigs need not provide a status update
+                .add(Restrictions.lt("lastUpdateTimestamp", new Date(System.currentTimeMillis() - this.timeout * 1000)))
+                .list();
             
-            rig.setActive(false);
-            rig.setOnline(false);
-            rig.setOfflineReason("Timed out");
-            this.session.beginTransaction();
-            this.session.flush();
-            this.session.getTransaction().commit();
+            this.logger.debug("Run rig status timeout check, there are " + timedOut.size() + 
+                    " rigs to set to inactive.");
+            
+            for (Rig rig : timedOut)
+            {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(rig.getLastUpdateTimestamp());
+                
+                this.logger.warn("Rig " + rig.getName() + " has timed out with last status update received at " +
+                        cal.get(Calendar.HOUR_OF_DAY) + ':' + cal.get(Calendar.MINUTE) + ':' + cal.get(Calendar.SECOND) +
+                        " - " + cal.get(Calendar.DATE) + '/' + (cal.get(Calendar.MONTH)+ 1) + '/' + cal.get(Calendar.YEAR) +
+                        ". Making rig inactive.");
+                
+                rig.setActive(false);
+                rig.setOnline(false);
+                rig.setOfflineReason("Timed out");
+                this.session.beginTransaction();
+                this.session.flush();
+                this.session.getTransaction().commit();
+            }
+        }
+        catch (Throwable thr)
+        {
+            this.session = null;
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            PrintStream pstr = new PrintStream(out);
+            thr.printStackTrace(pstr);
+            pstr.flush();
+            
+            this.logger.fatal("BUG: Uncaught exception in StatusTimeoutChecker of bundle " +
+            		"SchedulingServer-LocalRigProvider. Exception type: " + thr.getClass().getName() +
+            		", message: " + thr.getMessage() + ". Stack trace: " + out.toString() + '.');
         }
     } 
 }

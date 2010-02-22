@@ -408,5 +408,12 @@ public class StatusTimeoutCheckerTester extends TestCase
         ses.delete(caps);
         ses.getTransaction().commit();
     }
+    
+    @Test
+    public void testNotRigs() throws Exception
+    {
+        /* Check to ensure not exceptions are thrown when no rigs are present. */
+        this.checker.run();
+    }
 
 }

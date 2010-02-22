@@ -91,6 +91,8 @@ public class LocalRigProviderActivator implements BundleActivator
         
         /* Service to run the status timeout checker every 30 seconds. */
         this.tmChecker = new StatusTimeoutChecker();
+        props = new Properties();
+        props.put("period", "30");
         this.runnableReg = context.registerService(Runnable.class.getName(), this.tmChecker, props);
         
         /* Service to host the local rig provider interface. */
