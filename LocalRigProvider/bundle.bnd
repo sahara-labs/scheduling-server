@@ -7,12 +7,15 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
 !org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
 !org.jdom.*, !javax.*, !sun.*, !nu.xom, \
-au.edu.uts.eng.remotelabs.schedserver.server, *
+au.edu.uts.eng.remotelabs.schedserver.server, \
+!au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl, *
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf, \
 au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl
+au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl, \
+au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider, \
+au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok
 Bundle-ClassPath: ., \
 ${findpath;lib/.*.jar}

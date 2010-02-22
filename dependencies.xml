@@ -79,7 +79,7 @@ Date: 28th December 2009
 	
 	<!-- ### Data Access Bundle. -->
 	<detectIfBundlePresent property="missing.dataaccess" bundle="SchedulingServer-DataAccess.jar" />
-	<target name="dataAccessBundle" if="missing.dataacess">
+	<target name="dataAccessBundle" if="missing.dataaccess">
 		<buildRequiredBundle bundle="SchedulingServer-DataAccess.jar" bundleProject="DataAccess" />
 	</target>
 
