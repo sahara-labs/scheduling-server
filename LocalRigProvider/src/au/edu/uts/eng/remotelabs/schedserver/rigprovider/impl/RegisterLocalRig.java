@@ -99,14 +99,14 @@ public class RegisterLocalRig
     public boolean registerRig(final String name, final String type, final String capabilities,
             final String contactUrl)
     {
-        this.logger.debug("Attempting to add a new rig with name " + name + ", of type " + type + " with " +
-        		"capabilities " + capabilities + '.');
+        this.logger.debug("Attempting to add a new rig with name '" + name + "', of type '" + type + "' with " +
+        		"capabilities '" + capabilities + "'.");
         
         this.rig = this.rigDao.findByName(name);
         if (this.rig != null && this.rig.isActive())
         {
             /* Case 1: Rig exists and is active - cannot register rig because another RC owns it. */
-            this.logger.warn("Failed registering rig with name " + name + " as it already exists and " +
+            this.logger.warn("Failed registering rig with name '" + name + "' as it already exists and " +
             		"is active. Rig names must be unqiue.");
             this.failedReason = "Exists";
             return false;
@@ -114,13 +114,13 @@ public class RegisterLocalRig
         else if (this.rig != null)
         {
             /* Case 2: Rig exists, but does not exist, so the new RC is free to take it. */
-            this.logger.info("Registering an inactive existing rig with name " + name + " and existing " +
-            		"record identifier " + this.rig.getId() + ".");
+            this.logger.info("Registering an inactive existing rig with name '" + name + "' and existing " +
+            		"record identifier '" + this.rig.getId() + "'.");
         }
         else
         {
             /* Case 3: Rig does not exist. */
-            this.logger.debug("Registering a new rig with name " + name + '.');
+            this.logger.debug("Registering a new rig with name '" + name + "'.");
             this.rig = new Rig();
             this.rig.setName(name);
         }

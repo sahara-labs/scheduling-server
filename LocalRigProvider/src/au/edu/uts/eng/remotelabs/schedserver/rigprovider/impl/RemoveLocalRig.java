@@ -90,7 +90,7 @@ public class RemoveLocalRig
         {
             this.logger.warn("Trying to remove the registration of a rig with name '" + name + "' that is not " +
             		"registered.");
-            this.failedReason = "Rig '" + name + "' does not exist.";
+            this.failedReason = "Not registered";
             return false;
         }
         

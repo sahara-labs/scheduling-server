@@ -56,5 +56,20 @@
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/javassist-3.9.0.GA.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="/SchedServer-Logger/bin"/>
+	<classpathentry kind="lib" path="/home/mdiponio/workspace/SchedServer/Framework/lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-Configuration/bin"/>
+	<classpathentry kind="lib" path="/SchedServer-Server/bin"/>
+	<classpathentry kind="lib" path="/SchedServer-Server/lib/servlet-api-2.5-20081211.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/ejb3-persistence.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/slf4j-api-1.5.10.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/slf4j-simple-1.5.10.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/c3p0-0.9.1.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/mysql-connector-java-5.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/postgresql-8.4-701.jdbc4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

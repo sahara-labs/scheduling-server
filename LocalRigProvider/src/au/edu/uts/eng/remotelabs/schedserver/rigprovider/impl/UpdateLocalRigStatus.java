@@ -98,7 +98,7 @@ public class UpdateLocalRigStatus
         Rig rig = this.rigDao.findByName(name);
         if (rig == null)
         {
-            this.failedReason = "Rig '" + name + "' does not exist.";
+            this.failedReason = "Not registered";
             this.logger.warn("Unable to update the status of rig with name '" + name + "' as it does not exist.");
             return false;
         }

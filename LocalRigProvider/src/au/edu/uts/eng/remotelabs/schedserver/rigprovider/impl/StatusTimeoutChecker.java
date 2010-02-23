@@ -75,9 +75,6 @@ public class StatusTimeoutChecker implements Runnable
     /** The default timeout in minutes. */
     public static final int DEFAULT_TIMEOUT = 300;
     
-    /** Database session. */
-    private Session session;
-    
     /** The period a rig must provide a status update, otherwise the rig
      *  is put offline. */
     private int timeout;
@@ -106,8 +103,6 @@ public class StatusTimeoutChecker implements Runnable
             this.logger.warn("Configured rig time out period '" + tmStr + "' is not valid, using the default value " +
                     " of " + this.timeout + " seconds.");
         }
-        
-        this.session = DataAccessActivator.getNewSession();
     }
     
     /**
@@ -121,29 +116,26 @@ public class StatusTimeoutChecker implements Runnable
         
         this.timeout = tm;
         this.logger.info("Rig time out for providing a status update is " + this.timeout + " seconds.");
-        
-        this.session = DataAccessActivator.getNewSession();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void run()
-    {  
+    {
+        Session session = null;
         try
         {
-            if (this.session == null)
+            session = DataAccessActivator.getNewSession();
+            if (session == null)
             {
-                this.session = DataAccessActivator.getNewSession();
-                if (this.session == null)
-                {
-                    this.logger.error("Unable to obtain a database session for the rig status time out checker. " +
-                    		"Ensure the Scheduling Server data access bundle is started (ACTIVE state).");
-                    return;
-                }
+                this.logger.error("Unable to obtain a database session for the rig status time out checker. " +
+                        "Ensure the Scheduling Server data access bundle is started (ACTIVE state).");
+                return;
             }
             
+            
             /* Get all the rigs that have timed out. */
-            List<Rig> timedOut = this.session.createCriteria(Rig.class)
+            List<Rig> timedOut = session.createCriteria(Rig.class)
                 .add(Restrictions.eq("managed", true))    // Unmanaged rigs need not provide a status update
                 .add(Restrictions.eq("active", true))
                 .add(Restrictions.eq("online", true))
@@ -157,21 +149,24 @@ public class StatusTimeoutChecker implements Runnable
                 cal.setTime(rig.getLastUpdateTimestamp());
                 
                 this.logger.warn("Rig " + rig.getName() + " has timed out with last status update received at " +
-                        cal.get(Calendar.HOUR_OF_DAY) + ':' + cal.get(Calendar.MINUTE) + ':' + cal.get(Calendar.SECOND) +
-                        " - " + cal.get(Calendar.DATE) + '/' + (cal.get(Calendar.MONTH)+ 1) + '/' + cal.get(Calendar.YEAR) +
+                        cal.get(Calendar.DATE) + '/' + (cal.get(Calendar.MONTH)+ 1) + '/' + cal.get(Calendar.YEAR) +
+                        " - " + cal.get(Calendar.HOUR_OF_DAY) + ':' + cal.get(Calendar.MINUTE) + ':' + cal.get(Calendar.SECOND) +
                         ". Making rig inactive.");
                 
                 rig.setActive(false);
                 rig.setOnline(false);
                 rig.setOfflineReason("Timed out");
-                this.session.beginTransaction();
-                this.session.flush();
-                this.session.getTransaction().commit();
+            }
+            
+            if (session.isDirty())
+            {
+                session.beginTransaction();
+                session.flush();
+                session.getTransaction().commit();
             }
         }
         catch (Throwable thr)
         {
-            this.session = null;
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             PrintStream pstr = new PrintStream(out);
             thr.printStackTrace(pstr);
@@ -180,6 +175,10 @@ public class StatusTimeoutChecker implements Runnable
             this.logger.fatal("BUG: Uncaught exception in StatusTimeoutChecker of bundle " +
             		"SchedulingServer-LocalRigProvider. Exception type: " + thr.getClass().getName() +
             		", message: " + thr.getMessage() + ". Stack trace: " + out.toString() + '.');
+        }
+        finally
+        {
+            if (session != null) session.close();
         }
     } 
 }

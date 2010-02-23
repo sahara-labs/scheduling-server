@@ -104,7 +104,7 @@ public class IdentityTokenRegister implements IdentityToken
             }
         }
         
-        this.logger.debug("Generating identity token for rig '" + rigName + "' is " + builder.toString());
+        this.logger.debug("Generated identity token for rig '" + rigName + "' is '" + builder.toString() + "'.");
         this.registry.put(rigName, builder.toString());
         
         return builder.toString();
