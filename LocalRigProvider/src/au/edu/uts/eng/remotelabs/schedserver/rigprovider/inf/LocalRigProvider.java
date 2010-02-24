@@ -119,7 +119,7 @@ public class LocalRigProvider implements LocalRigProviderSkeletonInterface
     {
         /* Request parameters. */
         RemoveRigType remRig = request.getRemoveRig();
-        this.logger.info("Called " + this.getClass().getName() + "#removeRig with parameters: name=" + remRig.getName() 
+        this.logger.debug("Called " + this.getClass().getName() + "#removeRig with parameters: name=" + remRig.getName() 
                 + ", removal " + "reason=" + remRig.getRemovalReason() + '.');
         
         /* Response parameters. */
@@ -148,7 +148,7 @@ public class LocalRigProvider implements LocalRigProviderSkeletonInterface
         /* Request parameters. */
         UpdateRigType upRig = request.getUpdateRigStatus();
         StatusType status = upRig.getStatus();
-        this.logger.info("Called " + this.getClass().getName() + "#updateRigStatus with parameters: name=" + upRig.getName()
+        this.logger.debug("Called " + this.getClass().getName() + "#updateRigStatus with parameters: name=" + upRig.getName()
                 + ", isOnline=" + status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + '.');
         
         /* Response parameters. */
