@@ -9,12 +9,8 @@
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
-      <xsd:element name="listPermissionsResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="out" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
+      <xsd:element name="listPermissionsResponse"
+      	type="pm:PermissionListType">
       </xsd:element>
       <xsd:element name="getUserClass" type="pm:UserClassIDType">
       </xsd:element>
@@ -319,6 +315,12 @@
       			</xsd:sequence>
       		</xsd:extension>
       	</xsd:complexContent>
+      </xsd:complexType>
+    
+      <xsd:complexType name="PermissionListType">
+      	<xsd:sequence>
+      		<xsd:element name="permission" type="pm:PermissionType" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+      	</xsd:sequence>
       </xsd:complexType>
     </xsd:schema>
   </wsdl:types>
