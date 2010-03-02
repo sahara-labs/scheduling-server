@@ -190,7 +190,7 @@ Date: 5th February 2009
   </wsdl:binding>
   <wsdl:service name="LocalRigProvider">
     <wsdl:port binding="lrp:LocalRigProviderSOAP" name="LocalRigProviderSOAP">
-      <soap:address location="http://remotelabs.eng.uts.edu.au:8080/schedserver/localrigprovider"/>
+      <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
