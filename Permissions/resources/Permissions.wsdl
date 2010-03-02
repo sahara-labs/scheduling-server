@@ -106,47 +106,58 @@
 				<xsd:complexContent>
 					<xsd:extension base="pm:PermissionIDType">
 						<xsd:sequence>
-							<xsd:element name="userClass" type="pm:UserClassIDType">
+							<xsd:element name="userClass"
+								type="pm:UserClassIDType">
 							</xsd:element>
 							<xsd:element name="resourceClass">
 								<xsd:annotation>
 									<xsd:documentation>
-										The class of permission which may be
-										RIG, a specific rig, TYPE, a specific
-										rig type or CAPABILITY, a specific
+										The class of permission which
+										may be RIG, a specific rig,
+										TYPE, a specific rig type or
+										CAPABILITY, a specific
 										capability string.
-      						</xsd:documentation>
+									</xsd:documentation>
 								</xsd:annotation>
 								<xsd:simpleType>
-									<xsd:restriction base="xsd:string">
+									<xsd:restriction
+										base="xsd:string">
 										<xsd:enumeration value="TYPE"></xsd:enumeration>
 										<xsd:enumeration value="RIG"></xsd:enumeration>
-										<xsd:enumeration value="CAPABILITY"></xsd:enumeration>
+										<xsd:enumeration
+											value="CAPABILITY">
+										</xsd:enumeration>
 									</xsd:restriction>
 								</xsd:simpleType>
 							</xsd:element>
-							<xsd:element name="resource" type="pm:ResourceIDType">
+							<xsd:element name="resource"
+								type="pm:ResourceIDType">
 							</xsd:element>
 
-							<xsd:element name="sessionDuration" type="xsd:int"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="sessionDuration"
+								type="xsd:int" maxOccurs="1" minOccurs="0">
 								<xsd:annotation>
 									<xsd:documentation>
 										Duration of session in minutes.
-      						</xsd:documentation>
+									</xsd:documentation>
 								</xsd:annotation>
 							</xsd:element>
-							<xsd:element name="extensionDuration" type="xsd:int"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="extensionDuration"
+								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="allowedExtensions" type="xsd:int"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="allowedExtensions"
+								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="queueActivityTmOut" type="xsd:int"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="queueActivityTmOut"
+								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="sessionActivityTmOut" type="xsd:string"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="sessionActivityTmOut"
+								type="xsd:string" maxOccurs="1" minOccurs="0">
+							</xsd:element>
+                            <xsd:element name="start" type="xsd:dateTime" maxOccurs="1" minOccurs="0">
+							</xsd:element>
+                            <xsd:element name="expiry"
+								type="xsd:dateTime" maxOccurs="1" minOccurs="0">
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>
@@ -461,21 +472,23 @@
             </xsd:complexType>
     
             <xsd:complexType name="BulkAddUserClassUsersType">
-            	<xsd:sequence>
-            		<xsd:element name="userClass"
-            			type="pm:UserClassIDType">
-            		</xsd:element>
-            		<xsd:element name="userList"
-            			type="pm:UserListType">
-            		</xsd:element>
-            		<xsd:element name="lockUsers" type="xsd:boolean"></xsd:element>
-            	</xsd:sequence>
-            	<xsd:attribute name="privilegeID" type="xsd:int"
-            		use="optional">
-            	</xsd:attribute>
-            	<xsd:attribute name="privilegeName" type="xsd:string" use="optional"></xsd:attribute>
+            	<xsd:complexContent>
+            		<xsd:extension base="pm:OperationRequestType">
+            			<xsd:sequence>
+            				<xsd:element name="userClass"
+            					type="pm:UserClassIDType">
+            				</xsd:element>
+            				<xsd:element name="userList"
+            					type="pm:UserListType">
+            				</xsd:element>
+            				<xsd:element name="lockUsers"
+            					type="xsd:boolean">
+            				</xsd:element>
+            			</xsd:sequence>
+            		</xsd:extension>
+            	</xsd:complexContent>
             </xsd:complexType>
-    
+
             <xsd:attribute name="NewAttribute" type="xsd:string"></xsd:attribute>
         
             <xsd:attributeGroup name="NewAttributeGroup"></xsd:attributeGroup>
@@ -760,13 +773,13 @@
     	<wsdl:input message="pm:getUserClassesForUserRequest"></wsdl:input>
     	<wsdl:output message="pm:getUserClassesForUserResponse"></wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="bulkAddUserClassUsers">
-    	<wsdl:input message="pm:bulkAddUserClassUsersRequest"></wsdl:input>
-    	<wsdl:output message="pm:bulkAddUserClassUsersResponse"></wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getUserClassesForAcademic">
     	<wsdl:input message="pm:getUserClassesForAcademicRequest"></wsdl:input>
     	<wsdl:output message="pm:getUserClassesForAcademicResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="bulkAddUserClassUsers">
+    	<wsdl:input message="pm:bulkAddUserClassUsersRequest"></wsdl:input>
+    	<wsdl:output message="pm:bulkAddUserClassUsersResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="PermissionsSOAP" type="pm:Permissions">
