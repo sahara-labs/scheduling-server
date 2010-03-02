@@ -41,6 +41,7 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -107,6 +108,12 @@ public class ResourcePermission implements java.io.Serializable
     /** Timeout to terminate sessions if no presence is detected within this
      *  period. */
     private int sessionActivityTimeout;
+    
+    /** The time at which the resource permission comes in force. */
+    private Date startTime;
+    
+    /** The time at which the resource permission is no longer valid. */
+    private Date expiryTime;
     
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
     private Set<Session> sessionsForResourcePermissionId = new HashSet<Session>(0);
@@ -278,6 +285,28 @@ public class ResourcePermission implements java.io.Serializable
     public void setSessionActivityTimeout(final int sessionActivityTimeout)
     {
         this.sessionActivityTimeout = sessionActivityTimeout;
+    }
+    
+    @Column(name = "start_time", nullable = false)
+    public Date getStartTime()
+    {
+        return this.startTime;
+    }
+    
+    public void setStartTime(final Date startTime)
+    {
+        this.startTime = startTime;
+    }
+    
+    @Column(name = "expiry_time", nullable = false)
+    public Date getExpiryTime()
+    {
+        return this.expiryTime;
+    }
+    
+    public void setExpiryTime(final Date expiryTime)
+    {
+        this.expiryTime = expiryTime;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "resourcePermission")
