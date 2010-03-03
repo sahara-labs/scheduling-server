@@ -1,16 +1,67 @@
 /**
- * OperationResponseType.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 3rd March 2009
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types;
 
-/**
- * OperationResponseType bean class
- */
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class OperationResponseType implements org.apache.axis2.databinding.ADBBean
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
+/**
+ * OperationResponseType bean class.
+ */
+public class OperationResponseType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
@@ -19,211 +70,116 @@ public class OperationResponseType implements org.apache.axis2.databinding.ADBBe
      * Namespace Prefix = ns1
      */
 
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = -5106659380377252047L;
+    
+    protected boolean successful;
+    protected int failureCode;
+    protected boolean failureCodeTracker = false;
+    protected String failureReason;
+    protected boolean failureReasonTracker = false;
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    private static String generatePrefix(final String namespace)
     {
         if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/permissions"))
         {
             return "ns1";
         }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return BeanUtil.getUniquePrefix();
     }
 
-    /**
-     * field for Successful
-     */
-
-    protected boolean localSuccessful;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return boolean
-     */
     public boolean getSuccessful()
     {
-        return this.localSuccessful;
+        return this.successful;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            Successful
-     */
     public void setSuccessful(final boolean param)
     {
-
-        this.localSuccessful = param;
-
+        this.successful = param;
     }
 
-    /**
-     * field for FailureCode
-     */
-
-    protected int localFailureCode;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localFailureCodeTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getFailureCode()
     {
-        return this.localFailureCode;
+        return this.failureCode;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            FailureCode
-     */
     public void setFailureCode(final int param)
     {
-
-        // setting primitive attribute tracker to true
-
-        if (param == java.lang.Integer.MIN_VALUE)
+        if (param == Integer.MIN_VALUE)
         {
-            this.localFailureCodeTracker = false;
-
+            this.failureCodeTracker = false;
         }
         else
         {
-            this.localFailureCodeTracker = true;
+            this.failureCodeTracker = true;
         }
 
-        this.localFailureCode = param;
-
+        this.failureCode = param;
     }
 
-    /**
-     * field for FailureReason
-     */
-
-    protected java.lang.String localFailureReason;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localFailureReasonTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.lang.String
-     */
-    public java.lang.String getFailureReason()
+    public String getFailureReason()
     {
-        return this.localFailureReason;
+        return this.failureReason;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            FailureReason
-     */
-    public void setFailureReason(final java.lang.String param)
+    public void setFailureReason(final String param)
     {
-
         if (param != null)
         {
-            //update the setting tracker
-            this.localFailureReasonTracker = true;
+            this.failureReasonTracker = true;
         }
         else
         {
-            this.localFailureReasonTracker = false;
-
+            this.failureReasonTracker = false;
         }
 
-        this.localFailureReason = param;
-
+        this.failureReason = param;
     }
 
-    /**
-     * isReaderMTOMAware
-     * 
-     * @return true if the reader supports MTOM
-     */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
-
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 OperationResponseType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
-
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
-
-        java.lang.String prefix = null;
-        java.lang.String namespace = null;
+        String prefix = null;
+        String namespace = null;
 
         prefix = parentQName.getPrefix();
         namespace = parentQName.getNamespaceURI();
 
         if ((namespace != null) && (namespace.trim().length() > 0))
         {
-            final java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
+            final String writerPrefix = xmlWriter.getPrefix(namespace);
             if (writerPrefix != null)
             {
                 xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
@@ -247,8 +203,7 @@ public class OperationResponseType implements org.apache.axis2.databinding.ADBBe
 
         if (serializeType)
         {
-
-            final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+            final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/permissions");
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
@@ -260,168 +215,123 @@ public class OperationResponseType implements org.apache.axis2.databinding.ADBBe
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
                         "OperationResponseType", xmlWriter);
             }
-
         }
 
         namespace = "";
         if (!namespace.equals(""))
         {
             prefix = xmlWriter.getPrefix(namespace);
-
             if (prefix == null)
             {
                 prefix = OperationResponseType.generatePrefix(namespace);
-
                 xmlWriter.writeStartElement(prefix, "successful", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
-
             }
             else
             {
                 xmlWriter.writeStartElement(namespace, "successful");
             }
-
         }
         else
         {
             xmlWriter.writeStartElement("successful");
         }
-
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException("successful cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localSuccessful));
-        }
-
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.successful));
         xmlWriter.writeEndElement();
-        if (this.localFailureCodeTracker)
+        
+        if (this.failureCodeTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = OperationResponseType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "failureCode", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "failureCode");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("failureCode");
             }
 
-            if (this.localFailureCode == java.lang.Integer.MIN_VALUE)
+            if (this.failureCode == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("failureCode cannot be null!!");
-
+                throw new ADBException("failureCode cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localFailureCode));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.failureCode));
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localFailureReasonTracker)
+        
+        if (this.failureReasonTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = OperationResponseType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "failureReason", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "failureReason");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("failureReason");
             }
 
-            if (this.localFailureReason == null)
+            if (this.failureReason == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("failureReason cannot be null!!");
-
+                throw new ADBException("failureReason cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(this.localFailureReason);
-
+                xmlWriter.writeCharacters(this.failureReason);
             }
 
             xmlWriter.writeEndElement();
         }
         xmlWriter.writeEndElement();
-
     }
 
-    /**
-     * Util method to write an attribute with the ns prefix
-     */
-    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
-            final java.lang.String attName, final java.lang.String attValue,
-            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
-
         }
 
         xmlWriter.writeAttribute(namespace, attName, attValue);
-
     }
 
-    /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
+        String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
             prefix = OperationResponseType.generatePrefix(namespace);
-
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+                prefix = BeanUtil.getUniquePrefix();
             }
 
             xmlWriter.writeNamespace(prefix, namespace);
@@ -431,68 +341,44 @@ public class OperationResponseType implements org.apache.axis2.databinding.ADBBe
         return prefix;
     }
 
-    /**
-     * databinding method to get an XML representation of this object
-     */
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
 
-        final java.util.ArrayList elementList = new java.util.ArrayList();
-        final java.util.ArrayList attribList = new java.util.ArrayList();
+        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        elementList.add(new javax.xml.namespace.QName("", "successful"));
-
-        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localSuccessful));
-        if (this.localFailureCodeTracker)
+        elementList.add(new QName("", "successful"));
+        elementList.add(ConverterUtil.convertToString(this.successful));
+        
+        if (this.failureCodeTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "failureCode"));
+            elementList.add(new QName("", "failureCode"));
 
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localFailureCode));
+            elementList.add(ConverterUtil.convertToString(this.failureCode));
         }
-        if (this.localFailureReasonTracker)
+        
+        if (this.failureReasonTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "failureReason"));
-
-            if (this.localFailureReason != null)
+            elementList.add(new QName("", "failureReason"));
+            if (this.failureReason != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localFailureReason));
+                elementList.add(ConverterUtil.convertToString(this.failureReason));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("failureReason cannot be null!!");
+                throw new ADBException("failureReason cannot be null!!");
             }
         }
 
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
-                attribList.toArray());
-
+        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
     }
 
-    /**
-     * Factory class that keeps the parse method
-     */
     public static class Factory
     {
-
-        /**
-         * static method to create the object
-         * Precondition: If this object is an element, the current or next start element starts this object and any
-         * intervening reader events are ignorable
-         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
-         * start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element
-         * If this object is a complex type, the reader is positioned at the end element of its outer element
-         */
-        public static OperationResponseType parse(final javax.xml.stream.XMLStreamReader reader)
-                throws java.lang.Exception
+        public static OperationResponseType parse(final XMLStreamReader reader) throws Exception
         {
             final OperationResponseType object = new OperationResponseType();
-
             try
             {
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
@@ -500,102 +386,68 @@ public class OperationResponseType implements org.apache.axis2.databinding.ADBBe
 
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
-                    final java.lang.String fullTypeName = reader.getAttributeValue(
-                            "http://www.w3.org/2001/XMLSchema-instance", "type");
+                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
+                            "type");
                     if (fullTypeName != null)
                     {
-                        java.lang.String nsPrefix = null;
+                        String nsPrefix = null;
                         if (fullTypeName.indexOf(":") > -1)
                         {
                             nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
                         }
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-                        final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
+                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
                         if (!"OperationResponseType".equals(type))
                         {
-                            //find namespace for the prefix
-                            final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
                             return (OperationResponseType) au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ExtensionMapper
                                     .getTypeObject(nsUri, type, reader);
                         }
-
                     }
-
                 }
-
-                new java.util.Vector();
 
                 reader.next();
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "successful").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "successful").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setSuccessful(org.apache.axis2.databinding.utils.ConverterUtil.convertToBoolean(content));
-
+                    final String content = reader.getElementText();
+                    object.setSuccessful(ConverterUtil.convertToBoolean(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "failureCode").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "failureCode").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setFailureCode(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setFailureCode(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
-                    object.setFailureCode(java.lang.Integer.MIN_VALUE);
-
+                    object.setFailureCode(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "failureReason").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "failureReason").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setFailureReason(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
-
+                    final String content = reader.getElementText();
+                    object.setFailureReason(ConverterUtil.convertToString(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -605,20 +457,15 @@ public class OperationResponseType implements org.apache.axis2.databinding.ADBBe
 
                 if (reader.isStartElement())
                 {
-                    // A start element we are not expecting indicates a trailing invalid property
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
-
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
 
             return object;
-        }
-
-    }//end of factory class
-
+        }        
+    }
 }

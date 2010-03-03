@@ -1,17 +1,68 @@
 /**
- * PermissionType.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 3rd March 2009
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types;
 
-/**
- * PermissionType bean class
- */
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
 
-public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionIDType
-        implements org.apache.axis2.databinding.ADBBean
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
+/**
+ * PermissionType bean class.
+ */
+public class PermissionType extends PermissionIDType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
@@ -20,507 +71,246 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
      * Namespace Prefix = ns1
      */
 
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = -3543313127108184582L;
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    protected UserClassIDType userClass;
+    protected ResourceClass localResourceClass;
+    protected ResourceIDType resource;
+    protected int sessionDuration;
+    protected boolean sessionDurationTracker = false;
+    protected int extensionDuration;
+    protected boolean extensionDurationTracker = false;
+    protected int allowedExtensions;
+    protected boolean allowedExtensionsTracker = false;
+    protected int queueActivityTmOut;
+    protected boolean queueActivityTmOutTracker = false;
+    protected String sessionActivityTmOut;
+    protected boolean sessionActivityTmOutTracker = false;
+    protected Calendar start;
+    protected boolean startTracker = false;
+    protected Calendar expiry;
+    protected boolean expiryTracker = false;
+
+    private static String generatePrefix(final String namespace)
     {
         if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/permissions"))
         {
             return "ns1";
         }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return BeanUtil.getUniquePrefix();
     }
 
-    /**
-     * field for UserClass
-     */
-
-    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType localUserClass;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType
-     */
-    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType getUserClass()
+    public UserClassIDType getUserClass()
     {
-        return this.localUserClass;
+        return this.userClass;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            UserClass
-     */
-    public void setUserClass(final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType param)
+    public void setUserClass(final UserClassIDType param)
     {
-
-        this.localUserClass = param;
-
+        this.userClass = param;
     }
 
-    /**
-     * field for ResourceClass
-     */
-
-    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass_type1 localResourceClass;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass_type1
-     */
-    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass_type1 getResourceClass()
+    public ResourceClass getResourceClass()
     {
         return this.localResourceClass;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            ResourceClass
-     */
-    public void setResourceClass(
-            final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass_type1 param)
+    public void setResourceClass(final ResourceClass param)
     {
 
         this.localResourceClass = param;
 
     }
 
-    /**
-     * field for Resource
-     */
-
-    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType localResource;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType
-     */
-    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType getResource()
+    public ResourceIDType getResource()
     {
-        return this.localResource;
+        return this.resource;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            Resource
-     */
-    public void setResource(final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType param)
+    public void setResource(final ResourceIDType param)
     {
 
-        this.localResource = param;
+        this.resource = param;
 
     }
 
-    /**
-     * field for SessionDuration
-     */
-
-    protected int localSessionDuration;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localSessionDurationTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getSessionDuration()
     {
-        return this.localSessionDuration;
+        return this.sessionDuration;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            SessionDuration
-     */
     public void setSessionDuration(final int param)
     {
-
-        // setting primitive attribute tracker to true
-
-        if (param == java.lang.Integer.MIN_VALUE)
+        if (param == Integer.MIN_VALUE)
         {
-            this.localSessionDurationTracker = false;
-
+            this.sessionDurationTracker = false;
         }
         else
         {
-            this.localSessionDurationTracker = true;
+            this.sessionDurationTracker = true;
         }
 
-        this.localSessionDuration = param;
-
+        this.sessionDuration = param;
     }
 
-    /**
-     * field for ExtensionDuration
-     */
-
-    protected int localExtensionDuration;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localExtensionDurationTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getExtensionDuration()
     {
-        return this.localExtensionDuration;
+        return this.extensionDuration;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            ExtensionDuration
-     */
     public void setExtensionDuration(final int param)
     {
-
-        // setting primitive attribute tracker to true
-
-        if (param == java.lang.Integer.MIN_VALUE)
+        if (param == Integer.MIN_VALUE)
         {
-            this.localExtensionDurationTracker = false;
-
+            this.extensionDurationTracker = false;
         }
         else
         {
-            this.localExtensionDurationTracker = true;
+            this.extensionDurationTracker = true;
         }
 
-        this.localExtensionDuration = param;
-
+        this.extensionDuration = param;
     }
 
-    /**
-     * field for AllowedExtensions
-     */
-
-    protected int localAllowedExtensions;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localAllowedExtensionsTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getAllowedExtensions()
     {
-        return this.localAllowedExtensions;
+        return this.allowedExtensions;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            AllowedExtensions
-     */
     public void setAllowedExtensions(final int param)
     {
-
-        // setting primitive attribute tracker to true
-
-        if (param == java.lang.Integer.MIN_VALUE)
+        if (param == Integer.MIN_VALUE)
         {
-            this.localAllowedExtensionsTracker = false;
-
+            this.allowedExtensionsTracker = false;
         }
         else
         {
-            this.localAllowedExtensionsTracker = true;
+            this.allowedExtensionsTracker = true;
         }
 
-        this.localAllowedExtensions = param;
-
+        this.allowedExtensions = param;
     }
 
-    /**
-     * field for QueueActivityTmOut
-     */
-
-    protected int localQueueActivityTmOut;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localQueueActivityTmOutTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getQueueActivityTmOut()
     {
-        return this.localQueueActivityTmOut;
+        return this.queueActivityTmOut;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            QueueActivityTmOut
-     */
     public void setQueueActivityTmOut(final int param)
     {
-
-        // setting primitive attribute tracker to true
-
-        if (param == java.lang.Integer.MIN_VALUE)
+        if (param == Integer.MIN_VALUE)
         {
-            this.localQueueActivityTmOutTracker = false;
-
+            this.queueActivityTmOutTracker = false;
         }
         else
         {
-            this.localQueueActivityTmOutTracker = true;
+            this.queueActivityTmOutTracker = true;
         }
 
-        this.localQueueActivityTmOut = param;
-
+        this.queueActivityTmOut = param;
     }
 
-    /**
-     * field for SessionActivityTmOut
-     */
-
-    protected java.lang.String localSessionActivityTmOut;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localSessionActivityTmOutTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.lang.String
-     */
-    public java.lang.String getSessionActivityTmOut()
+    public String getSessionActivityTmOut()
     {
-        return this.localSessionActivityTmOut;
+        return this.sessionActivityTmOut;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            SessionActivityTmOut
-     */
-    public void setSessionActivityTmOut(final java.lang.String param)
+    public void setSessionActivityTmOut(final String param)
     {
-
         if (param != null)
         {
-            //update the setting tracker
-            this.localSessionActivityTmOutTracker = true;
+            this.sessionActivityTmOutTracker = true;
         }
         else
         {
-            this.localSessionActivityTmOutTracker = false;
-
+            this.sessionActivityTmOutTracker = false;
         }
 
-        this.localSessionActivityTmOut = param;
-
+        this.sessionActivityTmOut = param;
     }
 
-    /**
-     * field for Start
-     */
-
-    protected java.util.Calendar localStart;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localStartTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.util.Calendar
-     */
-    public java.util.Calendar getStart()
+    public Calendar getStart()
     {
-        return this.localStart;
+        return this.start;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            Start
-     */
-    public void setStart(final java.util.Calendar param)
+    public void setStart(final Calendar param)
     {
-
         if (param != null)
         {
-            //update the setting tracker
-            this.localStartTracker = true;
+            this.startTracker = true;
         }
         else
         {
-            this.localStartTracker = false;
-
+            this.startTracker = false;
         }
-
-        this.localStart = param;
-
+        this.start = param;
     }
 
-    /**
-     * field for Expiry
-     */
-
-    protected java.util.Calendar localExpiry;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localExpiryTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.util.Calendar
-     */
-    public java.util.Calendar getExpiry()
+    public Calendar getExpiry()
     {
-        return this.localExpiry;
+        return this.expiry;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            Expiry
-     */
-    public void setExpiry(final java.util.Calendar param)
+    public void setExpiry(final Calendar param)
     {
-
         if (param != null)
         {
-            //update the setting tracker
-            this.localExpiryTracker = true;
+            this.expiryTracker = true;
         }
         else
         {
-            this.localExpiryTracker = false;
-
+            this.expiryTracker = false;
         }
 
-        this.localExpiry = param;
-
+        this.expiry = param;
     }
 
-    /**
-     * isReaderMTOMAware
-     * 
-     * @return true if the reader supports MTOM
-     */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    @Override
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
-
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            @Override
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 PermissionType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
-
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
-
-        java.lang.String prefix = null;
-        java.lang.String namespace = null;
-
-        prefix = parentQName.getPrefix();
-        namespace = parentQName.getNamespaceURI();
+        String prefix = parentQName.getPrefix();
+        String namespace = parentQName.getNamespaceURI();
 
         if ((namespace != null) && (namespace.trim().length() > 0))
         {
-            final java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
+            final String writerPrefix = xmlWriter.getPrefix(namespace);
             if (writerPrefix != null)
             {
                 xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
@@ -542,7 +332,7 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
             xmlWriter.writeStartElement(parentQName.getLocalPart());
         }
 
-        final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+        final String namespacePrefix = this.registerPrefix(xmlWriter,
                 "http://remotelabs.eng.uts.edu.au/schedserver/permissions");
         if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
         {
@@ -551,9 +341,8 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
         }
         else
         {
-            this
-                    .writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "PermissionType",
-                            xmlWriter);
+            this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "PermissionType",
+                    xmlWriter);
         }
 
         if (this.localRequestorIDTracker)
@@ -570,29 +359,24 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
                     xmlWriter.writeStartElement(prefix, "requestorID", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "requestorID");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("requestorID");
             }
 
-            if (this.localRequestorID == java.lang.Integer.MIN_VALUE)
+            if (this.localRequestorID == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("requestorID cannot be null!!");
-
+                throw new ADBException("requestorID cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localRequestorID));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.localRequestorID));
             }
 
             xmlWriter.writeEndElement();
@@ -601,8 +385,7 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
         {
             if (this.localOperationRequestTypeSequence_type0 == null)
             {
-                throw new org.apache.axis2.databinding.ADBException(
-                        "OperationRequestTypeSequence_type0 cannot be null!!");
+                throw new ADBException("OperationRequestTypeSequence_type0 cannot be null!!");
             }
             this.localOperationRequestTypeSequence_type0.serialize(null, factory, xmlWriter);
         }
@@ -616,17 +399,14 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "requestorQName", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "requestorQName");
                 }
-
             }
             else
             {
@@ -635,120 +415,104 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
 
             if (this.localRequestorQName == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("requestorQName cannot be null!!");
-
+                throw new ADBException("requestorQName cannot be null!!");
             }
             else
             {
-
                 xmlWriter.writeCharacters(this.localRequestorQName);
-
             }
 
             xmlWriter.writeEndElement();
         }
-        if (this.localPermissionIDTracker)
+        
+        if (this.permissionIDTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "permissionID", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "permissionID");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("permissionID");
             }
 
-            if (this.localPermissionID == java.lang.Integer.MIN_VALUE)
+            if (this.permissionID == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("permissionID cannot be null!!");
-
+                throw new ADBException("permissionID cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localPermissionID));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.permissionID));
             }
 
             xmlWriter.writeEndElement();
         }
-        if (this.localUserClass == null)
+        
+        if (this.userClass == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
+            throw new ADBException("userClass cannot be null!!");
         }
-        this.localUserClass.serialize(new javax.xml.namespace.QName("", "userClass"), factory, xmlWriter);
+        this.userClass.serialize(new QName("", "userClass"), factory, xmlWriter);
 
         if (this.localResourceClass == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("resourceClass cannot be null!!");
+            throw new ADBException("resourceClass cannot be null!!");
         }
-        this.localResourceClass.serialize(new javax.xml.namespace.QName("", "resourceClass"), factory, xmlWriter);
+        this.localResourceClass.serialize(new QName("", "resourceClass"), factory, xmlWriter);
 
-        if (this.localResource == null)
+        if (this.resource == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("resource cannot be null!!");
+            throw new ADBException("resource cannot be null!!");
         }
-        this.localResource.serialize(new javax.xml.namespace.QName("", "resource"), factory, xmlWriter);
-        if (this.localSessionDurationTracker)
+        this.resource.serialize(new QName("", "resource"), factory, xmlWriter);
+        
+        if (this.sessionDurationTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "sessionDuration", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "sessionDuration");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("sessionDuration");
             }
 
-            if (this.localSessionDuration == java.lang.Integer.MIN_VALUE)
+            if (this.sessionDuration == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("sessionDuration cannot be null!!");
-
+                throw new ADBException("sessionDuration cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localSessionDuration));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.sessionDuration));
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localExtensionDurationTracker)
+        
+        if (this.extensionDurationTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -758,38 +522,32 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "extensionDuration", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "extensionDuration");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("extensionDuration");
             }
 
-            if (this.localExtensionDuration == java.lang.Integer.MIN_VALUE)
+            if (this.extensionDuration == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("extensionDuration cannot be null!!");
-
+                throw new ADBException("extensionDuration cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localExtensionDuration));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.extensionDuration));
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localAllowedExtensionsTracker)
+        
+        if (this.allowedExtensionsTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -799,38 +557,32 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "allowedExtensions", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "allowedExtensions");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("allowedExtensions");
             }
 
-            if (this.localAllowedExtensions == java.lang.Integer.MIN_VALUE)
+            if (this.allowedExtensions == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("allowedExtensions cannot be null!!");
-
+                throw new ADBException("allowedExtensions cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localAllowedExtensions));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.allowedExtensions));
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localQueueActivityTmOutTracker)
+        
+        if (this.queueActivityTmOutTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -840,125 +592,100 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "queueActivityTmOut", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "queueActivityTmOut");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("queueActivityTmOut");
             }
 
-            if (this.localQueueActivityTmOut == java.lang.Integer.MIN_VALUE)
+            if (this.queueActivityTmOut == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("queueActivityTmOut cannot be null!!");
-
+                throw new ADBException("queueActivityTmOut cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localQueueActivityTmOut));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.queueActivityTmOut));
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localSessionActivityTmOutTracker)
+        
+        if (this.sessionActivityTmOutTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "sessionActivityTmOut", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "sessionActivityTmOut");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("sessionActivityTmOut");
             }
 
-            if (this.localSessionActivityTmOut == null)
+            if (this.sessionActivityTmOut == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("sessionActivityTmOut cannot be null!!");
-
+                throw new ADBException("sessionActivityTmOut cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(this.localSessionActivityTmOut);
-
+                xmlWriter.writeCharacters(this.sessionActivityTmOut);
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localStartTracker)
+        
+        if (this.startTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = PermissionType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "start", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "start");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("start");
             }
 
-            if (this.localStart == null)
+            if (this.start == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("start cannot be null!!");
-
+                throw new ADBException("start cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localStart));
-
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.start));
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localExpiryTracker)
+        
+        if (this.expiryTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -972,212 +699,50 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
                     xmlWriter.writeStartElement(prefix, "expiry", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "expiry");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("expiry");
             }
 
-            if (this.localExpiry == null)
+            if (this.expiry == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("expiry cannot be null!!");
-
+                throw new ADBException("expiry cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localExpiry));
-
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.expiry));
             }
-
             xmlWriter.writeEndElement();
         }
         xmlWriter.writeEndElement();
-
     }
 
-    /**
-     * Util method to write an attribute with the ns prefix
-     */
-    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
-            final java.lang.String attName, final java.lang.String attValue,
-            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
-
         }
-
         xmlWriter.writeAttribute(namespace, attName, attValue);
-
     }
 
-    /**
-     * Util method to write an attribute without the ns prefix
-     */
-    private void writeAttribute(final java.lang.String namespace, final java.lang.String attName,
-            final java.lang.String attValue, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
-        if (namespace.equals(""))
-        {
-            xmlWriter.writeAttribute(attName, attValue);
-        }
-        else
-        {
-            this.registerPrefix(xmlWriter, namespace);
-            xmlWriter.writeAttribute(namespace, attName, attValue);
-        }
-    }
-
-    /**
-     * Util method to write an attribute without the ns prefix
-     */
-    private void writeQNameAttribute(final java.lang.String namespace, final java.lang.String attName,
-            final javax.xml.namespace.QName qname, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
-    {
-
-        final java.lang.String attributeNamespace = qname.getNamespaceURI();
-        java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
-        if (attributePrefix == null)
-        {
-            attributePrefix = this.registerPrefix(xmlWriter, attributeNamespace);
-        }
-        java.lang.String attributeValue;
-        if (attributePrefix.trim().length() > 0)
-        {
-            attributeValue = attributePrefix + ":" + qname.getLocalPart();
-        }
-        else
-        {
-            attributeValue = qname.getLocalPart();
-        }
-
-        if (namespace.equals(""))
-        {
-            xmlWriter.writeAttribute(attName, attributeValue);
-        }
-        else
-        {
-            this.registerPrefix(xmlWriter, namespace);
-            xmlWriter.writeAttribute(namespace, attName, attributeValue);
-        }
-    }
-
-    /**
-     * method to handle Qnames
-     */
-
-    private void writeQName(final javax.xml.namespace.QName qname, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
-    {
-        final java.lang.String namespaceURI = qname.getNamespaceURI();
-        if (namespaceURI != null)
-        {
-            java.lang.String prefix = xmlWriter.getPrefix(namespaceURI);
-            if (prefix == null)
-            {
-                prefix = PermissionType.generatePrefix(namespaceURI);
-                xmlWriter.writeNamespace(prefix, namespaceURI);
-                xmlWriter.setPrefix(prefix, namespaceURI);
-            }
-
-            if (prefix.trim().length() > 0)
-            {
-                xmlWriter.writeCharacters(prefix + ":"
-                        + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-            }
-            else
-            {
-                // i.e this is the default namespace
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-            }
-
-        }
-        else
-        {
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-        }
-    }
-
-    private void writeQNames(final javax.xml.namespace.QName[] qnames, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
-    {
-
-        if (qnames != null)
-        {
-            // we have to store this data until last moment since it is not possible to write any
-            // namespace data after writing the charactor data
-            final java.lang.StringBuffer stringToWrite = new java.lang.StringBuffer();
-            java.lang.String namespaceURI = null;
-            java.lang.String prefix = null;
-
-            for (int i = 0; i < qnames.length; i++)
-            {
-                if (i > 0)
-                {
-                    stringToWrite.append(" ");
-                }
-                namespaceURI = qnames[i].getNamespaceURI();
-                if (namespaceURI != null)
-                {
-                    prefix = xmlWriter.getPrefix(namespaceURI);
-                    if ((prefix == null) || (prefix.length() == 0))
-                    {
-                        prefix = PermissionType.generatePrefix(namespaceURI);
-                        xmlWriter.writeNamespace(prefix, namespaceURI);
-                        xmlWriter.setPrefix(prefix, namespaceURI);
-                    }
-
-                    if (prefix.trim().length() > 0)
-                    {
-                        stringToWrite.append(prefix).append(":").append(
-                                org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                    }
-                    else
-                    {
-                        stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(qnames[i]));
-                    }
-                }
-                else
-                {
-                    stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                }
-            }
-            xmlWriter.writeCharacters(stringToWrite.toString());
-        }
-
-    }
-
-    /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
-    {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
+        String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
             prefix = PermissionType.generatePrefix(namespace);
-
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+                prefix = BeanUtil.getUniquePrefix();
             }
 
             xmlWriter.writeNamespace(prefix, namespace);
@@ -1187,569 +752,379 @@ public class PermissionType extends au.edu.uts.eng.remotelabs.schedserver.permis
         return prefix;
     }
 
-    /**
-     * databinding method to get an XML representation of this object
-     */
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
+    @Override
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
+        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
+        final ArrayList<QName> attribList = new ArrayList<QName>();
 
-        final java.util.ArrayList elementList = new java.util.ArrayList();
-        final java.util.ArrayList attribList = new java.util.ArrayList();
-
-        attribList.add(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema-instance", "type"));
-        attribList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
-                "PermissionType"));
+        attribList.add(new QName("http://www.w3.org/2001/XMLSchema-instance", "type"));
+        attribList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions", "PermissionType"));
         if (this.localRequestorIDTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "requestorID"));
-
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localRequestorID));
+            elementList.add(new QName("", "requestorID"));
+            elementList.add(ConverterUtil.convertToString(this.localRequestorID));
         }
+        
         if (this.localOperationRequestTypeSequence_type0Tracker)
         {
-            elementList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
+            elementList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
                     "OperationRequestTypeSequence_type0"));
-
             if (this.localOperationRequestTypeSequence_type0 == null)
             {
-                throw new org.apache.axis2.databinding.ADBException(
-                        "OperationRequestTypeSequence_type0 cannot be null!!");
+                throw new ADBException("OperationRequestTypeSequence_type0 cannot be null!!");
             }
             elementList.add(this.localOperationRequestTypeSequence_type0);
         }
+        
         if (this.localRequestorQNameTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "requestorQName"));
-
+            elementList.add(new QName("", "requestorQName"));
             if (this.localRequestorQName != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localRequestorQName));
+                elementList.add(ConverterUtil.convertToString(this.localRequestorQName));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("requestorQName cannot be null!!");
+                throw new ADBException("requestorQName cannot be null!!");
             }
         }
-        if (this.localPermissionIDTracker)
+        
+        if (this.permissionIDTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "permissionID"));
-
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localPermissionID));
+            elementList.add(new QName("", "permissionID"));
+            elementList.add(ConverterUtil.convertToString(this.permissionID));
         }
-        elementList.add(new javax.xml.namespace.QName("", "userClass"));
+        elementList.add(new QName("", "userClass"));
 
-        if (this.localUserClass == null)
+        if (this.userClass == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
+            throw new ADBException("userClass cannot be null!!");
         }
-        elementList.add(this.localUserClass);
-
-        elementList.add(new javax.xml.namespace.QName("", "resourceClass"));
-
+        elementList.add(this.userClass);
+        
+        elementList.add(new QName("", "resourceClass"));
         if (this.localResourceClass == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("resourceClass cannot be null!!");
+            throw new ADBException("resourceClass cannot be null!!");
         }
         elementList.add(this.localResourceClass);
 
-        elementList.add(new javax.xml.namespace.QName("", "resource"));
-
-        if (this.localResource == null)
+        elementList.add(new QName("", "resource"));
+        if (this.resource == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("resource cannot be null!!");
+            throw new ADBException("resource cannot be null!!");
         }
-        elementList.add(this.localResource);
-        if (this.localSessionDurationTracker)
+        elementList.add(this.resource);
+        
+        if (this.sessionDurationTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "sessionDuration"));
-
-            elementList
-                    .add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localSessionDuration));
+            elementList.add(new QName("", "sessionDuration"));
+            elementList.add(ConverterUtil.convertToString(this.sessionDuration));
         }
-        if (this.localExtensionDurationTracker)
+        if (this.extensionDurationTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "extensionDuration"));
-
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localExtensionDuration));
+            elementList.add(new QName("", "extensionDuration"));
+            elementList.add(ConverterUtil.convertToString(this.extensionDuration));
         }
-        if (this.localAllowedExtensionsTracker)
+        
+        if (this.allowedExtensionsTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "allowedExtensions"));
-
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localAllowedExtensions));
+            elementList.add(new QName("", "allowedExtensions"));
+            elementList.add(ConverterUtil.convertToString(this.allowedExtensions));
         }
-        if (this.localQueueActivityTmOutTracker)
+        
+        if (this.queueActivityTmOutTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "queueActivityTmOut"));
-
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localQueueActivityTmOut));
+            elementList.add(new QName("", "queueActivityTmOut"));
+            elementList.add(ConverterUtil.convertToString(this.queueActivityTmOut));
         }
-        if (this.localSessionActivityTmOutTracker)
+        
+        if (this.sessionActivityTmOutTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "sessionActivityTmOut"));
-
-            if (this.localSessionActivityTmOut != null)
+            elementList.add(new QName("", "sessionActivityTmOut"));
+            if (this.sessionActivityTmOut != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localSessionActivityTmOut));
+                elementList.add(ConverterUtil.convertToString(this.sessionActivityTmOut));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("sessionActivityTmOut cannot be null!!");
+                throw new ADBException("sessionActivityTmOut cannot be null!!");
             }
         }
-        if (this.localStartTracker)
+        
+        if (this.startTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "start"));
-
-            if (this.localStart != null)
+            elementList.add(new QName("", "start"));
+            if (this.start != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localStart));
+                elementList.add(ConverterUtil.convertToString(this.start));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("start cannot be null!!");
+                throw new ADBException("start cannot be null!!");
             }
         }
-        if (this.localExpiryTracker)
+        
+        if (this.expiryTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "expiry"));
-
-            if (this.localExpiry != null)
+            elementList.add(new QName("", "expiry"));
+            if (this.expiry != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localExpiry));
+                elementList.add(ConverterUtil.convertToString(this.expiry));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("expiry cannot be null!!");
+                throw new ADBException("expiry cannot be null!!");
             }
         }
 
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
-                attribList.toArray());
-
+        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
     }
 
-    /**
-     * Factory class that keeps the parse method
-     */
     public static class Factory
     {
-
-        /**
-         * static method to create the object
-         * Precondition: If this object is an element, the current or next start element starts this object and any
-         * intervening reader events are ignorable
-         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
-         * start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element
-         * If this object is a complex type, the reader is positioned at the end element of its outer element
-         */
-        public static PermissionType parse(final javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception
+        public static PermissionType parse(final XMLStreamReader reader) throws Exception
         {
             final PermissionType object = new PermissionType();
 
-            final int event;
-            final java.lang.String nillableValue = null;
-            final java.lang.String prefix = "";
-            final java.lang.String namespaceuri = "";
             try
             {
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
-                    final java.lang.String fullTypeName = reader.getAttributeValue(
-                            "http://www.w3.org/2001/XMLSchema-instance", "type");
+                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
+                            "type");
                     if (fullTypeName != null)
                     {
-                        java.lang.String nsPrefix = null;
+                        String nsPrefix = null;
                         if (fullTypeName.indexOf(":") > -1)
                         {
                             nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
                         }
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-                        final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-
+                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
                         if (!"PermissionType".equals(type))
                         {
-                            //find namespace for the prefix
-                            final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (PermissionType) au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ExtensionMapper
-                                    .getTypeObject(nsUri, type, reader);
+                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+                            return (PermissionType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
-
                     }
-
                 }
-
-                // Note all attributes that were handled. Used to differ normal attributes
-                // from anyAttributes.
-                final java.util.Vector handledAttributes = new java.util.Vector();
 
                 reader.next();
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "requestorID").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "requestorID").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setRequestorID(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setRequestorID(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
-                    object.setRequestorID(java.lang.Integer.MIN_VALUE);
-
+                    object.setRequestorID(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
                 try
                 {
-
                     if (reader.isStartElement())
                     {
-
-                        object
-                                .setOperationRequestTypeSequence_type0(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationRequestTypeSequence_type0.Factory
-                                        .parse(reader));
-
-                    } // End of if for expected property start element
-
-                    else
-                    {
-
+                        object.setOperationRequestTypeSequence_type0(OperationRequestTypeSequence_type0.Factory
+                                .parse(reader));
                     }
-
                 }
-                catch (final java.lang.Exception e)
+                catch (final Exception e)
                 {
+                    /* Optional. */
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "requestorQName").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "requestorQName").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setRequestorQName(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
-
+                    final String content = reader.getElementText();
+                    object.setRequestorQName(ConverterUtil.convertToString(content));
                     reader.next();
+                }
 
-                } // End of if for expected property start element
-
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "permissionID").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setPermissionID(ConverterUtil.convertToInt(content));
+                    reader.next();
+                }
                 else
                 {
-
+                    object.setPermissionID(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "permissionID").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "userClass").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setPermissionID(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    object.setUserClass(UserClassIDType.Factory.parse(reader));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
-                    object.setPermissionID(java.lang.Integer.MIN_VALUE);
-
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "userClass").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "resourceClass").equals(reader.getName()))
                 {
-
-                    object
-                            .setUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType.Factory
-                                    .parse(reader));
-
+                    object.setResourceClass(ResourceClass.Factory.parse(reader));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "resourceClass").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "resource").equals(reader.getName()))
                 {
-
-                    object
-                            .setResourceClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass_type1.Factory
-                                    .parse(reader));
-
+                    object.setResource(ResourceIDType.Factory.parse(reader));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "resource").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "sessionDuration").equals(reader.getName()))
                 {
-
-                    object
-                            .setResource(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType.Factory
-                                    .parse(reader));
-
+                    final String content = reader.getElementText();
+                    object.setSessionDuration(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    object.setSessionDuration(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "sessionDuration").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "extensionDuration").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setSessionDuration(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setExtensionDuration(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
-                    object.setSessionDuration(java.lang.Integer.MIN_VALUE);
-
+                    object.setExtensionDuration(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "extensionDuration").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "allowedExtensions").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setExtensionDuration(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setAllowedExtensions(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
-                    object.setExtensionDuration(java.lang.Integer.MIN_VALUE);
-
+                    object.setAllowedExtensions(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "allowedExtensions").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "queueActivityTmOut").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setAllowedExtensions(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setQueueActivityTmOut(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
-                    object.setAllowedExtensions(java.lang.Integer.MIN_VALUE);
-
+                    object.setQueueActivityTmOut(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "queueActivityTmOut").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "sessionActivityTmOut").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object
-                            .setQueueActivityTmOut(org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setSessionActivityTmOut(ConverterUtil.convertToString(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-
-                    object.setQueueActivityTmOut(java.lang.Integer.MIN_VALUE);
-
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "sessionActivityTmOut").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "start").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setSessionActivityTmOut(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(content));
-
+                    final String content = reader.getElementText();
+                    object.setStart(ConverterUtil.convertToDateTime(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "start").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "expiry").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setStart(org.apache.axis2.databinding.utils.ConverterUtil.convertToDateTime(content));
-
+                    final String content = reader.getElementText();
+                    object.setExpiry(ConverterUtil.convertToDateTime(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "expiry").equals(reader.getName()))
-                {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setExpiry(org.apache.axis2.databinding.utils.ConverterUtil.convertToDateTime(content));
-
-                    reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
                 if (reader.isStartElement())
                 {
-                    // A start element we are not expecting indicates a trailing invalid property
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
-
             return object;
         }
-
-    }//end of factory class
-
+    }
 }

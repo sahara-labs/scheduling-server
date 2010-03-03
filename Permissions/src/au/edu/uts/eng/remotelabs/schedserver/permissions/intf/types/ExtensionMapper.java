@@ -21,7 +21,7 @@ public class ExtensionMapper
                 && "resourceClass_type1".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass_type1.Factory
+            return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass.Factory
                     .parse(reader);
 
         }
@@ -146,7 +146,7 @@ public class ExtensionMapper
                 && "resourceClass_type1".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass_type1.Factory
+            return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass.Factory
                     .parse(reader);
 
         }

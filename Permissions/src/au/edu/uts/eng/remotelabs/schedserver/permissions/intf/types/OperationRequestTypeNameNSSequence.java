@@ -6,45 +6,47 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
 /**
  * OperationRequestTypeNameNSSequence bean class
  */
-
-public class OperationRequestTypeNameNSSequence implements org.apache.axis2.databinding.ADBBean
+public class OperationRequestTypeNameNSSequence implements ADBBean
 {
-    /*
-     * This type was generated from the piece of schema that had
-     * name = OperationRequestTypeNameNSSequence
-     * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/permissions
-     * Namespace Prefix = ns1
-     */
-
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = 7834615871687808581L;
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    protected UserClassIDType localUserClass;
+
+    private static String generatePrefix(final String namespace)
     {
         if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/permissions"))
         {
             return "ns1";
         }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return BeanUtil.getUniquePrefix();
     }
-
-    /**
-     * field for UserClass
-     */
-
-    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType localUserClass;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType
+     * @return UserClassIDType
      */
-    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType getUserClass()
+    public UserClassIDType getUserClass()
     {
         return this.localUserClass;
     }
@@ -55,7 +57,7 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
      * @param param
      *            UserClass
      */
-    public void setUserClass(final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType param)
+    public void setUserClass(final UserClassIDType param)
     {
 
         this.localUserClass = param;
@@ -66,14 +68,14 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
      * field for User
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType localUser;
+    protected UserIDType localUser;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType
+     * @return UserIDType
      */
-    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType getUser()
+    public UserIDType getUser()
     {
         return this.localUser;
     }
@@ -84,7 +86,7 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
      * @param param
      *            User
      */
-    public void setUser(final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType param)
+    public void setUser(final UserIDType param)
     {
 
         this.localUser = param;
@@ -96,16 +98,15 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
      * 
      * @return true if the reader supports MTOM
      */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
 
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
@@ -115,44 +116,38 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
     /**
      * @param parentQName
      * @param factory
-     * @return org.apache.axiom.om.OMElement
+     * @return OMElement
      */
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
 
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
 
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 OperationRequestTypeNameNSSequence.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
 
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
 
         if (serializeType)
         {
 
-            final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+            final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/permissions");
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
@@ -169,24 +164,23 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
 
         if (this.localUserClass == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
+            throw new ADBException("userClass cannot be null!!");
         }
-        this.localUserClass.serialize(new javax.xml.namespace.QName("", "userClass"), factory, xmlWriter);
+        this.localUserClass.serialize(new QName("", "userClass"), factory, xmlWriter);
 
         if (this.localUser == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("user cannot be null!!");
+            throw new ADBException("user cannot be null!!");
         }
-        this.localUser.serialize(new javax.xml.namespace.QName("", "user"), factory, xmlWriter);
+        this.localUser.serialize(new QName("", "user"), factory, xmlWriter);
 
     }
 
     /**
      * Util method to write an attribute with the ns prefix
      */
-    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
-            final java.lang.String attName, final java.lang.String attValue,
-            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
@@ -202,10 +196,9 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
     /**
      * Register a namespace prefix
      */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
+        String prefix = xmlWriter.getPrefix(namespace);
 
         if (prefix == null)
         {
@@ -213,7 +206,7 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
 
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+                prefix = BeanUtil.getUniquePrefix();
             }
 
             xmlWriter.writeNamespace(prefix, namespace);
@@ -226,31 +219,29 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
     /**
      * databinding method to get an XML representation of this object
      */
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
 
         final java.util.ArrayList elementList = new java.util.ArrayList();
         final java.util.ArrayList attribList = new java.util.ArrayList();
 
-        elementList.add(new javax.xml.namespace.QName("", "userClass"));
+        elementList.add(new QName("", "userClass"));
 
         if (this.localUserClass == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
+            throw new ADBException("userClass cannot be null!!");
         }
         elementList.add(this.localUserClass);
 
-        elementList.add(new javax.xml.namespace.QName("", "user"));
+        elementList.add(new QName("", "user"));
 
         if (this.localUser == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("user cannot be null!!");
+            throw new ADBException("user cannot be null!!");
         }
         elementList.add(this.localUser);
 
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
-                attribList.toArray());
+        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
 
     }
 
@@ -269,8 +260,7 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
          * Postcondition: If this object is an element, the reader is positioned at its end element
          * If this object is a complex type, the reader is positioned at the end element of its outer element
          */
-        public static OperationRequestTypeNameNSSequence parse(final javax.xml.stream.XMLStreamReader reader)
-                throws java.lang.Exception
+        public static OperationRequestTypeNameNSSequence parse(final XMLStreamReader reader) throws Exception
         {
             final OperationRequestTypeNameNSSequence object = new OperationRequestTypeNameNSSequence();
 
@@ -289,12 +279,10 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
                     reader.next();
                 }
 
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "userClass").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "userClass").equals(reader.getName()))
                 {
 
-                    object
-                            .setUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType.Factory
-                                    .parse(reader));
+                    object.setUserClass(UserClassIDType.Factory.parse(reader));
 
                     reader.next();
 
@@ -303,8 +291,7 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
                 else
                 {
                     // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -312,11 +299,10 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
                     reader.next();
                 }
 
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "user").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "user").equals(reader.getName()))
                 {
 
-                    object.setUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType.Factory
-                            .parse(reader));
+                    object.setUser(UserIDType.Factory.parse(reader));
 
                     reader.next();
 
@@ -325,8 +311,7 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
                 else
                 {
                     // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -335,9 +320,9 @@ public class OperationRequestTypeNameNSSequence implements org.apache.axis2.data
                 }
 
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
 
             return object;

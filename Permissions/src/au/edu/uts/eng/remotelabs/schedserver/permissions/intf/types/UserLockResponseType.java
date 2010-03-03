@@ -202,11 +202,11 @@ public class UserLockResponseType extends
         else
         {
             xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localSuccessful));
+                    .convertToString(this.successful));
         }
 
         xmlWriter.writeEndElement();
-        if (this.localFailureCodeTracker)
+        if (this.failureCodeTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -233,7 +233,7 @@ public class UserLockResponseType extends
                 xmlWriter.writeStartElement("failureCode");
             }
 
-            if (this.localFailureCode == java.lang.Integer.MIN_VALUE)
+            if (this.failureCode == java.lang.Integer.MIN_VALUE)
             {
 
                 throw new org.apache.axis2.databinding.ADBException("failureCode cannot be null!!");
@@ -242,12 +242,12 @@ public class UserLockResponseType extends
             else
             {
                 xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localFailureCode));
+                        .convertToString(this.failureCode));
             }
 
             xmlWriter.writeEndElement();
         }
-        if (this.localFailureReasonTracker)
+        if (this.failureReasonTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -274,7 +274,7 @@ public class UserLockResponseType extends
                 xmlWriter.writeStartElement("failureReason");
             }
 
-            if (this.localFailureReason == null)
+            if (this.failureReason == null)
             {
                 // write the nil attribute
 
@@ -284,7 +284,7 @@ public class UserLockResponseType extends
             else
             {
 
-                xmlWriter.writeCharacters(this.localFailureReason);
+                xmlWriter.writeCharacters(this.failureReason);
 
             }
 
@@ -394,21 +394,21 @@ public class UserLockResponseType extends
 
         elementList.add(new javax.xml.namespace.QName("", "successful"));
 
-        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localSuccessful));
-        if (this.localFailureCodeTracker)
+        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.successful));
+        if (this.failureCodeTracker)
         {
             elementList.add(new javax.xml.namespace.QName("", "failureCode"));
 
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localFailureCode));
+            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.failureCode));
         }
-        if (this.localFailureReasonTracker)
+        if (this.failureReasonTracker)
         {
             elementList.add(new javax.xml.namespace.QName("", "failureReason"));
 
-            if (this.localFailureReason != null)
+            if (this.failureReason != null)
             {
                 elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localFailureReason));
+                        .convertToString(this.failureReason));
             }
             else
             {
