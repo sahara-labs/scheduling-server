@@ -6,15 +6,6 @@
 	targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
 	<wsdl:types>
 		<xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
-			<xsd:element name="listPermissions">
-				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="in" type="xsd:string" />
-					</xsd:sequence>
-				</xsd:complexType>
-			</xsd:element>
-			<xsd:element name="listPermissionsResponse" type="pm:PermissionListType">
-			</xsd:element>
 			<xsd:element name="getUserClass" type="pm:UserClassIDType">
 			</xsd:element>
 			<xsd:element name="getUserClassResponse" type="pm:UserClassType">
@@ -413,16 +404,6 @@
 			</xsd:element>
 			<xsd:element name="bulkAddUserClassUsersResponse" type="pm:OperationResponseType">
 			</xsd:element>
-			<xsd:element name="bulkAddUserClassUsersWithLocks">
-				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="in" type="xsd:string"></xsd:element>
-					</xsd:sequence>
-				</xsd:complexType>
-			</xsd:element>
-			<xsd:element name="bulkAddUserClassUsersWithLocksResponse"
-				type="pm:OperationResponseType">
-			</xsd:element>
 
 			<xsd:complexType name="OperationRequestType">
 				<xsd:sequence>
@@ -489,11 +470,7 @@
             	</xsd:complexContent>
             </xsd:complexType>
 
-            <xsd:attribute name="NewAttribute" type="xsd:string"></xsd:attribute>
-        
-            <xsd:attributeGroup name="NewAttributeGroup"></xsd:attributeGroup>
-           r Ahmad  <xsd:element name="getAcademicPermissionsForAcademic"
-            	type="pm:UserIDType">
+           <xsd:element name="getAcademicPermissionsForAcademic" type="pm:UserIDType">
             </xsd:element>
             <xsd:element name="getAcademicPermissionsForAcademicResponse"
             	type="pm:AcademicPermissionListType">

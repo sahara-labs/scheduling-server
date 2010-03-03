@@ -38,14 +38,14 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
      * field for Persona
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.Persona_type1 localPersona;
+    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType localPersona;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.Persona_type1
+     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType
      */
-    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.Persona_type1 getPersona()
+    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType getPersona()
     {
         return this.localPersona;
     }
@@ -56,7 +56,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
      * @param param
      *            Persona
      */
-    public void setPersona(final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.Persona_type1 param)
+    public void setPersona(final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType param)
     {
 
         this.localPersona = param;
@@ -847,7 +847,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
                 {
 
                     object
-                            .setPersona(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.Persona_type1.Factory
+                            .setPersona(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType.Factory
                                     .parse(reader));
 
                     reader.next();

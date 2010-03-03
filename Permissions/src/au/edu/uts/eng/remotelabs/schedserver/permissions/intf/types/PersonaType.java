@@ -37,8 +37,7 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -55,25 +54,31 @@ import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.BeanUtil;
 import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReader;
 import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * PermissionWithLockType bean class.
+ * PersonaType bean class.
  */
-public class PermissionWithLockType implements ADBBean
+public class PersonaType implements ADBBean
 {
-    /*
-     * This type was generated from the piece of schema that had
-     * name = PermissionWithLockType
-     * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/permissions
-     * Namespace Prefix = ns1
-     */
+    private static final long serialVersionUID = 6780049826926191697L;
 
-    private static final long serialVersionUID = -5286447047409360964L;
+    public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
+            "persona_type1", "ns1");
     
-    protected PermissionType permission;
-    protected boolean isLocked;
+    public static final String _ADMIN = ConverterUtil.convertToString("ADMIN");
+    public static final String _ACADEMIC = ConverterUtil.convertToString("ACADEMIC");
+    public static final String _USER = ConverterUtil.convertToString("USER");
+    public static final String _DEMO = ConverterUtil.convertToString("DEMO");
+    public static final PersonaType ADMIN = new PersonaType(PersonaType._ADMIN, true);
+    public static final PersonaType ACADEMIC = new PersonaType(PersonaType._ACADEMIC, true);
+    public static final PersonaType USER = new PersonaType(PersonaType._USER, true);
+    public static final PersonaType DEMO = new PersonaType(PersonaType._DEMO, true);
+    
+    protected String personaType;
+    private static HashMap<String, PersonaType> _table_ = new HashMap<String, PersonaType>();
 
     private static String generatePrefix(final String namespace)
     {
@@ -84,32 +89,41 @@ public class PermissionWithLockType implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    public PermissionType getPermission()
+    protected PersonaType(final String value, final boolean isRegisterValue)
     {
-        return this.permission;
+        this.personaType = value;
+        if (isRegisterValue)
+        {
+            PersonaType._table_.put(this.personaType, this);
+        }
+    }
+    
+    public String getValue()
+    {
+        return this.personaType;
     }
 
-    public void setPermission(final PermissionType param)
+    @Override
+    public boolean equals(final Object obj)
     {
-        this.permission = param;
+        return (obj == this);
     }
 
-    public boolean getIsLocked()
+    @Override
+    public int hashCode()
     {
-        return this.isLocked;
+        return this.toString().hashCode();
     }
 
-    public void setIsLocked(final boolean param)
+    @Override
+    public String toString()
     {
-
-        this.isLocked = param;
-
+        return this.personaType.toString();
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
             isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
@@ -123,15 +137,15 @@ public class PermissionWithLockType implements ADBBean
 
     public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, PersonaType.MY_QNAME)
         {
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                PermissionWithLockType.this.serialize(this.parentQName, factory, xmlWriter);
+                PersonaType.this.serialize(PersonaType.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new OMSourcedElementImpl(parentQName, factory, dataSource);
+        return new OMSourcedElementImpl(PersonaType.MY_QNAME, factory, dataSource);
     }
 
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
@@ -143,31 +157,27 @@ public class PermissionWithLockType implements ADBBean
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
-        String prefix = parentQName.getPrefix();
-        String namespace = parentQName.getNamespaceURI();
+        final String namespace = parentQName.getNamespaceURI();
+        final String localName = parentQName.getLocalPart();
 
-        if ((namespace != null) && (namespace.trim().length() > 0))
+        if (!namespace.equals(""))
         {
-            final String writerPrefix = xmlWriter.getPrefix(namespace);
-            if (writerPrefix != null)
+            String prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
             {
-                xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
+                prefix = PersonaType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, localName, namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
             }
             else
             {
-                if (prefix == null)
-                {
-                    prefix = PermissionWithLockType.generatePrefix(namespace);
-                }
-
-                xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
+                xmlWriter.writeStartElement(namespace, localName);
             }
         }
         else
         {
-            xmlWriter.writeStartElement(parentQName.getLocalPart());
+            xmlWriter.writeStartElement(localName);
         }
 
         if (serializeType)
@@ -177,46 +187,23 @@ public class PermissionWithLockType implements ADBBean
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":PermissionWithLockType", xmlWriter);
+                        + ":persona_type1", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                        "PermissionWithLockType", xmlWriter);
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "persona_type1",
+                        xmlWriter);
             }
         }
-        
-        if (this.permission == null)
+
+        if (this.personaType == null)
         {
-            throw new ADBException("permission cannot be null!!");
-        }
-        this.permission.serialize(new QName("", "permission"), factory, xmlWriter);
-
-        namespace = "";
-        if (!namespace.equals(""))
-        {
-            prefix = xmlWriter.getPrefix(namespace);
-
-            if (prefix == null)
-            {
-                prefix = PermissionWithLockType.generatePrefix(namespace);
-
-                xmlWriter.writeStartElement(prefix, "isLocked", namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
-
-            }
-            else
-            {
-                xmlWriter.writeStartElement(namespace, "isLocked");
-            }
+            throw new ADBException("Value cannot be null !!");
         }
         else
         {
-            xmlWriter.writeStartElement("isLocked");
+            xmlWriter.writeCharacters(this.personaType);
         }
-        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isLocked));
-        xmlWriter.writeEndElement();
 
         xmlWriter.writeEndElement();
     }
@@ -238,7 +225,7 @@ public class PermissionWithLockType implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = PermissionWithLockType.generatePrefix(namespace);
+            prefix = PersonaType.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
@@ -253,27 +240,57 @@ public class PermissionWithLockType implements ADBBean
 
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        elementList.add(new QName("", "permission"));
-        if (this.permission == null)
-        {
-            throw new ADBException("permission cannot be null!!");
-        }
-        elementList.add(this.permission);
-
-        elementList.add(new QName("", "isLocked"));
-        elementList.add(ConverterUtil.convertToString(this.isLocked));
-
-        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
-
+        return new ADBXMLStreamReaderImpl(PersonaType.MY_QNAME, new Object[] { ADBXMLStreamReader.ELEMENT_TEXT,
+                ConverterUtil.convertToString(this.personaType) }, null);
     }
 
     public static class Factory
     {
-        public static PermissionWithLockType parse(final XMLStreamReader reader) throws Exception
+        public static PersonaType fromValue(final String value) throws IllegalArgumentException
         {
-            final PermissionWithLockType object = new PermissionWithLockType();
+            final PersonaType enumeration = PersonaType._table_.get(value);
+
+            if (enumeration == null)
+            {
+                throw new IllegalArgumentException();
+            }
+            return enumeration;
+        }
+
+        public static PersonaType fromString(final String value, final String namespaceURI)
+                throws IllegalArgumentException
+        {
+            try
+            {
+                return Factory.fromValue(ConverterUtil.convertToString(value));
+            }
+            catch (final Exception e)
+            {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        public static PersonaType fromString(final XMLStreamReader xmlStreamReader, final String content)
+        {
+            if (content.indexOf(":") > -1)
+            {
+                final String prefix = content.substring(0, content.indexOf(":"));
+                final String namespaceUri = xmlStreamReader.getNamespaceContext().getNamespaceURI(prefix);
+                return PersonaType.Factory.fromString(content, namespaceUri);
+            }
+            else
+            {
+                return PersonaType.Factory.fromString(content, "");
+            }
+        }
+
+        public static PersonaType parse(final XMLStreamReader reader) throws Exception
+        {
+            PersonaType object = null;
+
+            String prefix = "";
+            String namespaceuri = "";
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -281,68 +298,26 @@ public class PermissionWithLockType implements ADBBean
                     reader.next();
                 }
 
-                if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
+                while (!reader.isEndElement())
                 {
-                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                            "type");
-                    if (fullTypeName != null)
+                    if (reader.isStartElement() || reader.hasText())
                     {
-                        String nsPrefix = null;
-                        if (fullTypeName.indexOf(":") > -1)
+                        final String content = reader.getElementText();
+                        if (content.indexOf(":") > 0)
                         {
-                            nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
+                            prefix = content.substring(0, content.indexOf(":"));
+                            namespaceuri = reader.getNamespaceURI(prefix);
+                            object = PersonaType.Factory.fromString(content, namespaceuri);
                         }
-                        nsPrefix = nsPrefix == null ? "" : nsPrefix;
-
-                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-
-                        if (!"PermissionWithLockType".equals(type))
+                        else
                         {
-                            //find namespace for the prefix
-                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (PermissionWithLockType) ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            object = PersonaType.Factory.fromString(content, "");
                         }
                     }
-                }
-
-                reader.next();
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "permission").equals(reader.getName()))
-                {
-                    object.setPermission(PermissionType.Factory.parse(reader));
-                    reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement() && new QName("", "isLocked").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setIsLocked(ConverterUtil.convertToBoolean(content));
-                    reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement())
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                    else
+                    {
+                        reader.next();
+                    }
                 }
             }
             catch (final XMLStreamException e)

@@ -105,7 +105,7 @@ public class ExtensionMapper
                 && "persona_type1".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.Persona_type1.Factory.parse(reader);
+            return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType.Factory.parse(reader);
 
         }
 
