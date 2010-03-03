@@ -247,9 +247,9 @@ public class ServerImpl
 	                writer.println("       <div align=\"center\">");
 	                writer.println("           <h1>Sahara R2: A New Hope</h1>");
 	                writer.println("           <img src=\"team.jpg\" />");
-	                writer.println("           <p style=\"font-size:0.8em\"><strong>The Sahara team:</strong> Michel " +
-	                		"de la Villefromoy, Tania Machet, Michael Diponio, Tejaswini Deshpande, " +
-	                		"Carlo Gianpietro.<br />");
+	                writer.println("           <p style=\"font-size:0.8em\"><strong>The Sahara team:</strong> " +
+	                		"Michael Diponio (Developer), Tania Machet (Software Engineer), " +
+	                		"Michel de la Villefromoy (Project Manager), Tejaswini Deshpande (Tester).<br />");
 	                writer.println("           &copy;University of Technology, Sydney 2009 - 2010</p>");
 	                writer.println("       </div>");
 	                writer.println("   </body>");
