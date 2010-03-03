@@ -243,7 +243,7 @@
 								type="pm:UserIDType">
 							</xsd:element>
 							<xsd:element name="userClass"
-								type="pm:UserClassType">
+								type="pm:UserClassIDType">
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>
@@ -492,12 +492,26 @@
             <xsd:attribute name="NewAttribute" type="xsd:string"></xsd:attribute>
         
             <xsd:attributeGroup name="NewAttributeGroup"></xsd:attributeGroup>
-           r Ahmad  <xsd:element name="getUserClassesForAcademic"
+           r Ahmad  <xsd:element name="getAcademicPermissionsForAcademic"
             	type="pm:UserIDType">
             </xsd:element>
-            <xsd:element name="getUserClassesForAcademicResponse"
+            <xsd:element name="getAcademicPermissionsForAcademicResponse"
             	type="pm:AcademicPermissionListType">
             </xsd:element>
+            <xsd:element name="getUserClasses"
+            	type="pm:UserClassesRequestType">
+            </xsd:element>
+            <xsd:element name="getUserClassesResponse"
+            	type="pm:UserClassListType">
+            </xsd:element>
+		
+            <xsd:complexType name="UserClassesRequestType">
+            	<xsd:sequence>
+            		<xsd:element name="notActive" type="xsd:boolean" maxOccurs="1" minOccurs="0"></xsd:element>
+            		<xsd:element name="all" type="xsd:boolean" maxOccurs="1" minOccurs="0"></xsd:element>
+            		<xsd:element name="letterRange" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
 		</xsd:schema>
   </wsdl:types>
   <wsdl:message name="getUserClassRequest">
@@ -662,11 +676,17 @@
   <wsdl:message name="bulkAddUserClassUsersResponse">
   	<wsdl:part name="parameters" element="pm:bulkAddUserClassUsersResponse"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getUserClassesForAcademicRequest">
-  	<wsdl:part name="parameters" element="pm:getUserClassesForAcademic"></wsdl:part>
+  <wsdl:message name="getAcademicPermissionsForAcademicRequest">
+  	<wsdl:part name="parameters" element="pm:getAcademicPermissionsForAcademic"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getUserClassesForAcademicResponse">
-  	<wsdl:part name="parameters" element="pm:getUserClassesForAcademicResponse"></wsdl:part>
+  <wsdl:message name="getAcademicPermissionsForAcademicResponse">
+  	<wsdl:part name="parameters" element="pm:getAcademicPermissionsForAcademicResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserClassesRequest">
+  	<wsdl:part name="parameters" element="pm:getUserClasses"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserClassesResponse">
+  	<wsdl:part name="parameters" element="pm:getUserClassesResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:portType name="Permissions">
     <wsdl:operation name="getUserClass">
@@ -773,13 +793,17 @@
     	<wsdl:input message="pm:getUserClassesForUserRequest"></wsdl:input>
     	<wsdl:output message="pm:getUserClassesForUserResponse"></wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getUserClassesForAcademic">
-    	<wsdl:input message="pm:getUserClassesForAcademicRequest"></wsdl:input>
-    	<wsdl:output message="pm:getUserClassesForAcademicResponse"></wsdl:output>
+    <wsdl:operation name="getAcademicPermissionsForAcademic">
+    	<wsdl:input message="pm:getAcademicPermissionsForAcademicRequest"></wsdl:input>
+    	<wsdl:output message="pm:getAcademicPermissionsForAcademicResponse"></wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="bulkAddUserClassUsers">
     	<wsdl:input message="pm:bulkAddUserClassUsersRequest"></wsdl:input>
     	<wsdl:output message="pm:bulkAddUserClassUsersResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserClasses">
+    	<wsdl:input message="pm:getUserClassesRequest"></wsdl:input>
+    	<wsdl:output message="pm:getUserClassesResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="PermissionsSOAP" type="pm:Permissions">
