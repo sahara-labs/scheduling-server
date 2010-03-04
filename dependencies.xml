@@ -89,4 +89,10 @@ Date: 28th December 2009
 		<buildRequiredBundle bundle="SchedulingServer-TaskScheduler.jar" bundleProject="TaskScheduler" />
 	</target>
 	
+	<!-- ### Permissions Bundle. -->
+	<detectIfBundlePresent property="missing.permissions" bundle="SchedulingServer-Permissions.jar" />
+	<target name="permissionsBundle" if="missing.permissions">
+		<buildRequiredBundle bundle="SchedulingServer-Permissions.jar" bundleProject="Permissions" />
+	</target>
+	
 </project>
