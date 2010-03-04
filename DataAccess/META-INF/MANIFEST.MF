@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Data Access
-Bundle-SymbolicName: SchedServer-DataAccess
+Bundle-SymbolicName: SchedulingServer-DataAccess
 Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator
 Bundle-Vendor: UTS: FEIT Remote Laboratory
