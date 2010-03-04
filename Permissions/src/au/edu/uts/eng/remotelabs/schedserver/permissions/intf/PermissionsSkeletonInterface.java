@@ -1,421 +1,163 @@
+/**
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 3rd March 2009
+ */
+
+package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
+
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
 
 /**
- * PermissionsSkeletonInterface.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1  Built on : Aug 19, 2008 (10:13:39 LKT)
+ * PermissionsSkeletonInterface, interface for the Permissions service.
  */
-    package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
-    /**
-     *  PermissionsSkeletonInterface java skeleton interface for the axisService
-     */
-    public interface PermissionsSkeletonInterface {
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param addUserLock
-         */
+public interface PermissionsSkeletonInterface
+{
+    public AddUserLockResponse addUserLock(AddUserLock request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse addUserLock
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock addUserLock
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param addPermission
-         */
+    public AddPermissionResponse addPermission(AddPermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse addPermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission addPermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param addUser
-         */
+    public AddUserResponse addUser(AddUser addUser);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse addUser
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser addUser
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param deleteUser
-         */
+    public DeleteUserResponse deleteUser(DeleteUser request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse deleteUser
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser deleteUser
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getUserClassesForUser
-         */
+    public GetUserClassesForUserResponse getUserClassesForUser(GetUserClassesForUser request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse getUserClassesForUser
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser getUserClassesForUser
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param deleteAcademicPermission
-         */
+    public DeleteAcademicPermissionResponse deleteAcademicPermission(DeleteAcademicPermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse deleteAcademicPermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission deleteAcademicPermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getAcademicPermissionsForAcademic
-         */
+    public GetAcademicPermissionsForAcademicResponse getAcademicPermissionsForAcademic(
+            GetAcademicPermissionsForAcademic request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse getAcademicPermissionsForAcademic
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic getAcademicPermissionsForAcademic
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param deleteUserAssociation
-         */
+    public DeleteUserAssociationResponse deleteUserAssociation(DeleteUserAssociation request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse deleteUserAssociation
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation deleteUserAssociation
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getPermissionsForUserClass
-         */
+    public GetPermissionsForUserClassResponse getPermissionsForUserClass(GetPermissionsForUserClass request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse getPermissionsForUserClass
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass getPermissionsForUserClass
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param editPermission
-         */
+    public EditPermissionResponse editPermission(EditPermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse editPermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission editPermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param editUserClass
-         */
+    public EditUserClassResponse editUserClass(EditUserClass request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse editUserClass
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass editUserClass
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param deleteUserLock
-         */
+    public DeleteUserLockResponse deleteUserLock(DeleteUserLock request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse deleteUserLock
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock deleteUserLock
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param editAcademicPermission
-         */
+    public EditAcademicPermissionResponse editAcademicPermission(EditAcademicPermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse editAcademicPermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission editAcademicPermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param deleteUserClass
-         */
+    public DeleteUserClassResponse deleteUserClass(DeleteUserClass request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse deleteUserClass
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass deleteUserClass
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param addUserClass
-         */
+    public AddUserClassResponse addUserClass(AddUserClass request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse addUserClass
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass addUserClass
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param deletePermission
-         */
+    public DeletePermissionResponse deletePermission(DeletePermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse deletePermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission deletePermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getPermissionsForUser
-         */
+    public GetPermissionsForUserResponse getPermissionsForUser(GetPermissionsForUser request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse getPermissionsForUser
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser getPermissionsForUser
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getUsersInUserClass
-         */
+    public GetUsersInUserClassResponse getUsersInUserClass(GetUsersInUserClass request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse getUsersInUserClass
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass getUsersInUserClass
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param addUserAssociation
-         */
+    public AddUserAssociationResponse addUserAssociation(AddUserAssociation request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse addUserAssociation
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation addUserAssociation
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getUser
-         */
+    public GetUserResponse getUser(GetUser request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse getUser
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser getUser
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getAcademicPermission
-         */
+    public GetAcademicPermissionResponse getAcademicPermission(GetAcademicPermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse getAcademicPermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission getAcademicPermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param addAcademicPermission
-         */
+    public AddAcademicPermissionResponse addAcademicPermission(AddAcademicPermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse addAcademicPermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission addAcademicPermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param unlockUserLock
-         */
+    public UnlockUserLockResponse unlockUserLock(UnlockUserLock request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse unlockUserLock
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock unlockUserLock
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getUserClasses
-         */
+    public GetUserClassesResponse getUserClasses(GetUserClasses request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse getUserClasses
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses getUserClasses
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param bulkAddUserClassUsers
-         */
+    public BulkAddUserClassUsersResponse bulkAddUserClassUsers(BulkAddUserClassUsers request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse bulkAddUserClassUsers
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers bulkAddUserClassUsers
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getAcademicPermissionsForUserClass
-         */
+    public GetAcademicPermissionsForUserClassResponse getAcademicPermissionsForUserClass(
+            GetAcademicPermissionsForUserClass request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse getAcademicPermissionsForUserClass
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass getAcademicPermissionsForUserClass
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getPermission
-         */
+    public GetPermissionResponse getPermission(GetPermission request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse getPermission
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission getPermission
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param getUserClass
-         */
+    public GetUserClassResponse getUserClass(GetUserClass request);
 
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse getUserClass
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass getUserClass
-                 )
-            ;
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                    * @param editUser
-         */
-
-        
-                public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse editUser
-                (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser editUser
-                 )
-            ;
-        
-         }
-    
+    public EditUserResponse editUser(EditUser request);
+}

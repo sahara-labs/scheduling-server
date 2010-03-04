@@ -1,479 +1,254 @@
+/**
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 3rd March 2009
+ */
+
+package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
+
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
 
 /**
- * PermissionsSkeleton.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1  Built on : Aug 19, 2008 (10:13:39 LKT)
+ * PermissionsSkeleton, skeleton class for the Permissions service.
  */
-    package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
-    /**
-     *  PermissionsSkeleton java skeleton for the axisService
-     */
-    public class PermissionsSkeleton implements PermissionsSkeletonInterface{
-        
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param addUserLock0
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse addUserLock
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock addUserLock0
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#addUserLock");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param addPermission2
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse addPermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission addPermission2
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#addPermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param addUser4
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse addUser
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser addUser4
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#addUser");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param deleteUser6
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse deleteUser
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser deleteUser6
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deleteUser");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getUserClassesForUser8
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse getUserClassesForUser
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser getUserClassesForUser8
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getUserClassesForUser");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param deleteAcademicPermission10
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse deleteAcademicPermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission deleteAcademicPermission10
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deleteAcademicPermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getAcademicPermissionsForAcademic12
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse getAcademicPermissionsForAcademic
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic getAcademicPermissionsForAcademic12
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getAcademicPermissionsForAcademic");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param deleteUserAssociation14
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse deleteUserAssociation
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation deleteUserAssociation14
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deleteUserAssociation");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getPermissionsForUserClass16
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse getPermissionsForUserClass
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass getPermissionsForUserClass16
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getPermissionsForUserClass");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param editPermission18
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse editPermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission editPermission18
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#editPermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param editUserClass20
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse editUserClass
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass editUserClass20
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#editUserClass");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param deleteUserLock22
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse deleteUserLock
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock deleteUserLock22
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deleteUserLock");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param editAcademicPermission24
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse editAcademicPermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission editAcademicPermission24
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#editAcademicPermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param deleteUserClass26
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse deleteUserClass
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass deleteUserClass26
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deleteUserClass");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param addUserClass28
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse addUserClass
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass addUserClass28
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#addUserClass");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param deletePermission30
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse deletePermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission deletePermission30
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deletePermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getPermissionsForUser32
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse getPermissionsForUser
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser getPermissionsForUser32
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getPermissionsForUser");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getUsersInUserClass34
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse getUsersInUserClass
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass getUsersInUserClass34
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getUsersInUserClass");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param addUserAssociation36
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse addUserAssociation
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation addUserAssociation36
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#addUserAssociation");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getUser38
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse getUser
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser getUser38
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getUser");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getAcademicPermission40
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse getAcademicPermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission getAcademicPermission40
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getAcademicPermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param addAcademicPermission42
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse addAcademicPermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission addAcademicPermission42
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#addAcademicPermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param unlockUserLock44
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse unlockUserLock
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock unlockUserLock44
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#unlockUserLock");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getUserClasses46
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse getUserClasses
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses getUserClasses46
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getUserClasses");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param bulkAddUserClassUsers48
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse bulkAddUserClassUsers
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers bulkAddUserClassUsers48
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#bulkAddUserClassUsers");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getAcademicPermissionsForUserClass50
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse getAcademicPermissionsForUserClass
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass getAcademicPermissionsForUserClass50
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getAcademicPermissionsForUserClass");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getPermission52
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse getPermission
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission getPermission52
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getPermission");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param getUserClass54
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse getUserClass
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass getUserClass54
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getUserClass");
-        }
-     
-         
-        /**
-         * Auto generated method signature
-         * 
-                                     * @param editUser56
-         */
-        
-                 public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse editUser
-                  (
-                  au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser editUser56
-                  )
-            {
-                //TODO : fill this with the necessary business logic
-                throw new  java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName() + "#editUser");
-        }
-     
+public class PermissionsSkeleton implements PermissionsSkeletonInterface
+{
+    public AddUserLockResponse addUserLock(final AddUserLock request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUserLock");
     }
-    
+
+    public AddPermissionResponse addPermission(final AddPermission request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addPermission");
+    }
+
+    public AddUserResponse addUser(final AddUser request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUser");
+    }
+
+    public DeleteUserResponse deleteUser(final DeleteUser request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUser");
+    }
+    public GetUserClassesForUserResponse getUserClassesForUser(final GetUserClassesForUser request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUserClassesForUser");
+    }
+
+    public DeleteAcademicPermissionResponse deleteAcademicPermission(
+            final DeleteAcademicPermission request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteAcademicPermission");
+    }
+
+    public GetAcademicPermissionsForAcademicResponse getAcademicPermissionsForAcademic(
+            final GetAcademicPermissionsForAcademic request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() 
+                + "#getAcademicPermissionsForAcademic");
+    }
+
+    public DeleteUserAssociationResponse deleteUserAssociation(final DeleteUserAssociation request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUserAssociation");
+    }
+
+    public GetPermissionsForUserClassResponse getPermissionsForUserClass(
+            final GetPermissionsForUserClass request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getPermissionsForUserClass");
+    }
+
+    public EditPermissionResponse editPermission(final EditPermission request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editPermission");
+    }
+
+    public EditUserClassResponse editUserClass(final EditUserClass request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editUserClass");
+    }
+
+    public DeleteUserLockResponse deleteUserLock(final DeleteUserLock request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUserLock");
+    }
+
+    public EditAcademicPermissionResponse editAcademicPermission(final EditAcademicPermission request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editAcademicPermission");
+    }
+
+    public DeleteUserClassResponse deleteUserClass(final DeleteUserClass request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUserClass");
+    }
+
+    public AddUserClassResponse addUserClass(final AddUserClass request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUserClass");
+    }
+
+    public DeletePermissionResponse deletePermission(final DeletePermission request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deletePermission");
+    }
+
+    public GetPermissionsForUserResponse getPermissionsForUser(final GetPermissionsForUser request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getPermissionsForUser");
+    }
+
+
+    public GetUsersInUserClassResponse getUsersInUserClass(final GetUsersInUserClass request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUsersInUserClass");
+    }
+
+    public AddUserAssociationResponse addUserAssociation(final AddUserAssociation request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUserAssociation");
+    }
+
+    public GetUserResponse getUser(final GetUser request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUser");
+    }
+
+    public GetAcademicPermissionResponse getAcademicPermission(final GetAcademicPermission request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getAcademicPermission");
+    }
+
+    public AddAcademicPermissionResponse addAcademicPermission(final AddAcademicPermission request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addAcademicPermission");
+    }
+
+    public UnlockUserLockResponse unlockUserLock(final UnlockUserLock request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#unlockUserLock");
+    }
+
+    public GetUserClassesResponse getUserClasses(final GetUserClasses request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUserClasses");
+    }
+
+    public BulkAddUserClassUsersResponse bulkAddUserClassUsers(final BulkAddUserClassUsers request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#bulkAddUserClassUsers");
+    }
+
+    public GetAcademicPermissionsForUserClassResponse getAcademicPermissionsForUserClass(
+            final GetAcademicPermissionsForUserClass request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName()
+                + "#getAcademicPermissionsForUserClass");
+    }
+
+    public GetPermissionResponse getPermission(final GetPermission getPermission52)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getPermission");
+    }
+
+    public GetUserClassResponse getUserClass(final GetUserClass request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUserClass");
+    }
+
+    public EditUserResponse editUser(final EditUser request)
+    {
+        throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editUser");
+    }
+}
