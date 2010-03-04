@@ -1,2396 +1,1195 @@
+/**
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 3rd March 2009
+ */
+package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
+import org.apache.axis2.util.JavaUtils;
+
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
 
 /**
- * PermissionsMessageReceiverInOut.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1  Built on : Aug 19, 2008 (10:13:39 LKT)
+ * Message receiver for the permissions SOAP operations.
  */
-        package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
+public class PermissionsMessageReceiverInOut extends AbstractInOutMessageReceiver
+{
+    @Override
+    public void invokeBusinessLogic(final MessageContext msgContext, final MessageContext newMsgContext)
+            throws AxisFault
+    {
+        try
+        {
+            final Object obj = this.getTheImplementationObject(msgContext);
+            final PermissionsSkeletonInterface skel = (PermissionsSkeletonInterface) obj;
 
-        /**
-        *  PermissionsMessageReceiverInOut message receiver
-        */
+            SOAPEnvelope envelope = null;
+            final AxisOperation op = msgContext.getOperationContext().getAxisOperation();
+            if (op == null)
+            {
+                throw new AxisFault("Operation is not located, if this is doclit style the SOAP-ACTION should " +
+                		"specified via the SOAP Action to use the RawXMLProvider");
+            }
 
-        public class PermissionsMessageReceiverInOut extends org.apache.axis2.receivers.AbstractInOutMessageReceiver{
+            String methodName;
+            if ((op.getName() != null) && ((methodName = JavaUtils.xmlNameToJava(op.getName().getLocalPart())) != null))
+            {
+                if ("addUserLock".equals(methodName))
+                {
+                    AddUserLockResponse addUserLockResponse = null;
+                    final AddUserLock wrappedParam = (AddUserLock) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), AddUserLock.class, 
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    addUserLockResponse = skel.addUserLock(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), addUserLockResponse, false);
+                }
+                else if ("addPermission".equals(methodName))
+                {
+                    AddPermissionResponse addPermissionResponse = null;
+                    final AddPermission wrappedParam = (AddPermission) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), AddPermission.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    addPermissionResponse = skel.addPermission(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), addPermissionResponse, false);
+                }
+                else if ("addUser".equals(methodName))
+                {
+                    AddUserResponse addUserResponse = null;
+                    final AddUser wrappedParam = (AddUser) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), AddUser.class, this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    addUserResponse = skel.addUser(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), addUserResponse, false);
+                }
+                else if ("deleteUser".equals(methodName))
+                {
+                    DeleteUserResponse deleteUserResponse = null;
+                    final DeleteUser wrappedParam = (DeleteUser) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), DeleteUser.class, this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    deleteUserResponse = skel.deleteUser(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), deleteUserResponse, false);
+                }
+                else if ("getUserClassesForUser".equals(methodName))
+                {
+                    GetUserClassesForUserResponse getUserClassesForUserResponse = null;
+                    final GetUserClassesForUser wrappedParam = (GetUserClassesForUser) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), GetUserClassesForUser.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    getUserClassesForUserResponse = skel.getUserClassesForUser(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getUserClassesForUserResponse, false);
+                }
+                else if ("deleteAcademicPermission".equals(methodName))
+                {
+                    DeleteAcademicPermissionResponse deleteAcademicPermissionResponse = null;
+                    final DeleteAcademicPermission wrappedParam = (DeleteAcademicPermission) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), DeleteAcademicPermission.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    deleteAcademicPermissionResponse = skel.deleteAcademicPermission(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), deleteAcademicPermissionResponse,
+                            false);
+                }
+                else if ("getAcademicPermissionsForAcademic".equals(methodName))
+                {
+                    GetAcademicPermissionsForAcademicResponse getAcademicPermissionsForAcademicResponse = null;
+                    final GetAcademicPermissionsForAcademic wrappedParam = (GetAcademicPermissionsForAcademic) this
+                            .fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
+                            GetAcademicPermissionsForAcademic.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    getAcademicPermissionsForAcademicResponse = skel.getAcademicPermissionsForAcademic(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext),
+                            getAcademicPermissionsForAcademicResponse, false);
+                }
+                else if ("deleteUserAssociation".equals(methodName))
+                {
+                    DeleteUserAssociationResponse deleteUserAssociationResponse = null;
+                    final DeleteUserAssociation wrappedParam = (DeleteUserAssociation) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), DeleteUserAssociation.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
 
+                    deleteUserAssociationResponse = skel.deleteUserAssociation(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), deleteUserAssociationResponse, false);
+                }
+                else if ("getPermissionsForUserClass".equals(methodName))
+                {
+                    GetPermissionsForUserClassResponse getPermissionsForUserClassResponse = null;
+                    final GetPermissionsForUserClass wrappedParam = (GetPermissionsForUserClass) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), GetPermissionsForUserClass.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    getPermissionsForUserClassResponse = skel.getPermissionsForUserClass(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getPermissionsForUserClassResponse,
+                            false);
+                }
+                else if ("editPermission".equals(methodName))
+                {
+                    EditPermissionResponse editPermissionResponse = null;
+                    final EditPermission wrappedParam = (EditPermission) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), EditPermission.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    editPermissionResponse = skel.editPermission(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), editPermissionResponse, false);
+                }
+                else if ("editUserClass".equals(methodName))
+                {
+                    EditUserClassResponse editUserClassResponse = null;
+                    final EditUserClass wrappedParam = (EditUserClass) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), EditUserClass.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    editUserClassResponse = skel.editUserClass(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), editUserClassResponse, false);
+                }
+                else if ("deleteUserLock".equals(methodName))
+                {
+                    DeleteUserLockResponse deleteUserLockResponse = null;
+                    final DeleteUserLock wrappedParam = (DeleteUserLock) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), DeleteUserLock.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    deleteUserLockResponse = skel.deleteUserLock(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), deleteUserLockResponse, false);
+                }
+                else
 
-        public void invokeBusinessLogic(org.apache.axis2.context.MessageContext msgContext, org.apache.axis2.context.MessageContext newMsgContext)
-        throws org.apache.axis2.AxisFault{
+                if ("editAcademicPermission".equals(methodName))
+                {
 
-        try {
+                    EditAcademicPermissionResponse editAcademicPermissionResponse83 = null;
+                    final EditAcademicPermission wrappedParam = (EditAcademicPermission) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), EditAcademicPermission.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
 
-        // get the implementation class for the Web Service
-        Object obj = getTheImplementationObject(msgContext);
+                    editAcademicPermissionResponse83 =
 
-        PermissionsSkeletonInterface skel = (PermissionsSkeletonInterface)obj;
-        //Out Envelop
-        org.apache.axiom.soap.SOAPEnvelope envelope = null;
-        //Find the axisOperation that has been set by the Dispatch phase.
-        org.apache.axis2.description.AxisOperation op = msgContext.getOperationContext().getAxisOperation();
-        if (op == null) {
-        throw new org.apache.axis2.AxisFault("Operation is not located, if this is doclit style the SOAP-ACTION should specified via the SOAP Action to use the RawXMLProvider");
+                    skel.editAcademicPermission(wrappedParam);
+
+                    envelope = this
+                            .toEnvelope(this.getSOAPFactory(msgContext), editAcademicPermissionResponse83, false);
+                }
+                else
+
+                if ("deleteUserClass".equals(methodName))
+                {
+
+                    DeleteUserClassResponse deleteUserClassResponse85 = null;
+                    final DeleteUserClass wrappedParam = (DeleteUserClass) this.fromOM(msgContext.getEnvelope()
+                            .getBody().getFirstElement(), DeleteUserClass.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+
+                    deleteUserClassResponse85 =
+
+                    skel.deleteUserClass(wrappedParam);
+
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), deleteUserClassResponse85, false);
+                }
+                else
+
+                if ("addUserClass".equals(methodName))
+                {
+
+                    AddUserClassResponse addUserClassResponse87 = null;
+                    final AddUserClass wrappedParam = (AddUserClass) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), AddUserClass.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+
+                    addUserClassResponse87 =
+
+                    skel.addUserClass(wrappedParam);
+
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), addUserClassResponse87, false);
+                }
+                else
+
+                if ("deletePermission".equals(methodName))
+                {
+
+                    DeletePermissionResponse deletePermissionResponse89 = null;
+                    final DeletePermission wrappedParam = (DeletePermission) this.fromOM(msgContext.getEnvelope()
+                            .getBody().getFirstElement(), DeletePermission.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+
+                    deletePermissionResponse89 =
+
+                    skel.deletePermission(wrappedParam);
+
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), deletePermissionResponse89, false);
+                }
+                else if ("getPermissionsForUser".equals(methodName))
+                {
+                    GetPermissionsForUserResponse getPermissionsForUserResponse = null;
+                    final GetPermissionsForUser wrappedParam = (GetPermissionsForUser) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), GetPermissionsForUser.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    getPermissionsForUserResponse = skel.getPermissionsForUser(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getPermissionsForUserResponse, false);
+                }
+                else if ("getUsersInUserClass".equals(methodName))
+                {
+                    GetUsersInUserClassResponse getUsersInUserClassResponse = null;
+                    final GetUsersInUserClass wrappedParam = (GetUsersInUserClass) this.fromOM(msgContext.getEnvelope()
+                            .getBody().getFirstElement(), GetUsersInUserClass.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    getUsersInUserClassResponse = skel.getUsersInUserClass(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getUsersInUserClassResponse, false);
+                }
+                else if ("addUserAssociation".equals(methodName))
+                {
+                    AddUserAssociationResponse addUserAssociationResponse = null;
+                    final AddUserAssociation wrappedParam = (AddUserAssociation) this.fromOM(msgContext.getEnvelope()
+                            .getBody().getFirstElement(), AddUserAssociation.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    addUserAssociationResponse = skel.addUserAssociation(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), addUserAssociationResponse, false);
+                }
+                else if ("getUser".equals(methodName))
+                {
+                    GetUserResponse getUserResponse = null;
+                    final GetUser wrappedParam = (GetUser) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), GetUser.class, this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    getUserResponse = skel.getUser(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getUserResponse, false);
+                }
+                else if ("getAcademicPermission".equals(methodName))
+                {
+                    GetAcademicPermissionResponse getAcademicPermissionResponse = null;
+                    final GetAcademicPermission wrappedParam = (GetAcademicPermission) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), GetAcademicPermission.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    getAcademicPermissionResponse = skel.getAcademicPermission(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getAcademicPermissionResponse, false);
+                }
+                else if ("addAcademicPermission".equals(methodName))
+                {
+                    AddAcademicPermissionResponse addAcademicPermissionResponse = null;
+                    final AddAcademicPermission wrappedParam = (AddAcademicPermission) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), AddAcademicPermission.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    addAcademicPermissionResponse = skel.addAcademicPermission(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), addAcademicPermissionResponse, false);
+                }
+                else if ("unlockUserLock".equals(methodName))
+                {
+                    UnlockUserLockResponse unlockUserLockResponse = null;
+                    final UnlockUserLock wrappedParam = (UnlockUserLock) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), UnlockUserLock.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    unlockUserLockResponse = skel.unlockUserLock(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), unlockUserLockResponse, false);
+                }
+                else if ("getUserClasses".equals(methodName))
+                {
+                    GetUserClassesResponse getUserClassesResponse = null;
+                    final GetUserClasses wrappedParam = (GetUserClasses) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), GetUserClasses.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    getUserClassesResponse = skel.getUserClasses(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getUserClassesResponse, false);
+                }
+                else if ("bulkAddUserClassUsers".equals(methodName))
+                {
+                    BulkAddUserClassUsersResponse bulkAddUserClassUsersResponse = null;
+                    final BulkAddUserClassUsers wrappedParam = (BulkAddUserClassUsers) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), BulkAddUserClassUsers.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    bulkAddUserClassUsersResponse = skel.bulkAddUserClassUsers(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), bulkAddUserClassUsersResponse, false);
+                }
+                else if ("getAcademicPermissionsForUserClass".equals(methodName))
+                {
+                    GetAcademicPermissionsForUserClassResponse getAcademicPermissionsForUserClassResponse = null;
+                    final GetAcademicPermissionsForUserClass wrappedParam = (GetAcademicPermissionsForUserClass) this
+                            .fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
+                            GetAcademicPermissionsForUserClass.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    getAcademicPermissionsForUserClassResponse = skel.getAcademicPermissionsForUserClass(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getAcademicPermissionsForUserClassResponse, false);
+                }
+                else if ("getPermission".equals(methodName))
+                {
+                    GetPermissionResponse getPermissionResponse = null;
+                    final GetPermission wrappedParam = (GetPermission) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), GetPermission.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+                    getPermissionResponse = skel.getPermission(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getPermissionResponse, false);
+                }
+                else if ("getUserClass".equals(methodName))
+                {
+                    GetUserClassResponse getUserClassResponse = null;
+                    final GetUserClass wrappedParam = (GetUserClass) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), GetUserClass.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    getUserClassResponse = skel.getUserClass(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), getUserClassResponse, false);
+                }
+                else if ("editUser".equals(methodName))
+                {
+                    EditUserResponse editUserResponse = null;
+                    final EditUser wrappedParam = (EditUser) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), EditUser.class, this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    editUserResponse = skel.editUser(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), editUserResponse, false);
+                }
+                else
+                {
+                    throw new RuntimeException("method not found");
+                }
+
+                newMsgContext.setEnvelope(envelope);
+            }
         }
-
-        java.lang.String methodName;
-        if((op.getName() != null) && ((methodName = org.apache.axis2.util.JavaUtils.xmlNameToJava(op.getName().getLocalPart())) != null)){
-
-        
-
-            if("addUserLock".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse addUserLockResponse59 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               addUserLockResponse59 =
-                                                   
-                                                   
-                                                         skel.addUserLock(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), addUserLockResponse59, false);
-                                    } else 
-
-            if("addPermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse addPermissionResponse61 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               addPermissionResponse61 =
-                                                   
-                                                   
-                                                         skel.addPermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), addPermissionResponse61, false);
-                                    } else 
-
-            if("addUser".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse addUserResponse63 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               addUserResponse63 =
-                                                   
-                                                   
-                                                         skel.addUser(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), addUserResponse63, false);
-                                    } else 
-
-            if("deleteUser".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse deleteUserResponse65 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               deleteUserResponse65 =
-                                                   
-                                                   
-                                                         skel.deleteUser(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), deleteUserResponse65, false);
-                                    } else 
-
-            if("getUserClassesForUser".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse getUserClassesForUserResponse67 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getUserClassesForUserResponse67 =
-                                                   
-                                                   
-                                                         skel.getUserClassesForUser(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getUserClassesForUserResponse67, false);
-                                    } else 
-
-            if("deleteAcademicPermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse deleteAcademicPermissionResponse69 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               deleteAcademicPermissionResponse69 =
-                                                   
-                                                   
-                                                         skel.deleteAcademicPermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), deleteAcademicPermissionResponse69, false);
-                                    } else 
-
-            if("getAcademicPermissionsForAcademic".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse getAcademicPermissionsForAcademicResponse71 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getAcademicPermissionsForAcademicResponse71 =
-                                                   
-                                                   
-                                                         skel.getAcademicPermissionsForAcademic(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getAcademicPermissionsForAcademicResponse71, false);
-                                    } else 
-
-            if("deleteUserAssociation".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse deleteUserAssociationResponse73 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               deleteUserAssociationResponse73 =
-                                                   
-                                                   
-                                                         skel.deleteUserAssociation(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), deleteUserAssociationResponse73, false);
-                                    } else 
-
-            if("getPermissionsForUserClass".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse getPermissionsForUserClassResponse75 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getPermissionsForUserClassResponse75 =
-                                                   
-                                                   
-                                                         skel.getPermissionsForUserClass(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getPermissionsForUserClassResponse75, false);
-                                    } else 
-
-            if("editPermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse editPermissionResponse77 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               editPermissionResponse77 =
-                                                   
-                                                   
-                                                         skel.editPermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), editPermissionResponse77, false);
-                                    } else 
-
-            if("editUserClass".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse editUserClassResponse79 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               editUserClassResponse79 =
-                                                   
-                                                   
-                                                         skel.editUserClass(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), editUserClassResponse79, false);
-                                    } else 
-
-            if("deleteUserLock".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse deleteUserLockResponse81 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               deleteUserLockResponse81 =
-                                                   
-                                                   
-                                                         skel.deleteUserLock(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), deleteUserLockResponse81, false);
-                                    } else 
-
-            if("editAcademicPermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse editAcademicPermissionResponse83 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               editAcademicPermissionResponse83 =
-                                                   
-                                                   
-                                                         skel.editAcademicPermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), editAcademicPermissionResponse83, false);
-                                    } else 
-
-            if("deleteUserClass".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse deleteUserClassResponse85 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               deleteUserClassResponse85 =
-                                                   
-                                                   
-                                                         skel.deleteUserClass(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), deleteUserClassResponse85, false);
-                                    } else 
-
-            if("addUserClass".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse addUserClassResponse87 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               addUserClassResponse87 =
-                                                   
-                                                   
-                                                         skel.addUserClass(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), addUserClassResponse87, false);
-                                    } else 
-
-            if("deletePermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse deletePermissionResponse89 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               deletePermissionResponse89 =
-                                                   
-                                                   
-                                                         skel.deletePermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), deletePermissionResponse89, false);
-                                    } else 
-
-            if("getPermissionsForUser".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse getPermissionsForUserResponse91 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getPermissionsForUserResponse91 =
-                                                   
-                                                   
-                                                         skel.getPermissionsForUser(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getPermissionsForUserResponse91, false);
-                                    } else 
-
-            if("getUsersInUserClass".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse getUsersInUserClassResponse93 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getUsersInUserClassResponse93 =
-                                                   
-                                                   
-                                                         skel.getUsersInUserClass(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getUsersInUserClassResponse93, false);
-                                    } else 
-
-            if("addUserAssociation".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse addUserAssociationResponse95 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               addUserAssociationResponse95 =
-                                                   
-                                                   
-                                                         skel.addUserAssociation(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), addUserAssociationResponse95, false);
-                                    } else 
-
-            if("getUser".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse getUserResponse97 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getUserResponse97 =
-                                                   
-                                                   
-                                                         skel.getUser(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getUserResponse97, false);
-                                    } else 
-
-            if("getAcademicPermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse getAcademicPermissionResponse99 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getAcademicPermissionResponse99 =
-                                                   
-                                                   
-                                                         skel.getAcademicPermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getAcademicPermissionResponse99, false);
-                                    } else 
-
-            if("addAcademicPermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse addAcademicPermissionResponse101 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               addAcademicPermissionResponse101 =
-                                                   
-                                                   
-                                                         skel.addAcademicPermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), addAcademicPermissionResponse101, false);
-                                    } else 
-
-            if("unlockUserLock".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse unlockUserLockResponse103 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               unlockUserLockResponse103 =
-                                                   
-                                                   
-                                                         skel.unlockUserLock(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), unlockUserLockResponse103, false);
-                                    } else 
-
-            if("getUserClasses".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse getUserClassesResponse105 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getUserClassesResponse105 =
-                                                   
-                                                   
-                                                         skel.getUserClasses(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getUserClassesResponse105, false);
-                                    } else 
-
-            if("bulkAddUserClassUsers".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse bulkAddUserClassUsersResponse107 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               bulkAddUserClassUsersResponse107 =
-                                                   
-                                                   
-                                                         skel.bulkAddUserClassUsers(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), bulkAddUserClassUsersResponse107, false);
-                                    } else 
-
-            if("getAcademicPermissionsForUserClass".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse getAcademicPermissionsForUserClassResponse109 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getAcademicPermissionsForUserClassResponse109 =
-                                                   
-                                                   
-                                                         skel.getAcademicPermissionsForUserClass(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getAcademicPermissionsForUserClassResponse109, false);
-                                    } else 
-
-            if("getPermission".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse getPermissionResponse111 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getPermissionResponse111 =
-                                                   
-                                                   
-                                                         skel.getPermission(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getPermissionResponse111, false);
-                                    } else 
-
-            if("getUserClass".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse getUserClassResponse113 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               getUserClassResponse113 =
-                                                   
-                                                   
-                                                         skel.getUserClass(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), getUserClassResponse113, false);
-                                    } else 
-
-            if("editUser".equals(methodName)){
-                
-                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse editUserResponse115 = null;
-	                        au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser wrappedParam =
-                                                             (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser)fromOM(
-                                    msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser.class,
-                                    getEnvelopeNamespaces(msgContext.getEnvelope()));
-                                                
-                                               editUserResponse115 =
-                                                   
-                                                   
-                                                         skel.editUser(wrappedParam)
-                                                    ;
-                                            
-                                        envelope = toEnvelope(getSOAPFactory(msgContext), editUserResponse115, false);
-                                    
-            } else {
-              throw new java.lang.RuntimeException("method not found");
-            }
-        
-
-        newMsgContext.setEnvelope(envelope);
+        catch (final Exception e)
+        {
+            throw AxisFault.makeFault(e);
         }
-        }
-        catch (java.lang.Exception e) {
-        throw org.apache.axis2.AxisFault.makeFault(e);
-        }
-        }
-        
-        //
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse param, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
-
-            
-                        try{
-                             return param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse.MY_QNAME,
-                                          org.apache.axiom.om.OMAbstractFactory.getOMFactory());
-                        } catch(org.apache.axis2.databinding.ADBException e){
-                            throw org.apache.axis2.AxisFault.makeFault(e);
-                        }
-                    
-
-            }
-        
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse wrapaddUserLock(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse wrapaddPermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse wrapaddUser(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse wrapdeleteUser(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse wrapgetUserClassesForUser(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse wrapdeleteAcademicPermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse wrapgetAcademicPermissionsForAcademic(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse wrapdeleteUserAssociation(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse wrapgetPermissionsForUserClass(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse wrapeditPermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse wrapeditUserClass(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse wrapdeleteUserLock(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse wrapeditAcademicPermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse wrapdeleteUserClass(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse wrapaddUserClass(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse wrapdeletePermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse wrapgetPermissionsForUser(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse wrapgetUsersInUserClass(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse wrapaddUserAssociation(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse wrapgetUser(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse wrapgetAcademicPermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse wrapaddAcademicPermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse wrapunlockUserLock(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse wrapgetUserClasses(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse wrapbulkAddUserClassUsers(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse wrapgetAcademicPermissionsForUserClass(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse wrapgetPermission(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse wrapgetUserClass(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse();
-                                return wrappedElement;
-                         }
-                    
-                    private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse param, boolean optimizeContent)
-                        throws org.apache.axis2.AxisFault{
-                      try{
-                          org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                           
-                                    emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse.MY_QNAME,factory));
-                                
-
-                         return emptyEnvelope;
-                    } catch(org.apache.axis2.databinding.ADBException e){
-                        throw org.apache.axis2.AxisFault.makeFault(e);
-                    }
-                    }
-                    
-                         private au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse wrapeditUser(){
-                                au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse wrappedElement = new au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse();
-                                return wrappedElement;
-                         }
-                    
-
-
-        /**
-        *  get the default envelope
-        */
-        private org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory){
-        return factory.getDefaultEnvelope();
-        }
-
-
-        private  java.lang.Object fromOM(
-        org.apache.axiom.om.OMElement param,
-        java.lang.Class type,
-        java.util.Map extraNamespaces) throws org.apache.axis2.AxisFault{
-
-        try {
-        
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLockResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademicResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLockResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsersResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-                if (au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse.class.equals(type)){
-                
-                           return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
-                    
-
-                }
-           
-        } catch (java.lang.Exception e) {
-        throw org.apache.axis2.AxisFault.makeFault(e);
-        }
-           return null;
-        }
-
-
-
-    
-
-        /**
-        *  A utility method that copies the namepaces from the SOAPEnvelope
-        */
-        private java.util.Map getEnvelopeNamespaces(org.apache.axiom.soap.SOAPEnvelope env){
-        java.util.Map returnMap = new java.util.HashMap();
-        java.util.Iterator namespaceIterator = env.getAllDeclaredNamespaces();
-        while (namespaceIterator.hasNext()) {
-        org.apache.axiom.om.OMNamespace ns = (org.apache.axiom.om.OMNamespace) namespaceIterator.next();
-        returnMap.put(ns.getPrefix(),ns.getNamespaceURI());
-        }
-        return returnMap;
-        }
-
-        private org.apache.axis2.AxisFault createAxisFault(java.lang.Exception e) {
-        org.apache.axis2.AxisFault f;
-        Throwable cause = e.getCause();
-        if (cause != null) {
-            f = new org.apache.axis2.AxisFault(e.getMessage(), cause);
-        } else {
-            f = new org.apache.axis2.AxisFault(e.getMessage());
-        }
-
-        return f;
     }
 
-        }//end of class
-    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddUserLockResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddUserLockResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddPermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddPermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddUserResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddUserResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final DeleteUserResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(DeleteUserResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetUserClassesForUserResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetUserClassesForUserResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final DeleteAcademicPermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(DeleteAcademicPermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetAcademicPermissionsForAcademicResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetAcademicPermissionsForAcademicResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final DeleteUserAssociationResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(DeleteUserAssociationResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetPermissionsForUserClassResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetPermissionsForUserClassResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final EditPermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(EditPermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final EditUserClassResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(EditUserClassResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final DeleteUserLockResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(DeleteUserLockResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final EditAcademicPermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(EditAcademicPermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final DeleteUserClassResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(DeleteUserClassResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddUserClassResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddUserClassResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final DeletePermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(DeletePermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetPermissionsForUserResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetPermissionsForUserResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetUsersInUserClassResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetUsersInUserClassResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddUserAssociationResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddUserAssociationResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetUserResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetUserResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetAcademicPermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetAcademicPermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddAcademicPermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddAcademicPermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final UnlockUserLockResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(UnlockUserLockResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetUserClassesResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetUserClassesResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final BulkAddUserClassUsersResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(BulkAddUserClassUsersResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetAcademicPermissionsForUserClassResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetAcademicPermissionsForUserClassResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetPermissionResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetPermissionResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetUserClassResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetUserClassResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final EditUserResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(EditUserResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    private Object fromOM(final OMElement param, final Class<?> type, final Map<String, String> extraNamespaces)
+            throws AxisFault
+    {
+        try
+        {
+            if (AddUserLock.class.equals(type))
+            {
+                return AddUserLock.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUserLockResponse.class.equals(type))
+            {
+                return AddUserLockResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddPermission.class.equals(type))
+            {
+                return AddPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddPermissionResponse.class.equals(type))
+            {
+                return AddPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUser.class.equals(type))
+            {
+                return AddUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUserResponse.class.equals(type))
+            {
+                return AddUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUser.class.equals(type))
+            {
+                return DeleteUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUserResponse.class.equals(type))
+            {
+                return DeleteUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUserClassesForUser.class.equals(type))
+            {
+                return GetUserClassesForUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUserClassesForUserResponse.class.equals(type))
+            {
+                return GetUserClassesForUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteAcademicPermission.class.equals(type))
+            {
+                return DeleteAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteAcademicPermissionResponse.class.equals(type))
+            {
+                return DeleteAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetAcademicPermissionsForAcademic.class.equals(type))
+            {
+                return GetAcademicPermissionsForAcademic.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetAcademicPermissionsForAcademicResponse.class.equals(type))
+            {
+                return GetAcademicPermissionsForAcademicResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUserAssociation.class.equals(type))
+            {
+                return DeleteUserAssociation.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUserAssociationResponse.class.equals(type))
+            {
+                return DeleteUserAssociationResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetPermissionsForUserClass.class.equals(type))
+            {
+                return GetPermissionsForUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetPermissionsForUserClassResponse.class.equals(type))
+            {
+                return GetPermissionsForUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditPermission.class.equals(type))
+            {
+                return EditPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditPermissionResponse.class.equals(type))
+            {
+                return EditPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditUserClass.class.equals(type))
+            {
+                return EditUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditUserClassResponse.class.equals(type))
+            {
+                return EditUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUserLock.class.equals(type))
+            {
+                return DeleteUserLock.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUserLockResponse.class.equals(type))
+            {
+                return DeleteUserLockResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditAcademicPermission.class.equals(type))
+            {
+                return EditAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditAcademicPermissionResponse.class.equals(type))
+            {
+                return EditAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUserClass.class.equals(type))
+            {
+                return DeleteUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeleteUserClassResponse.class.equals(type))
+            {
+                return DeleteUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUserClass.class.equals(type))
+            {
+                return AddUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUserClassResponse.class.equals(type))
+            {
+                return AddUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeletePermission.class.equals(type))
+            {
+                return DeletePermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (DeletePermissionResponse.class.equals(type))
+            {
+                return DeletePermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetPermissionsForUser.class.equals(type))
+            {
+                return GetPermissionsForUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetPermissionsForUserResponse.class.equals(type))
+            {
+                return GetPermissionsForUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUsersInUserClass.class.equals(type))
+            {
+                return GetUsersInUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUsersInUserClassResponse.class.equals(type))
+            {
+                return GetUsersInUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUserAssociation.class.equals(type))
+            {
+                return AddUserAssociation.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUserAssociationResponse.class.equals(type))
+            {
+                return AddUserAssociationResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUser.class.equals(type))
+            {
+                return GetUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUserResponse.class.equals(type))
+            {
+                return GetUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetAcademicPermission.class.equals(type))
+            {
+                return GetAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetAcademicPermissionResponse.class.equals(type))
+            {
+                return GetAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddAcademicPermission.class.equals(type))
+            {
+                return AddAcademicPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddAcademicPermissionResponse.class.equals(type))
+            {
+                return AddAcademicPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (UnlockUserLock.class.equals(type))
+            {
+                return UnlockUserLock.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (UnlockUserLockResponse.class.equals(type))
+            {
+                return UnlockUserLockResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUserClasses.class.equals(type))
+            {
+                return GetUserClasses.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUserClassesResponse.class.equals(type))
+            {
+                return GetUserClassesResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (BulkAddUserClassUsers.class.equals(type))
+            {
+                return BulkAddUserClassUsers.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (BulkAddUserClassUsersResponse.class.equals(type))
+            {
+                return BulkAddUserClassUsersResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetAcademicPermissionsForUserClass.class.equals(type))
+            {
+                return GetAcademicPermissionsForUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetAcademicPermissionsForUserClassResponse.class.equals(type))
+            {
+                return GetAcademicPermissionsForUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetPermission.class.equals(type))
+            {
+                return GetPermission.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetPermissionResponse.class.equals(type))
+            {
+                return GetPermissionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUserClass.class.equals(type))
+            {
+                return GetUserClass.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (GetUserClassResponse.class.equals(type))
+            {
+                return GetUserClassResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditUser.class.equals(type))
+            {
+                return EditUser.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EditUserResponse.class.equals(type))
+            {
+                return EditUserResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+        }
+        catch (final Exception e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
+    {
+        final Map<String, String> returnMap = new HashMap<String, String>();
+        final Iterator namespaceIterator = env.getAllDeclaredNamespaces();
+        while (namespaceIterator.hasNext())
+        {
+            final OMNamespace ns = (OMNamespace) namespaceIterator.next();
+            returnMap.put(ns.getPrefix(), ns.getNamespaceURI());
+        }
+        return returnMap;
+    }
+}
+
