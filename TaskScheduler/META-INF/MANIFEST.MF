@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TaskScheduler
-Bundle-SymbolicName: SchedulingServer_TaskScheduler
+Bundle-SymbolicName: SchedulingServer-TaskScheduler
 Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.tasksched.TaskSchedulerActivator
 Bundle-Vendor: UTS: FEIT Remote Laboratory
