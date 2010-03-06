@@ -39,7 +39,6 @@ package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -60,54 +59,40 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * UserListType bean class.
+ * UserNameNamespaceSequence bean class.
  */
-public class UserListType implements ADBBean
+public class UserNameNamespaceSequence implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = UserListType
+     * name = UserNameNamespaceSequence
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/permissions
      * Namespace Prefix = ns1
      */
 
-    private static final long serialVersionUID = -887344501785101659L;
+    private static final long serialVersionUID = 7429280397663223535L;
 
-    protected UserIDType[] users;
-    protected boolean usersTracker = false;
+    protected String localUserName;
+    protected String localUserNamespace;
 
-    public UserIDType[] getUser()
+    public String getUserName()
     {
-        return this.users;
+        return this.localUserName;
     }
 
-    public void setUser(final UserIDType[] param)
+    public void setUserName(final String param)
     {
-        if (param != null)
-        {
-            this.usersTracker = true;
-        }
-        else
-        {
-            this.usersTracker = false;
-        }
-
-        this.users = param;
+        this.localUserName = param;
     }
 
-    @SuppressWarnings("unchecked")
-    public void addUser(final UserIDType param)
+    public String getUserNamespace()
     {
-        if (this.users == null)
-        {
-            this.users = new UserIDType[] {};
-        }
-        this.usersTracker = true;
+        return this.localUserNamespace;
+    }
 
-        final List<UserIDType> list = ConverterUtil.toList(this.users);
-        list.add(param);
-        this.users = list.toArray(new UserIDType[list.size()]);
-
+    public void setUserNamespace(final String param)
+    {
+        this.localUserNamespace = param;
     }
     
     private static String generatePrefix(final String namespace)
@@ -140,7 +125,7 @@ public class UserListType implements ADBBean
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                UserListType.this.serialize(this.parentQName, factory, xmlWriter);
+                UserNameNamespaceSequence.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -155,66 +140,89 @@ public class UserListType implements ADBBean
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
-        String prefix = parentQName.getPrefix();
-        String namespace = parentQName.getNamespaceURI();
 
-        if ((namespace != null) && (namespace.trim().length() > 0))
-        {
-            final String writerPrefix = xmlWriter.getPrefix(namespace);
-            if (writerPrefix != null)
-            {
-                xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
-            }
-            else
-            {
-                if (prefix == null)
-                {
-                    prefix = UserListType.generatePrefix(namespace);
-                }
-
-                xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
-            }
-        }
-        else
-        {
-            xmlWriter.writeStartElement(parentQName.getLocalPart());
-        }
+        String prefix = null;
+        String namespace = null;
 
         if (serializeType)
         {
+
             final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/permissions");
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":UserListType", xmlWriter);
+                        + ":UserNameNamespaceSequence", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "UserListType",
-                        xmlWriter);
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
+                        "UserNameNamespaceSequence", xmlWriter);
             }
         }
-        
-        if (this.usersTracker)
+
+        namespace = "";
+        if (!namespace.equals(""))
         {
-            if (this.users != null)
+            prefix = xmlWriter.getPrefix(namespace);
+
+            if (prefix == null)
             {
-                for (final UserIDType element : this.users)
-                {
-                    if (element != null)
-                    {
-                        element.serialize(new QName("", "user"), factory, xmlWriter);
-                    }
-                }
+                prefix = UserNameNamespaceSequence.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "userName", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
             }
             else
             {
-                throw new ADBException("user cannot be null!!");
+                xmlWriter.writeStartElement(namespace, "userName");
             }
         }
+        else
+        {
+            xmlWriter.writeStartElement("userName");
+        }
+
+        if (this.localUserName == null)
+        {
+            throw new ADBException("userName cannot be null!!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(this.localUserName);
+        }
+        xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = UserNameNamespaceSequence.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "userNamespace", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "userNamespace");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("userNamespace");
+        }
+
+        if (this.localUserNamespace == null)
+        {
+            throw new ADBException("userNamespace cannot be null!!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(this.localUserNamespace);
+        }
+
         xmlWriter.writeEndElement();
     }
 
@@ -226,6 +234,7 @@ public class UserListType implements ADBBean
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
+
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
 
@@ -234,38 +243,42 @@ public class UserListType implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = UserListType.generatePrefix(namespace);
+            prefix = UserNameNamespaceSequence.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
             }
-
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
+
         return prefix;
     }
 
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
+
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
-        if (this.usersTracker)
+
+
+        elementList.add(new QName("", "userName"));
+        if (this.localUserName != null)
         {
-            if (this.users != null)
-            {
-                for (final UserIDType element : this.users)
-                {
-                    if (element != null)
-                    {
-                        elementList.add(new QName("", "user"));
-                        elementList.add(element);
-                    }
-                }
-            }
-            else
-            {
-                throw new ADBException("user cannot be null!!");
-            }
+            elementList.add(ConverterUtil.convertToString(this.localUserName));
+        }
+        else
+        {
+            throw new ADBException("userName cannot be null!!");
+        }
+
+        elementList.add(new QName("", "userNamespace"));
+        if (this.localUserNamespace != null)
+        {
+            elementList.add(ConverterUtil.convertToString(this.localUserNamespace));
+        }
+        else
+        {
+            throw new ADBException("userNamespace cannot be null!!");
         }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
@@ -273,86 +286,45 @@ public class UserListType implements ADBBean
 
     public static class Factory
     {
-        public static UserListType parse(final XMLStreamReader reader) throws Exception
+        public static UserNameNamespaceSequence parse(final XMLStreamReader reader) throws Exception
         {
-            final UserListType object = new UserListType();
+            final UserNameNamespaceSequence object = new UserNameNamespaceSequence();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
+                if (reader.isStartElement() && new QName("", "userName").equals(reader.getName()))
                 {
-                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                            "type");
-                    if (fullTypeName != null)
-                    {
-                        String nsPrefix = null;
-                        if (fullTypeName.indexOf(":") > -1)
-                        {
-                            nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
-                        }
-                        nsPrefix = nsPrefix == null ? "" : nsPrefix;
-
-                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-                        if (!"UserListType".equals(type))
-                        {
-                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (UserListType) ExtensionMapper.getTypeObject(nsUri, type, reader);
-                        }
-                    }
-                }
-
-                reader.next();
-                final ArrayList<UserIDType> userList = new ArrayList<UserIDType>();
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
+                    final String content = reader.getElementText();
+                    object.setUserName(ConverterUtil.convertToString(content));
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "user").equals(reader.getName()))
-                {
-                    userList.add(UserIDType.Factory.parse(reader));
-                    boolean noMoreUsers = false;
-                    while (!noMoreUsers)
-                    {
-                        while (!reader.isEndElement())
-                        {
-                            reader.next();
-                        }
-                        reader.next();
-                        while (!reader.isStartElement() && !reader.isEndElement())
-                        {
-                            reader.next();
-                        }
-                        if (reader.isEndElement())
-                        {
-                            noMoreUsers = true;
-                        }
-                        else
-                        {
-                            if (new QName("", "user").equals(reader.getName()))
-                            {
-                                userList.add(UserIDType.Factory.parse(reader));
-                            }
-                            else
-                            {
-                                noMoreUsers = true;
-                            }
-                        }
-                    }
-
-                    object.setUser((UserIDType[]) ConverterUtil.convertToArray(UserIDType.class, userList));
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement())
+                else
                 {
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new QName("", "userNamespace").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setUserNamespace(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
                 }
             }
             catch (final XMLStreamException e)

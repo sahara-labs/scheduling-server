@@ -74,8 +74,8 @@ public class UserIDType extends OperationRequestType implements ADBBean
 
     protected String userID;
     protected boolean userIDTracker = false;
-    protected OperationRequestTypeSequence_type1 localOperationRequestTypeSequence_type1;
-    protected boolean localOperationRequestTypeSequence_type1Tracker = false;
+    protected UserNameNamespaceSequence userNameNSSeq;
+    protected boolean userNameNSSeqTracker = false;
     protected String userQName;
     protected boolean userQNameTracker = false;
 
@@ -98,23 +98,23 @@ public class UserIDType extends OperationRequestType implements ADBBean
         this.userID = param;
     }
 
-    public OperationRequestTypeSequence_type1 getOperationRequestTypeSequence_type1()
+    public UserNameNamespaceSequence getUserNameNamespaceSequence()
     {
-        return this.localOperationRequestTypeSequence_type1;
+        return this.userNameNSSeq;
     }
 
-    public void setOperationRequestTypeSequence_type1(final OperationRequestTypeSequence_type1 param)
+    public void setUserNameNamespaceSequence(final UserNameNamespaceSequence param)
     {
         if (param != null)
         {
-            this.localOperationRequestTypeSequence_type1Tracker = true;
+            this.userNameNSSeqTracker = true;
         }
         else
         {
-            this.localOperationRequestTypeSequence_type1Tracker = false;
+            this.userNameNSSeqTracker = false;
         }
 
-        this.localOperationRequestTypeSequence_type1 = param;
+        this.userNameNSSeq = param;
     }
 
     public String getUserQName()
@@ -337,13 +337,13 @@ public class UserIDType extends OperationRequestType implements ADBBean
             xmlWriter.writeEndElement();
         }
 
-        if (this.localOperationRequestTypeSequence_type1Tracker)
+        if (this.userNameNSSeqTracker)
         {
-            if (this.localOperationRequestTypeSequence_type1 == null)
+            if (this.userNameNSSeq == null)
             {
-                throw new ADBException("OperationRequestTypeSequence_type1 cannot be null!!");
+                throw new ADBException("UserNameNamespaceSequence cannot be null!!");
             }
-            this.localOperationRequestTypeSequence_type1.serialize(null, factory, xmlWriter);
+            this.userNameNSSeq.serialize(null, factory, xmlWriter);
         }
         
         if (this.userQNameTracker)
@@ -469,15 +469,15 @@ public class UserIDType extends OperationRequestType implements ADBBean
             }
         }
         
-        if (this.localOperationRequestTypeSequence_type1Tracker)
+        if (this.userNameNSSeqTracker)
         {
             elementList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
-                    "OperationRequestTypeSequence_type1"));
-            if (this.localOperationRequestTypeSequence_type1 == null)
+                    "UserNameNamespaceSequence"));
+            if (this.userNameNSSeq == null)
             {
-                throw new ADBException("OperationRequestTypeSequence_type1 cannot be null!!");
+                throw new ADBException("UserNameNamespaceSequence cannot be null!!");
             }
-            elementList.add(this.localOperationRequestTypeSequence_type1);
+            elementList.add(this.userNameNSSeq);
         }
         
         if (this.userQNameTracker)
@@ -594,7 +594,7 @@ public class UserIDType extends OperationRequestType implements ADBBean
                 {
                     if (reader.isStartElement())
                     {
-                        object.setOperationRequestTypeSequence_type1(OperationRequestTypeSequence_type1.Factory
+                        object.setUserNameNamespaceSequence(UserNameNamespaceSequence.Factory
                                 .parse(reader));
                     }
 
