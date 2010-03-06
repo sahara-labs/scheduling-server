@@ -256,7 +256,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
 
             xmlWriter.writeEndElement();
         }
-        if (this.localUserIDTracker)
+        if (this.userIDTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -283,7 +283,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
                 xmlWriter.writeStartElement("userID");
             }
 
-            if (this.localUserID == null)
+            if (this.userID == null)
             {
                 // write the nil attribute
 
@@ -293,7 +293,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
             else
             {
 
-                xmlWriter.writeCharacters(this.localUserID);
+                xmlWriter.writeCharacters(this.userID);
 
             }
 
@@ -308,7 +308,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
             }
             this.localOperationRequestTypeSequence_type1.serialize(null, factory, xmlWriter);
         }
-        if (this.localUserQNameTracker)
+        if (this.userQNameTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -335,7 +335,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
                 xmlWriter.writeStartElement("userQName");
             }
 
-            if (this.localUserQName == null)
+            if (this.userQName == null)
             {
                 // write the nil attribute
 
@@ -345,7 +345,7 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
             else
             {
 
-                xmlWriter.writeCharacters(this.localUserQName);
+                xmlWriter.writeCharacters(this.userQName);
 
             }
 
@@ -587,13 +587,13 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
                 throw new org.apache.axis2.databinding.ADBException("requestorQName cannot be null!!");
             }
         }
-        if (this.localUserIDTracker)
+        if (this.userIDTracker)
         {
             elementList.add(new javax.xml.namespace.QName("", "userID"));
 
-            if (this.localUserID != null)
+            if (this.userID != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserID));
+                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.userID));
             }
             else
             {
@@ -612,13 +612,13 @@ public class UserType extends au.edu.uts.eng.remotelabs.schedserver.permissions.
             }
             elementList.add(this.localOperationRequestTypeSequence_type1);
         }
-        if (this.localUserQNameTracker)
+        if (this.userQNameTracker)
         {
             elementList.add(new javax.xml.namespace.QName("", "userQName"));
 
-            if (this.localUserQName != null)
+            if (this.userQName != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserQName));
+                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.userQName));
             }
             else
             {
