@@ -1,238 +1,164 @@
 /**
- * GetUsersInUserClass.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 3rd March 2009
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
 /**
- * GetUsersInUserClass bean class
+ * GetUsersInUserClass bean class.
  */
-
-public class GetUsersInUserClass implements org.apache.axis2.databinding.ADBBean
+public class GetUsersInUserClass implements ADBBean
 {
-
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = 5198587978463585700L;
-    public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-            "http://remotelabs.eng.uts.edu.au/schedserver/permissions", "getUsersInUserClass", "ns1");
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
+            "getUsersInUserClass", "ns1");
+
+    protected UserClassIDType getUsersInUserClass;
+
+    public UserClassIDType getGetUsersInUserClass()
     {
-        if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/permissions"))
-        {
-            return "ns1";
-        }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return this.getUsersInUserClass;
     }
 
-    /**
-     * field for GetUsersInUserClass
-     */
-
-    protected au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType localGetUsersInUserClass;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType
-     */
-    public au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType getGetUsersInUserClass()
+    public void setGetUsersInUserClass(final UserClassIDType param)
     {
-        return this.localGetUsersInUserClass;
+        this.getUsersInUserClass = param;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            GetUsersInUserClass
-     */
-    public void setGetUsersInUserClass(
-            final au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType param)
-    {
-
-        this.localGetUsersInUserClass = param;
-
-    }
-
-    /**
-     * isReaderMTOMAware
-     * 
-     * @return true if the reader supports MTOM
-     */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                GetUsersInUserClass.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this, GetUsersInUserClass.MY_QNAME)
         {
-
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 GetUsersInUserClass.this.serialize(GetUsersInUserClass.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(GetUsersInUserClass.MY_QNAME, factory, dataSource);
-
+        return new OMSourcedElementImpl(GetUsersInUserClass.MY_QNAME, factory, dataSource);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
-
-        //We can safely assume an element has only one type associated with it
-
-        if (this.localGetUsersInUserClass == null)
+        if (this.getUsersInUserClass == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("Property cannot be null!");
+            throw new ADBException("Property cannot be null!");
         }
-        this.localGetUsersInUserClass.serialize(GetUsersInUserClass.MY_QNAME, factory, xmlWriter);
-
+        this.getUsersInUserClass.serialize(GetUsersInUserClass.MY_QNAME, factory, xmlWriter);
     }
 
-    /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
-        if (prefix == null)
-        {
-            prefix = GetUsersInUserClass.generatePrefix(namespace);
-
-            while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
-            {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-            }
-
-            xmlWriter.writeNamespace(prefix, namespace);
-            xmlWriter.setPrefix(prefix, namespace);
-        }
-
-        return prefix;
+        return this.getUsersInUserClass.getPullParser(GetUsersInUserClass.MY_QNAME);
     }
 
-    /**
-     * databinding method to get an XML representation of this object
-     */
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
-    {
-
-        //We can safely assume an element has only one type associated with it
-        return this.localGetUsersInUserClass.getPullParser(GetUsersInUserClass.MY_QNAME);
-
-    }
-
-    /**
-     * Factory class that keeps the parse method
-     */
     public static class Factory
     {
-
-        /**
-         * static method to create the object
-         * Precondition: If this object is an element, the current or next start element starts this object and any
-         * intervening reader events are ignorable
-         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
-         * start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element
-         * If this object is a complex type, the reader is positioned at the end element of its outer element
-         */
-        public static GetUsersInUserClass parse(final javax.xml.stream.XMLStreamReader reader)
-                throws java.lang.Exception
+        public static GetUsersInUserClass parse(final XMLStreamReader reader) throws Exception
         {
             final GetUsersInUserClass object = new GetUsersInUserClass();
-
             try
             {
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                new java.util.Vector();
-
                 while (!reader.isEndElement())
                 {
                     if (reader.isStartElement())
                     {
-
                         if (reader.isStartElement()
-                                && new javax.xml.namespace.QName(
-                                        "http://remotelabs.eng.uts.edu.au/schedserver/permissions",
+                                && new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
                                         "getUsersInUserClass").equals(reader.getName()))
                         {
-
-                            object
-                                    .setGetUsersInUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType.Factory
-                                            .parse(reader));
-
-                        } // End of if for expected property start element
-
+                            object.setGetUsersInUserClass(UserClassIDType.Factory.parse(reader));
+                        }
                         else
                         {
-                            // A start element we are not expecting indicates an invalid parameter was passed
-                            throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                                    + reader.getLocalName());
+                            throw new ADBException("Unexpected subelement " + reader.getLocalName());
                         }
-
                     }
                     else
                     {
                         reader.next();
                     }
-                } // end of while loop
-
+                }
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
 
             return object;
         }
-
-    }//end of factory class
-
+    }
 }

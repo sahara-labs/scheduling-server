@@ -54,18 +54,46 @@ import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * OperationRequestTypeNameNSSequence bean class.
+ * OperationRequestTypeSequence bean class.
  */
-public class OperationRequestTypeNameNSSequence implements ADBBean
+public class OperationRequestTypeSequence implements ADBBean
 {
-    private static final long serialVersionUID = 7834615871687808581L;
+    /*
+     * This type was generated from the piece of schema that had
+     * name = OperationRequestTypeSequence
+     * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/permissions
+     * Namespace Prefix = ns1
+     */
 
-    protected UserClassIDType userClass;
-    protected UserIDType user;
+    private static final long serialVersionUID = -7680765520499568840L;
+
+    protected String requestorName;
+    protected String requestorNameSpace;
+
+    public String getRequestorName()
+    {
+        return this.requestorName;
+    }
+
+    public void setRequestorName(final String param)
+    {
+        this.requestorName = param;
+    }
+
+    public String getRequestorNameSpace()
+    {
+        return this.requestorNameSpace;
+    }
+
+    public void setRequestorNameSpace(final String param)
+    {
+        this.requestorNameSpace = param;
+    }
 
     private static String generatePrefix(final String namespace)
     {
@@ -74,26 +102,6 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
             return "ns1";
         }
         return BeanUtil.getUniquePrefix();
-    }
-
-    public UserClassIDType getUserClass()
-    {
-        return this.userClass;
-    }
-
-    public void setUserClass(final UserClassIDType param)
-    {
-        this.userClass = param;
-    }
-
-    public UserIDType getUser()
-    {
-        return this.user;
-    }
-
-    public void setUser(final UserIDType param)
-    {
-        this.user = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -117,7 +125,7 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                OperationRequestTypeNameNSSequence.this.serialize(this.parentQName, factory, xmlWriter);
+                OperationRequestTypeSequence.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -132,33 +140,93 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
+
+        String prefix = null;
+        String namespace = null;
+
         if (serializeType)
         {
+
             final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/permissions");
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":OperationRequestTypeNameNSSequence", xmlWriter);
+                        + ":OperationRequestTypeSequence_type0", xmlWriter);
             }
             else
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                        "OperationRequestTypeNameNSSequence", xmlWriter);
+                        "OperationRequestTypeSequence_type0", xmlWriter);
+            }
+
+        }
+
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+
+            if (prefix == null)
+            {
+                prefix = OperationRequestTypeSequence.generatePrefix(namespace);
+
+                xmlWriter.writeStartElement(prefix, "requestorName", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "requestorName");
             }
         }
-
-        if (this.userClass == null)
+        else
         {
-            throw new ADBException("userClass cannot be null!!");
+            xmlWriter.writeStartElement("requestorName");
         }
-        this.userClass.serialize(new QName("", "userClass"), factory, xmlWriter);
 
-        if (this.user == null)
+        if (this.requestorName == null)
         {
-            throw new ADBException("user cannot be null!!");
+            throw new ADBException("requestorName cannot be null!!");
         }
-        this.user.serialize(new QName("", "user"), factory, xmlWriter);
+        else
+        {
+            xmlWriter.writeCharacters(this.requestorName);
+        }
+        xmlWriter.writeEndElement();
+
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = OperationRequestTypeSequence.generatePrefix(namespace);
+
+                xmlWriter.writeStartElement(prefix, "requestorNameSpace", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "requestorNameSpace");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("requestorNameSpace");
+        }
+
+        if (this.requestorNameSpace == null)
+        {
+            throw new ADBException("requestorNameSpace cannot be null!!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(this.requestorNameSpace);
+        }
+
+        xmlWriter.writeEndElement();
     }
 
     private void writeAttribute(final String prefix, final String namespace, final String attName,
@@ -169,6 +237,7 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
+
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
 
@@ -177,12 +246,11 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = OperationRequestTypeNameNSSequence.generatePrefix(namespace);
+            prefix = OperationRequestTypeSequence.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
             }
-
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
@@ -195,28 +263,34 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
 
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        elementList.add(new QName("", "userClass"));
-        if (this.userClass == null)
+        elementList.add(new QName("", "requestorName"));
+        if (this.requestorName != null)
         {
-            throw new ADBException("userClass cannot be null!!");
+            elementList.add(ConverterUtil.convertToString(this.requestorName));
         }
-        elementList.add(this.userClass);
+        else
+        {
+            throw new ADBException("requestorName cannot be null!!");
+        }
 
-        elementList.add(new QName("", "user"));
-        if (this.user == null)
+        elementList.add(new QName("", "requestorNameSpace"));
+        if (this.requestorNameSpace != null)
         {
-            throw new ADBException("user cannot be null!!");
+            elementList.add(ConverterUtil.convertToString(this.requestorNameSpace));
         }
-        elementList.add(this.user);
+        else
+        {
+            throw new ADBException("requestorNameSpace cannot be null!!");
+        }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
     }
 
     public static class Factory
     {
-        public static OperationRequestTypeNameNSSequence parse(final XMLStreamReader reader) throws Exception
+        public static OperationRequestTypeSequence parse(final XMLStreamReader reader) throws Exception
         {
-            final OperationRequestTypeNameNSSequence object = new OperationRequestTypeNameNSSequence();
+            final OperationRequestTypeSequence object = new OperationRequestTypeSequence();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -224,14 +298,10 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
                     reader.next();
                 }
 
-                while (!reader.isStartElement() && !reader.isEndElement())
+                if (reader.isStartElement() && new QName("", "requestorName").equals(reader.getName()))
                 {
-                    reader.next();
-                }
-
-                if (reader.isStartElement() && new QName("", "userClass").equals(reader.getName()))
-                {
-                    object.setUserClass(UserClassIDType.Factory.parse(reader));
+                    final String content = reader.getElementText();
+                    object.setRequestorName(ConverterUtil.convertToString(content));
                     reader.next();
                 }
                 else
@@ -243,16 +313,17 @@ public class OperationRequestTypeNameNSSequence implements ADBBean
                 {
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "user").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "requestorNameSpace").equals(reader.getName()))
                 {
-                    object.setUser(UserIDType.Factory.parse(reader));
+                    final String content = reader.getElementText();
+                    object.setRequestorNameSpace(ConverterUtil.convertToString(content));
                     reader.next();
                 }
                 else
                 {
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
-                
+
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();

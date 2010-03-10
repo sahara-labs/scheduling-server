@@ -210,7 +210,7 @@ public class AcademicPermissionIDType extends OperationRequestType implements AD
                     xmlWriter);
         }
 
-        if (this.localRequestorIDTracker)
+        if (this.requestorIDTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -236,27 +236,27 @@ public class AcademicPermissionIDType extends OperationRequestType implements AD
                 xmlWriter.writeStartElement("requestorID");
             }
 
-            if (this.localRequestorID == Integer.MIN_VALUE)
+            if (this.requestorID == Integer.MIN_VALUE)
             {
                 throw new ADBException("requestorID cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.localRequestorID));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.requestorID));
             }
 
             xmlWriter.writeEndElement();
         }
         
-        if (this.localOperationRequestTypeSequence_type0Tracker)
+        if (this.nameNameSpaceSequenceTracker)
         {
-            if (this.localOperationRequestTypeSequence_type0 == null)
+            if (this.nameNameSpaceSequence == null)
             {
                 throw new ADBException("OperationRequestTypeSequence_type0 cannot be null!!");
             }
-            this.localOperationRequestTypeSequence_type0.serialize(null, factory, xmlWriter);
+            this.nameNameSpaceSequence.serialize(null, factory, xmlWriter);
         }
-        if (this.localRequestorQNameTracker)
+        if (this.requestorQNameTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -283,7 +283,7 @@ public class AcademicPermissionIDType extends OperationRequestType implements AD
                 xmlWriter.writeStartElement("requestorQName");
             }
 
-            if (this.localRequestorQName == null)
+            if (this.requestorQName == null)
             {
                 // write the nil attribute
 
@@ -293,7 +293,7 @@ public class AcademicPermissionIDType extends OperationRequestType implements AD
             else
             {
 
-                xmlWriter.writeCharacters(this.localRequestorQName);
+                xmlWriter.writeCharacters(this.requestorQName);
 
             }
 
@@ -395,32 +395,32 @@ public class AcademicPermissionIDType extends OperationRequestType implements AD
         attribList.add(new QName("http://www.w3.org/2001/XMLSchema-instance", "type"));
         attribList
                 .add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions", "AcademicPermissionIDType"));
-        if (this.localRequestorIDTracker)
+        if (this.requestorIDTracker)
         {
             elementList.add(new QName("", "requestorID"));
 
-            elementList.add(ConverterUtil.convertToString(this.localRequestorID));
+            elementList.add(ConverterUtil.convertToString(this.requestorID));
         }
         
-        if (this.localOperationRequestTypeSequence_type0Tracker)
+        if (this.nameNameSpaceSequenceTracker)
         {
             elementList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
                     "OperationRequestTypeSequence_type0"));
 
-            if (this.localOperationRequestTypeSequence_type0 == null)
+            if (this.nameNameSpaceSequence == null)
             {
                 throw new ADBException("OperationRequestTypeSequence_type0 cannot be null!!");
             }
-            elementList.add(this.localOperationRequestTypeSequence_type0);
+            elementList.add(this.nameNameSpaceSequence);
         }
         
-        if (this.localRequestorQNameTracker)
+        if (this.requestorQNameTracker)
         {
             elementList.add(new QName("", "requestorQName"));
 
-            if (this.localRequestorQName != null)
+            if (this.requestorQName != null)
             {
-                elementList.add(ConverterUtil.convertToString(this.localRequestorQName));
+                elementList.add(ConverterUtil.convertToString(this.requestorQName));
             }
             else
             {
@@ -510,7 +510,7 @@ public class AcademicPermissionIDType extends OperationRequestType implements AD
                 {
                     if (reader.isStartElement())
                     {
-                        object.setOperationRequestTypeSequence_type0(OperationRequestTypeSequence_type0.Factory
+                        object.setOperationRequestTypeSequence_type0(OperationRequestTypeSequence.Factory
                                 .parse(reader));
                     }
                 }
