@@ -36,6 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.impl;
 
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
@@ -43,61 +47,126 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  * Class to add, edit, get and delete users.
  */
 public class UserAdmin
-{
-    /** Administrator user persona. */
-    public static final String ADMIN = "ADMIN";
-    
-    /** Academic user persona. */
-    public static final String ACADEMIC = "ACADEMIC";
-    
-    /** Regular user persona. */
-    public static final String USER = "USER";
-    
-    /** Demonstration user. */
-    public static final String DEMO = "DEMO";
-    
+{   
     /** Failure reason. */
     private String failureReason;
+    
+    /** User data access object. */
+    private UserDao dao;
 
     /** Logger. */
     private Logger logger;
     
-    public UserAdmin()
+    public UserAdmin(Session ses)
     {
         this.logger = LoggerActivator.getLogger();
+        this.dao = new UserDao(ses);
     }
     
     /**
      * Adds a regular user (persona type USER) with the specified name and 
      * name space.
      * 
-     * @param name user's name
-     * @param namespace user's name space 
+     * @param bs users name space 
+     * @param name users name
      * @return true if successful, false otherwise
      */
-    public boolean addUser(String name, String namespace)
+    public boolean addUser(String ns, String name)
     {
-        return this.addUser(name, namespace, UserAdmin.USER);
+        return this.addUser(ns, name, User.USER);
     }
     
     /**
      * Adds a user with the specified user name, name space and persona type.
      * 
+     * @param ns users name space
      * @param name users name
-     * @param namespace users name space
      * @param persona users persona type
      * @return true if successful
      */
-    public boolean addUser(String name, String namespace, String persona)
+    public boolean addUser(String ns, String name, String persona)
     {
-        if ((persona = this.verfiyPersona(persona)) == null) return false;
-        
-        this.logger.debug("Adding user with name='" + name + "', name space='" + namespace + "' and persona='" 
+        this.logger.debug("Adding user with name='" + name + "', name space='" + ns + "' and persona='" 
                 + persona + "'.");
         
+        if ((persona = this.verfiyPersona(persona)) == null)
+        {
+            this.failureReason = "Unknown persona type " + persona;
+            this.logger.warn("Failed adding user with name '" + name + "' and namespace '" + ns + "' because " +
+                    " the persona type is not one of ADMIN, ACADEMIC, USER or DEMO.");
+            return false;
+        }
+        
+        /* Check doesn't already exist. */        
+        User user = this.dao.findByName(ns, name);
+        if (user != null)
+        {
+            this.logger.warn("Failed adding new user because a user with name '" + name + "' and namespace '" +
+                    ns + "' already exists.");
+            this.failureReason = "Name, namespace combination not unique";
+            return false;
+        }
+        
+        /* OK to save user. */
+        user = new User(name, ns, persona);
+        this.dao.persist(user);
+        return true;
+    }
+    
+    /**
+     * Edits the user's details. The users name, name space and/or persona
+     * may be changed, with the specified identifier used to determine 
+     * the users record.
+     * 
+     * @param id users record identifier
+     * @param ns users name space
+     * @param name users name
+     * @param persona
+     * @return true if successful, false if record with id is not found
+     */
+    public boolean editUser(long id, String ns, String name, String persona)
+    {
+        User user = this.dao.get(id);
+        if (user == null)
+        {
+            this.logger.warn("Unable to load user with record id='" + id + "', so unable to edit their details.");
+            this.failureReason = "User not found";
+            return false;
+        }
+        
+        if (!user.getName().equals(ns) || !user.getName().equals(name))
+        {
+            /* Check the new name - name space is unique. */
+            if (this.dao.findByName(ns, name) != null)
+            {
+               this.logger.warn("Unable to modify the user name and namespace of user with record " + user.getId() +
+                       " as the new name, namespace combination will not be unique.");
+               this.failureReason = "Name, namespace combination not unique";
+               return false;
+            }
+            user.setName(name);
+            user.setNamespace(ns);
+        }
+        
+        if ((persona = this.verfiyPersona(persona)) == null)
+        {
+            this.failureReason = "Unknown persona type " + persona;
+            this.logger.warn("Failed editting user with name '" + name + "' and namespace '" + ns + "' because " +
+                    " the persona type is not one of ADMIN, ACADEMIC, USER or DEMO.");
+            return false;
+        }
+        user.setPersona(persona);
+        this.dao.flush();
+        
+        return true;
+    }
+    
+    public boolean editUser(String name, String ns, String persona)
+    {
         
         return false;
     }
+    
     
     /**
      * Verifies if the supplied persona is a correct persona type. Valid 
@@ -114,13 +183,12 @@ public class UserAdmin
      */
     private String verfiyPersona(String persona)
     {
-        if (UserAdmin.ACADEMIC.equalsIgnoreCase(persona)) return persona.toUpperCase();
-        if (UserAdmin.ADMIN.equalsIgnoreCase(persona)) return persona.toUpperCase();
-        if (UserAdmin.DEMO.equalsIgnoreCase(persona)) return persona.toUpperCase();
-        if (UserAdmin.USER.equalsIgnoreCase(persona)) return persona.toUpperCase();
+        if (User.ACADEMIC.equalsIgnoreCase(persona)) return persona.toUpperCase();
+        if (User.ADMIN.equalsIgnoreCase(persona)) return persona.toUpperCase();
+        if (User.DEMO.equalsIgnoreCase(persona)) return persona.toUpperCase();
+        if (User.USER.equalsIgnoreCase(persona)) return persona.toUpperCase();
         
-        this.failureReason = "Unknown persona type " + persona;
-        this.logger.warn("Verifying persona " + persona + " failed. If must be either 'ADMIN', 'ACADEMIC', 'USER' or" +
+        this.logger.debug("Verifying persona " + persona + " failed. If must be either 'ADMIN', 'ACADEMIC', 'USER' or" +
         		" 'DEMO'.");
         return null;
     }
@@ -132,6 +200,12 @@ public class UserAdmin
     {
         return this.failureReason;
     }
-    
-    
+
+    /**
+     * Close the in use session.
+     */
+    public void closeSession()
+    {
+        this.dao.closeSession();
+    }
 }

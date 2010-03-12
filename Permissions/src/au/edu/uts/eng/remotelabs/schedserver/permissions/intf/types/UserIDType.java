@@ -69,6 +69,9 @@ public class UserIDType extends OperationRequestType implements ADBBean
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/permissions
      * Namespace Prefix = ns1
      */
+    
+    /** QName delimiter. */
+    public static final String QNAME_DELIM = ":";
 
     private static final long serialVersionUID = 1843946623145867606L;
 
@@ -78,6 +81,35 @@ public class UserIDType extends OperationRequestType implements ADBBean
     protected boolean userNameNSSeqTracker = false;
     protected String userQName;
     protected boolean userQNameTracker = false;
+    
+    public String getUserName()
+    {
+        if (this.userNameNSSeq != null) return this.userNameNSSeq.getUserName();
+        
+        if (this.userQName != null)
+        {
+            String idParts[] = this.userQName.split(UserIDType.QNAME_DELIM, 2);
+            if (idParts.length == 2)
+            {
+                return idParts[1];
+            }
+        }
+        
+        return null;
+    }
+    
+    public String getUserNamespace()
+    {
+        if (this.userNameNSSeq != null) return this.userNameNSSeq.getUserNamespace();
+        
+        if (this.userQName != null)
+        {
+            String idParts[] = this.userQName.split(UserIDType.QNAME_DELIM, 2);
+            return idParts[0];
+        }
+        
+        return null;
+    }
 
     public String getUserID()
     {

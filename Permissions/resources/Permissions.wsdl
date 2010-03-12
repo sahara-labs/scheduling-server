@@ -58,7 +58,12 @@
 				<xsd:sequence>
 					<xsd:element name="successful" type="xsd:boolean"></xsd:element>
 					<xsd:element name="failureCode" type="xsd:int"
-						maxOccurs="1" minOccurs="0"></xsd:element>
+						maxOccurs="1" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>The possible failure codes are:
+  * 1 - The requestor does not have the permission to do the specified request.
+  * 2 - A required parameter was not provided. </xsd:documentation>
+						</xsd:annotation></xsd:element>
 					<xsd:element name="failureReason" type="xsd:string"
 						maxOccurs="1" minOccurs="0">
 					</xsd:element>
@@ -192,6 +197,9 @@
 							</xsd:sequence>
 							<xsd:element name="userQName"
 								type="xsd:string" maxOccurs="1" minOccurs="0">
+                                <xsd:annotation>
+                                	<xsd:documentation>The user identification QName format is {namespace}:{name}.</xsd:documentation>
+                                </xsd:annotation>
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>

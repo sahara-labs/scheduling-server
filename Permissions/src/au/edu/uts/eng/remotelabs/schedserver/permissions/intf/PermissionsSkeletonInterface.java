@@ -105,6 +105,12 @@ public interface PermissionsSkeletonInterface
 
     public AddPermissionResponse addPermission(AddPermission request);
 
+    /**
+     * Adds a user to the scheduling server.
+     * 
+     * @param addUser request 
+     * @return response
+     */
     public AddUserResponse addUser(AddUser addUser);
 
     public DeleteUserResponse deleteUser(DeleteUser request);

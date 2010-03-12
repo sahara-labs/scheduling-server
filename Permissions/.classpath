@@ -50,5 +50,17 @@
 	<classpathentry kind="lib" path="lib/xml-resolver-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Configuration"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-DataAccess"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Logger"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Server"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-TaskScheduler"/>
+	<classpathentry kind="lib" path="/SchedServer-Framework/lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-Server/lib/servlet-api-2.5-20081211.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-commons-annotations.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-Logger/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
