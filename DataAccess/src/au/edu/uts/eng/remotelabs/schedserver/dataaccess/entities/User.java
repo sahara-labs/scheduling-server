@@ -64,6 +64,18 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "namespace" }))
 public class User implements java.io.Serializable
 {
+    /** Administrator user persona. */
+    public static final String ADMIN = "ADMIN";
+    
+    /** Academic user persona. */
+    public static final String ACADEMIC = "ACADEMIC";
+    
+    /** Regular user persona. */
+    public static final String USER = "USER";
+    
+    /** Demonstration user persona. */
+    public static final String DEMO = "DEMO";
+    
     /** Serilizable class. */
     private static final long serialVersionUID = -4090859888631269654L;
     
