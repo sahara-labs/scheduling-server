@@ -340,7 +340,7 @@ public class UpdateLocalRigStatusTester extends TestCase
     {
         assertFalse(this.update.updateStatus("Not_Rig", false, "Fail!"));
         assertNotNull(this.update.getFailedReason());
-        assertEquals("Rig 'Not_Rig' does not exist.", this.update.getFailedReason());
+        assertEquals("Not registered", this.update.getFailedReason());
     }
 
 }

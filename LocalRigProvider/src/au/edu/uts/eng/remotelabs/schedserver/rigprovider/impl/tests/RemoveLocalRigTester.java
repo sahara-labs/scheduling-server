@@ -205,7 +205,7 @@ public class RemoveLocalRigTester extends TestCase
     {
         assertFalse(this.remove.removeRig("removedRig", "Because I said so."));
         assertNotNull(this.remove.getFailedReason());
-        assertEquals("Rig 'removedRig' does not exist.", this.remove.getFailedReason());
+        assertEquals("Not registered", this.remove.getFailedReason());
     }
 
 }

@@ -94,8 +94,6 @@ public class RemoveLocalRig
             return false;
         }
         
-        /* TODO Logoff any user that may be in-session. */
-        
         rig.setActive(false);
         rig.setOnline(false);
         rig.setOfflineReason(reason);
