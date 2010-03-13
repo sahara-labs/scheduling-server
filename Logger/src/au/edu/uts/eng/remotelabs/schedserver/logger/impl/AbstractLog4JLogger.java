@@ -62,7 +62,7 @@ abstract class AbstractLog4JLogger extends AbstractLogger
      */
     public AbstractLog4JLogger() 
     {
-        this.logger = org.apache.log4j.Logger.getLogger("ISG Client");
+        this.logger = org.apache.log4j.Logger.getLogger("Rig Client");
 
         // Logging level
         switch(LoggerActivator.getLoggingLevel())
@@ -109,6 +109,12 @@ abstract class AbstractLog4JLogger extends AbstractLogger
                 break;
             case Logger.ERROR:
                 this.logger.error(message);
+                break;
+            case Logger.FATAL:
+                this.logger.fatal(message);
+                break;
+            case Logger.PRIORITY:
+                this.logger.fatal(message);
                 break;
             default:    
                 this.logger.debug(message);
