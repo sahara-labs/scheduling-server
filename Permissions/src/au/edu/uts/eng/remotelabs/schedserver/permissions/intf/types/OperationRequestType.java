@@ -68,7 +68,7 @@ public class OperationRequestType implements ADBBean
         return this.nameNameSpaceSequence;
     }
 
-    public void setOperationRequestTypeSequence_type0(final OperationRequestTypeSequence param)
+    public void setOperationRequestTypeSequence(final OperationRequestTypeSequence param)
     {
         if (param != null)
         {
@@ -405,7 +405,7 @@ public class OperationRequestType implements ADBBean
                 {
                     if (reader.isStartElement())
                     {
-                        object.setOperationRequestTypeSequence_type0(OperationRequestTypeSequence.Factory
+                        object.setOperationRequestTypeSequence(OperationRequestTypeSequence.Factory
                                 .parse(reader));
                     }
                 }

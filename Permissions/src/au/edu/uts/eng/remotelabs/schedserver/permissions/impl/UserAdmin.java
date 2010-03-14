@@ -134,7 +134,7 @@ public class UserAdmin
             return false;
         }
         
-        if (!user.getName().equals(ns) || !user.getName().equals(name))
+        if (name != null && ns != null && (!user.getNamespace().equals(ns) || !user.getName().equals(name)))
         {
             /* Check the new name - name space is unique. */
             if (this.dao.findByName(ns, name) != null)
@@ -161,12 +161,81 @@ public class UserAdmin
         return true;
     }
     
-    public boolean editUser(String name, String ns, String persona)
+    
+    /**
+     * Edits the users details. Loads the user with the specified name and 
+     * name space and modifies the user's persona.
+     * 
+     * @param name users name
+     * @param ns users namespace
+     * @param persona the new persona
+     * @return true if successful
+     */
+    public boolean editUser(String ns, String name, String persona)
     {
+        User user = this.dao.findByName(ns, name);
+        if (user == null)
+        {
+            this.failureReason = "User does not exist";
+            this.logger.warn("Unable to edit the user with the name " + name + " and namespace " + ns + 
+                    " because they do not exist.");
+            return false;
+        }
         
-        return false;
+        if ((persona = this.verfiyPersona(persona)) == null)
+        {
+            this.failureReason = "Persona not valid";
+            this.logger.warn("Unable to edit the user with the name " + name + " and namespace " + ns + 
+                    " because the persona is not valid.");
+            return false;
+        }
+        
+        user.setPersona(persona);
+        this.dao.flush();
+        
+        return true;
     }
     
+    /**
+     * Deletes the user with the specified identifer.
+     * 
+     * @param id user identifer
+     * @return true if successful
+     */
+    public boolean deleteUser(long id)
+    {
+        User user = this.dao.get(id);
+        if (user == null)
+        {
+            this.logger.warn("Unable to delete user with id " + id + " as it does not exist.");
+            this.failureReason = "User does not exist";
+            return false;
+        }
+        
+        this.dao.delete(user);
+        return true;
+    }
+    
+    /**
+     * Deletes the user with specified name and namespace.
+     * 
+     * @param ns namespace of user
+     * @param name name of user
+     * @return true if successful
+     */
+    public boolean deleteUser(String ns, String name)
+    {
+        User user = this.dao.findByName(ns, name);
+        if (user == null)
+        {
+            this.logger.warn("Unable to delete user with name " + name + ", namespace " + ns + '.');
+            this.failureReason = "User does not exist";
+            return false;
+        }
+        
+        this.dao.delete(user);
+        return true;
+    }
     
     /**
      * Verifies if the supplied persona is a correct persona type. Valid 

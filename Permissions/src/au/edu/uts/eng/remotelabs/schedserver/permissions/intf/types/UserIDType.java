@@ -148,6 +148,14 @@ public class UserIDType extends OperationRequestType implements ADBBean
 
         this.userNameNSSeq = param;
     }
+    
+    public void setNameNamespace(String namespace, String name)
+    {
+        UserNameNamespaceSequence seq = new UserNameNamespaceSequence();
+        seq.setUserNamespace(namespace);
+        seq.setUserName(name);
+        this.setUserNameNamespaceSequence(seq);
+    }
 
     public String getUserQName()
     {
@@ -586,7 +594,7 @@ public class UserIDType extends OperationRequestType implements ADBBean
                 {
                     if (reader.isStartElement())
                     {
-                        object.setOperationRequestTypeSequence_type0(OperationRequestTypeSequence.Factory
+                        object.setOperationRequestTypeSequence(OperationRequestTypeSequence.Factory
                                 .parse(reader));
                     }
                 }

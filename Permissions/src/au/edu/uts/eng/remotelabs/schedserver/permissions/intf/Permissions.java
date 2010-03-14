@@ -37,6 +37,10 @@
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.impl.UserAdmin;
@@ -98,8 +102,12 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUs
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserType;
 
 /**
@@ -115,24 +123,40 @@ public class Permissions implements PermissionsSkeletonInterface
         this.logger = LoggerActivator.getLogger();
     }
 
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addAcademicPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission)
-     */
     @Override
-    public AddAcademicPermissionResponse addAcademicPermission(AddAcademicPermission request)
+    public GetUserResponse getUser(GetUser request)
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission)
-     */
-    @Override
-    public AddPermissionResponse addPermission(AddPermission request)
-    {
-        // TODO Auto-generated method stub
-        return null;
+        /** Request parameters. */
+        UserIDType userReq = request.getGetUser();
+        String ns = userReq.getUserNamespace(), nm = userReq.getUserName();
+        long id = this.getIdentifier(userReq.getUserID());
+        this.logger.debug("Received get user request with id=" + id + ", namespace=" + ns + " and name=" + nm + '.');
+        
+        /** Response parameters. */
+        GetUserResponse resp = new GetUserResponse();
+        UserType userResp = new UserType();
+        resp.setGetUserResponse(userResp);
+        userResp.setPersona(PersonaType.DEMO);
+        
+        UserDao dao = new UserDao();
+        User user;
+        if (id > 0 && (user = dao.get(id)) != null)
+        {
+            userResp.setUserID(String.valueOf(user.getId()));
+            userResp.setNameNamespace(user.getNamespace(), user.getName());
+            userResp.setUserQName(user.getNamespace() + UserIDType.QNAME_DELIM + user.getName());
+            userResp.setPersona(PersonaType.Factory.fromValue(user.getPersona()));
+        }
+        else if (ns != null && nm != null && (user = dao.findByName(ns, nm)) != null)
+        {
+            userResp.setUserID(String.valueOf(user.getId()));
+            userResp.setNameNamespace(user.getNamespace(), user.getName());
+            userResp.setUserQName(user.getNamespace() + UserIDType.QNAME_DELIM + user.getName());
+            userResp.setPersona(PersonaType.Factory.fromValue(user.getPersona()));
+        }
+        
+        dao.closeSession();
+        return resp;
     }
 
     @Override
@@ -165,7 +189,7 @@ public class Permissions implements PermissionsSkeletonInterface
         else
         {
             UserAdmin admin = new UserAdmin(DataAccessActivator.getNewSession());
-            if (admin.addUser(nm, ns, persona))
+            if (admin.addUser(ns, nm, persona))
             {
                 op.setSuccessful(true);
             }
@@ -179,22 +203,213 @@ public class Permissions implements PermissionsSkeletonInterface
 
         return resp;
     }
+    
+    @Override
+    public EditUserResponse editUser(EditUser request)
+    {
+        /* Request parameters. */
+        UserType userReq = request.getEditUser();
+        String ns = userReq.getUserNamespace(), name = userReq.getUserName(), persona = userReq.getPersona().getValue();
+        long id = this.getIdentifier(userReq.getUserID());
+        this.logger.debug("Received request to edit user with id=" + id + ", namespace=" + ns + ", name=" + name 
+                + ", persona=" + persona + '.');
+        
+        /* Response parameters. */
+        EditUserResponse resp = new EditUserResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setEditUserResponse(op);
+        op.setSuccessful(false);
+        
+        UserAdmin userAdmin = new UserAdmin(DataAccessActivator.getNewSession());
+        
+        /* Check if the user is authorised. */
+        if (!this.checkPermission(userReq))
+        {
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied.");            
+        }
+        else if (id > 0)
+        {
+            if (userAdmin.editUser(id, ns, name, persona))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(userAdmin.getFailureReason());
+            }
+        }
+        else if (ns != null && name != null)
+        {
+            if (userAdmin.editUser(ns, name, persona))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(userAdmin.getFailureReason());
+            }
+        }
+        else
+        {
+            op.setFailureCode(2);
+            op.setFailureReason("Mandatory parameter not provided.");
+        }
+        
+        userAdmin.closeSession();
+        return resp;
+    }
+    
+    @Override
+    public DeleteUserResponse deleteUser(DeleteUser request)
+    {
+        /* Request parameters. */
+        UserIDType userReq = request.getDeleteUser();
+        String ns = userReq.getUserNamespace(), name = userReq.getUserName();
+        long id = this.getIdentifier(userReq.getUserID());
+        this.logger.debug("Received delete user with id=" + id + ", namespace=" + ns + ", name=" + name + '.');
+        
+        /* Response parameters. */
+        DeleteUserResponse resp = new DeleteUserResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setDeleteUserResponse(op);
+        op.setSuccessful(false);
+        
+        UserAdmin admin = new UserAdmin(DataAccessActivator.getNewSession());
+        if (!this.checkPermission(userReq))
+        {
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied");
+        }
+        else if (id != 0)
+        {
+            if (admin.deleteUser(id))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(admin.getFailureReason());
+            }
+        }
+        else if (ns != null && name != null)
+        {
+            if (admin.deleteUser(ns, name))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(admin.getFailureReason());
+            }
+        }
+        else
+        {
+            op.setFailureCode(2);
+            op.setFailureReason("Mandatory parameter not supplied");
+        }
+        
+        admin.closeSession();
+        return resp;
+    }
 
+    @Override
+    public GetUserClassResponse getUserClass(GetUserClass request)
+    {
+        /* Request parameters. */
+        UserClassIDType uCReq = request.getGetUserClass();
+        String name = uCReq.getUserClassName();
+        long id = uCReq.getUserClassID();
+        this.logger.debug("Received get user class request with id=" + id + ", name=" + name + '.');
+        
+        /* Response parameters. */
+        GetUserClassResponse resp = new GetUserClassResponse();
+        UserClassType uc = new UserClassType();
+        resp.setGetUserClassResponse(uc);
+        
+        UserClassDao dao = new UserClassDao();
+        UserClass cls;
+        if ((id > 0 && (cls = dao.get(id)) != null) || (name != null && (cls = dao.findByName(name)) != null))
+        {
+            uc.setUserClassID(cls.getId().intValue());
+            uc.setUserClassName(cls.getName());
+            uc.setIsActive(cls.isActive());
+            uc.setIsKickable(cls.isKickable());
+            uc.setIsQueuable(cls.isQueuable());
+            uc.setIsUserLockable(cls.isUsersLockable());
+            uc.setPriority(cls.getPriority());
+        }
+            
+        dao.closeSession();
+        return resp;
+    }
+    
+    @Override
+    public AddUserClassResponse addUserClass(AddUserClass request)
+    {
+        /* Request parameters. */
+        UserClassType ucReq = request.getAddUserClass();
+        String name = ucReq.getUserClassName();
+        int pri = ucReq.getPriority();
+        this.logger.debug("Received add user request with name=" + name + ", priority=" + pri + ", active=" + 
+                ucReq.getIsActive() + ", kickable=" + ucReq.getIsKickable() + ", queueable=" + ucReq.getIsQueuable() +
+                ", lockable=" + ucReq.getIsUserLockable() + '.');
+        
+        /* Response parameters. */
+        AddUserClassResponse resp = new AddUserClassResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setAddUserClassResponse(op);
+        op.setSuccessful(false);
+        
+        if (!this.checkPermission(ucReq))
+        {
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied.");
+        }
+        else if (name == null)
+        {
+            op.setFailureCode(2);
+            op.setFailureReason("Mandatory parameter not supplied.");
+        }
+        else
+        {
+            
+        }
+        
+        
+        return null;
+    }
+
+    
     /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)
+     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addAcademicPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission)
      */
     @Override
-    public AddUserAssociationResponse addUserAssociation(AddUserAssociation request)
+    public AddAcademicPermissionResponse addAcademicPermission(AddAcademicPermission request)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
     /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)
+     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission)
      */
     @Override
-    public AddUserClassResponse addUserClass(AddUserClass request)
+    public AddPermissionResponse addPermission(AddPermission request)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)
+     */
+    @Override
+    public AddUserAssociationResponse addUserAssociation(AddUserAssociation request)
     {
         // TODO Auto-generated method stub
         return null;
@@ -239,16 +454,7 @@ public class Permissions implements PermissionsSkeletonInterface
         // TODO Auto-generated method stub
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#deleteUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser)
-     */
-    @Override
-    public DeleteUserResponse deleteUser(DeleteUser request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    
 
     /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)
@@ -300,12 +506,7 @@ public class Permissions implements PermissionsSkeletonInterface
         return null;
     }
 
-    @Override
-    public EditUserResponse editUser(EditUser request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    
 
     /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)
@@ -359,9 +560,6 @@ public class Permissions implements PermissionsSkeletonInterface
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#getPermissionsForUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser)
-     */
     @Override
     public GetPermissionsForUserResponse getPermissionsForUser(GetPermissionsForUser request)
     {
@@ -374,26 +572,6 @@ public class Permissions implements PermissionsSkeletonInterface
      */
     @Override
     public GetPermissionsForUserClassResponse getPermissionsForUserClass(GetPermissionsForUserClass request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#getUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)
-     */
-    @Override
-    public GetUserResponse getUser(GetUser request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#getUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass)
-     */
-    @Override
-    public GetUserClassResponse getUserClass(GetUserClass request)
     {
         // TODO Auto-generated method stub
         return null;
@@ -446,5 +624,25 @@ public class Permissions implements PermissionsSkeletonInterface
     {
         // TODO check request permissions. */
         return true;
+    }
+    
+    /**
+     * Converts string identifiers to a long.
+     * 
+     * @param idStr string containing a long  
+     * @return long or 0 if identifier not valid
+     */
+    private long getIdentifier(String idStr)
+    {
+        if (idStr == null) return 0;
+        
+        try
+        {
+            return Long.parseLong(idStr);
+        }
+        catch (NumberFormatException nfe)
+        {
+            return 0;
+        }
     }
 }

@@ -208,6 +208,132 @@ public class UserAdminTester extends TestCase
         this.dao.delete(edittedUser);
     }
     
+    @Test
+    public void testEditUserNewPersona()
+    {
+        String name = "tuser";
+        String ns = "tuserns";
+        
+        User user = new User(name, ns, User.ADMIN);
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        ses.save(user);
+        ses.getTransaction().commit();
+        
+        assertTrue(this.admin.editUser(user.getId(), ns, name, User.USER));
+       
+        ses.refresh(user);
+        assertEquals(name, user.getName());
+        assertEquals(ns, user.getNamespace());
+        assertEquals(User.USER, user.getPersona());
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.getTransaction().commit();
+    }
     
-
+    @Test
+    public void testEditUserNoNameNoNSPersona()
+    {
+        String name = "tuser";
+        String ns = "tuserns";
+        
+        User user = new User(name, ns, User.ADMIN);
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        ses.save(user);
+        ses.getTransaction().commit();
+        
+        assertTrue(this.admin.editUser(user.getId(), null, null, User.USER));
+       
+        ses.refresh(user);
+        assertEquals(name, user.getName());
+        assertEquals(ns, user.getNamespace());
+        assertEquals(User.USER, user.getPersona());
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.getTransaction().commit();
+    }
+    
+    @Test
+    public void testEditNoUser()
+    {
+        assertFalse(this.admin.editUser(1, "newName", "newNS", User.USER));
+        assertNotNull(this.admin.getFailureReason());
+    }
+    
+    @Test
+    public void testEditUserPersona()
+    {
+        String name = "eUser";
+        String ns = "nseUser";
+        
+        User user = new User(name, ns, User.ADMIN);
+        this.dao.persist(user);
+        
+        assertTrue(this.admin.editUser(ns, name, User.ACADEMIC));
+        assertNull(this.admin.getFailureReason());
+        
+        this.dao.refresh(user);
+        assertEquals(name, user.getName());
+        assertEquals(ns, user.getNamespace());
+        assertEquals(User.ACADEMIC, user.getPersona());
+        
+        this.dao.delete(user);
+    }
+    
+    @Test
+    public void testEditUserInvalidPersona()
+    {
+        String name = "eUser";
+        String ns = "nseUser";
+        
+        User user = new User(name, ns, User.ADMIN);
+        this.dao.persist(user);
+        
+        assertFalse(this.admin.editUser(ns, name, "Not valid"));
+        assertNotNull(this.admin.getFailureReason());
+        
+        this.dao.delete(user);
+    }
+    
+    @Test
+    public void testEditUserUserNotExist()
+    {
+        assertFalse(this.admin.editUser("not", "exist", User.ADMIN));
+        assertNotNull(this.admin.getFailureReason());
+    }
+    
+    @Test
+    public void testDeleteUser()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        
+        ses.beginTransaction();
+        UserClass uc = new UserClass("test1", 10, true, true, true, true);
+        ses.save(uc);
+        User us = new User("del1", "ns1", "ACADEMIC");
+        ses.save(us);
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
+        UserAssociation assoc = new UserAssociation();
+        assoc.setUser(us);
+        assoc.setUserClass(uc);
+        UserAssociationId id = new UserAssociationId();
+        id.setUserClassId(uc.getId());
+        id.setUsersId(us.getId());
+        assoc.setId(id);
+        ses.save(assoc);
+        ses.getTransaction().commit();
+        
+        this.admin.deleteUser(us.getId());
+        
+        assertNull(this.dao.findByName("ns1", "test1"));
+        
+        ses.beginTransaction();
+        ses.delete(uc);
+        ses.getTransaction().commit();
+    }
 }

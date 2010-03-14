@@ -68,6 +68,8 @@ public class PersonaType implements ADBBean
     public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/permissions",
             "persona_type1", "ns1");
     
+    private static HashMap<String, PersonaType> _table_ = new HashMap<String, PersonaType>();
+    
     public static final String _ADMIN = ConverterUtil.convertToString("ADMIN");
     public static final String _ACADEMIC = ConverterUtil.convertToString("ACADEMIC");
     public static final String _USER = ConverterUtil.convertToString("USER");
@@ -78,7 +80,6 @@ public class PersonaType implements ADBBean
     public static final PersonaType DEMO = new PersonaType(PersonaType._DEMO, true);
     
     protected String personaType;
-    private static HashMap<String, PersonaType> _table_ = new HashMap<String, PersonaType>();
 
     private static String generatePrefix(final String namespace)
     {

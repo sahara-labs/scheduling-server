@@ -713,7 +713,7 @@ public class UserClassType extends UserClassIDType
                 {
                     if (reader.isStartElement())
                     {
-                        object.setOperationRequestTypeSequence_type0(OperationRequestTypeSequence.Factory
+                        object.setOperationRequestTypeSequence(OperationRequestTypeSequence.Factory
                                 .parse(reader));
                     }
                 }

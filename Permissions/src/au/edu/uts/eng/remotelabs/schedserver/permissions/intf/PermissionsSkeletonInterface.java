@@ -108,11 +108,25 @@ public interface PermissionsSkeletonInterface
     /**
      * Adds a user to the scheduling server.
      * 
-     * @param addUser request 
+     * @param request 
      * @return response
      */
-    public AddUserResponse addUser(AddUser addUser);
+    public AddUserResponse addUser(AddUser request);
+    
+    /**
+     * Edits a user on the scheduling server.
+     * 
+     * @param request
+     * @return response
+     */
+    public EditUserResponse editUser(EditUser request);
 
+    /**
+     * Deletes a user from the scheduling server.
+     * 
+     * @param request 
+     * @return response
+     */
     public DeleteUserResponse deleteUser(DeleteUser request);
 
     public GetUserClassesForUserResponse getUserClassesForUser(GetUserClassesForUser request);
@@ -164,6 +178,4 @@ public interface PermissionsSkeletonInterface
     public GetPermissionResponse getPermission(GetPermission request);
 
     public GetUserClassResponse getUserClass(GetUserClass request);
-
-    public EditUserResponse editUser(EditUser request);
 }
