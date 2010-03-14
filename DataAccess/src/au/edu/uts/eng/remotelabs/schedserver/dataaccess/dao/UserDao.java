@@ -36,11 +36,16 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.io.Serializable;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 
 /**
  * Data access object for {@link User} entity.
@@ -83,5 +88,45 @@ public class UserDao extends GenericDao<User>
         cri.add(Restrictions.eq("namespace", ns));
         cri.add(Restrictions.eq("name", name));
         return (User) cri.uniqueResult();
+    }
+    
+    @Override
+    public void delete(Serializable id)
+    {
+        User user = this.get(id);
+        this.delete(user);
+    }
+    
+    @Override
+    public void delete(User user)
+    {
+        this.session.beginTransaction();
+        
+        /** Deletes all the users academic permissions. */
+        for (AcademicPermission perm : user.getAcademicPermissions())
+        {
+            this.session.delete(perm);
+        }
+        
+        /** Deletes all the user associations. */
+        for (UserAssociation assoc : user.getUserAssociations())
+        {
+            this.session.delete(assoc);
+        }
+        
+        /** Deletes all the user locks. */
+        for (UserLock lock : user.getUserLocks())
+        {
+            this.session.delete(lock);
+        }
+        
+        /** NULL the session information. */
+        for (au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses : user.getSessions())
+        {
+            ses.setUser(null);
+        }
+        
+        this.session.getTransaction().commit();
+        super.delete(user);
     }
 }

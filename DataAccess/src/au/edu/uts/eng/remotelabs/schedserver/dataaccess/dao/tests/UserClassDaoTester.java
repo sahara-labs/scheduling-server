@@ -32,24 +32,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 4th January 2010
+ * @date 14th March 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
-
 
 import java.lang.reflect.Field;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.hibernate.Session;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -68,14 +64,14 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
 /**
- * Tests the {@link UserDao} class. 
+ * Tests the {@link UserClassDao} class. 
  */
-public class UserDaoTester extends TestCase
+public class UserClassDaoTester extends TestCase
 {
     /** Object of class under test. */
-    private UserDao dao;
-
-    public UserDaoTester(String name) throws Exception
+    private UserClassDao dao;
+    
+    public UserClassDaoTester(String name) throws Exception
     {
         super(name);
         
@@ -119,70 +115,28 @@ public class UserDaoTester extends TestCase
     }
     
     @Override
-    @Before
-    public void setUp() throws Exception
+    public void setUp()
     {
-        super.setUp();
-        this.dao = new UserDao();
-    }
-    
-    @Override
-    @After
-    public void tearDown() throws Exception
-    {
-        super.tearDown();
-        this.dao.closeSession();
+        this.dao = new UserClassDao();
     }
     
     @Test
-    public void testGetUser()
+    public void testFindByName()
     {
-        User user = new User("tuser", "test", "USER");
-        Session ses = DataAccessActivator.getNewSession();
-        ses.beginTransaction();
-        ses.save(user);
-        ses.getTransaction().commit();
-        ses.close();
+        UserClass cls = new UserClass();
+        cls.setName("class");
+        cls.setPriority(10);
+        this.dao.persist(cls);
         
-        User ldUser = this.dao.findByName("test", "tuser");
-        assertNotNull(ldUser);
-        
-        assertEquals("test", ldUser.getNamespace());
-        assertEquals("tuser", ldUser.getName());
-        assertEquals("USER", ldUser.getPersona());
-        
-        this.dao.delete(ldUser);
+        UserClass ldCls = this.dao.findByName("class");
+        assertNotNull(ldCls);
+        assertEquals("class", ldCls.getName());
+        assertEquals(10, ldCls.getPriority());
     }
     
     @Test
-    public void testDeleteUser()
+    public void testFindNotFound()
     {
-        Session ses = DataAccessActivator.getNewSession();
-        
-        ses.beginTransaction();
-        UserClass uc = new UserClass("test1", 10, true, true, true, true);
-        ses.save(uc);
-        User us = new User("del1", "ns1", "ACADEMIC");
-        ses.save(us);
-        ses.getTransaction().commit();
-        
-        ses.beginTransaction();
-        UserAssociation assoc = new UserAssociation();
-        assoc.setUser(us);
-        assoc.setUserClass(uc);
-        UserAssociationId id = new UserAssociationId();
-        id.setUserClassId(uc.getId());
-        id.setUsersId(us.getId());
-        assoc.setId(id);
-        ses.save(assoc);
-        ses.getTransaction().commit();
-        
-        this.dao.delete(us.getId());
-        
-        assertNull(this.dao.findByName("ns1", "test1"));
-        
-        ses.beginTransaction();
-        ses.delete(uc);
-        ses.getTransaction().commit();
+        assertNull(this.dao.findByName("doesnotexist"));
     }
 }
