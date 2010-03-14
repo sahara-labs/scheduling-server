@@ -44,7 +44,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Class to add, edit, get and delete users.
+ * Class to add, edit and delete users.
  */
 public class UserAdmin
 {   
