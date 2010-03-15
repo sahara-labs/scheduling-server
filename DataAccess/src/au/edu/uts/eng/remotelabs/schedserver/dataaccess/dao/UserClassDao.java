@@ -36,10 +36,15 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.io.Serializable;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 
 /**
@@ -68,5 +73,46 @@ public class UserClassDao extends GenericDao<UserClass>
         Criteria cri = this.session.createCriteria(UserClass.class);
         cri.add(Restrictions.eq("name", name));
         return (UserClass)cri.uniqueResult();
+    }
+    
+    @Override
+    public void delete(Serializable id)
+    {
+        UserClass uc = this.get(id);
+        if (uc != null) this.delete(uc);
+    }
+    
+    @Override
+    public void delete(UserClass uc)
+    {
+        this.session.beginTransaction();
+        
+        /* Delete all the user associations. */
+        for (UserAssociation assoc : uc.getUserAssociations())
+        {
+            this.session.delete(assoc);
+        }
+        
+        /* Delete all academic permissions. */
+        for (AcademicPermission perm : uc.getAcademicPermissions())
+        {
+            this.session.delete(perm);
+        }
+        
+        /* Delete all associated resource permissions. */
+        for (ResourcePermission perm : uc.getResourcePermissions())
+        {
+            /* Null out any sessions which have this resource permission. */
+            for (au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses : 
+                    perm.getSessionsForResourcePermissionId())
+            {
+                ses.setResourcePermissionByResourcePermissionId(null);
+            }
+            this.session.delete(perm);
+        }
+        
+        this.session.getTransaction().commit();
+        
+        super.delete(uc);
     }
 }
