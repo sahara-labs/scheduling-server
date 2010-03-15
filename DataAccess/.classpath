@@ -22,5 +22,7 @@
 	<classpathentry kind="lib" path="lib/slf4j-api-1.5.10.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-1.5.10.jar"/>
+	<classpathentry kind="lib" path="/Users/neo/Documents/Projects/Java_Projects/workspace/SchedServer/trunk/test/lib/easymock-2.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.11-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
