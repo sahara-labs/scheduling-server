@@ -14,7 +14,7 @@ lib/javassist-3.9.0.GA.jar, \
 lib/c3p0-0.9.1.jar, \
 lib/slf4j-api-1.5.10.jar, \
 lib/slf4j-simple-1.5.10.jar, \
-lib/mysql-connector-java-5.1.10-bin.jar, \
+lib/mysql-connector-java-5.1.11-bin.jar, \
 lib/postgresql-8.4-701.jdbc4.jar, \
 lib/jta-1.1.jar
 Import-Package: !bitronix.tm, !com.ibm.ejs.jts.jta, !com.ibm.websphere.jtaextensions, !com.ibm.ws.Transaction, \
@@ -40,6 +40,6 @@ javassist-3.9.0.GA.jar, \
 c3p0-0.9.1.jar, \
 slf4j-api-1.5.10.jar, \
 slf4j-simple-1.5.10.jar, \
-mysql-connector-java-5.1.10-bin.jar, \
+mysql-connector-java-5.1.11-bin.jar, \
 postgresql-8.4-701.jdbc4.jar, \
 jta-1.1.jar
