@@ -177,6 +177,38 @@ public class UserClassAdmin
     }
     
     /**
+     * Deletes the user class with the specified record identifier.
+     * 
+     * @param id record identifier
+     * @return true if successful
+     */
+    public boolean deleteUserClass(long id)
+    {
+        this.dao.delete(id);
+        return true;
+    }
+    
+    /**
+     * Delete the user class with the specified name.
+     * 
+     * @param name user class name
+     * @return true if successful
+     */
+    public boolean deleteUserClass(String name)
+    {
+        UserClass userClass = this.dao.findByName(name);
+        if (userClass == null)
+        {
+            this.logger.warn("Unable to delete user class with name " + name + " as it does not exist.");
+            this.failureReason = "Class does not exist.";
+            return false;
+        }
+        
+        this.dao.delete(userClass);
+        return true;
+    }
+    
+    /**
      * Closes the in use database session.
      */
     public void closeSession()
