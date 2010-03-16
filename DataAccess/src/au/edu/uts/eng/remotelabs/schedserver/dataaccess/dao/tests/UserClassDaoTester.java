@@ -37,14 +37,17 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.hibernate.Session;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
@@ -132,11 +135,97 @@ public class UserClassDaoTester extends TestCase
         assertNotNull(ldCls);
         assertEquals("class", ldCls.getName());
         assertEquals(10, ldCls.getPriority());
+        
+        this.dao.delete(cls);
     }
     
     @Test
     public void testFindNotFound()
     {
         assertNull(this.dao.findByName("doesnotexist"));
+    }
+    
+    @Test
+    public void testDeleteId()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType ty = new RigType("type", 10, false);
+        ses.save(ty);
+        RigCapabilities caps = new RigCapabilities("a,b");
+        ses.save(caps);
+        Rig rig = new Rig(ty, caps, "rig", "http://rig/", new Date(), true, null, false, true, true);
+        ses.save(rig);
+        
+        User us = new User("user", "userns", "ADMIN");
+        ses.save(us);
+        UserClass uc = new UserClass("clazz", 10, true, true, true, true);
+        ses.save(uc);
+        ResourcePermission perm = new ResourcePermission(uc, "RIG", 3600, 300, (short) 5, 300, 300);
+        perm.setExpiryTime(new Date());
+        perm.setStartTime(new Date());
+        perm.setRig(rig);
+        ses.save(perm);
+        UserAssociationId id = new UserAssociationId(us.getId(), uc.getId());
+        UserAssociation assoc = new UserAssociation(id, uc, us);
+        ses.save(assoc);
+        ses.getTransaction().commit();
+        
+        this.dao.delete(uc.getId());
+        
+        GenericDao<ResourcePermission> rpDao = new GenericDao<ResourcePermission>(ResourcePermission.class);
+        assertNull(rpDao.get(perm.getId()));
+        ses.refresh(us);
+        assertEquals(0, us.getUserAssociations().size());
+        
+        
+        ses.beginTransaction();
+        ses.delete(us);
+        ses.delete(rig);
+        ses.delete(caps);
+        ses.delete(ty);
+        ses.getTransaction().commit();
+    }
+    
+    @Test 
+    public void testDeleteName()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType ty = new RigType("type", 10, false);
+        ses.save(ty);
+        RigCapabilities caps = new RigCapabilities("a,b");
+        ses.save(caps);
+        Rig rig = new Rig(ty, caps, "rig", "http://rig/", new Date(), true, null, false, true, true);
+        ses.save(rig);
+        
+        User us = new User("user", "userns", "ADMIN");
+        ses.save(us);
+        UserClass uc = new UserClass("clazz", 10, true, true, true, true);
+        ses.save(uc);
+        ResourcePermission perm = new ResourcePermission(uc, "RIG", 3600, 300, (short) 5, 300, 300);
+        perm.setExpiryTime(new Date());
+        perm.setStartTime(new Date());
+        perm.setRig(rig);
+        ses.save(perm);
+        UserAssociationId id = new UserAssociationId(us.getId(), uc.getId());
+        UserAssociation assoc = new UserAssociation(id, uc, us);
+        ses.save(assoc);
+        ses.getTransaction().commit();
+        
+        this.dao.delete(this.dao.findByName("clazz"));
+        
+        GenericDao<ResourcePermission> rpDao = new GenericDao<ResourcePermission>(ResourcePermission.class);
+        assertNull(rpDao.get(perm.getId()));
+        ses.refresh(us);
+        assertEquals(0, us.getUserAssociations().size());
+        
+        
+        ses.beginTransaction();
+        ses.delete(us);
+        ses.delete(rig);
+        ses.delete(caps);
+        ses.delete(ty);
+        ses.getTransaction().commit();
     }
 }
