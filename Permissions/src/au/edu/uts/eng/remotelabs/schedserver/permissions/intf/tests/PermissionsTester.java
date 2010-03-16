@@ -41,6 +41,8 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,10 +68,16 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass;
@@ -163,7 +171,7 @@ public class PermissionsTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser)}.
      */
     @Test
-    public void testAddUser()
+    public void testAddUser() throws Exception
     {
         AddUser req = new AddUser();
         UserType user = new UserType();
@@ -187,13 +195,19 @@ public class PermissionsTester extends TestCase
         assertNotNull(us);
         dao.delete(us);
         dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(AddUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
     }
 
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser)}.
      */
     @Test
-    public void testEditUser()
+    public void testEditUser() throws Exception
     {
         User user = new User();
         user.setNamespace("UTS");
@@ -228,13 +242,19 @@ public class PermissionsTester extends TestCase
         assertEquals("ADMIN", user.getPersona());
         
         dao.delete(user);
+        
+        OMElement ele = resp.getOMElement(EditUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
     }
     
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser)}.
      */
     @Test
-    public void testDeleteUser()
+    public void testDeleteUser() throws Exception
     {
         UserDao dao = new UserDao();
         User user = new User();
@@ -260,13 +280,19 @@ public class PermissionsTester extends TestCase
         assertTrue(op.getSuccessful());
         
         assertNull(dao.findByName("UTS", "tmachet"));
+        
+        OMElement ele = resp.getOMElement(DeleteUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
     }
     
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser)}.
      */
     @Test
-    public void testDeleteUserID()
+    public void testDeleteUserID() throws Exception
     {
         UserDao dao = new UserDao();
         User user = new User();
@@ -289,6 +315,12 @@ public class PermissionsTester extends TestCase
         assertTrue(op.getSuccessful());
         
         assertNull(dao.findByName("UTS", "tmachet"));
+        
+        OMElement ele = resp.getOMElement(DeleteUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
     }
 
     /**
@@ -304,9 +336,138 @@ public class PermissionsTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)}.
      */
     @Test
-    public void testAddUserClass()
+    public void testAddUserClass() throws Exception
     {
-        fail("Not yet implemented");
+        AddUserClass req = new AddUserClass();
+        UserClassType cls = new UserClassType();
+        req.setAddUserClass(cls);
+        
+        cls.setUserClassName("newClass");
+        cls.setPriority(10);
+        cls.setIsActive(true);
+        cls.setIsKickable(true);
+        cls.setIsQueuable(true);
+        cls.setIsUserLockable(true);
+        cls.setRequestorQName("UTS:mdiponio");
+        
+        AddUserClassResponse resp = this.permissions.addUserClass(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getAddUserClassResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        UserClassDao dao = new UserClassDao();
+        UserClass uc = dao.findByName("newClass");
+        assertNotNull(uc);
+        
+        assertEquals("newClass", uc.getName());
+        assertEquals(10, uc.getPriority());
+        assertTrue(uc.isActive());
+        assertTrue(uc.isKickable());
+        assertTrue(uc.isQueuable());
+        assertTrue(uc.isUsersLockable());
+        
+        dao.delete(uc);
+        dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(AddUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)}.
+     */
+    @Test
+    public void testAddUserClassFalse() throws Exception
+    {
+        AddUserClass req = new AddUserClass();
+        UserClassType cls = new UserClassType();
+        req.setAddUserClass(cls);
+        
+        cls.setUserClassName("newClass");
+        cls.setPriority(100);
+        cls.setIsActive(false);
+        cls.setIsKickable(false);
+        cls.setIsQueuable(false);
+        cls.setIsUserLockable(false);
+        cls.setRequestorQName("UTS:mdiponio");
+        
+        AddUserClassResponse resp = this.permissions.addUserClass(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getAddUserClassResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        UserClassDao dao = new UserClassDao();
+        UserClass uc = dao.findByName("newClass");
+        assertNotNull(uc);
+        
+        assertEquals("newClass", uc.getName());
+        assertEquals(100, uc.getPriority());
+        assertFalse(uc.isActive());
+        assertFalse(uc.isKickable());
+        assertFalse(uc.isQueuable());
+        assertFalse(uc.isUsersLockable());
+        
+        dao.delete(uc);
+        dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(AddUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)}.
+     */
+    @Test
+    public void testAddUserClassExists() throws Exception
+    {
+        UserClassDao dao = new UserClassDao();
+        UserClass uc = new UserClass();
+        uc.setName("exists");
+        uc.setPriority(190);
+        dao.persist(uc);
+        
+        AddUserClass req = new AddUserClass();
+        UserClassType cls = new UserClassType();
+        req.setAddUserClass(cls);
+        cls.setRequestorQName("UTS:mdiponio");
+        cls.setUserClassName("exists");
+        cls.setPriority(10);
+        cls.setIsActive(true);
+        cls.setIsKickable(true);
+        cls.setIsQueuable(true);
+        cls.setIsUserLockable(true);
+        
+        AddUserClassResponse resp = this.permissions.addUserClass(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getAddUserClassResponse();
+        assertNotNull(op);
+        assertFalse(op.getSuccessful());
+        assertEquals(3, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        
+        dao.delete(uc);
+        dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(AddUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>false</successful>"));
     }
 
     /**
@@ -358,9 +519,121 @@ public class PermissionsTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
      */
     @Test
-    public void testDeleteUserClass()
+    public void testDeleteUserClass() throws Exception
     {
-        fail("Not yet implemented");
+        UserClassDao dao = new UserClassDao();
+        UserClass uc = new UserClass();
+        uc.setName("todelete");
+        dao.persist(uc);
+        
+        DeleteUserClass req = new DeleteUserClass();
+        UserClassIDType cid = new UserClassIDType();
+        req.setDeleteUserClass(cid);
+        cid.setUserClassName("todelete");
+        
+        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getDeleteUserClassResponse();
+        assertNotNull(op);
+        
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        assertNull(dao.findByName("todelete"));
+        
+        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
+     */
+    @Test
+    public void testDeleteUserClassID() throws Exception
+    {
+        UserClassDao dao = new UserClassDao();
+        UserClass uc = new UserClass();
+        uc.setName("todelete");
+        dao.persist(uc);
+        
+        DeleteUserClass req = new DeleteUserClass();
+        UserClassIDType cid = new UserClassIDType();
+        req.setDeleteUserClass(cid);
+        cid.setUserClassID(uc.getId().intValue());
+        
+        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getDeleteUserClassResponse();
+        assertNotNull(op);
+        
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        assertNull(dao.findByName("todelete"));
+        
+        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
+     */
+    @Test
+    public void testDeleteUserClassNotExist() throws Exception
+    {
+        DeleteUserClass req = new DeleteUserClass();
+        UserClassIDType cid = new UserClassIDType();
+        req.setDeleteUserClass(cid);
+        cid.setUserClassName("todelete");
+        
+        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getDeleteUserClassResponse();
+        assertNotNull(op);
+        
+        assertFalse(op.getSuccessful());
+        assertEquals(3, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>false</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
+     */
+    @Test
+    public void testDeleteUserClassNoIdName() throws Exception
+    {
+
+        DeleteUserClass req = new DeleteUserClass();
+        UserClassIDType cid = new UserClassIDType();
+        req.setDeleteUserClass(cid);
+        
+        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getDeleteUserClassResponse();
+        assertNotNull(op);
+        
+        assertFalse(op.getSuccessful());
+        assertEquals(2, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        
+        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>false</successful>"));
     }
 
     /**
@@ -394,10 +667,132 @@ public class PermissionsTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)}.
      */
     @Test
-    public void testEditUserClass()
+    public void testEditUserClass() throws Exception
     {
-        fail("Not yet implemented");
+        UserClassDao dao = new UserClassDao();
+        UserClass uc = new UserClass();
+        uc.setName("uclass");
+        uc.setPriority(190);
+        dao.persist(uc);
+        
+        EditUserClass req = new EditUserClass();
+        UserClassType cls = new UserClassType();
+        req.setEditUserClass(cls);
+        cls.setRequestorQName("UTS:mdiponio");
+        cls.setUserClassName("uclass");
+        cls.setPriority(10);
+        cls.setIsActive(true);
+        cls.setIsKickable(true);
+        cls.setIsQueuable(true);
+        cls.setIsUserLockable(true);
+        
+        EditUserClassResponse resp = this.permissions.editUserClass(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getEditUserClassResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        dao.refresh(uc);
+        assertEquals("uclass", uc.getName());
+        assertEquals(10, uc.getPriority());
+        assertTrue(uc.isActive());
+        assertTrue(uc.isKickable());
+        assertTrue(uc.isQueuable());
+        assertTrue(uc.isUsersLockable());
+        
+        dao.delete(uc);
+        dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(EditUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
     }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)}.
+     */
+    @Test
+    public void testEditUserClassID() throws Exception
+    {
+        UserClassDao dao = new UserClassDao();
+        UserClass uc = new UserClass();
+        uc.setName("uclass");
+        uc.setPriority(190);
+        dao.persist(uc);
+        
+        EditUserClass req = new EditUserClass();
+        UserClassType cls = new UserClassType();
+        req.setEditUserClass(cls);
+        cls.setUserClassID(uc.getId().intValue());
+        cls.setRequestorQName("UTS:mdiponio");
+        cls.setUserClassName("newname");
+        cls.setPriority(10);
+        cls.setIsActive(true);
+        cls.setIsKickable(false);
+        cls.setIsQueuable(true);
+        cls.setIsUserLockable(false);
+        
+        EditUserClassResponse resp = this.permissions.editUserClass(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getEditUserClassResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        dao.refresh(uc);
+        assertEquals("newname", uc.getName());
+        assertEquals(10, uc.getPriority());
+        assertTrue(uc.isActive());
+        assertFalse(uc.isKickable());
+        assertTrue(uc.isQueuable());
+        assertFalse(uc.isUsersLockable());
+        
+        dao.delete(uc);
+        dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(EditUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)}.
+     */
+    @Test
+    public void testEditUserClassDoesExist() throws Exception
+    {
+        EditUserClass req = new EditUserClass();
+        UserClassType cls = new UserClassType();
+        req.setEditUserClass(cls);
+        cls.setRequestorQName("UTS:mdiponio");
+        cls.setUserClassName("notexists");
+        cls.setPriority(10);
+        
+        EditUserClassResponse resp = this.permissions.editUserClass(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getEditUserClassResponse();
+        assertNotNull(op);
+        assertFalse(op.getSuccessful());
+        assertEquals(3, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        
+        OMElement ele = resp.getOMElement(EditUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>false</successful>"));
+    }
+
 
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getAcademicPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission)}.
@@ -457,7 +852,7 @@ public class PermissionsTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)}.
      */
     @Test
-    public void testGetUser()
+    public void testGetUser() throws Exception
     {
         User user = new User();
         user.setNamespace("UTS");
@@ -494,13 +889,19 @@ public class PermissionsTester extends TestCase
         
         dao.delete(user);
         dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(GetUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<persona>ADMIN</persona>"));
     }
     
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)}.
      */
     @Test
-    public void testGetUserQName()
+    public void testGetUserQName() throws Exception
     {
         User user = new User();
         user.setNamespace("UTS");
@@ -537,13 +938,19 @@ public class PermissionsTester extends TestCase
         
         dao.delete(user);
         dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(GetUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<persona>ADMIN</persona>"));
     }
     
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)}.
      */
     @Test
-    public void testGetUserSeq()
+    public void testGetUserSeq() throws Exception
     {
         User user = new User();
         user.setNamespace("UTS");
@@ -580,13 +987,19 @@ public class PermissionsTester extends TestCase
         
         dao.delete(user);
         dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(GetUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<persona>ADMIN</persona>"));
     }
 
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass)}.
      */
     @Test
-    public void testGetUserClass()
+    public void testGetUserClass() throws Exception
     {
         UserClassDao dao = new UserClassDao();
         UserClass cls = new UserClass("ucTest", 50, true, false, true, false);
@@ -612,13 +1025,18 @@ public class PermissionsTester extends TestCase
         
         dao.delete(cls);
         dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(GetUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
     }
     
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass)}.
      */
     @Test
-    public void testGetUserClassName()
+    public void testGetUserClassName() throws Exception
     {
         UserClassDao dao = new UserClassDao();
         UserClass cls = new UserClass("ucTest", 50, true, false, true, false);
@@ -644,6 +1062,11 @@ public class PermissionsTester extends TestCase
         
         dao.delete(cls);
         dao.closeSession();
+        
+        OMElement ele = resp.getOMElement(GetUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
     }
 
     /**

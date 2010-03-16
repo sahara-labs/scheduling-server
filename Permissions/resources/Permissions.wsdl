@@ -212,11 +212,19 @@
 						<xsd:sequence>
 							<xsd:element name="persona">
 								<xsd:simpleType>
-									<xsd:restriction base="xsd:string">
-										<xsd:enumeration value="ADMIN"></xsd:enumeration>
-										<xsd:enumeration value="ACADEMIC"></xsd:enumeration>
+									<xsd:restriction
+										base="xsd:string">
+										<xsd:enumeration
+											value="ADMIN">
+										</xsd:enumeration>
+										<xsd:enumeration
+											value="ACADEMIC">
+										</xsd:enumeration>
 										<xsd:enumeration value="USER"></xsd:enumeration>
 										<xsd:enumeration value="DEMO"></xsd:enumeration>
+										<xsd:enumeration
+											value="NOTFOUND">
+										</xsd:enumeration>
 									</xsd:restriction>
 								</xsd:simpleType>
 							</xsd:element>

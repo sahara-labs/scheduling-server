@@ -74,7 +74,7 @@ public class UserClassAdmin
      * @param lockable whether the members of the user class are lockable
      * @return true if successful
      */
-    public boolean addUser(String name, int priority, boolean active, boolean queuable, boolean kickable, 
+    public boolean addUserClass(String name, int priority, boolean active, boolean queuable, boolean kickable, 
             boolean lockable)
     {
         UserClass userClass = new UserClass();
@@ -85,10 +85,12 @@ public class UserClassAdmin
         userClass.setKickable(kickable);
         userClass.setUsersLockable(lockable);
         
+        this.logger.debug("Adding new user class with name '" + name + "' and priority '" + priority + "'.");
+        
         /* Check if there is an existing user class with the same name. */
         if (this.dao.findByName(name) != null)
         {
-            this.logger.warn("Unable to add user class with name " + name + " because a user class with that name " +
+            this.logger.warn("Unable to add user class with name '" + name + "' because a user class with that name " +
             		"already exists.");
             this.failureReason = "User class with name exists";
             return false;
@@ -109,13 +111,13 @@ public class UserClassAdmin
      * @param lockable whether the members of the user class are lockable
      * @return true if successful
      */
-    public boolean editUser(String name, int priority, boolean active, boolean queuable, boolean kickable, 
+    public boolean editUserClass(String name, int priority, boolean active, boolean queuable, boolean kickable, 
             boolean lockable)
     {
         UserClass userClass = this.dao.findByName(name);
         if (userClass == null)
         {
-            this.logger.warn("Unable to edit user class with name " + name + " as it does not exist.");
+            this.logger.warn("Unable to edit user class with name '" + name + "' as it does not exist.");
             this.failureReason = "User class not found";
             return false;
         }
@@ -142,13 +144,13 @@ public class UserClassAdmin
      * @param lockable whether the members of the user class are lockable
      * @return true if successful
      */
-    public boolean editUser(long id, String name, int priority, boolean active, boolean queuable, boolean kickable, 
+    public boolean editUserClass(long id, String name, int priority, boolean active, boolean queuable, boolean kickable, 
             boolean lockable)
     {
         UserClass userClass = this.dao.get(id);
         if (userClass == null)
         {
-            this.logger.warn("Unable to edit user class with record identifier " + id + " as it does not exist.");
+            this.logger.warn("Unable to edit user class with record identifier '" + id + "' as it does not exist.");
             this.failureReason = "User class not found";
             return false;
         }
@@ -158,7 +160,7 @@ public class UserClassAdmin
         {
             if (this.dao.findByName(name) != null)
             {
-                this.logger.warn("Unable to change name of user class record identifier " + id + " because the new " +
+                this.logger.warn("Unable to change name of user class record identifier '" + id + "' because the new " +
                 		"name already exists.");
                 this.failureReason = "User class with name exists";
                 return false;
@@ -199,7 +201,7 @@ public class UserClassAdmin
         UserClass userClass = this.dao.findByName(name);
         if (userClass == null)
         {
-            this.logger.warn("Unable to delete user class with name " + name + " as it does not exist.");
+            this.logger.warn("Unable to delete user class with name '" + name + "' as it does not exist.");
             this.failureReason = "Class does not exist.";
             return false;
         }

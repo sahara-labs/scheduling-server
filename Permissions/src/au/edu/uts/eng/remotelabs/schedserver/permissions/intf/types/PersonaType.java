@@ -74,10 +74,12 @@ public class PersonaType implements ADBBean
     public static final String _ACADEMIC = ConverterUtil.convertToString("ACADEMIC");
     public static final String _USER = ConverterUtil.convertToString("USER");
     public static final String _DEMO = ConverterUtil.convertToString("DEMO");
+    public static final String _NOTFOUND = ConverterUtil.convertToString("NOTFOUND");
     public static final PersonaType ADMIN = new PersonaType(PersonaType._ADMIN, true);
     public static final PersonaType ACADEMIC = new PersonaType(PersonaType._ACADEMIC, true);
     public static final PersonaType USER = new PersonaType(PersonaType._USER, true);
     public static final PersonaType DEMO = new PersonaType(PersonaType._DEMO, true);
+    public static final PersonaType NOTFOUND = new PersonaType(PersonaType._NOTFOUND, true);
     
     protected String personaType;
 

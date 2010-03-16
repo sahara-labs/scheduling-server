@@ -44,6 +44,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.impl.UserAdmin;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.impl.UserClassAdmin;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermissionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission;
@@ -136,7 +137,7 @@ public class Permissions implements PermissionsSkeletonInterface
         GetUserResponse resp = new GetUserResponse();
         UserType userResp = new UserType();
         resp.setGetUserResponse(userResp);
-        userResp.setPersona(PersonaType.DEMO);
+        userResp.setPersona(PersonaType.NOTFOUND);
         
         UserDao dao = new UserDao();
         User user;
@@ -377,11 +378,136 @@ public class Permissions implements PermissionsSkeletonInterface
         }
         else
         {
-            
+            UserClassAdmin admin = new UserClassAdmin(DataAccessActivator.getNewSession());
+            if (admin.addUserClass(name, pri, ucReq.getIsActive(), ucReq.getIsQueuable(), ucReq.getIsKickable(), 
+                    ucReq.getIsUserLockable()))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(admin.getFailureReason());
+            }
+            admin.closeSession();
         }
         
+        return resp;
+    }
+    
+    @Override
+    public EditUserClassResponse editUserClass(EditUserClass request)
+    {
+        /* Request parameters. */
+        UserClassType ucReq = request.getEditUserClass();
+        String name = ucReq.getUserClassName();
+        int id = ucReq.getUserClassID(), pri = ucReq.getPriority();
+        this.logger.debug("Received edit user request with id=" + id + ", name=" + name + ", priority=" + pri + ", active=" + 
+                ucReq.getIsActive() + ", kickable=" + ucReq.getIsKickable() + ", queueable=" + ucReq.getIsQueuable() +
+                ", lockable=" + ucReq.getIsUserLockable() + '.');
         
-        return null;
+        /* Response parameters. */
+        EditUserClassResponse resp = new EditUserClassResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setEditUserClassResponse(op);
+        op.setSuccessful(false);
+        
+        UserClassAdmin admin = new UserClassAdmin(DataAccessActivator.getNewSession());
+        if (!this.checkPermission(ucReq))
+        {
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied.");
+        }
+        else if (id > 0)
+        {
+            if (admin.editUserClass(id, name, pri, ucReq.getIsActive(), ucReq.getIsQueuable(), ucReq.getIsKickable(), 
+                    ucReq.getIsUserLockable()))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(admin.getFailureReason());
+            }
+        }
+        else if (name != null)
+        {
+            
+            if (admin.editUserClass(name, pri, ucReq.getIsActive(), ucReq.getIsQueuable(), ucReq.getIsKickable(), 
+                    ucReq.getIsUserLockable()))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(admin.getFailureReason());
+            }
+        }
+        else
+        {
+            op.setFailureCode(2);
+            op.setFailureReason("Mandatory parameter not provided");
+        }
+        
+        admin.closeSession();
+        return resp;
+    }
+    
+    @Override
+    public DeleteUserClassResponse deleteUserClass(DeleteUserClass request)
+    {
+        /* Request parameters. */
+        UserClassIDType usClRequest = request.getDeleteUserClass();
+        String name = usClRequest.getUserClassName();
+        int id = usClRequest.getUserClassID();
+        this.logger.debug("Received delete user request with id=" + id + ", name=" + name + ".");
+        
+        /* Response parameters. */
+        DeleteUserClassResponse resp = new DeleteUserClassResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setDeleteUserClassResponse(op);
+        op.setSuccessful(false);
+        
+        UserClassAdmin admin = new UserClassAdmin(DataAccessActivator.getNewSession());
+        if (!this.checkPermission(usClRequest))
+        {
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied");
+        }
+        else if (id > 0)
+        {
+            if (admin.deleteUserClass(id))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(admin.getFailureReason());
+            }
+        }
+        else if (name != null)
+        {
+            if (admin.deleteUserClass(name))
+            {
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason(admin.getFailureReason());
+            }
+        }
+        else
+        {
+            op.setFailureCode(2);
+            op.setFailureReason("Mandatory parameter not provided");
+        }
+        
+        admin.closeSession();
+        return resp;
     }
 
     
@@ -467,16 +593,6 @@ public class Permissions implements PermissionsSkeletonInterface
     }
 
     /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)
-     */
-    @Override
-    public DeleteUserClassResponse deleteUserClass(DeleteUserClass request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#deleteUserLock(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock)
      */
     @Override
@@ -501,18 +617,6 @@ public class Permissions implements PermissionsSkeletonInterface
      */
     @Override
     public EditPermissionResponse editPermission(EditPermission request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    
-
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)
-     */
-    @Override
-    public EditUserClassResponse editUserClass(EditUserClass request)
     {
         // TODO Auto-generated method stub
         return null;
