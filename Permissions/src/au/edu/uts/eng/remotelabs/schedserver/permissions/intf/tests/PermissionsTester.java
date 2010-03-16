@@ -43,11 +43,13 @@ import junit.framework.TestCase;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.hibernate.Session;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
@@ -68,10 +70,14 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse;
@@ -85,6 +91,7 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociationType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType;
@@ -327,9 +334,133 @@ public class PermissionsTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)}.
      */
     @Test
-    public void testAddUserAssociation()
+    public void testAddUserAssociation() throws Exception
     {
-        fail("Not yet implemented");
+        UserDao uDao = new UserDao();
+        User user = new User("tuser", "ns1", "ADMIN");
+        uDao.persist(user);
+        UserClassDao cDao = new UserClassDao(uDao.getSession());
+        UserClass ucls = new UserClass();
+        ucls.setName("usClass");
+        cDao.persist(ucls);
+        UserAssociationDao aDao = new UserAssociationDao(uDao.getSession());
+        
+        AddUserAssociation req = new AddUserAssociation();
+        UserAssociationType assocType = new UserAssociationType();
+        req.setAddUserAssociation(assocType);
+        assocType.setRequestorQName("UTS:mdiponio");
+        UserIDType uid = new UserIDType();
+        uid.setUserQName("ns1:tuser");
+        assocType.setUser(uid);
+        UserClassIDType cid = new UserClassIDType();
+        cid.setUserClassName("usClass");
+        assocType.setUserClass(cid);
+        
+        AddUserAssociationResponse resp = this.permissions.addUserAssociation(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getAddUserAssociationResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        UserAssociation ua = aDao.get(new UserAssociationId(user.getId(), ucls.getId()));
+        assertNotNull(ua);
+        assertEquals(user.getId(), ua.getUser().getId());
+        assertEquals(ucls.getId(), ua.getUserClass().getId());
+        aDao.delete(ua);
+        uDao.delete(user);
+        cDao.delete(ucls);
+        cDao.closeSession();
+        
+        OMElement ele = resp.getOMElement(AddUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)}.
+     */
+    @Test
+    public void testAddUserAssociationID() throws Exception
+    {
+        UserDao uDao = new UserDao();
+        User user = new User("tuser", "ns1", "ADMIN");
+        uDao.persist(user);
+        UserClassDao cDao = new UserClassDao(uDao.getSession());
+        UserClass ucls = new UserClass();
+        ucls.setName("usClass");
+        cDao.persist(ucls);
+        UserAssociationDao aDao = new UserAssociationDao(uDao.getSession());
+        
+        AddUserAssociation req = new AddUserAssociation();
+        UserAssociationType assocType = new UserAssociationType();
+        req.setAddUserAssociation(assocType);
+        assocType.setRequestorQName("UTS:mdiponio");
+        UserIDType uid = new UserIDType();
+        uid.setUserID(String.valueOf(user.getId()));
+        assocType.setUser(uid);
+        UserClassIDType cid = new UserClassIDType();
+        cid.setUserClassID((ucls.getId().intValue()));
+        assocType.setUserClass(cid);
+        
+        AddUserAssociationResponse resp = this.permissions.addUserAssociation(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getAddUserAssociationResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        UserAssociation ua = aDao.get(new UserAssociationId(user.getId(), ucls.getId()));
+        assertNotNull(ua);
+        assertEquals(user.getId(), ua.getUser().getId());
+        assertEquals(ucls.getId(), ua.getUserClass().getId());
+        aDao.delete(ua);
+        uDao.delete(user);
+        cDao.delete(ucls);
+        cDao.closeSession();
+        
+        OMElement ele = resp.getOMElement(AddUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)}.
+     */
+    @Test
+    public void testAddUserAssociationNoIdName() throws Exception
+    {
+        AddUserAssociation req = new AddUserAssociation();
+        UserAssociationType assocType = new UserAssociationType();
+        req.setAddUserAssociation(assocType);
+        assocType.setRequestorQName("UTS:mdiponio");
+        UserIDType uid = new UserIDType();
+        assocType.setUser(uid);
+        UserClassIDType cid = new UserClassIDType();
+        assocType.setUserClass(cid);
+        
+        AddUserAssociationResponse resp = this.permissions.addUserAssociation(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getAddUserAssociationResponse();
+        assertNotNull(op);
+        assertFalse(op.getSuccessful());
+        assertEquals(2, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        
+        OMElement ele = resp.getOMElement(AddUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>false</successful>"));
     }
 
     /**
@@ -510,9 +641,135 @@ public class PermissionsTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)}.
      */
     @Test
-    public void testDeleteUserAssociation()
+    public void testDeleteUserAssociation() throws Exception
     {
-        fail("Not yet implemented");
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("tuser", "ns", "USER");
+        ses.save(user);
+        UserClass cls = new UserClass();
+        cls.setName("tclass");
+        ses.save(cls);
+        UserAssociation ass = new UserAssociation();
+        ass.setId(new UserAssociationId(user.getId(), cls.getId()));
+        ass.setUser(user);
+        ass.setUserClass(cls);
+        ses.save(ass);
+        ses.getTransaction().commit();
+        
+        DeleteUserAssociation req = new DeleteUserAssociation();
+        UserAssociationType assocType = new UserAssociationType();
+        req.setDeleteUserAssociation(assocType);
+        assocType.setRequestorQName("UTS:mdiponio");
+        UserIDType uid = new UserIDType();
+        uid.setUserQName("ns:tuser");
+        assocType.setUser(uid);
+        UserClassIDType cid = new UserClassIDType();
+        cid.setUserClassName("tclass");
+        assocType.setUserClass(cid);
+        
+        DeleteUserAssociationResponse resp = this.permissions.deleteUserAssociation(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getDeleteUserAssociationResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.delete(cls);
+        ses.getTransaction().commit();
+        
+        OMElement ele = resp.getOMElement(DeleteUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)}.
+     */
+    @Test
+    public void testDeleteUserAssociationID() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("tuser", "ns", "USER");
+        ses.save(user);
+        UserClass cls = new UserClass();
+        cls.setName("tclass");
+        ses.save(cls);
+        UserAssociation ass = new UserAssociation();
+        ass.setId(new UserAssociationId(user.getId(), cls.getId()));
+        ass.setUser(user);
+        ass.setUserClass(cls);
+        ses.save(ass);
+        ses.getTransaction().commit();
+        
+        DeleteUserAssociation req = new DeleteUserAssociation();
+        UserAssociationType assocType = new UserAssociationType();
+        req.setDeleteUserAssociation(assocType);
+        assocType.setRequestorQName("UTS:mdiponio");
+        UserIDType uid = new UserIDType();
+        uid.setUserID(String.valueOf(user.getId()));
+        assocType.setUser(uid);
+        UserClassIDType cid = new UserClassIDType();
+        cid.setUserClassID(cls.getId().intValue());
+        assocType.setUserClass(cid);
+        
+        DeleteUserAssociationResponse resp = this.permissions.deleteUserAssociation(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getDeleteUserAssociationResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.delete(cls);
+        ses.getTransaction().commit();
+        
+        OMElement ele = resp.getOMElement(DeleteUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>true</successful>"));
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)}.
+     */
+    @Test
+    public void testDeleteUserAssociationNoID() throws Exception
+    {   
+        DeleteUserAssociation req = new DeleteUserAssociation();
+        UserAssociationType assocType = new UserAssociationType();
+        req.setDeleteUserAssociation(assocType);
+        assocType.setRequestorQName("UTS:mdiponio");
+        UserIDType uid = new UserIDType();
+        assocType.setUser(uid);
+        UserClassIDType cid = new UserClassIDType();
+        assocType.setUserClass(cid);
+        
+        DeleteUserAssociationResponse resp = this.permissions.deleteUserAssociation(req);
+        assertNotNull(resp);
+        
+        OperationResponseType op = resp.getDeleteUserAssociationResponse();
+        assertNotNull(op);
+        assertFalse(op.getSuccessful());
+        assertEquals(2, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        
+        OMElement ele = resp.getOMElement(DeleteUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        assertTrue(xml.contains("<successful>false</successful>"));
     }
 
     /**

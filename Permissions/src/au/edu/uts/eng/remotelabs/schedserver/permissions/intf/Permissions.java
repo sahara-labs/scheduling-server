@@ -37,9 +37,12 @@
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -103,12 +106,15 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUs
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockListType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociationType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserType;
 
 /**
@@ -509,6 +515,121 @@ public class Permissions implements PermissionsSkeletonInterface
         admin.closeSession();
         return resp;
     }
+    
+    @Override
+    public AddUserAssociationResponse addUserAssociation(AddUserAssociation request)
+    {
+        /* Request parameters. */
+        UserAssociationType assocReq = request.getAddUserAssociation();
+        UserIDType uId = assocReq.getUser();
+        UserClassIDType uClsId = assocReq.getUserClass();
+        String unm = uId.getUserName(), uns = uId.getUserNamespace(), cnm = uClsId.getUserClassName();
+        long userId = 0, classId = uClsId.getUserClassID();
+        try
+        {
+            userId = Integer.parseInt(uId.getUserID());
+        }
+        catch (NumberFormatException ex) { /* Not going to use ID them. */ }
+        this.logger.debug("Received add user association request for user id=" + userId + ", user name=" + unm +
+                ", user namespace" + uns + ", class id=" + classId + ", class name=" + cnm + ".");
+        
+        /* Response parameters. */
+        AddUserAssociationResponse resp = new AddUserAssociationResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setAddUserAssociationResponse(op);
+        op.setSuccessful(false);
+        
+        UserClassDao classDao = new UserClassDao();
+        UserDao userDao = new UserDao(classDao.getSession());
+        UserAssociationDao assocDao = new UserAssociationDao(classDao.getSession());
+        User user;
+        UserClass userClass;
+        if (!this.checkPermission(assocReq))
+        {
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied");
+        }
+        else if (((userId > 0 && (user = userDao.get(userId)) != null) || // Load user from ID
+                 (uns != null && unm != null && (user = userDao.findByName(uns, unm)) != null)) && // Load user from namespace & name
+                ((classId > 0 && (userClass = classDao.get(classId)) != null) || // Load class from ID
+                 (cnm != null && (userClass = classDao.findByName(cnm)) != null))) // Load class from name
+        {
+            UserAssociationId assocId = new UserAssociationId(user.getId(), userClass.getId());
+            if (assocDao.get(assocId) == null)
+            {
+                UserAssociation assoc = new UserAssociation();
+                assoc.setId(assocId);
+                assoc.setUser(user);
+                assoc.setUserClass(userClass);
+                assocDao.persist(assoc);
+                op.setSuccessful(true);
+            }
+            else
+            {
+                op.setFailureCode(3);
+                op.setFailureReason("Association already exists.");
+            }
+        }
+        else
+        {
+            op.setFailureCode(2);
+            op.setFailureReason("A mandatory parameter was not provided");
+        }
+        
+        classDao.closeSession();
+        return resp;
+    }
+    
+    @Override
+    public DeleteUserAssociationResponse deleteUserAssociation(DeleteUserAssociation request)
+    {
+        /* Request parameters. */
+        UserAssociationType assocReq = request.getDeleteUserAssociation();
+        UserIDType uId = assocReq.getUser();
+        UserClassIDType uClsId = assocReq.getUserClass();
+        String unm = uId.getUserName(), uns = uId.getUserNamespace(), cnm = uClsId.getUserClassName();
+        long userId = 0, classId = uClsId.getUserClassID();
+        try
+        {
+            userId = Integer.parseInt(uId.getUserID());
+        }
+        catch (NumberFormatException ex) { /* Not going to use ID them. */ }
+        this.logger.debug("Received delete user association request for user id=" + userId + ", user name=" + unm +
+                ", user namespace" + uns + ", class id=" + classId + ", class name=" + cnm + ".");
+        
+        /* Response parameters. */
+        DeleteUserAssociationResponse resp = new DeleteUserAssociationResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setDeleteUserAssociationResponse(op);
+        op.setSuccessful(false);
+        
+        UserClassDao classDao = new UserClassDao();
+        UserDao userDao = new UserDao(classDao.getSession());
+        UserAssociationDao assocDao = new UserAssociationDao(classDao.getSession());
+        User user;
+        UserClass userClass;
+        if (!this.checkPermission(assocReq))
+        {
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied");
+        }
+        else if (((userId > 0 && (user = userDao.get(userId)) != null) || // Load user from ID
+                  (uns != null && unm != null && (user = userDao.findByName(uns, unm)) != null)) && // Load user from namespace & name
+                 ((classId > 0 && (userClass = classDao.get(classId)) != null) || // Load class from ID
+                  (cnm != null && (userClass = classDao.findByName(cnm)) != null))) // Load class from name
+        {
+            assocDao.delete(new UserAssociationId(user.getId(), userClass.getId()));
+            op.setSuccessful(true);
+        }
+        else
+        {
+            op.setFailureCode(2);
+            op.setFailureReason("A mandatory parameter was not provided");
+        }
+        
+        classDao.closeSession();
+        return resp;
+    }
 
     
     /* (non-Javadoc)
@@ -530,16 +651,6 @@ public class Permissions implements PermissionsSkeletonInterface
         // TODO Auto-generated method stub
         return null;
     }
-    
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)
-     */
-    @Override
-    public AddUserAssociationResponse addUserAssociation(AddUserAssociation request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#addUserLock(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock)
@@ -547,7 +658,10 @@ public class Permissions implements PermissionsSkeletonInterface
     @Override
     public AddUserLockResponse addUserLock(AddUserLock request)
     {
-        // TODO Auto-generated method stub
+        /* Request parameters. */
+        UserLockType lock = request.getAddUserLock();
+        
+        /* Response parameters. */
         return null;
     }
 
@@ -581,16 +695,6 @@ public class Permissions implements PermissionsSkeletonInterface
         return null;
     }
     
-
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)
-     */
-    @Override
-    public DeleteUserAssociationResponse deleteUserAssociation(DeleteUserAssociation request)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#deleteUserLock(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock)
@@ -667,8 +771,25 @@ public class Permissions implements PermissionsSkeletonInterface
     @Override
     public GetPermissionsForUserResponse getPermissionsForUser(GetPermissionsForUser request)
     {
-        // TODO Auto-generated method stub
-        return null;
+        /* Request parameters. */
+        UserIDType uid = request.getGetPermissionsForUser();
+        String ns = uid.getUserNamespace(), nm = uid.getUserName();
+        long id = 0;
+        try
+        {
+            id = Long.parseLong(uid.getUserID());
+        }
+        catch (NumberFormatException ex) { /* Not using id then. */ }
+        this.logger.debug("Received get permissions for user with id=" + id + ", namespace=" + ns + ", name=" + nm + '.');
+        
+        /* Response parameters. */
+        GetPermissionsForUserResponse resp = new GetPermissionsForUserResponse();
+        PermissionWithLockListType permList = new PermissionWithLockListType();
+        resp.setGetPermissionsForUserResponse(permList);
+        
+        // TODO
+        
+        return resp;
     }
 
     /* (non-Javadoc)
