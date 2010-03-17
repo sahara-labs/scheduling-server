@@ -301,10 +301,6 @@ public class UserNameNamespaceSequence implements ADBBean
                     object.setUserName(ConverterUtil.convertToString(content));
                     reader.next();
                 }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
@@ -316,10 +312,6 @@ public class UserNameNamespaceSequence implements ADBBean
                     final String content = reader.getElementText();
                     object.setUserNamespace(ConverterUtil.convertToString(content));
                     reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

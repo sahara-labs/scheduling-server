@@ -84,7 +84,10 @@ public class UserIDType extends OperationRequestType implements ADBBean
     
     public String getUserName()
     {
-        if (this.userNameNSSeq != null) return this.userNameNSSeq.getUserName();
+        if (this.userNameNSSeq != null && this.userNameNSSeq.getUserName() != null)
+        {
+            return this.userNameNSSeq.getUserName();
+        }
         
         if (this.userQName != null)
         {
@@ -100,7 +103,10 @@ public class UserIDType extends OperationRequestType implements ADBBean
     
     public String getUserNamespace()
     {
-        if (this.userNameNSSeq != null) return this.userNameNSSeq.getUserNamespace();
+        if (this.userNameNSSeq != null && this.userNameNSSeq.getUserNamespace() != null)
+        {
+            return this.userNameNSSeq.getUserNamespace();
+        }
         
         if (this.userQName != null)
         {

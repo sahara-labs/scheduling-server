@@ -189,10 +189,10 @@
 							</xsd:element>
 							<xsd:sequence maxOccurs="1" minOccurs="0">
 								<xsd:element name="userName"
-									type="xsd:string">
+									type="xsd:string" maxOccurs="1" minOccurs="0">
 								</xsd:element>
 								<xsd:element name="userNamespace"
-									type="xsd:string">
+									type="xsd:string" maxOccurs="1" minOccurs="0">
 								</xsd:element>
 							</xsd:sequence>
 							<xsd:element name="userQName"
@@ -426,10 +426,10 @@
 					<xsd:element name="requestorID" type="xsd:int" maxOccurs="1" minOccurs="0"></xsd:element>
 					<xsd:sequence maxOccurs="1" minOccurs="0">
 						<xsd:element name="requestorName"
-							type="xsd:string">
+							type="xsd:string" maxOccurs="1" minOccurs="0">
 						</xsd:element>
 						<xsd:element name="requestorNameSpace"
-							type="xsd:string">
+							type="xsd:string" maxOccurs="1" minOccurs="0">
 						</xsd:element>
 					</xsd:sequence>
 
