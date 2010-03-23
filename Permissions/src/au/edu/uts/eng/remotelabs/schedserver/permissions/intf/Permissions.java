@@ -785,12 +785,7 @@ public class Permissions implements PermissionsSkeletonInterface
         /* Request parameters. */
         UserIDType uid = request.getGetPermissionsForUser();
         String ns = uid.getUserNamespace(), nm = uid.getUserName();
-        long id = 0;
-        try
-        {
-            id = Long.parseLong(uid.getUserID());
-        }
-        catch (NumberFormatException ex) { /* Not using id then. */ }
+        long id = this.getIdentifier(uid.getUserID());
         this.logger.debug("Received get permissions for user with id=" + id + ", namespace=" + ns + ", name=" + nm + '.');
         
         /* Response parameters. */
@@ -800,9 +795,9 @@ public class Permissions implements PermissionsSkeletonInterface
         
         /* 1) Load user. */
         UserDao userDao = new UserDao();
-        User user;
-        if ((id > 0 && (user = userDao.get(id)) == null) || ns == null || nm == null || 
-                (user = userDao.findByName(ns, nm)) == null)
+        User user = null;
+        if ((id > 0 && (user = userDao.get(id)) == null) && (ns == null || nm == null || 
+                (user = userDao.findByName(ns, nm)) == null))
         {
             userDao.closeSession();
             return resp;
@@ -820,6 +815,7 @@ public class Permissions implements PermissionsSkeletonInterface
         for (UserAssociation assoc : user.getUserAssociations())
         {
             UserClass userClass = assoc.getUserClass();
+            if (!userClass.isActive()) continue;
             for (ResourcePermission resPerm : userClass.getResourcePermissions())
             {
                 PermissionWithLockType permWithLock = new PermissionWithLockType();
@@ -899,6 +895,7 @@ public class Permissions implements PermissionsSkeletonInterface
                 
                 /* Add if the resource permission is locked. */
                 permWithLock.setIsLocked(lockedResources.contains(resPerm.getId()));
+                permList.addPermission(permWithLock);
             }
         }
         
