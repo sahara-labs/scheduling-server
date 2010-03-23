@@ -84,7 +84,7 @@ public class PermissionType extends PermissionIDType implements ADBBean
     protected boolean allowedExtensionsTracker = false;
     protected int queueActivityTmOut;
     protected boolean queueActivityTmOutTracker = false;
-    protected String sessionActivityTmOut;
+    protected int sessionActivityTmOut;
     protected boolean sessionActivityTmOutTracker = false;
     protected Calendar start;
     protected boolean startTracker = false;
@@ -210,20 +210,20 @@ public class PermissionType extends PermissionIDType implements ADBBean
         this.queueActivityTmOut = param;
     }
 
-    public String getSessionActivityTmOut()
+    public int getSessionActivityTmOut()
     {
         return this.sessionActivityTmOut;
     }
 
-    public void setSessionActivityTmOut(final String param)
+    public void setSessionActivityTmOut(final int param)
     {
-        if (param != null)
+        if (param == Integer.MIN_VALUE)
         {
-            this.sessionActivityTmOutTracker = true;
+            this.sessionActivityTmOutTracker = false;
         }
         else
         {
-            this.sessionActivityTmOutTracker = false;
+            this.sessionActivityTmOutTracker = true;
         }
 
         this.sessionActivityTmOut = param;
@@ -640,13 +640,13 @@ public class PermissionType extends PermissionIDType implements ADBBean
                 xmlWriter.writeStartElement("sessionActivityTmOut");
             }
 
-            if (this.sessionActivityTmOut == null)
+            if (this.sessionActivityTmOut == Integer.MIN_VALUE)
             {
                 throw new ADBException("sessionActivityTmOut cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(this.sessionActivityTmOut);
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.sessionActivityTmOut));
             }
             xmlWriter.writeEndElement();
         }
@@ -843,14 +843,7 @@ public class PermissionType extends PermissionIDType implements ADBBean
         if (this.sessionActivityTmOutTracker)
         {
             elementList.add(new QName("", "sessionActivityTmOut"));
-            if (this.sessionActivityTmOut != null)
-            {
-                elementList.add(ConverterUtil.convertToString(this.sessionActivityTmOut));
-            }
-            else
-            {
-                throw new ADBException("sessionActivityTmOut cannot be null!!");
-            }
+            elementList.add(ConverterUtil.convertToString(this.sessionActivityTmOut));
         }
         
         if (this.startTracker)
@@ -1084,7 +1077,7 @@ public class PermissionType extends PermissionIDType implements ADBBean
                 if (reader.isStartElement() && new QName("", "sessionActivityTmOut").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setSessionActivityTmOut(ConverterUtil.convertToString(content));
+                    object.setSessionActivityTmOut(ConverterUtil.convertToInt(content));
                     reader.next();
                 }
 

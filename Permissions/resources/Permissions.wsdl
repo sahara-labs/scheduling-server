@@ -148,9 +148,9 @@
 								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
 							<xsd:element name="sessionActivityTmOut"
-								type="xsd:string" maxOccurs="1" minOccurs="0">
+								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-                            <xsd:element name="start" type="xsd:dateTime" maxOccurs="1" minOccurs="0">
+							<xsd:element name="start" type="xsd:dateTime" maxOccurs="1" minOccurs="0">
 							</xsd:element>
                             <xsd:element name="expiry"
 								type="xsd:dateTime" maxOccurs="1" minOccurs="0">

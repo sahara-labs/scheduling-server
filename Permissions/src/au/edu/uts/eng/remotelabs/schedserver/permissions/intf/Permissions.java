@@ -36,14 +36,23 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.impl.UserAdmin;
@@ -106,15 +115,18 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUs
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockListType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociationType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserType;
 
 /**
@@ -659,7 +671,6 @@ public class Permissions implements PermissionsSkeletonInterface
     public AddUserLockResponse addUserLock(AddUserLock request)
     {
         /* Request parameters. */
-        UserLockType lock = request.getAddUserLock();
         
         /* Response parameters. */
         return null;
@@ -787,8 +798,111 @@ public class Permissions implements PermissionsSkeletonInterface
         PermissionWithLockListType permList = new PermissionWithLockListType();
         resp.setGetPermissionsForUserResponse(permList);
         
-        // TODO
+        /* 1) Load user. */
+        UserDao userDao = new UserDao();
+        User user;
+        if ((id > 0 && (user = userDao.get(id)) == null) || ns == null || nm == null || 
+                (user = userDao.findByName(ns, nm)) == null)
+        {
+            userDao.closeSession();
+            return resp;
+        }
         
+        
+        /* Get a list of resources that are locked. */
+        List<Long> lockedResources = new ArrayList<Long>();
+        for (UserLock lock : user.getUserLocks())
+        {
+            if (lock.isIsLocked()) lockedResources.add(lock.getResourcePermission().getId());
+        }
+        
+        /* For each of the user classes the user is a member of, add all its resource permissions. */
+        for (UserAssociation assoc : user.getUserAssociations())
+        {
+            UserClass userClass = assoc.getUserClass();
+            for (ResourcePermission resPerm : userClass.getResourcePermissions())
+            {
+                PermissionWithLockType permWithLock = new PermissionWithLockType();
+                PermissionType perm = new PermissionType();
+                perm.setPermissionID(resPerm.getId().intValue());
+                permWithLock.setPermission(perm);
+
+                /* Add user class. */
+                UserClassIDType userClassIdType = new UserClassIDType();
+                userClassIdType.setUserClassID(userClass.getId().intValue());
+                userClassIdType.setUserClassName(userClass.getName());
+                perm.setUserClass(userClassIdType);
+                
+                /* Add resource. */
+                ResourceIDType resourceIdType = new ResourceIDType();
+                perm.setResource(resourceIdType);
+                if ("RIG".equals(resPerm.getType()))
+                {
+                    Rig rig = resPerm.getRig();
+                    if (rig == null)
+                    {
+                        this.logger.warn("Incorrect configuration of a rig resource permission with " +
+                                "id " + resPerm.getId() + ", as no rig is set.");
+                        continue;
+                    }
+                    
+                    perm.setResourceClass(ResourceClass.RIG);
+                    resourceIdType.setResourceID(rig.getId().intValue());
+                    resourceIdType.setResourceName(rig.getName());
+                }
+                else if ("TYPE".equals(resPerm.getType()))
+                {
+                    RigType rigType = resPerm.getRigType();
+                    if (rigType == null)
+                    {
+                        this.logger.warn("Incorrect configuration of a rig type resource permission with " +
+                                "id " + resPerm.getId() + ", as no rig type is set.");
+                        continue;
+                    }
+                    
+                    perm.setResourceClass(ResourceClass.TYPE);
+                    resourceIdType.setResourceID(rigType.getId().intValue());
+                    resourceIdType.setResourceName(rigType.getName());
+                }
+                else if ("CAPS".equals(resPerm.getType()))
+                {
+                    RequestCapabilities caps = resPerm.getRequestCapabilities();
+                    if (caps == null)
+                    {
+                        this.logger.warn("Incorrect configuration of a request capabilities resource permission with " +
+                                "id " + resPerm.getId() + ", as no request capabilities are set.");
+                        continue;
+                    }
+                    perm.setResourceClass(ResourceClass.CAPABILITY);
+                    resourceIdType.setResourceID(caps.getId().intValue());
+                    resourceIdType.setResourceName(caps.getCapabilities());
+                }
+                else
+                {
+                    this.logger.warn("Incorrect configuration of a resource permission with id " + resPerm.getId() + 
+                            ". It has an unknown resource type " + resPerm.getType() + ". It should be one of " +
+                            "'RIG', 'TYPE' or 'CAPS'.");
+                }
+
+                /* Add information about permission. */
+                perm.setSessionDuration(resPerm.getSessionDuration());
+                perm.setExtensionDuration(resPerm.getExtensionDuration());
+                perm.setAllowedExtensions(resPerm.getAllowedExtensions());
+                perm.setQueueActivityTmOut(resPerm.getQueueActivityTimeout());
+                perm.setSessionActivityTmOut(resPerm.getSessionActivityTimeout());
+                Calendar start = Calendar.getInstance();
+                start.setTime(resPerm.getStartTime());
+                perm.setStart(start);
+                Calendar expiry = Calendar.getInstance();
+                expiry.setTime(resPerm.getExpiryTime());
+                perm.setExpiry(expiry);
+                
+                /* Add if the resource permission is locked. */
+                permWithLock.setIsLocked(lockedResources.contains(resPerm.getId()));
+            }
+        }
+        
+        userDao.closeSession();
         return resp;
     }
 

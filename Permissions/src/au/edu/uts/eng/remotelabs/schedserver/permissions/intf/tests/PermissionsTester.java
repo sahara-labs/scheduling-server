@@ -69,28 +69,49 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockListType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociationType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
@@ -157,7 +178,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addAcademicPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission)}.
+     * Test method for {@link Permissions#addAcademicPermission(AddAcademicPermission)}.
      */
     @Test
     public void testAddAcademicPermission()
@@ -166,7 +187,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission)}.
+     * Test method for {@link Permissions#addPermission(AddPermission)}.
      */
     @Test
     public void testAddPermission()
@@ -175,7 +196,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser)}.
+     * Test method for {@link Permissions#addUser(AddUser)}.
      */
     @Test
     public void testAddUser() throws Exception
@@ -183,9 +204,9 @@ public class PermissionsTester extends TestCase
         AddUser req = new AddUser();
         UserType user = new UserType();
         req.setAddUser(user);
-        user.setRequestorQName("UTS:mdiponio");
+        user.setRequestorQName("TESTNS:mdiponio");
         UserNameNamespaceSequence nsname = new UserNameNamespaceSequence();
-        nsname.setUserNamespace("UTS");
+        nsname.setUserNamespace("TESTNS");
         nsname.setUserName("tmachet");
         user.setUserNameNamespaceSequence(nsname);
         user.setPersona(PersonaType.ADMIN);
@@ -198,7 +219,7 @@ public class PermissionsTester extends TestCase
         assertTrue(op.getSuccessful());
         
         UserDao dao = new UserDao();
-        User us = dao.findByName("UTS", "tmachet");
+        User us = dao.findByName("TESTNS", "tmachet");
         assertNotNull(us);
         dao.delete(us);
         dao.closeSession();
@@ -211,13 +232,13 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser)}.
+     * Test method for {@link Permissions#editUser(EditUser)}.
      */
     @Test
     public void testEditUser() throws Exception
     {
         User user = new User();
-        user.setNamespace("UTS");
+        user.setNamespace("TESTNS");
         user.setName("tmachet");
         user.setPersona("USER");
         UserDao dao = new UserDao();
@@ -226,10 +247,10 @@ public class PermissionsTester extends TestCase
         EditUser req = new EditUser();
         UserType ty = new UserType();
         req.setEditUser(ty);
-        ty.setRequestorQName("UTS:mdiponio");
+        ty.setRequestorQName("TESTNS:mdiponio");
         ty.setUserID(String.valueOf(user.getId()));
         UserNameNamespaceSequence seq = new UserNameNamespaceSequence();
-        seq.setUserNamespace("UTS-ENG");
+        seq.setUserNamespace("TESTNS-ENG");
         seq.setUserName("tmachet");
         ty.setUserNameNamespaceSequence(seq);
         ty.setPersona(PersonaType.ADMIN);
@@ -244,7 +265,7 @@ public class PermissionsTester extends TestCase
         assertEquals(0, op.getFailureCode());
         
         dao.refresh(user);
-        assertEquals("UTS-ENG", user.getNamespace());
+        assertEquals("TESTNS-ENG", user.getNamespace());
         assertEquals("tmachet", user.getName());
         assertEquals("ADMIN", user.getPersona());
         
@@ -258,7 +279,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser)}.
+     * Test method for {@link Permissions#deleteUser(DeleteUser)}.
      */
     @Test
     public void testDeleteUser() throws Exception
@@ -267,15 +288,15 @@ public class PermissionsTester extends TestCase
         User user = new User();
         user.setPersona("USER");
         user.setName("tmachet");
-        user.setNamespace("UTS");
+        user.setNamespace("TESTNS");
         dao.persist(user);
         
         DeleteUser req = new DeleteUser();
         UserIDType usTy = new UserIDType();
         req.setDeleteUser(usTy);
-        usTy.setRequestorQName("UTS:mdiponio");
+        usTy.setRequestorQName("TESTNS:mdiponio");
         UserNameNamespaceSequence seq = new UserNameNamespaceSequence();
-        seq.setUserNamespace("UTS");
+        seq.setUserNamespace("TESTNS");
         seq.setUserName("tmachet");
         usTy.setUserNameNamespaceSequence(seq);
         
@@ -286,7 +307,7 @@ public class PermissionsTester extends TestCase
         assertNotNull(op);
         assertTrue(op.getSuccessful());
         
-        assertNull(dao.findByName("UTS", "tmachet"));
+        assertNull(dao.findByName("TESTNS", "tmachet"));
         
         OMElement ele = resp.getOMElement(DeleteUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
         assertNotNull(ele);
@@ -296,7 +317,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser)}.
+     * Test method for {@link Permissions#deleteUser(DeleteUser)}.
      */
     @Test
     public void testDeleteUserID() throws Exception
@@ -305,13 +326,13 @@ public class PermissionsTester extends TestCase
         User user = new User();
         user.setPersona("USER");
         user.setName("tmachet");
-        user.setNamespace("UTS");
+        user.setNamespace("TESTNS");
         dao.persist(user);
         
         DeleteUser req = new DeleteUser();
         UserIDType usTy = new UserIDType();
         req.setDeleteUser(usTy);
-        usTy.setRequestorQName("UTS:mdiponio");
+        usTy.setRequestorQName("TESTNS:mdiponio");
         usTy.setUserID(String.valueOf(user.getId()));
         
         DeleteUserResponse resp = this.permissions.deleteUser(req);
@@ -321,7 +342,7 @@ public class PermissionsTester extends TestCase
         assertNotNull(op);
         assertTrue(op.getSuccessful());
         
-        assertNull(dao.findByName("UTS", "tmachet"));
+        assertNull(dao.findByName("TESTNS", "tmachet"));
         
         OMElement ele = resp.getOMElement(DeleteUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
         assertNotNull(ele);
@@ -331,7 +352,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)}.
+     * Test method for {@link Permissions#addUserAssociation(AddUserAssociation)}.
      */
     @Test
     public void testAddUserAssociation() throws Exception
@@ -348,7 +369,7 @@ public class PermissionsTester extends TestCase
         AddUserAssociation req = new AddUserAssociation();
         UserAssociationType assocType = new UserAssociationType();
         req.setAddUserAssociation(assocType);
-        assocType.setRequestorQName("UTS:mdiponio");
+        assocType.setRequestorQName("TESTNS:mdiponio");
         UserIDType uid = new UserIDType();
         uid.setUserQName("ns1:tuser");
         assocType.setUser(uid);
@@ -382,7 +403,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)}.
+     * Test method for {@link Permissions#addUserAssociation(AddUserAssociation)}.
      */
     @Test
     public void testAddUserAssociationID() throws Exception
@@ -399,7 +420,7 @@ public class PermissionsTester extends TestCase
         AddUserAssociation req = new AddUserAssociation();
         UserAssociationType assocType = new UserAssociationType();
         req.setAddUserAssociation(assocType);
-        assocType.setRequestorQName("UTS:mdiponio");
+        assocType.setRequestorQName("TESTNS:mdiponio");
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(user.getId()));
         assocType.setUser(uid);
@@ -433,7 +454,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation)}.
+     * Test method for {@link Permissions#addUserAssociation(AddUserAssociation)}.
      */
     @Test
     public void testAddUserAssociationNoIdName() throws Exception
@@ -441,7 +462,7 @@ public class PermissionsTester extends TestCase
         AddUserAssociation req = new AddUserAssociation();
         UserAssociationType assocType = new UserAssociationType();
         req.setAddUserAssociation(assocType);
-        assocType.setRequestorQName("UTS:mdiponio");
+        assocType.setRequestorQName("TESTNS:mdiponio");
         UserIDType uid = new UserIDType();
         assocType.setUser(uid);
         UserClassIDType cid = new UserClassIDType();
@@ -464,7 +485,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)}.
+     * Test method for {@link Permissions#addUserClass(AddUserClass)}.
      */
     @Test
     public void testAddUserClass() throws Exception
@@ -479,7 +500,7 @@ public class PermissionsTester extends TestCase
         cls.setIsKickable(true);
         cls.setIsQueuable(true);
         cls.setIsUserLockable(true);
-        cls.setRequestorQName("UTS:mdiponio");
+        cls.setRequestorQName("TESTNS:mdiponio");
         
         AddUserClassResponse resp = this.permissions.addUserClass(req);
         assertNotNull(resp);
@@ -512,7 +533,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)}.
+     * Test method for {@link Permissions#addUserClass(AddUserClass)}.
      */
     @Test
     public void testAddUserClassFalse() throws Exception
@@ -527,7 +548,7 @@ public class PermissionsTester extends TestCase
         cls.setIsKickable(false);
         cls.setIsQueuable(false);
         cls.setIsUserLockable(false);
-        cls.setRequestorQName("UTS:mdiponio");
+        cls.setRequestorQName("TESTNS:mdiponio");
         
         AddUserClassResponse resp = this.permissions.addUserClass(req);
         assertNotNull(resp);
@@ -560,7 +581,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass)}.
+     * Test method for {@link Permissions#addUserClass(AddUserClass)}.
      */
     @Test
     public void testAddUserClassExists() throws Exception
@@ -574,7 +595,7 @@ public class PermissionsTester extends TestCase
         AddUserClass req = new AddUserClass();
         UserClassType cls = new UserClassType();
         req.setAddUserClass(cls);
-        cls.setRequestorQName("UTS:mdiponio");
+        cls.setRequestorQName("TESTNS:mdiponio");
         cls.setUserClassName("exists");
         cls.setPriority(10);
         cls.setIsActive(true);
@@ -602,7 +623,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#addUserLock(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock)}.
+     * Test method for {@link Permissions#addUserLock(AddUserLock)}.
      */
     @Test
     public void testAddUserLock()
@@ -611,7 +632,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#bulkAddUserClassUsers(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers)}.
+     * Test method for {@link Permissions#bulkAddUserClassUsers(BulkAddUserClassUsers)}.
      */
     @Test
     public void testBulkAddUserClassUsers()
@@ -620,7 +641,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteAcademicPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission)}.
+     * Test method for {@link Permissions#deleteAcademicPermission(DeleteAcademicPermission)}.
      */
     @Test
     public void testDeleteAcademicPermission()
@@ -629,7 +650,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deletePermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission)}.
+     * Test method for {@link Permissions#deletePermission(DeletePermission)}.
      */
     @Test
     public void testDeletePermission()
@@ -638,7 +659,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)}.
+     * Test method for {@link Permissions#deleteUserAssociation(DeleteUserAssociation)}.
      */
     @Test
     public void testDeleteUserAssociation() throws Exception
@@ -660,7 +681,7 @@ public class PermissionsTester extends TestCase
         DeleteUserAssociation req = new DeleteUserAssociation();
         UserAssociationType assocType = new UserAssociationType();
         req.setDeleteUserAssociation(assocType);
-        assocType.setRequestorQName("UTS:mdiponio");
+        assocType.setRequestorQName("TESTNS:mdiponio");
         UserIDType uid = new UserIDType();
         uid.setUserQName("ns:tuser");
         assocType.setUser(uid);
@@ -690,7 +711,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)}.
+     * Test method for {@link Permissions#deleteUserAssociation(DeleteUserAssociation)}.
      */
     @Test
     public void testDeleteUserAssociationID() throws Exception
@@ -712,7 +733,7 @@ public class PermissionsTester extends TestCase
         DeleteUserAssociation req = new DeleteUserAssociation();
         UserAssociationType assocType = new UserAssociationType();
         req.setDeleteUserAssociation(assocType);
-        assocType.setRequestorQName("UTS:mdiponio");
+        assocType.setRequestorQName("TESTNS:mdiponio");
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(user.getId()));
         assocType.setUser(uid);
@@ -742,7 +763,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserAssociation(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation)}.
+     * Test method for {@link Permissions#deleteUserAssociation(DeleteUserAssociation)}.
      */
     @Test
     public void testDeleteUserAssociationNoID() throws Exception
@@ -750,7 +771,7 @@ public class PermissionsTester extends TestCase
         DeleteUserAssociation req = new DeleteUserAssociation();
         UserAssociationType assocType = new UserAssociationType();
         req.setDeleteUserAssociation(assocType);
-        assocType.setRequestorQName("UTS:mdiponio");
+        assocType.setRequestorQName("TESTNS:mdiponio");
         UserIDType uid = new UserIDType();
         assocType.setUser(uid);
         UserClassIDType cid = new UserClassIDType();
@@ -773,7 +794,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
+     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
      */
     @Test
     public void testDeleteUserClass() throws Exception
@@ -807,7 +828,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
+     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
      */
     @Test
     public void testDeleteUserClassID() throws Exception
@@ -841,7 +862,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
+     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
      */
     @Test
     public void testDeleteUserClassNotExist() throws Exception
@@ -867,7 +888,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass)}.
+     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
      */
     @Test
     public void testDeleteUserClassNoIdName() throws Exception
@@ -894,7 +915,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#deleteUserLock(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock)}.
+     * Test method for {@link Permissions#deleteUserLock(DeleteUserLock)}.
      */
     @Test
     public void testDeleteUserLock()
@@ -903,7 +924,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editAcademicPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission)}.
+     * Test method for {@link Permissions#editAcademicPermission(EditAcademicPermission)}.
      */
     @Test
     public void testEditAcademicPermission()
@@ -912,7 +933,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission)}.
+     * Test method for {@link Permissions#editPermission(EditPermission)}.
      */
     @Test
     public void testEditPermission()
@@ -921,7 +942,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)}.
+     * Test method for {@link Permissions#editUserClass(EditUserClass)}.
      */
     @Test
     public void testEditUserClass() throws Exception
@@ -935,7 +956,7 @@ public class PermissionsTester extends TestCase
         EditUserClass req = new EditUserClass();
         UserClassType cls = new UserClassType();
         req.setEditUserClass(cls);
-        cls.setRequestorQName("UTS:mdiponio");
+        cls.setRequestorQName("TESTNS:mdiponio");
         cls.setUserClassName("uclass");
         cls.setPriority(10);
         cls.setIsActive(true);
@@ -971,7 +992,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)}.
+     * Test method for {@link Permissions#editUserClass(EditUserClass)}.
      */
     @Test
     public void testEditUserClassID() throws Exception
@@ -986,7 +1007,7 @@ public class PermissionsTester extends TestCase
         UserClassType cls = new UserClassType();
         req.setEditUserClass(cls);
         cls.setUserClassID(uc.getId().intValue());
-        cls.setRequestorQName("UTS:mdiponio");
+        cls.setRequestorQName("TESTNS:mdiponio");
         cls.setUserClassName("newname");
         cls.setPriority(10);
         cls.setIsActive(true);
@@ -1022,7 +1043,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#editUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass)}.
+     * Test method for {@link Permissions#editUserClass(EditUserClass)}.
      */
     @Test
     public void testEditUserClassDoesExist() throws Exception
@@ -1030,7 +1051,7 @@ public class PermissionsTester extends TestCase
         EditUserClass req = new EditUserClass();
         UserClassType cls = new UserClassType();
         req.setEditUserClass(cls);
-        cls.setRequestorQName("UTS:mdiponio");
+        cls.setRequestorQName("TESTNS:mdiponio");
         cls.setUserClassName("notexists");
         cls.setPriority(10);
         
@@ -1052,7 +1073,7 @@ public class PermissionsTester extends TestCase
 
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getAcademicPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission)}.
+     * Test method for {@link Permissions#getAcademicPermission(GetAcademicPermission)}.
      */
     @Test
     public void testGetAcademicPermission()
@@ -1061,7 +1082,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getAcademicPermissionsForAcademic(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic)}.
+     * Test method for {@link Permissions#getAcademicPermissionsForAcademic(GetAcademicPermissionsForAcademic)}.
      */
     @Test
     public void testGetAcademicPermissionsForAcademic()
@@ -1070,7 +1091,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getAcademicPermissionsForUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass)}.
+     * Test method for {@link Permissions#getAcademicPermissionsForUserClass(GetAcademicPermissionsForUserClass)}.
      */
     @Test
     public void testGetAcademicPermissionsForUserClass()
@@ -1079,7 +1100,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission)}.
+     * Test method for {@link Permissions#getPermission(GetPermission)}.
      */
     @Test
     public void testGetPermission()
@@ -1088,16 +1109,73 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getPermissionsForUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser)}.
+     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
      */
     @Test
     public void testGetPermissionsForUser()
     {
         fail("Not yet implemented");
     }
+    
+    /**
+     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     */
+    @Test
+    public void testGetPermissionsForUserNoPerms() throws Exception
+    {
+        User user = new User("test", "TESTNS", "USER");
+        UserDao dao = new UserDao();
+        dao.persist(user);
+        
+        GetPermissionsForUser request = new GetPermissionsForUser();
+        UserIDType uid = new UserIDType();
+        request.setGetPermissionsForUser(uid);
+        uid.setUserID(String.valueOf(user.getId()));
+        
+        GetPermissionsForUserResponse resp = this.permissions.getPermissionsForUser(request);
+        assertNotNull(resp);
+        
+        dao.delete(user);
+        
+        PermissionWithLockListType lockList = resp.getGetPermissionsForUserResponse();
+        assertNotNull(lockList);
+        assertNull(lockList.getPermission());
+        
+        OMElement ele = resp.getOMElement(GetPermissionsForUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     */
+    @Test
+    public void testGetPermissionsForUserNoUser() throws Exception
+    {      
+        GetPermissionsForUser request = new GetPermissionsForUser();
+        UserIDType uid = new UserIDType();
+        request.setGetPermissionsForUser(uid);
+        uid.setUserQName("FOO:BAR");
+        
+        GetPermissionsForUserResponse resp = this.permissions.getPermissionsForUser(request);
+        assertNotNull(resp);
+
+        PermissionWithLockListType lockList = resp.getGetPermissionsForUserResponse();
+        assertNotNull(lockList);
+        assertNull(lockList.getPermission());
+        
+        OMElement ele = resp.getOMElement(GetPermissionsForUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getPermissionsForUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass)}.
+     * Test method for {@link Permissions#getPermissionsForUserClass(GetPermissionsForUserClass)}.
      */
     @Test
     public void testGetPermissionsForUserClass()
@@ -1106,13 +1184,13 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)}.
+     * Test method for {@link Permissions#getUser(GetUser)}.
      */
     @Test
     public void testGetUser() throws Exception
     {
         User user = new User();
-        user.setNamespace("UTS");
+        user.setNamespace("TESTNS");
         user.setName("mdiponio");
         user.setPersona("ADMIN");
         UserDao dao = new UserDao();
@@ -1155,13 +1233,13 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)}.
+     * Test method for {@link Permissions#getUser(GetUser)}.
      */
     @Test
     public void testGetUserQName() throws Exception
     {
         User user = new User();
-        user.setNamespace("UTS");
+        user.setNamespace("TESTNS");
         user.setName("mdiponio");
         user.setPersona("ADMIN");
         UserDao dao = new UserDao();
@@ -1204,13 +1282,13 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser)}.
+     * Test method for {@link Permissions#getUser(GetUser)}.
      */
     @Test
     public void testGetUserSeq() throws Exception
     {
         User user = new User();
-        user.setNamespace("UTS");
+        user.setNamespace("TESTNS");
         user.setName("mdiponio");
         user.setPersona("ADMIN");
         UserDao dao = new UserDao();
@@ -1253,7 +1331,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass)}.
+     * Test method for {@link Permissions#getUserClass(GetUserClass)}.
      */
     @Test
     public void testGetUserClass() throws Exception
@@ -1290,7 +1368,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass)}.
+     * Test method for {@link Permissions#getUserClass(GetUserClass)}.
      */
     @Test
     public void testGetUserClassName() throws Exception
@@ -1327,7 +1405,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUserClasses(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses)}.
+     * Test method for {@link Permissions#getUserClasses(GetUserClasses)}.
      */
     @Test
     public void testGetUserClasses()
@@ -1336,7 +1414,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUserClassesForUser(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser)}.
+     * Test method for {@link Permissions#getUserClassesForUser(GetUserClassesForUser)}.
      */
     @Test
     public void testGetUserClassesForUser()
@@ -1345,7 +1423,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#getUsersInUserClass(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass)}.
+     * Test method for {@link Permissions#getUsersInUserClass(GetUsersInUserClass)}.
      */
     @Test
     public void testGetUsersInUserClass()
@@ -1354,7 +1432,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions#unlockUserLock(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock)}.
+     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
      */
     @Test
     public void testUnlockUserLock()
