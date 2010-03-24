@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.tests;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -109,8 +110,11 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockListType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociationType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
@@ -1112,9 +1116,362 @@ public class PermissionsTester extends TestCase
      * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
      */
     @Test
-    public void testGetPermissionsForUser()
+    public void testGetPermissionsForUser() throws Exception
     {
-        fail("Not yet implemented");
+        /**********************************************************************
+         ** Test setup.                                                      **
+         *********************************************************************/
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        /* User. */
+        User user = new User("test", "permUser", "USER");
+        ses.save(user);
+        
+        /* Three classes. */
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("permTestClass1");
+        uclass1.setActive(true);
+        ses.save(uclass1);
+        UserClass uclass2 = new UserClass();
+        uclass2.setName("permTestClass2");
+        uclass2.setActive(true);
+        ses.save(uclass2);
+        UserClass uclass3 = new UserClass();
+        uclass3.setName("permTestClass3");
+        uclass3.setActive(true);
+        ses.save(uclass3);
+        
+        /* User is a member of two. */
+        UserAssociation assoc1 = new UserAssociation(new UserAssociationId(user.getId(), uclass1.getId()), uclass1, user);
+        ses.save(assoc1);
+        UserAssociation assoc2 = new UserAssociation(new UserAssociationId(user.getId(), uclass2.getId()), uclass2, user);
+        ses.save(assoc2);
+        
+        /* Resources for the permissions. */
+        /* -- Three rig types. */
+        RigType rigType1 = new RigType("interRigType1", 300, false);
+        ses.save(rigType1);
+        RigType rigType2 = new RigType("interRigType2", 300, false);
+        ses.save(rigType2);
+        RigType rigType3 = new RigType("batchRigType3", 300, true);
+        ses.save(rigType3);
+        
+        /* -- Five rigs all using the same rig caps (not important). */
+        RigCapabilities rigCaps = new RigCapabilities("not,important");
+        ses.save(rigCaps);
+        Rig rig1 = new Rig(rigType1, rigCaps, "interRig1", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig1);
+        Rig rig2 = new Rig(rigType1, rigCaps, "interRig2", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig2);
+        Rig rig3 = new Rig(rigType2, rigCaps, "interRig3", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig3);
+        Rig rig4 = new Rig(rigType2, rigCaps, "interRig4", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig4);
+        Rig rig5 = new Rig(rigType2, rigCaps, "interRig5", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig5);
+        
+        /* -- One request capabilties. */
+        RequestCapabilities caps = new RequestCapabilities("a, b, c, d");
+        ses.save(caps);
+        
+        /* Resource permissions. */
+        ResourcePermission perm1 = new ResourcePermission(uclass1, "TYPE", 3600, 300, (short) 10, 300, 300);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        ses.save(perm1);
+        ResourcePermission perm2 = new ResourcePermission(uclass1, "RIG", 3600, 300, (short) 10, 300, 300);
+        perm2.setRig(rig1);
+        perm2.setStartTime(new Date());
+        perm2.setExpiryTime(new Date());
+        ses.save(perm2);
+        ResourcePermission perm3 = new ResourcePermission(uclass1, "RIG", 3600, 300, (short) 10, 300, 300);
+        perm3.setRig(rig2);
+        perm3.setStartTime(new Date());
+        perm3.setExpiryTime(new Date());
+        ses.save(perm3);
+        ResourcePermission perm4 = new ResourcePermission(uclass2, "TYPE", 3600, 300, (short) 10, 300, 300);
+        perm4.setRigType(rigType2);
+        perm4.setStartTime(new Date());
+        perm4.setExpiryTime(new Date());
+        ses.save(perm4);
+        ResourcePermission perm5 = new ResourcePermission(uclass2, "RIG", 3600, 300, (short) 10, 300, 300);
+        perm5.setRig(rig3);
+        perm5.setStartTime(new Date());
+        perm5.setExpiryTime(new Date());
+        ses.save(perm5);
+        ResourcePermission perm6 = new ResourcePermission(uclass2, "RIG", 3600, 300, (short) 10, 300, 300);
+        perm6.setRig(rig4);
+        perm6.setStartTime(new Date());
+        perm6.setExpiryTime(new Date());
+        ses.save(perm6);
+        ResourcePermission perm7 = new ResourcePermission(uclass2, "CAPS", 3600, 300, (short) 10, 300, 300);
+        perm7.setRequestCapabilities(caps);
+        perm7.setStartTime(new Date());
+        perm7.setExpiryTime(new Date());
+        ses.save(perm7);
+        ResourcePermission perm8 = new ResourcePermission(uclass3, "RIG", 3600, 300, (short) 10, 300, 300);
+        perm8.setRig(rig5);
+        perm8.setStartTime(new Date());
+        perm8.setExpiryTime(new Date());
+        ses.save(perm8);
+        ResourcePermission perm9 = new ResourcePermission(uclass3, "CAPS", 3600, 300, (short) 10, 300, 300);
+        perm9.setRequestCapabilities(caps);
+        perm9.setStartTime(new Date());
+        perm9.setExpiryTime(new Date());
+        ses.save(perm9);
+        
+        /* User locks. */
+        UserLock lock1 = new UserLock(user, perm1, true, "abc123");
+        ses.save(lock1);
+        UserLock lock2 = new UserLock(user, perm2, false, "abc123");
+        ses.save(lock2);
+        ses.getTransaction().commit();
+        
+        /**********************************************************************
+         ** Actual test.                                                     **
+         *********************************************************************/
+        GetPermissionsForUser request = new GetPermissionsForUser();
+        UserIDType uid = new UserIDType();
+        request.setGetPermissionsForUser(uid);
+        uid.setNameNamespace(user.getNamespace(), user.getName());
+        
+        GetPermissionsForUserResponse resp = this.permissions.getPermissionsForUser(request);
+        assertNotNull(resp);
+
+        /**********************************************************************
+         ** Test cleanup.                                                    **
+         *********************************************************************/
+        ses.beginTransaction();
+        ses.delete(lock2);
+        ses.delete(lock1);
+        ses.delete(perm1);
+        ses.delete(perm2);
+        ses.delete(perm3);
+        ses.delete(perm4);
+        ses.delete(perm5);
+        ses.delete(perm6);
+        ses.delete(perm7);
+        ses.delete(perm8);
+        ses.delete(perm9);
+        ses.delete(caps);
+        ses.delete(rig5);
+        ses.delete(rig4);
+        ses.delete(rig3);
+        ses.delete(rig2);
+        ses.delete(rig1);
+        ses.delete(rigCaps);
+        ses.delete(rigType3);
+        ses.delete(rigType2);
+        ses.delete(rigType1);
+        ses.delete(assoc2);
+        ses.delete(assoc1);
+        ses.delete(uclass3);
+        ses.delete(uclass2);
+        ses.delete(uclass1);
+        ses.delete(user);
+        ses.getTransaction().commit();
+        
+        PermissionWithLockListType permListType = resp.getGetPermissionsForUserResponse();
+        assertNotNull(permListType);
+        
+        PermissionWithLockType permList[] = permListType.getPermission();
+        assertNotNull(permList);
+        assertEquals(7, permList.length);
+        
+        for (PermissionWithLockType lock : permList)
+        {
+            assertNotNull(lock);
+            PermissionType pt = lock.getPermission();
+            assertNotNull(pt);
+            
+            assertEquals(3600, pt.getSessionDuration());
+            assertEquals(300, pt.getExtensionDuration());
+            assertEquals(10, pt.getAllowedExtensions());
+            assertEquals(300, pt.getQueueActivityTmOut());
+            assertEquals(300, pt.getSessionActivityTmOut());
+            assertNotNull(pt.getStart());
+            assertNotNull(pt.getExpiry());
+            
+            ResourceIDType res = pt.getResource();
+            assertNotNull(res);
+            assertTrue(res.getResourceID() > 0);
+            assertNotNull(res.getResourceName());
+        }
+        
+        OMElement ele = resp.getOMElement(GetPermissionsForUser.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     */
+    @Test
+    public void testGetPermissionsForUserLocked()
+    {
+        /**********************************************************************
+         ** Test setup.                                                      **
+         *********************************************************************/
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("test", "permUser", "USER");
+        ses.save(user);
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("permTestClass1");
+        uclass1.setActive(true);
+        ses.save(uclass1);
+        UserAssociation assoc1 = new UserAssociation(new UserAssociationId(user.getId(), uclass1.getId()), uclass1, user);
+        ses.save(assoc1);
+        RigType rigType1 = new RigType("interRigType1", 300, false);
+        ses.save(rigType1);
+        RigCapabilities rigCaps = new RigCapabilities("not,important");
+        ses.save(rigCaps);
+        Rig rig1 = new Rig(rigType1, rigCaps, "interRig1", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig1);
+        ResourcePermission perm1 = new ResourcePermission(uclass1, "TYPE", 3600, 300, (short) 10, 300, 300);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        ses.save(perm1);
+        UserLock lock1 = new UserLock(user, perm1, true, "abc123");
+        ses.save(lock1);
+        ses.getTransaction().commit();
+        
+        /**********************************************************************
+         ** Actual test.                                                     **
+         *********************************************************************/
+        GetPermissionsForUser request = new GetPermissionsForUser();
+        UserIDType uid = new UserIDType();
+        request.setGetPermissionsForUser(uid);
+        uid.setNameNamespace(user.getNamespace(), user.getName());
+        
+        GetPermissionsForUserResponse resp = this.permissions.getPermissionsForUser(request);
+        assertNotNull(resp);
+
+        /**********************************************************************
+         ** Test cleanup.                                                    **
+         *********************************************************************/
+        ses.beginTransaction();
+        ses.delete(lock1);
+        ses.delete(perm1);
+        ses.delete(rig1);
+        ses.delete(rigCaps);
+        ses.delete(rigType1);
+        ses.delete(assoc1);
+        ses.delete(uclass1);
+        ses.delete(user);
+        ses.getTransaction().commit();
+        
+        PermissionWithLockListType permListType = resp.getGetPermissionsForUserResponse();
+        assertNotNull(permListType);
+        
+        PermissionWithLockType permList[] = permListType.getPermission();
+        assertNotNull(permList);
+        assertEquals(1, permList.length);
+        
+        PermissionWithLockType perm = permList[0];
+        assertNotNull(perm);
+        assertTrue(perm.getIsLocked());
+        
+        PermissionType p = perm.getPermission();
+        assertNotNull(p);
+        assertEquals(perm1.getAllowedExtensions(), p.getAllowedExtensions());
+        assertEquals(perm1.getExtensionDuration(), p.getExtensionDuration());
+        assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
+        assertEquals(perm1.getSessionActivityTimeout(), p.getSessionActivityTmOut());
+        assertEquals(perm1.getSessionDuration(), p.getSessionDuration());
+        assertEquals("TYPE", p.getResourceClass().getValue());
+        
+        ResourceIDType res = p.getResource();
+        assertNotNull(res);
+        assertEquals(res.getResourceName(), "interRigType1");
+    }
+    
+    /**
+     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     */
+    @Test
+    public void testGetPermissionsForUserNotLocked()
+    {
+        /**********************************************************************
+         ** Test setup.                                                      **
+         *********************************************************************/
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("test", "permUser", "USER");
+        ses.save(user);
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("permTestClass1");
+        uclass1.setActive(true);
+        ses.save(uclass1);
+        UserAssociation assoc1 = new UserAssociation(new UserAssociationId(user.getId(), uclass1.getId()), uclass1, user);
+        ses.save(assoc1);
+        RigType rigType1 = new RigType("interRigType1", 300, false);
+        ses.save(rigType1);
+        RigCapabilities rigCaps = new RigCapabilities("not,important");
+        ses.save(rigCaps);
+        Rig rig1 = new Rig(rigType1, rigCaps, "interRig1", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig1);
+        ResourcePermission perm1 = new ResourcePermission(uclass1, "RIG", 3600, 300, (short) 10, 300, 300);
+        perm1.setRig(rig1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        ses.save(perm1);
+        UserLock lock1 = new UserLock(user, perm1, false, "abc123");
+        ses.save(lock1);
+        ses.getTransaction().commit();
+        
+        /**********************************************************************
+         ** Actual test.                                                     **
+         *********************************************************************/
+        GetPermissionsForUser request = new GetPermissionsForUser();
+        UserIDType uid = new UserIDType();
+        request.setGetPermissionsForUser(uid);
+        uid.setNameNamespace(user.getNamespace(), user.getName());
+        
+        GetPermissionsForUserResponse resp = this.permissions.getPermissionsForUser(request);
+        assertNotNull(resp);
+
+        /**********************************************************************
+         ** Test cleanup.                                                    **
+         *********************************************************************/
+        ses.beginTransaction();
+        ses.delete(lock1);
+        ses.delete(perm1);
+        ses.delete(rig1);
+        ses.delete(rigCaps);
+        ses.delete(rigType1);
+        ses.delete(assoc1);
+        ses.delete(uclass1);
+        ses.delete(user);
+        ses.getTransaction().commit();
+        
+        PermissionWithLockListType permListType = resp.getGetPermissionsForUserResponse();
+        assertNotNull(permListType);
+        
+        PermissionWithLockType permList[] = permListType.getPermission();
+        assertNotNull(permList);
+        assertEquals(1, permList.length);
+        
+        PermissionWithLockType perm = permList[0];
+        assertNotNull(perm);
+        assertFalse(perm.getIsLocked());
+        
+        PermissionType p = perm.getPermission();
+        assertNotNull(p);
+        assertEquals(perm1.getAllowedExtensions(), p.getAllowedExtensions());
+        assertEquals(perm1.getExtensionDuration(), p.getExtensionDuration());
+        assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
+        assertEquals(perm1.getSessionActivityTimeout(), p.getSessionActivityTmOut());
+        assertEquals(perm1.getSessionDuration(), p.getSessionDuration());
+        assertEquals("RIG", p.getResourceClass().getValue());
+        
+        ResourceIDType res = p.getResource();
+        assertNotNull(res);
+        assertEquals(res.getResourceName(), "interRig1");
     }
     
     /**
@@ -1136,6 +1493,7 @@ public class PermissionsTester extends TestCase
         assertNotNull(resp);
         
         dao.delete(user);
+        dao.closeSession();
         
         PermissionWithLockListType lockList = resp.getGetPermissionsForUserResponse();
         assertNotNull(lockList);

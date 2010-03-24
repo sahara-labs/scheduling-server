@@ -796,13 +796,16 @@ public class Permissions implements PermissionsSkeletonInterface
         /* 1) Load user. */
         UserDao userDao = new UserDao();
         User user = null;
-        if ((id > 0 && (user = userDao.get(id)) == null) && (ns == null || nm == null || 
-                (user = userDao.findByName(ns, nm)) == null))
+        if (id > 0) user = userDao.get(id);
+        else if (ns != null && nm != null) user = userDao.findByName(ns, nm);
+
+        if (user == null)
         {
+            this.logger.debug("User not found for getting permissions, id is " + id + ", namespce is " + ns + 
+                    " and name is " + nm + '.');
             userDao.closeSession();
             return resp;
         }
-        
         
         /* Get a list of resources that are locked. */
         List<Long> lockedResources = new ArrayList<Long>();
