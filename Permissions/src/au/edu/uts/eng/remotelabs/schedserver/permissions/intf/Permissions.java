@@ -835,7 +835,7 @@ public class Permissions implements PermissionsSkeletonInterface
                 /* Add resource. */
                 ResourceIDType resourceIdType = new ResourceIDType();
                 perm.setResource(resourceIdType);
-                if ("RIG".equals(resPerm.getType()))
+                if (ResourcePermission.RIG_PERMISSION.equals(resPerm.getType()))
                 {
                     Rig rig = resPerm.getRig();
                     if (rig == null)
@@ -849,7 +849,7 @@ public class Permissions implements PermissionsSkeletonInterface
                     resourceIdType.setResourceID(rig.getId().intValue());
                     resourceIdType.setResourceName(rig.getName());
                 }
-                else if ("TYPE".equals(resPerm.getType()))
+                else if (ResourcePermission.TYPE_PERMISSION.equals(resPerm.getType()))
                 {
                     RigType rigType = resPerm.getRigType();
                     if (rigType == null)
@@ -863,7 +863,7 @@ public class Permissions implements PermissionsSkeletonInterface
                     resourceIdType.setResourceID(rigType.getId().intValue());
                     resourceIdType.setResourceName(rigType.getName());
                 }
-                else if ("CAPS".equals(resPerm.getType()))
+                else if (ResourcePermission.CAPS_PERMISSION.equals(resPerm.getType()))
                 {
                     RequestCapabilities caps = resPerm.getRequestCapabilities();
                     if (caps == null)

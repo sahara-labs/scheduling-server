@@ -1205,7 +1205,7 @@ public class PermissionsTester extends TestCase
         perm6.setStartTime(new Date());
         perm6.setExpiryTime(new Date());
         ses.save(perm6);
-        ResourcePermission perm7 = new ResourcePermission(uclass2, "CAPS", 3600, 300, (short) 10, 300, 300);
+        ResourcePermission perm7 = new ResourcePermission(uclass2, "CAPABILITY", 3600, 300, (short) 10, 300, 300);
         perm7.setRequestCapabilities(caps);
         perm7.setStartTime(new Date());
         perm7.setExpiryTime(new Date());
@@ -1215,7 +1215,7 @@ public class PermissionsTester extends TestCase
         perm8.setStartTime(new Date());
         perm8.setExpiryTime(new Date());
         ses.save(perm8);
-        ResourcePermission perm9 = new ResourcePermission(uclass3, "CAPS", 3600, 300, (short) 10, 300, 300);
+        ResourcePermission perm9 = new ResourcePermission(uclass3, "CAPABILITY", 3600, 300, (short) 10, 300, 300);
         perm9.setRequestCapabilities(caps);
         perm9.setStartTime(new Date());
         perm9.setExpiryTime(new Date());
