@@ -66,6 +66,15 @@ import javax.persistence.Table;
 @Table(name = "resource_permission")
 public class ResourcePermission implements java.io.Serializable
 {
+    /** Rig type resource permission type. */
+    public static final String TYPE_PERMISSION = "TYPE";
+    
+    /** Rig resource permission type. */
+    public static final String RIG_PERMISSION = "RIG";
+    
+    /** Capability resource permission type. */
+    public static final String CAPS_PERMISSION = "CAPABILITY";
+    
     /** Serializable class. */
     private static final long serialVersionUID = -2292524825260205119L;
     
@@ -221,7 +230,7 @@ public class ResourcePermission implements java.io.Serializable
         this.requestCapabilities = requestCapabilities;
     }
 
-    @Column(name = "type", nullable = false, length = 5)
+    @Column(name = "type", nullable = false, length = 10)
     public String getType()
     {
         return this.type;

@@ -107,6 +107,11 @@ public class DataAccessActivator implements BundleActivator
         this.logger.debug("Hibernate properties: " + cfg.getProperties().toString());
 
         DataAccessActivator.sessionFactory = cfg.buildSessionFactory();
+        if (DataAccessActivator.sessionFactory == null)
+        {
+            this.logger.fatal("Unable to open a session factory to the database. Ensure the database is running " +
+            		"and restart the scheduling server.");
+        }
         
         DataAccessActivator.confTracker = new ServiceTracker(context, 
                 au.edu.uts.eng.remotelabs.schedserver.config.Config.class.getName(), null);
@@ -120,8 +125,11 @@ public class DataAccessActivator implements BundleActivator
         Statistics stats = DataAccessActivator.sessionFactory.getStatistics();
         this.logger.info("Hibernate statistics: " + stats.toString());
 
-        DataAccessActivator.sessionFactory.close();
-        DataAccessActivator.sessionFactory = null;
+        synchronized (DataAccessActivator.sessionFactory)
+        {
+            DataAccessActivator.sessionFactory.close();
+            DataAccessActivator.sessionFactory = null;
+        }
 	}
 
     /**
@@ -132,12 +140,15 @@ public class DataAccessActivator implements BundleActivator
      */
     public static Session getNewSession()
     {
-        if (sessionFactory == null)
+        synchronized (DataAccessActivator.sessionFactory)
         {
-            return null;
-        }
+            if (sessionFactory == null)
+            {
+                return null;
+            }
 
-        return DataAccessActivator.sessionFactory.openSession();
+            return DataAccessActivator.sessionFactory.openSession();
+        }
     }
 
     /**
