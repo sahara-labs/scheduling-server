@@ -5,37 +5,37 @@
 Copyright (c) 2009, University of Technology, Sydney
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
+Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
+    * Redistributions of source code must retain the above copyright notice,
       this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright 
-      notice, this list of conditions and the following disclaimer in the 
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the University of Technology, Sydney nor the names 
-      of its contributors may be used to endorse or promote products derived from 
+    * Neither the name of the University of Technology, Sydney nor the names
+      of its contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Author: Michael Diponio (mdiponio)
 Date: 28th December 2009
 -->
 <project name="Scheduling Server Dependencies">
-	
-	<!-- This file targets to conditionally build dependant bundles if they 
+
+	<!-- This file targets to conditionally build dependant bundles if they
 	     are depended on by other bundles. -->
-		 
+
 	<macrodef name="detectIfBundlePresent">
 		<attribute name="property" />
 		<attribute name="bundle" />
@@ -47,7 +47,7 @@ Date: 28th December 2009
 			</condition>
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="buildRequiredBundle">
 		<attribute name="bundleProject" />
 		<attribute name="bundle" />
@@ -58,25 +58,25 @@ Date: 28th December 2009
 			<copy file="../@{bundleProject}/bundle/@{bundle}" todir="../bundles" />
 		</sequential>
 	</macrodef>
-	
+
 	<!-- ### Configuration Bundle. -->
 	<detectIfBundlePresent property="missing.conf" bundle="SchedulingServer-Configuration.jar" />
 	<target name="configurationBundle" if="missing.conf">
 		<buildRequiredBundle bundle="SchedulingServer-Configuration.jar" bundleProject="Configuration" />
 	</target>
-	
+
 	<!-- ### Logger Bundle. -->
 	<detectIfBundlePresent property="missing.logger" bundle="SchedulingServer-Logger.jar" />
 	<target name="loggerBundle" if="missing.logger">
 		<buildRequiredBundle bundle="SchedulingServer-Logger.jar" bundleProject="Logger" />
 	</target>
-	
+
 	<!-- ### Server Bundle. -->
 	<detectIfBundlePresent property="missing.server" bundle="SchedulingServer-Server.jar" />
 	<target name="serverBundle" if="missing.server" >
 		<buildRequiredBundle bundle="SchedulingServer-Server.jar" bundleProject="Server" />
 	</target>
-	
+
 	<!-- ### Data Access Bundle. -->
 	<detectIfBundlePresent property="missing.dataaccess" bundle="SchedulingServer-DataAccess.jar" />
 	<target name="dataAccessBundle" if="missing.dataaccess">
@@ -88,11 +88,17 @@ Date: 28th December 2009
 	<target name="taskSchedulerBundle" if="missing.taskscheduler">
 		<buildRequiredBundle bundle="SchedulingServer-TaskScheduler.jar" bundleProject="TaskScheduler" />
 	</target>
-	
+
 	<!-- ### Permissions Bundle. -->
 	<detectIfBundlePresent property="missing.permissions" bundle="SchedulingServer-Permissions.jar" />
 	<target name="permissionsBundle" if="missing.permissions">
 		<buildRequiredBundle bundle="SchedulingServer-Permissions.jar" bundleProject="Permissions" />
 	</target>
-	
+
+	<!-- ### Queuer Bundle. -->
+	<detectIfBundlePresent property="missing.queuer" bundle="SchedulingServer-Queuer.jar" />
+	<target name="queuerBundle" if="missing.queuer">
+		<buildRequiredBundle bundle="SchedulingServer-Queuer.jar" bundleProject="Queuer" />
+	</target>
+
 </project>
