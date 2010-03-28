@@ -1,17 +1,67 @@
 /**
- * PermissionIDType.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 28th March 2009
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types;
 
-/**
- * PermissionIDType bean class
- */
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class PermissionIDType extends au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.OperationRequestType
-        implements org.apache.axis2.databinding.ADBBean
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
+/**
+ * PermissionIDType bean class.
+ */
+public class PermissionIDType extends OperationRequestType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
@@ -20,119 +70,74 @@ public class PermissionIDType extends au.edu.uts.eng.remotelabs.schedserver.queu
      * Namespace Prefix = ns1
      */
 
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = 5767028981277969357L;
+    
+    protected int permissionID;
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    private static String generatePrefix(final String namespace)
     {
         if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/queuer"))
         {
             return "ns1";
         }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return BeanUtil.getUniquePrefix();
     }
 
-    /**
-     * field for PermissionID
-     */
-
-    protected int localPermissionID;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getPermissionID()
     {
-        return this.localPermissionID;
+        return this.permissionID;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            PermissionID
-     */
     public void setPermissionID(final int param)
     {
-
-        this.localPermissionID = param;
-
+        this.permissionID = param;
     }
 
-    /**
-     * isReaderMTOMAware
-     * 
-     * @return true if the reader supports MTOM
-     */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
     @Override
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
-
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 PermissionIDType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
-
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
     }
 
     @Override
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
     @Override
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
-
-        java.lang.String prefix = null;
-        java.lang.String namespace = null;
-
-        prefix = parentQName.getPrefix();
-        namespace = parentQName.getNamespaceURI();
+        String prefix = parentQName.getPrefix();
+        String namespace = parentQName.getNamespaceURI();
 
         if ((namespace != null) && (namespace.trim().length() > 0))
         {
-            final java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
+            final String writerPrefix = xmlWriter.getPrefix(namespace);
             if (writerPrefix != null)
             {
                 xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
@@ -154,7 +159,7 @@ public class PermissionIDType extends au.edu.uts.eng.remotelabs.schedserver.queu
             xmlWriter.writeStartElement(parentQName.getLocalPart());
         }
 
-        final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+        final String namespacePrefix = this.registerPrefix(xmlWriter,
                 "http://remotelabs.eng.uts.edu.au/schedserver/queuer");
         if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
         {
@@ -173,70 +178,61 @@ public class PermissionIDType extends au.edu.uts.eng.remotelabs.schedserver.queu
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = PermissionIDType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "requestorID", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "requestorID");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("requestorID");
             }
 
-            if (this.requestorID == java.lang.Integer.MIN_VALUE)
+            if (this.requestorID == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("requestorID cannot be null!!");
-
+                throw new ADBException("requestorID cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.requestorID));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.requestorID));
             }
 
             xmlWriter.writeEndElement();
         }
+        
         if (this.requestorNSNameSequenceTracker)
         {
             if (this.requestorNSNameSequence == null)
             {
-                throw new org.apache.axis2.databinding.ADBException("RequestorNSNameSequence cannot be null!!");
+                throw new ADBException("RequestorNSNameSequence cannot be null!!");
             }
             this.requestorNSNameSequence.serialize(null, factory, xmlWriter);
         }
+        
         if (this.requestorQNameTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = PermissionIDType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "requestorQName", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "requestorQName");
                 }
-
             }
             else
             {
@@ -245,98 +241,71 @@ public class PermissionIDType extends au.edu.uts.eng.remotelabs.schedserver.queu
 
             if (this.requestorQName == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("requestorQName cannot be null!!");
-
+                throw new ADBException("requestorQName cannot be null!!");
             }
             else
             {
-
                 xmlWriter.writeCharacters(this.requestorQName);
-
             }
-
             xmlWriter.writeEndElement();
         }
+        
         namespace = "";
         if (!namespace.equals(""))
         {
             prefix = xmlWriter.getPrefix(namespace);
-
             if (prefix == null)
             {
                 prefix = PermissionIDType.generatePrefix(namespace);
-
                 xmlWriter.writeStartElement(prefix, "permissionID", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
-
             }
             else
             {
                 xmlWriter.writeStartElement(namespace, "permissionID");
             }
-
         }
         else
         {
             xmlWriter.writeStartElement("permissionID");
         }
 
-        if (this.localPermissionID == java.lang.Integer.MIN_VALUE)
+        if (this.permissionID == Integer.MIN_VALUE)
         {
-
-            throw new org.apache.axis2.databinding.ADBException("permissionID cannot be null!!");
-
+            throw new ADBException("permissionID cannot be null!!");
         }
         else
         {
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localPermissionID));
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.permissionID));
         }
 
         xmlWriter.writeEndElement();
-
         xmlWriter.writeEndElement();
-
     }
 
-    /**
-     * Util method to write an attribute with the ns prefix
-     */
-    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
-            final java.lang.String attName, final java.lang.String attValue,
-            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
-
         }
 
         xmlWriter.writeAttribute(namespace, attName, attValue);
-
     }
 
-    /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
+        String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
             prefix = PermissionIDType.generatePrefix(namespace);
-
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+                prefix = BeanUtil.getUniquePrefix();
             }
-
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
@@ -344,235 +313,156 @@ public class PermissionIDType extends au.edu.uts.eng.remotelabs.schedserver.queu
         return prefix;
     }
 
-    /**
-     * databinding method to get an XML representation of this object
-     */
     @Override
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
+        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
+        final ArrayList<QName> attribList = new ArrayList<QName>();
 
-        final java.util.ArrayList elementList = new java.util.ArrayList();
-        final java.util.ArrayList attribList = new java.util.ArrayList();
-
-        attribList.add(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema-instance", "type"));
-        attribList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/queuer",
-                "PermissionIDType"));
+        attribList.add(new QName("http://www.w3.org/2001/XMLSchema-instance", "type"));
+        attribList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/queuer", "PermissionIDType"));
+        
         if (this.requestorIDTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "requestorID"));
-
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.requestorID));
+            elementList.add(new QName("", "requestorID"));
+            elementList.add(ConverterUtil.convertToString(this.requestorID));
         }
+        
         if (this.requestorNSNameSequenceTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/queuer",
-                    "RequestorNSNameSequence"));
-
+            elementList
+                    .add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/queuer", "RequestorNSNameSequence"));
             if (this.requestorNSNameSequence == null)
             {
-                throw new org.apache.axis2.databinding.ADBException("RequestorNSNameSequence cannot be null!!");
+                throw new ADBException("RequestorNSNameSequence cannot be null!!");
             }
             elementList.add(this.requestorNSNameSequence);
         }
+        
         if (this.requestorQNameTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "requestorQName"));
-
+            elementList.add(new QName("", "requestorQName"));
             if (this.requestorQName != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.requestorQName));
+                elementList.add(ConverterUtil.convertToString(this.requestorQName));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("requestorQName cannot be null!!");
+                throw new ADBException("requestorQName cannot be null!!");
             }
         }
-        elementList.add(new javax.xml.namespace.QName("", "permissionID"));
+        
+        elementList.add(new QName("", "permissionID"));
+        elementList.add(ConverterUtil.convertToString(this.permissionID));
 
-        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localPermissionID));
-
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
-                attribList.toArray());
-
+        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
     }
 
-    /**
-     * Factory class that keeps the parse method
-     */
     public static class Factory
     {
-
-        /**
-         * static method to create the object
-         * Precondition: If this object is an element, the current or next start element starts this object and any
-         * intervening reader events are ignorable
-         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
-         * start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element
-         * If this object is a complex type, the reader is positioned at the end element of its outer element
-         */
-        public static PermissionIDType parse(final javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception
+        public static PermissionIDType parse(final XMLStreamReader reader) throws Exception
         {
             final PermissionIDType object = new PermissionIDType();
-
             try
             {
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
-                    final java.lang.String fullTypeName = reader.getAttributeValue(
-                            "http://www.w3.org/2001/XMLSchema-instance", "type");
+                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
+                            "type");
                     if (fullTypeName != null)
                     {
-                        java.lang.String nsPrefix = null;
+                        String nsPrefix = null;
                         if (fullTypeName.indexOf(":") > -1)
                         {
                             nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
                         }
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-                        final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-
+                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
                         if (!"PermissionIDType".equals(type))
                         {
                             //find namespace for the prefix
-                            final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (PermissionIDType) au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ExtensionMapper
-                                    .getTypeObject(nsUri, type, reader);
+                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+                            return (PermissionIDType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
-
                     }
-
                 }
-
-                new java.util.Vector();
 
                 reader.next();
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "requestorID").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "requestorID").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setRequestorID(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setRequestorID(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
-                    object.setRequestorID(java.lang.Integer.MIN_VALUE);
-
+                    object.setRequestorID(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
                 try
                 {
-
                     if (reader.isStartElement())
                     {
-
-                        object
-                                .setRequestorNSNameSequence(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RequestorNSNameSequence.Factory
-                                        .parse(reader));
-
-                    } // End of if for expected property start element
-
-                    else
-                    {
-
+                        object.setRequestorNSNameSequence(RequestorNSNameSequence.Factory.parse(reader));
                     }
-
                 }
-                catch (final java.lang.Exception e)
+                catch (final Exception e)
+                { /* Optional. */ }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
                 {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "requestorQName").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setRequestorQName(ConverterUtil.convertToString(content));
+                    reader.next();
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "requestorQName").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "permissionID").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setRequestorQName(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
-
+                    final String content = reader.getElementText();
+                    object.setPermissionID(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "permissionID").equals(reader.getName()))
-                {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setPermissionID(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
-                    reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
                 if (reader.isStartElement())
                 {
-                    // A start element we are not expecting indicates a trailing invalid property
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
-
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
 
             return object;
         }
-
-    }//end of factory class
-
+    }
 }
