@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.permissions.intf.tests;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Properties;
 
@@ -110,16 +111,20 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockListType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociationType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserLockIDUserPermSequence;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserNameNamespaceSequence;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserType;
 
@@ -1793,9 +1798,344 @@ public class PermissionsTester extends TestCase
      * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
      */
     @Test
-    public void testUnlockUserLock()
+    public void testUnlockUserLockID()
     {
-        fail("Not yet implemented");
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("locktest", "ns", "USER");
+        ses.persist(user);
+        UserClass userClass= new UserClass();
+        userClass.setName("uc");
+        ses.persist(userClass);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(new Date());
+        perm.setExpiryTime(new Date());
+        perm.setUserClass(userClass);
+        perm.setType("RIG");
+        ses.persist(perm);
+        UserLock lock = new UserLock(user, perm, true, "abc123");
+        ses.persist(lock);
+        ses.getTransaction().commit();
+        
+        /* Request. */
+        UnlockUserLock request = new UnlockUserLock();
+        UserLockType lockReq = new UserLockType();
+        request.setUnlockUserLock(lockReq);
+        lockReq.setRequestorQName("TESTNS:mdiponio");
+        lockReq.setLockKey("abc123");
+        lockReq.setUserLockID(lock.getId().intValue());
+        
+        UnlockUserLockResponse resp = this.permissions.unlockUserLock(request);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getUnlockUserLockResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        ses.refresh(lock);
+        assertFalse(lock.isIsLocked());
+        
+        ses.beginTransaction();
+        ses.delete(lock);
+        ses.delete(perm);
+        ses.delete(userClass);
+        ses.delete(user);
+        ses.getTransaction().commit();
+        ses.close();
     }
-
+    
+    /**
+     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     */
+    @Test
+    public void testUnlockUserLockIDWrongKey()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("locktest", "ns", "USER");
+        ses.persist(user);
+        UserClass userClass= new UserClass();
+        userClass.setName("uc");
+        ses.persist(userClass);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(new Date());
+        perm.setExpiryTime(new Date());
+        perm.setUserClass(userClass);
+        perm.setType("RIG");
+        ses.persist(perm);
+        UserLock lock = new UserLock(user, perm, true, "abc123");
+        ses.persist(lock);
+        ses.getTransaction().commit();
+        
+        /* Request. */
+        UnlockUserLock request = new UnlockUserLock();
+        UserLockType lockReq = new UserLockType();
+        request.setUnlockUserLock(lockReq);
+        lockReq.setRequestorQName("TESTNS:mdiponio");
+        lockReq.setLockKey("wrongkey");
+        lockReq.setUserLockID(lock.getId().intValue());
+        
+        UnlockUserLockResponse resp = this.permissions.unlockUserLock(request);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getUnlockUserLockResponse();
+        assertNotNull(op);
+        assertFalse(op.getSuccessful());
+        assertEquals(3, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        
+        ses.refresh(lock);
+        assertTrue(lock.isIsLocked());
+        
+        ses.beginTransaction();
+        ses.delete(lock);
+        ses.delete(perm);
+        ses.delete(userClass);
+        ses.delete(user);
+        ses.getTransaction().commit();
+        ses.close();
+    }
+    
+    /**
+     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     */
+    @Test
+    public void testUnlockUserLockPermUser()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("locktest", "ns", "USER");
+        ses.persist(user);
+        UserClass userClass= new UserClass();
+        userClass.setName("uc");
+        ses.persist(userClass);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(new Date());
+        perm.setExpiryTime(new Date());
+        perm.setUserClass(userClass);
+        perm.setType("RIG");
+        ses.persist(perm);
+        UserLock lock = new UserLock(user, perm, true, "abc123");
+        ses.persist(lock);
+        ses.getTransaction().commit();
+        
+        /* Request. */
+        UnlockUserLock request = new UnlockUserLock();
+        UserLockType lockReq = new UserLockType();
+        request.setUnlockUserLock(lockReq);
+        lockReq.setRequestorQName("TESTNS:mdiponio");
+        lockReq.setLockKey("abc123");
+        UserLockIDUserPermSequence seq = new UserLockIDUserPermSequence();
+        PermissionIDType pId = new PermissionIDType();
+        pId.setPermissionID(perm.getId().intValue());
+        seq.setPermissionID(pId);
+        UserIDType uId = new UserIDType();
+        uId.setUserQName(user.getNamespace() + ":" + user.getName());
+        seq.setUserID(uId);
+        lockReq.setUserIDPermissionsTracker(seq);
+        
+        UnlockUserLockResponse resp = this.permissions.unlockUserLock(request);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getUnlockUserLockResponse();
+        assertNotNull(op);
+        assertTrue(op.getSuccessful());
+        assertEquals(0, op.getFailureCode());
+        assertNull(op.getFailureReason());
+        
+        ses.refresh(lock);
+        assertFalse(lock.isIsLocked());
+        
+        ses.beginTransaction();
+        ses.delete(lock);
+        ses.delete(perm);
+        ses.delete(userClass);
+        ses.delete(user);
+        ses.getTransaction().commit();
+        ses.close();
+    }
+    
+    /**
+     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     */
+    @Test
+    public void testUnlockUserLockPermUserWrongKey()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("locktest", "ns", "USER");
+        ses.persist(user);
+        UserClass userClass= new UserClass();
+        userClass.setName("uc");
+        ses.persist(userClass);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(new Date());
+        perm.setExpiryTime(new Date());
+        perm.setUserClass(userClass);
+        perm.setType("RIG");
+        ses.persist(perm);
+        UserLock lock = new UserLock(user, perm, true, "abc123");
+        ses.persist(lock);
+        ses.getTransaction().commit();
+        
+        /* Request. */
+        UnlockUserLock request = new UnlockUserLock();
+        UserLockType lockReq = new UserLockType();
+        request.setUnlockUserLock(lockReq);
+        lockReq.setRequestorQName("TESTNS:mdiponio");
+        lockReq.setLockKey("wrongkey");
+        UserLockIDUserPermSequence seq = new UserLockIDUserPermSequence();
+        PermissionIDType pId = new PermissionIDType();
+        pId.setPermissionID(perm.getId().intValue());
+        seq.setPermissionID(pId);
+        UserIDType uId = new UserIDType();
+        uId.setUserQName(user.getNamespace() + ":" + user.getName());
+        seq.setUserID(uId);
+        lockReq.setUserIDPermissionsTracker(seq);
+        
+        UnlockUserLockResponse resp = this.permissions.unlockUserLock(request);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getUnlockUserLockResponse();
+        assertNotNull(op);
+        assertFalse(op.getSuccessful());
+        assertEquals(3, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+        
+        ses.refresh(lock);
+        assertTrue(lock.isIsLocked());
+        
+        ses.beginTransaction();
+        ses.delete(lock);
+        ses.delete(perm);
+        ses.delete(userClass);
+        ses.delete(user);
+        ses.getTransaction().commit();
+        ses.close();
+    }
+    
+    /**
+     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     */
+    @Test
+    public void testUnlockUserLockNoKey()
+    {
+        /* Request. */
+        UnlockUserLock request = new UnlockUserLock();
+        UserLockType lockReq = new UserLockType();
+        request.setUnlockUserLock(lockReq);
+        lockReq.setRequestorQName("TESTNS:mdiponio");
+        lockReq.setUserLockID(10);
+        
+        
+        UnlockUserLockResponse resp = this.permissions.unlockUserLock(request);
+        assertNotNull(resp);
+        OperationResponseType op = resp.getUnlockUserLockResponse();
+        assertNotNull(op);
+        assertFalse(op.getSuccessful());
+        assertEquals(2, op.getFailureCode());
+        assertNotNull(op.getFailureReason());
+    }
+    
+    @Test
+    public void testGetUserFromUserID() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("UserIdTest", "Permission", "USER");
+        ses.persist(user);
+        ses.getTransaction().commit();
+        
+        UserIDType uid = new UserIDType();
+        uid.setUserID(String.valueOf(user.getId()));
+        
+        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        meth.setAccessible(true);
+        User loaded = (User)meth.invoke(this.permissions, uid, ses);
+        assertNotNull(loaded);
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.getTransaction().commit();
+        
+        assertEquals(user.getId().longValue(), loaded.getId().longValue());
+        assertEquals(user.getName(), loaded.getName());
+        assertEquals(user.getNamespace(), loaded.getNamespace());
+        assertEquals(user.getPersona(), loaded.getPersona());
+        
+        ses.close();
+    }
+    
+    @Test
+    public void testGetUserFromUserIDNmNsSeq() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("UserIdTest", "Permission", "USER");
+        ses.persist(user);
+        ses.getTransaction().commit();
+        
+        UserIDType uid = new UserIDType();
+        UserNameNamespaceSequence seq = new UserNameNamespaceSequence();
+        seq.setUserNamespace(user.getNamespace());
+        seq.setUserName(user.getName());
+        uid.setUserNameNamespaceSequence(seq);
+        
+        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        meth.setAccessible(true);
+        User loaded = (User)meth.invoke(this.permissions, uid, ses);
+        assertNotNull(loaded);
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.getTransaction().commit();
+        
+        assertEquals(user.getId().longValue(), loaded.getId().longValue());
+        assertEquals(user.getName(), loaded.getName());
+        assertEquals(user.getNamespace(), loaded.getNamespace());
+        assertEquals(user.getPersona(), loaded.getPersona());
+        
+        ses.close();
+    }
+    
+    @Test
+    public void testGetUserFromUserIDQName() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User("UserIdTest", "Permission", "USER");
+        ses.persist(user);
+        ses.getTransaction().commit();
+        
+        UserIDType uid = new UserIDType();
+        uid.setUserQName(user.getNamespace() + ":" + user.getName());
+        
+        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        meth.setAccessible(true);
+        User loaded = (User)meth.invoke(this.permissions, uid, ses);
+        assertNotNull(loaded);
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.getTransaction().commit();
+        
+        assertEquals(user.getId().longValue(), loaded.getId().longValue());
+        assertEquals(user.getName(), loaded.getName());
+        assertEquals(user.getNamespace(), loaded.getNamespace());
+        assertEquals(user.getPersona(), loaded.getPersona());
+        
+        ses.close();
+    }
+    
+    @Test
+    public void testGetUserFromUserIDNotExist() throws Exception
+    {
+        UserIDType uid = new UserIDType();
+        uid.setUserQName("PERM_TEST:does_not_exist");
+        Session ses = DataAccessActivator.getNewSession();
+        
+        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        meth.setAccessible(true);
+        assertNull(meth.invoke(this.permissions, uid, ses));
+        
+        ses.close();
+    }
 }

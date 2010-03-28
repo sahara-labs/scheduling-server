@@ -8,8 +8,8 @@ Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
 !org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
 !org.jdom.*, !javax.*, !sun.*, !nu.xom, \
 au.edu.uts.eng.remotelabs.schedserver.server, *
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.permissions.inf, \
-au.edu.uts.eng.remotelabs.schedserver.permissions.inf.types, \
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.permissions.intf, \
+au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types, \
 au.edu.uts.eng.remotelabs.schedserver.permissions.impl
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn

@@ -40,10 +40,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.hibernate.Session;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserLockDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -127,6 +131,8 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociat
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserLockIDUserPermSequence;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserType;
 
 /**
@@ -946,14 +952,101 @@ public class Permissions implements PermissionsSkeletonInterface
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#unlockUserLock(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock)
-     */
     @Override
     public UnlockUserLockResponse unlockUserLock(UnlockUserLock request)
     {
-        // TODO Auto-generated method stub
-        return null;
+        /* Request parameters. */
+        UserLockType lockReq = request.getUnlockUserLock();
+        String key = lockReq.getLockKey();
+        int lockId = lockReq.getUserLockID();
+        UserLockIDUserPermSequence seq = lockReq.getUserIDPermissionsSequence();
+        
+        /* Response parameters. */
+        UnlockUserLockResponse resp = new UnlockUserLockResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setUnlockUserLockResponse(op);
+        op.setSuccessful(false);
+        
+        UserLockDao dao = new UserLockDao();
+        if (!this.checkPermission(lockReq))
+        {
+            this.logger.warn("Failed unlocking user permission because the requestor does not have permission.");
+            op.setFailureCode(1);
+            op.setFailureReason("Permission denied.");
+        }
+        else if (key == null)
+        {
+            this.logger.warn("Failed unlocking user lock because the no lock key was supplied.");
+            op.setFailureCode(2);
+            op.setFailureReason("Mandatory parameter not provided.");
+        }
+        else if (lockId > 0)
+        {
+            this.logger.debug("Received unlock user lock request with lock identifier=" + lockId + ", lock key=" + key + '.');
+            UserLock lock = dao.get(Long.valueOf(lockId));
+            if (lock == null)
+            {
+                this.logger.warn("Fail unlocking user lock (id=" + lockId + ") because the lock was not found.");
+                op.setFailureCode(3);
+                op.setFailureReason("User lock not found.");
+            }
+            else if (lock.getLockKey().equals(key))
+            {
+                lock.setIsLocked(false);
+                dao.flush();
+                op.setSuccessful(true);
+            }
+            else
+            {
+                this.logger.warn("Fail unlocking user lock because the supplied lock key was incorrect " +
+                		"(supplied=" + key + ", actual=" + lock.getLockKey() + ").");
+                op.setFailureCode(3);
+                op.setFailureReason("Provided key does not match.");
+            }
+        }
+        else if (seq != null)
+        {
+            UserIDType uid = seq.getUserID();
+            long pId = seq.getPermissionID().getPermissionID();
+            this.logger.debug("Received unlock user lock request with permission id=" + seq.getPermissionID().getPermissionID() +
+                        ", user id=" + uid.getUserID() + ", user namespace= " + uid.getUserNamespace() + 
+                        ", user name=" + uid.getUserName()  + ", lock key=" + key + '.');
+
+            User user = this.getUserFromUserID(seq.getUserID(), dao.getSession());
+            ResourcePermission perm = new ResourcePermissionDao(dao.getSession()).get(pId);
+            UserLock lock;
+            
+            if (user == null || perm == null || (lock = dao.findLock(user, perm)) == null)
+            {                
+                this.logger.warn("Fail unlocking user lock (permission id=" + seq.getPermissionID().getPermissionID() +
+                        ", user id= " + uid.getUserID() + ", user namespace= " + uid.getUserNamespace() + 
+                        ", user name=" + uid.getUserName()  + ") because the lock was not found.");
+                op.setFailureCode(3);
+                op.setFailureReason("User lock not found.");
+            }
+            else if (lock.getLockKey().equals(key))
+            {
+                lock.setIsLocked(false);
+                dao.flush();
+                op.setSuccessful(true);
+            }
+            else
+            {
+                this.logger.warn("Fail unlocking user lock because the supplied lock key was incorrect " +
+                		"(supplied=" + key + ", actual=" + lock.getLockKey() + ").");
+                op.setFailureCode(3);
+                op.setFailureReason("Provided key does not match.");
+            }    
+        }
+        else
+        {
+            this.logger.warn("Failed unlocking user lock because the no lock key was supplied.");
+            op.setFailureCode(2);
+            op.setFailureReason("Mandatory parameter not provided.");
+        }
+        
+        dao.closeSession();
+        return resp;
     }
 
     /**
@@ -961,8 +1054,34 @@ public class Permissions implements PermissionsSkeletonInterface
      */
     private boolean checkPermission(OperationRequestType req)
     {
-        // TODO check request permissions. */
+        // TODO check request permissions.
         return true;
+    }
+    
+    /**
+     * Gets the user identified by the user id type. 
+     * 
+     * @param uid user identity 
+     * @param ses database session
+     * @return user or null if not found
+     */
+    private User getUserFromUserID(UserIDType uid, Session ses)
+    {
+        UserDao dao = new UserDao(ses);
+        User user;
+        long recordId = this.getIdentifier(uid.getUserID());
+        String ns = uid.getUserNamespace(), nm = uid.getUserName();
+        
+        if (recordId > 0 && (user = dao.get(recordId)) != null)
+        {
+            return user;
+        }
+        else if (ns != null && nm != null && (user = dao.findByName(ns, nm)) != null)
+        {
+            return user;
+        }
+        
+        return null;
     }
     
     /**

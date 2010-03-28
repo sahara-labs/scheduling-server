@@ -166,6 +166,12 @@ public interface PermissionsSkeletonInterface
 
     public AddAcademicPermissionResponse addAcademicPermission(AddAcademicPermission request);
 
+    /**
+     * Unlocks a locked permission if the provided lock key is correct.
+     * 
+     * @param request
+     * @return response
+     */
     public UnlockUserLockResponse unlockUserLock(UnlockUserLock request);
 
     public GetUserClassesResponse getUserClasses(GetUserClasses request);
