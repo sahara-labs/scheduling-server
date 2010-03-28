@@ -37,6 +37,10 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -47,8 +51,10 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosit
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePositionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueueResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueueResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
 
 /**
  * Queuer SOAP interface implementation.
@@ -94,8 +100,65 @@ public class Queuer implements QueuerSkeletonInterface
 
     public IsUserInQueueResponse isUserInQueue(final IsUserInQueue request)
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#isUserInQueue");
+        /* Request parameters. */
+        
+        /* Response parameters. */
+        
+        return null;
+    }
+    
+    /**
+     * Checks whether the request has the specified permission.
+     */
+    private boolean checkPermission(OperationRequestType req)
+    {
+        // TODO check request permissions.
+        return true;
+    }
+    
+    /**
+     * Gets the user identified by the user id type. 
+     * 
+     * @param uid user identity 
+     * @param ses database session
+     * @return user or null if not found
+     */
+    private User getUserFromUserID(UserIDType uid, Session ses)
+    {
+        UserDao dao = new UserDao(ses);
+        User user;
+        long recordId = this.getIdentifier(uid.getUserID());
+        String ns = uid.getUserNamespace(), nm = uid.getUserName();
+        
+        if (recordId > 0 && (user = dao.get(recordId)) != null)
+        {
+            return user;
+        }
+        else if (ns != null && nm != null && (user = dao.findByName(ns, nm)) != null)
+        {
+            return user;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Converts string identifiers to a long.
+     * 
+     * @param idStr string containing a long  
+     * @return long or 0 if identifier not valid
+     */
+    private long getIdentifier(String idStr)
+    {
+        if (idStr == null) return 0;
+        
+        try
+        {
+            return Long.parseLong(idStr);
+        }
+        catch (NumberFormatException nfe)
+        {
+            return 0;
+        }
     }
 }

@@ -252,7 +252,7 @@
                                                          throw new org.apache.axis2.databinding.ADBException("inQueue cannot be null!!");
                                                       
                                                } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localInQueue));
+                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(inQueue));
                                                }
                                     
                                    xmlWriter.writeEndElement();
@@ -281,11 +281,11 @@
                                                          throw new org.apache.axis2.databinding.ADBException("inSession cannot be null!!");
                                                       
                                                } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localInSession));
+                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(inSession));
                                                }
                                     
                                    xmlWriter.writeEndElement();
-                              if (localQueueSuccessfulTracker){
+                              if (queueSuccessfulTracker){
                                     namespace = "";
                                     if (! namespace.equals("")) {
                                         prefix = xmlWriter.getPrefix(namespace);
@@ -310,21 +310,21 @@
                                                          throw new org.apache.axis2.databinding.ADBException("queueSuccessful cannot be null!!");
                                                       
                                                } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localQueueSuccessful));
+                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(queueSuccessful));
                                                }
                                     
                                    xmlWriter.writeEndElement();
-                             } if (localAssignedResourceTracker){
-                                            if (localAssignedResource==null){
+                             } if (assignedResourceTracker){
+                                            if (assignedResource==null){
                                                  throw new org.apache.axis2.databinding.ADBException("assignedResource cannot be null!!");
                                             }
-                                           localAssignedResource.serialize(new javax.xml.namespace.QName("","assignedResource"),
+                                           assignedResource.serialize(new javax.xml.namespace.QName("","assignedResource"),
                                                factory,xmlWriter);
-                                        } if (localQueuedResouceTracker){
-                                            if (localQueuedResouce==null){
+                                        } if (queuedResouceTracker){
+                                            if (queuedResouce==null){
                                                  throw new org.apache.axis2.databinding.ADBException("queuedResouce cannot be null!!");
                                             }
-                                           localQueuedResouce.serialize(new javax.xml.namespace.QName("","queuedResouce"),
+                                           queuedResouce.serialize(new javax.xml.namespace.QName("","queuedResouce"),
                                                factory,xmlWriter);
                                         }
                                     namespace = "";
@@ -560,37 +560,37 @@
                                                                       "inQueue"));
                                  
                                 elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localInQueue));
+                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(inQueue));
                             
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "inSession"));
                                  
                                 elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localInSession));
-                             if (localQueueSuccessfulTracker){
+                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(inSession));
+                             if (queueSuccessfulTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "queueSuccessful"));
                                  
                                 elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localQueueSuccessful));
-                            } if (localAssignedResourceTracker){
+                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(queueSuccessful));
+                            } if (assignedResourceTracker){
                             elementList.add(new javax.xml.namespace.QName("",
                                                                       "assignedResource"));
                             
                             
-                                    if (localAssignedResource==null){
+                                    if (assignedResource==null){
                                          throw new org.apache.axis2.databinding.ADBException("assignedResource cannot be null!!");
                                     }
-                                    elementList.add(localAssignedResource);
-                                } if (localQueuedResouceTracker){
+                                    elementList.add(assignedResource);
+                                } if (queuedResouceTracker){
                             elementList.add(new javax.xml.namespace.QName("",
                                                                       "queuedResouce"));
                             
                             
-                                    if (localQueuedResouce==null){
+                                    if (queuedResouce==null){
                                          throw new org.apache.axis2.databinding.ADBException("queuedResouce cannot be null!!");
                                     }
-                                    elementList.add(localQueuedResouce);
+                                    elementList.add(queuedResouce);
                                 }
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "position"));

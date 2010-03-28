@@ -241,7 +241,7 @@
                            xmlWriter);
                    }
 
-                if (localRequestorIDTracker){
+                if (requestorIDTracker){
                                     namespace = "";
                                     if (! namespace.equals("")) {
                                         prefix = xmlWriter.getPrefix(namespace);
@@ -261,21 +261,21 @@
                                         xmlWriter.writeStartElement("requestorID");
                                     }
                                 
-                                               if (localRequestorID==java.lang.Integer.MIN_VALUE) {
+                                               if (requestorID==java.lang.Integer.MIN_VALUE) {
                                            
                                                          throw new org.apache.axis2.databinding.ADBException("requestorID cannot be null!!");
                                                       
                                                } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localRequestorID));
+                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(requestorID));
                                                }
                                     
                                    xmlWriter.writeEndElement();
-                             } if (localOperationRequestTypeSequence_type0Tracker){
-                                            if (localOperationRequestTypeSequence_type0==null){
-                                                 throw new org.apache.axis2.databinding.ADBException("OperationRequestTypeSequence_type0 cannot be null!!");
+                             } if (requestorNSNameSequenceTracker){
+                                            if (requestorNSNameSequence==null){
+                                                 throw new org.apache.axis2.databinding.ADBException("RequestorNSNameSequence cannot be null!!");
                                             }
-                                           localOperationRequestTypeSequence_type0.serialize(null,factory,xmlWriter);
-                                        } if (localRequestorQNameTracker){
+                                           requestorNSNameSequence.serialize(null,factory,xmlWriter);
+                                        } if (requestorQNameTracker){
                                     namespace = "";
                                     if (! namespace.equals("")) {
                                         prefix = xmlWriter.getPrefix(namespace);
@@ -296,7 +296,7 @@
                                     }
                                 
 
-                                          if (localRequestorQName==null){
+                                          if (requestorQName==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("requestorQName cannot be null!!");
@@ -304,7 +304,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localRequestorQName);
+                                                   xmlWriter.writeCharacters(requestorQName);
                                             
                                           }
                                     
@@ -576,27 +576,27 @@
                 
                     attribList.add(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema-instance","type"));
                     attribList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/queuer","ResourceIDType"));
-                 if (localRequestorIDTracker){
+                 if (requestorIDTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "requestorID"));
                                  
                                 elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localRequestorID));
-                            } if (localOperationRequestTypeSequence_type0Tracker){
+                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(requestorID));
+                            } if (requestorNSNameSequenceTracker){
                             elementList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/queuer",
-                                                                      "OperationRequestTypeSequence_type0"));
+                                                                      "RequestorNSNameSequence"));
                             
                             
-                                    if (localOperationRequestTypeSequence_type0==null){
-                                         throw new org.apache.axis2.databinding.ADBException("OperationRequestTypeSequence_type0 cannot be null!!");
+                                    if (requestorNSNameSequence==null){
+                                         throw new org.apache.axis2.databinding.ADBException("RequestorNSNameSequence cannot be null!!");
                                     }
-                                    elementList.add(localOperationRequestTypeSequence_type0);
-                                } if (localRequestorQNameTracker){
+                                    elementList.add(requestorNSNameSequence);
+                                } if (requestorQNameTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "requestorQName"));
                                  
-                                        if (localRequestorQName != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localRequestorQName));
+                                        if (requestorQName != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(requestorQName));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("requestorQName cannot be null!!");
                                         }
@@ -731,7 +731,7 @@
                                     
                                     if (reader.isStartElement() ){
                                 
-                                                object.setOperationRequestTypeSequence_type0(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.OperationRequestTypeSequence_type0.Factory.parse(reader));
+                                                object.setRequestorNSNameSequence(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RequestorNSNameSequence.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

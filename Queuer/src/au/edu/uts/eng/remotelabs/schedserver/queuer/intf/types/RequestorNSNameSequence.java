@@ -59,27 +59,24 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * OperationRequestType bean class.
+ * RequestorNSNameSequence bean class.
  */
-public class OperationRequestType implements ADBBean
+public class RequestorNSNameSequence implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = OperationRequestType
+     * name = RequestorNSNameSequence
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/queuer
      * Namespace Prefix = ns1
      */
 
-    private static final long serialVersionUID = -5489951784148124879L;
+    private static final long serialVersionUID = -7719780289416070928L;
 
-    protected int requestorID;
-    protected boolean requestorIDTracker = false;
+    protected String requestorName;
+    protected boolean requestorNameTracker;
 
-    protected RequestorNSNameSequence requestorNSNameSequence;
-    protected boolean requestorNSNameSequenceTracker;
-
-    protected String requestorQName;
-    protected boolean requestorQNameTracker = false;
+    protected String requestorNamespace;
+    protected boolean requestorNamespaceTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -90,59 +87,43 @@ public class OperationRequestType implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    public int getRequestorID()
+    public String getRequestorName()
     {
-        return this.requestorID;
+        return this.requestorName;
     }
 
-    public void setRequestorID(final int param)
-    {
-        if (param == Integer.MIN_VALUE)
-        {
-            this.requestorIDTracker = false;
-        }
-        else
-        {
-            this.requestorIDTracker = true;
-        }
-        this.requestorID = param;
-    }
-
-    public RequestorNSNameSequence getRequestorNSNameSequence()
-    {
-        return this.requestorNSNameSequence;
-    }
-
-    public void setRequestorNSNameSequence(final RequestorNSNameSequence param)
+    public void setRequestorName(final String param)
     {
         if (param != null)
         {
-            this.requestorNSNameSequenceTracker = true;
+            this.requestorNameTracker = true;
         }
         else
         {
-            this.requestorNSNameSequenceTracker = false;
+            this.requestorNameTracker = false;
+
         }
-        this.requestorNSNameSequence = param;
+
+        this.requestorName = param;
     }
 
-    public String getRequestorQName()
+    public String getRequestorNamespace()
     {
-        return this.requestorQName;
+        return this.requestorNamespace;
     }
 
-    public void setRequestorQName(final String param)
+    public void setRequestorNamespace(final String param)
     {
         if (param != null)
         {
-            this.requestorQNameTracker = true;
+            this.requestorNamespaceTracker = true;
         }
         else
         {
-            this.requestorQNameTracker = false;
+            this.requestorNamespaceTracker = false;
         }
 
-        this.requestorQName = param;
+        this.requestorNamespace = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -166,7 +147,7 @@ public class OperationRequestType implements ADBBean
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                OperationRequestType.this.serialize(this.parentQName, factory, xmlWriter);
+                RequestorNSNameSequence.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -181,31 +162,8 @@ public class OperationRequestType implements ADBBean
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
-        String prefix = parentQName.getPrefix();
-        String namespace = parentQName.getNamespaceURI();
-
-        if ((namespace != null) && (namespace.trim().length() > 0))
-        {
-            final String writerPrefix = xmlWriter.getPrefix(namespace);
-            if (writerPrefix != null)
-            {
-                xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
-            }
-            else
-            {
-                if (prefix == null)
-                {
-                    prefix = OperationRequestType.generatePrefix(namespace);
-                }
-                xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
-            }
-        }
-        else
-        {
-            xmlWriter.writeStartElement(parentQName.getLocalPart());
-        }
+        String prefix = null;
+        String namespace = null;
 
         if (serializeType)
         {
@@ -214,16 +172,15 @@ public class OperationRequestType implements ADBBean
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":OperationRequestType", xmlWriter);
+                        + ":RequestorNSNameSequence", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "OperationRequestType",
-                        xmlWriter);
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
+                        "RequestorNSNameSequence", xmlWriter);
             }
         }
-
-        if (this.requestorIDTracker)
+        if (this.requestorNameTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -231,42 +188,34 @@ public class OperationRequestType implements ADBBean
                 prefix = xmlWriter.getPrefix(namespace);
                 if (prefix == null)
                 {
-                    prefix = OperationRequestType.generatePrefix(namespace);
-                    xmlWriter.writeStartElement(prefix, "requestorID", namespace);
+                    prefix = RequestorNSNameSequence.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "requestorName", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
                 }
                 else
                 {
-                    xmlWriter.writeStartElement(namespace, "requestorID");
+                    xmlWriter.writeStartElement(namespace, "requestorName");
                 }
             }
             else
             {
-                xmlWriter.writeStartElement("requestorID");
+                xmlWriter.writeStartElement("requestorName");
             }
 
-            if (this.requestorID == Integer.MIN_VALUE)
+            if (this.requestorName == null)
             {
-                throw new ADBException("requestorID cannot be null!!");
+                throw new ADBException("requestorName cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.requestorID));
+                xmlWriter.writeCharacters(this.requestorName);
             }
+
             xmlWriter.writeEndElement();
         }
-
-        if (this.requestorNSNameSequenceTracker)
-        {
-            if (this.requestorNSNameSequence == null)
-            {
-                throw new ADBException("RequestorNSNameSequence cannot be null!!");
-            }
-            this.requestorNSNameSequence.serialize(null, factory, xmlWriter);
-        }
-
-        if (this.requestorQNameTracker)
+        
+        if (this.requestorNamespaceTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -274,32 +223,32 @@ public class OperationRequestType implements ADBBean
                 prefix = xmlWriter.getPrefix(namespace);
                 if (prefix == null)
                 {
-                    prefix = OperationRequestType.generatePrefix(namespace);
-                    xmlWriter.writeStartElement(prefix, "requestorQName", namespace);
+                    prefix = RequestorNSNameSequence.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "requestorNamespace", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
                 }
                 else
                 {
-                    xmlWriter.writeStartElement(namespace, "requestorQName");
+                    xmlWriter.writeStartElement(namespace, "requestorNamespace");
                 }
             }
             else
             {
-                xmlWriter.writeStartElement("requestorQName");
+                xmlWriter.writeStartElement("requestorNamespace");
             }
 
-            if (this.requestorQName == null)
+            if (this.requestorNamespace == null)
             {
-                throw new ADBException("requestorQName cannot be null!!");
+                throw new ADBException("requestorNamespace cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(this.requestorQName);
+                xmlWriter.writeCharacters(this.requestorNamespace);
             }
+
             xmlWriter.writeEndElement();
         }
-        xmlWriter.writeEndElement();
     }
 
     private void writeAttribute(final String prefix, final String namespace, final String attName,
@@ -310,6 +259,7 @@ public class OperationRequestType implements ADBBean
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
+
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
 
@@ -318,7 +268,7 @@ public class OperationRequestType implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = OperationRequestType.generatePrefix(namespace);
+            prefix = RequestorNSNameSequence.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
@@ -334,33 +284,28 @@ public class OperationRequestType implements ADBBean
 
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        if (this.requestorIDTracker)
+        if (this.requestorNameTracker)
         {
-            elementList.add(new QName("", "requestorID"));
-            elementList.add(ConverterUtil.convertToString(this.requestorID));
-        }
-
-        if (this.requestorNSNameSequenceTracker)
-        {
-            elementList
-                    .add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/queuer", "RequestorNSNameSequence"));
-            if (this.requestorNSNameSequence == null)
+            elementList.add(new QName("", "requestorName"));
+            if (this.requestorName != null)
             {
-                throw new ADBException("RequestorNSNameSequence cannot be null!!");
-            }
-            elementList.add(this.requestorNSNameSequence);
-        }
-
-        if (this.requestorQNameTracker)
-        {
-            elementList.add(new QName("", "requestorQName"));
-            if (this.requestorQName != null)
-            {
-                elementList.add(ConverterUtil.convertToString(this.requestorQName));
+                elementList.add(ConverterUtil.convertToString(this.requestorName));
             }
             else
             {
-                throw new ADBException("requestorQName cannot be null!!");
+                throw new ADBException("requestorName cannot be null!!");
+            }
+        }
+        if (this.requestorNamespaceTracker)
+        {
+            elementList.add(new QName("", "requestorNamespace"));
+            if (this.requestorNamespace != null)
+            {
+                elementList.add(ConverterUtil.convertToString(this.requestorNamespace));
+            }
+            else
+            {
+                throw new ADBException("requestorNamespace cannot be null!!");
             }
         }
 
@@ -369,86 +314,41 @@ public class OperationRequestType implements ADBBean
 
     public static class Factory
     {
-        public static OperationRequestType parse(final XMLStreamReader reader) throws Exception
+        public static RequestorNSNameSequence parse(final XMLStreamReader reader) throws Exception
         {
-            final OperationRequestType object = new OperationRequestType();
-
+            final RequestorNSNameSequence object = new RequestorNSNameSequence();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-                if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
-                {
-                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                            "type");
-                    if (fullTypeName != null)
-                    {
-                        String nsPrefix = null;
-                        if (fullTypeName.indexOf(":") > -1)
-                        {
-                            nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
-                        }
-                        nsPrefix = nsPrefix == null ? "" : nsPrefix;
-                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-                        if (!"OperationRequestType".equals(type))
-                        {
-                            //find namespace for the prefix
-                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (OperationRequestType) ExtensionMapper.getTypeObject(nsUri, type, reader);
-                        }
-                    }
-                }
-
-                reader.next();
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "requestorID").equals(reader.getName()))
+
+                if (reader.isStartElement() && new QName("", "requestorName").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setRequestorID(ConverterUtil.convertToInt(content));
+                    object.setRequestorName(ConverterUtil.convertToString(content));
                     reader.next();
-                }
-                else
-                {
-                    object.setRequestorID(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-                try
-                {
-                    if (reader.isStartElement())
-                    {
-                        object.setRequestorNSNameSequence(RequestorNSNameSequence.Factory.parse(reader));
-                    }
-                }
-                catch (final Exception e)
-                { /* Optional. */ }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "requestorQName").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "requestorNamespace").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setRequestorQName(ConverterUtil.convertToString(content));
+                    object.setRequestorNamespace(ConverterUtil.convertToString(content));
                     reader.next();
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
-                }
-                if (reader.isStartElement())
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
             }
             catch (final XMLStreamException e)
