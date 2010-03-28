@@ -34,13 +34,7 @@
  * @date 18th January 2010
  */
 
-/**
- * RemoveRigType.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
- */
-
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -58,26 +52,23 @@ import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
 import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.types.URI;
 import org.apache.axis2.databinding.utils.BeanUtil;
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * RemoveRigType bean class.
+ * RegisterRigType bean class.
  */
-public class RemoveRigType extends RigType implements ADBBean
+public class RegisterRigType extends RigType implements ADBBean
 {
-    /*
-     * This type was generated from the piece of schema that had
-     * name = RemoveRigType
-     * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider
-     * Namespace Prefix = ns1
-     */
+    private static final long serialVersionUID = -7329577829710575306L;
 
-    private static final long serialVersionUID = -1693664378633064567L;
-    
-    protected String removalReason;
+    protected String capabilities;
+    protected String type;
+    protected StatusType status;
+    protected URI contactUrl;
 
     private static String generatePrefix(final String namespace)
     {
@@ -88,17 +79,46 @@ public class RemoveRigType extends RigType implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    public String getRemovalReason()
+    public String getType()
     {
-        return this.removalReason;
+        return this.type;
     }
 
+    public void setType(final String param)
+    {
+        this.type = param;
+    }
+
+    public String getCapabilities()
+    {
+        return this.capabilities;
+    }
+
+    public void setCapabilities(final String param)
+    {
+        this.capabilities = param;
+    }
+
+    public StatusType getStatus()
+    {
+        return this.status;
+    }
+
+    public void setStatus(final StatusType param)
+    {
+        this.status = param;
+    }
     
-    public void setRemovalReason(final String param)
+    public URI getContactUrl()
     {
-        this.removalReason = param;
+        return this.contactUrl;
     }
-
+    
+    public void setContactUrl(final URI param)
+    {
+        this.contactUrl = param;
+    }
+    
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
@@ -122,7 +142,8 @@ public class RemoveRigType extends RigType implements ADBBean
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                RemoveRigType.this.serialize(this.parentQName, factory, xmlWriter);
+                RegisterRigType.this.serialize(this.parentQName, factory,
+                        xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -153,8 +174,9 @@ public class RemoveRigType extends RigType implements ADBBean
             {
                 if (prefix == null)
                 {
-                    prefix = RemoveRigType.generatePrefix(namespace);
+                    prefix = RegisterRigType.generatePrefix(namespace);
                 }
+
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
@@ -170,21 +192,21 @@ public class RemoveRigType extends RigType implements ADBBean
         if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
         {
             this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                    namespacePrefix + ":RemoveRigType", xmlWriter);
+                    namespacePrefix + ":RegisterRigType", xmlWriter);
         }
         else
         {
-            this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                    "RemoveRigType", xmlWriter);
+            this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "RegisterRigType", xmlWriter);
         }
 
         namespace = "";
         if (!namespace.equals(""))
         {
             prefix = xmlWriter.getPrefix(namespace);
+
             if (prefix == null)
             {
-                prefix = RemoveRigType.generatePrefix(namespace);
+                prefix = RegisterRigType.generatePrefix(namespace);
                 xmlWriter.writeStartElement(prefix, "name", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
@@ -201,14 +223,14 @@ public class RemoveRigType extends RigType implements ADBBean
 
         if (this.name == null)
         {
-            throw new ADBException("name cannot be null!!");
+            throw new ADBException("name cannot be null");
         }
         else
         {
             xmlWriter.writeCharacters(this.name);
         }
         xmlWriter.writeEndElement();
-        
+
         namespace = "";
         if (!namespace.equals(""))
         {
@@ -216,31 +238,96 @@ public class RemoveRigType extends RigType implements ADBBean
 
             if (prefix == null)
             {
-                prefix = RemoveRigType.generatePrefix(namespace);
-                xmlWriter.writeStartElement(prefix, "removalReason", namespace);
+                prefix = RegisterRigType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "type", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
             }
             else
             {
-                xmlWriter.writeStartElement(namespace, "removalReason");
+                xmlWriter.writeStartElement(namespace, "type");
             }
         }
         else
         {
-            xmlWriter.writeStartElement("removalReason");
+            xmlWriter.writeStartElement("type");
         }
-
-        if (this.removalReason == null)
+        if (this.type == null)
         {
-            throw new ADBException("removalReason cannot be null!!");
+            throw new ADBException("type cannot be null");
         }
         else
         {
-            xmlWriter.writeCharacters(this.removalReason);
+            xmlWriter.writeCharacters(this.type);
         }
         xmlWriter.writeEndElement();
 
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = RegisterRigType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "capabilities", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "capabilities");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("capabilities");
+        }
+        if (this.capabilities == null)
+        {
+            throw new ADBException("capabilities cannot be null");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(this.capabilities);
+        }
+        xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = RegisterRigType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "contactUrl", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "contactUrl");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("contactUrl");
+        }
+        if (this.contactUrl == null)
+        {
+            throw new ADBException("contact URL cannot be null");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.contactUrl));
+        }
+        xmlWriter.writeEndElement();
+
+        if (this.status == null)
+        {
+            throw new ADBException("status cannot be null");
+        }
+        this.status.serialize(new QName("", "status"), factory, xmlWriter);
+        
         xmlWriter.writeEndElement();
     }
 
@@ -251,6 +338,7 @@ public class RemoveRigType extends RigType implements ADBBean
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
+
         }
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
@@ -260,27 +348,28 @@ public class RemoveRigType extends RigType implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = RemoveRigType.generatePrefix(namespace);
+            prefix = RegisterRigType.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
             }
+
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
-
         return prefix;
     }
 
     @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
+
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
         final ArrayList<QName> attribList = new ArrayList<QName>();
 
         attribList.add(new QName("http://www.w3.org/2001/XMLSchema-instance", "type"));
         attribList.add(new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
-                        "RemoveRigType"));
+                        "RegisterRigType"));
 
         elementList.add(new QName("", "name"));
         if (this.name != null)
@@ -292,24 +381,48 @@ public class RemoveRigType extends RigType implements ADBBean
             throw new ADBException("name cannot be null!!");
         }
 
-        elementList.add(new QName("", "removalReason"));
-        if (this.removalReason != null)
+        elementList.add(new QName("", "type"));
+        if (this.type != null)
         {
-            elementList.add(ConverterUtil.convertToString(this.removalReason));
+            elementList.add(ConverterUtil.convertToString(this.type));
         }
         else
         {
-            throw new ADBException("removalReason cannot be null!!");
+            throw new ADBException("type cannot be null");
         }
+
+        elementList.add(new QName("", "capabilities"));
+        if (this.capabilities != null)
+        {
+            elementList.add(ConverterUtil.convertToString(this.capabilities));
+        }
+        else
+        {
+            throw new ADBException("capabilities cannot be null");
+        }
+        
+        elementList.add(new QName("", "contactUrl"));
+        if (this.contactUrl == null)
+        {
+            throw new ADBException("contact URL cannot be null");
+        }
+        elementList.add(this.contactUrl);
+
+        elementList.add(new QName("", "status"));
+        if (this.status == null)
+        {
+            throw new ADBException("status cannot be null");
+        }
+        elementList.add(this.status);
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
     }
 
     public static class Factory
     {
-        public static RemoveRigType parse(final XMLStreamReader reader) throws Exception
+        public static RegisterRigType parse(final XMLStreamReader reader) throws Exception
         {
-            final RemoveRigType object = new RemoveRigType();
+            final RegisterRigType object = new RegisterRigType();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -328,11 +441,13 @@ public class RemoveRigType extends RigType implements ADBBean
                             nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
                         }
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
+
                         final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-                        if (!"RemoveRigType".equals(type))
+
+                        if (!"RegisterRigType".equals(type))
                         {
                             final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (RemoveRigType) ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            return (RegisterRigType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
                     }
                 }
@@ -342,8 +457,7 @@ public class RemoveRigType extends RigType implements ADBBean
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()&& new QName("", "name").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "name").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
                     object.setName(ConverterUtil.convertToString(content));
@@ -358,11 +472,55 @@ public class RemoveRigType extends RigType implements ADBBean
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new QName("", "removalReason").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "type").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setRemovalReason(ConverterUtil.convertToString(content));
+                    object.setType(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new QName("", "capabilities").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setCapabilities(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "contactUrl").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setContactUrl(ConverterUtil.convertToAnyURI(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "status").equals(reader.getName()))
+                {
+                    object.setStatus(StatusType.Factory.parse(reader));
                     reader.next();
                 }
                 else

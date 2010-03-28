@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 16th February 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.tests;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.tests;
 
 import java.io.ByteArrayInputStream;
 
@@ -47,9 +47,9 @@ import org.apache.axis2.databinding.types.URI;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.StatusType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.StatusType;
 
 /**
  * Tests the {@link RegisterRigType} class.

@@ -34,7 +34,7 @@
  * @date 18th January 2010
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -51,33 +51,36 @@ import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * RegisterRigResponse bean class.
+ * RegisterRig bean class.
  */
-public class RegisterRigResponse implements ADBBean
+public class RegisterRig implements ADBBean
 {
-    private static final long serialVersionUID = -4098220485551904780L;
-    
-    public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
-            "registerRigResponse", "ns1");
+    private static final long serialVersionUID = -354021647075760313L;
 
-    protected ProviderResponse registerRigResponse;
-    
-    public ProviderResponse getRegisterRigResponse()
+    public static final QName MY_QNAME = new QName(
+            "http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
+            "registerRig", "ns1");
+
+    protected RegisterRigType registerRig;
+
+    public RegisterRigType getRegisterRig()
     {
-        return this.registerRigResponse;
+        return this.registerRig;
     }
 
-    public void setRegisterRigResponse(final ProviderResponse param)
+    public void setRegisterRig(final RegisterRigType param)
     {
-        this.registerRigResponse = param;
+        this.registerRig = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
+
         try
         {
-            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader
+                    .getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
         catch (final IllegalArgumentException e)
         {
@@ -86,47 +89,56 @@ public class RegisterRigResponse implements ADBBean
         return isReaderMTOMAware;
     }
 
-    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
+    public OMElement getOMElement(final QName parentQName,
+            final OMFactory factory) throws ADBException
     {
-        final OMDataSource dataSource = new ADBDataSource(this, RegisterRigResponse.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this,
+                RegisterRig.MY_QNAME)
         {
             @Override
-            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter)
+                    throws XMLStreamException
             {
-                RegisterRigResponse.this.serialize(RegisterRigResponse.MY_QNAME, factory, xmlWriter);
+                RegisterRig.this.serialize(RegisterRig.MY_QNAME, factory,
+                        xmlWriter);
             }
         };
-        return new OMSourcedElementImpl(RegisterRigResponse.MY_QNAME, factory, dataSource);
+        return new OMSourcedElementImpl(RegisterRig.MY_QNAME, factory,
+                dataSource);
     }
 
-    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+    public void serialize(final QName parentQName, final OMFactory factory,
+            final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws XMLStreamException, ADBException
+    public void serialize(final QName parentQName, final OMFactory factory,
+            final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException,
+            ADBException
     {
-        if (this.registerRigResponse == null)
+        if (this.registerRig == null)
         {
             throw new ADBException("Property cannot be null!");
         }
-        this.registerRigResponse.serialize(RegisterRigResponse.MY_QNAME, factory, xmlWriter);
+        this.registerRig.serialize(RegisterRig.MY_QNAME, factory, xmlWriter);
     }
 
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        return this.registerRigResponse.getPullParser(RegisterRigResponse.MY_QNAME);
+        return this.registerRig.getPullParser(RegisterRig.MY_QNAME);
     }
 
     public static class Factory
     {
-        public static RegisterRigResponse parse(final XMLStreamReader reader) throws Exception
+        public static RegisterRig parse(final XMLStreamReader reader) throws Exception
         {
-            final RegisterRigResponse object = new RegisterRigResponse();
+            final RegisterRig object = new RegisterRig();
             try
             {
+
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
@@ -135,10 +147,11 @@ public class RegisterRigResponse implements ADBBean
                 {
                     if (reader.isStartElement())
                     {
-                        if (reader.isStartElement() && new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
-                                        "registerRigResponse").equals(reader.getName()))
+                        if (reader.isStartElement()
+                                && new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
+                                        "registerRig").equals(reader.getName()))
                         {
-                            object.setRegisterRigResponse(ProviderResponse.Factory.parse(reader));
+                            object.setRegisterRig(RegisterRigType.Factory.parse(reader));
                         }
                         else
                         {

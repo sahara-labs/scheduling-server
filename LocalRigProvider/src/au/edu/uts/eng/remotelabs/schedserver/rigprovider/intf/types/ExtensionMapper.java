@@ -40,7 +40,7 @@
  * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types;
 
 import javax.xml.stream.XMLStreamReader;
 

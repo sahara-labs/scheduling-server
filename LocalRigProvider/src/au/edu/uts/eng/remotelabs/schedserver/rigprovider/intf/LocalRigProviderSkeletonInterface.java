@@ -34,14 +34,14 @@
  * @date 18th January 2010
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatus;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatusResponse;
 
 /**
  * LocalRigProviderSkeletonInterface, interface for the local rig provider 

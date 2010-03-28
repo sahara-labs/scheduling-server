@@ -34,7 +34,7 @@
  * @date 18th January 2010
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -51,25 +51,25 @@ import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * RemoveRigResponse bean class.
+ * UpdateRigStatus bean class.
  */
-public class RemoveRigResponse implements ADBBean
+public class UpdateRigStatus implements ADBBean
 {
-    private static final long serialVersionUID = 7333419381053061409L;
+    private static final long serialVersionUID = -6089516688756716289L;
     
     public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
-            "removeRigResponse", "ns1");
-
-    protected ProviderResponse removeRigResponse;
+            "updateRigStatus", "ns1");
     
-    public ProviderResponse getRemoveRigResponse()
+    protected UpdateRigType updateRigStatus;
+
+    public UpdateRigType getUpdateRigStatus()
     {
-        return this.removeRigResponse;
+        return this.updateRigStatus;
     }
 
-    public void setRemoveRigResponse(final ProviderResponse param)
+    public void setUpdateRigStatus(final UpdateRigType param)
     {
-        this.removeRigResponse = param;
+        this.updateRigStatus = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -88,16 +88,15 @@ public class RemoveRigResponse implements ADBBean
 
     public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-        final OMDataSource dataSource = new ADBDataSource(this, RemoveRigResponse.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this, UpdateRigStatus.MY_QNAME)
         {
             @Override
-            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter)
-                    throws XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                RemoveRigResponse.this.serialize(RemoveRigResponse.MY_QNAME, factory, xmlWriter);
+                UpdateRigStatus.this.serialize(UpdateRigStatus.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new OMSourcedElementImpl(RemoveRigResponse.MY_QNAME, factory, dataSource);
+        return new OMSourcedElementImpl(UpdateRigStatus.MY_QNAME, factory, dataSource);
     }
 
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
@@ -109,38 +108,38 @@ public class RemoveRigResponse implements ADBBean
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
-        if (this.removeRigResponse == null)
+        if (this.updateRigStatus == null)
         {
             throw new ADBException("Property cannot be null!");
         }
-        this.removeRigResponse.serialize(RemoveRigResponse.MY_QNAME, factory, xmlWriter);
+        this.updateRigStatus.serialize(UpdateRigStatus.MY_QNAME, factory, xmlWriter);
     }
 
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        return this.removeRigResponse.getPullParser(RemoveRigResponse.MY_QNAME);
+        return this.updateRigStatus.getPullParser(UpdateRigStatus.MY_QNAME);
     }
 
     public static class Factory
     {
-        public static RemoveRigResponse parse(final XMLStreamReader reader) throws Exception
+        public static UpdateRigStatus parse(final XMLStreamReader reader) throws Exception
         {
-            final RemoveRigResponse object = new RemoveRigResponse();
+            final UpdateRigStatus object = new UpdateRigStatus();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
+
                 while (!reader.isEndElement())
                 {
                     if (reader.isStartElement())
                     {
-                        if (reader.isStartElement()
-                                && new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
-                                        "removeRigResponse").equals(reader.getName()))
+                        if (reader.isStartElement() && new QName("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider",
+                                "updateRigStatus").equals(reader.getName()))
                         {
-                            object.setRemoveRigResponse(ProviderResponse.Factory.parse(reader));
+                            object.setUpdateRigStatus(UpdateRigType.Factory.parse(reader));
                         }
                         else
                         {
@@ -157,7 +156,6 @@ public class RemoveRigResponse implements ADBBean
             {
                 throw new Exception(e);
             }
-
             return object;
         }
     }

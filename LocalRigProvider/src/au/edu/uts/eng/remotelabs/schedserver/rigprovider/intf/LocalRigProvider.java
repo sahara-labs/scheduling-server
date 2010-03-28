@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 4th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf;
+package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -43,17 +43,17 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTo
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RegisterLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RemoveLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.UpdateLocalRigStatus;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.ProviderResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RegisterRigType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.RemoveRigType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.StatusType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatus;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigStatusResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.inf.types.UpdateRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ProviderResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.StatusType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigType;
 
 /**
  * Local rig provider SOAP interface operation implementations.
