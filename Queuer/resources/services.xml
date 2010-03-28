@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.4.1  Built on : Aug 19, 2008 (10:13:39 LKT) -->
+<serviceGroup>
+    <service name="Queuer">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="addUserToQueue" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/addUserToQueue</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/addUserToQueueResponse</outputActionMapping>
+        </operation>
+        <operation name="removeUserFromQueue" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/removeUserFromQueue</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/removeUserFromQueueResponse</outputActionMapping>
+        </operation>
+        <operation name="checkPermissionAvailability" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/checkPermissionAvailability</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/checkPermissionAvailabilityResponse</outputActionMapping>
+        </operation>
+        <operation name="getUserQueuePosition" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/getUserQueuePosition</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/getUserQueuePositionResponse</outputActionMapping>
+        </operation>
+        <operation name="checkResourceAvailability" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/checkResourceAvailability</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/checkResourceAvailabilityResponse</outputActionMapping>
+        </operation>
+        <operation name="isUserInQueue" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/isUserInQueue</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/isUserInQueueResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

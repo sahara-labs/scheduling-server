@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:qu="http://remotelabs.eng.uts.edu.au/schedserver/queuer" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Queuer" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+  <wsdl:documentation>SOAP interface for Scheduling Server queuing</wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+      <xsd:element name="checkPermissionAvailability"
+      	type="qu:PermissionIDType">
+      </xsd:element>
+      <xsd:element name="checkPermissionAvailabilityResponse"
+      	type="qu:QueueType">
+      </xsd:element>
+      <xsd:element name="addUserToQueue" type="qu:QueueRequestType">
+      </xsd:element>
+      <xsd:element name="addUserToQueueResponse"
+      	type="qu:InQueueType">
+      </xsd:element>
+      <xsd:element name="getUserQueuePosition" type="qu:UserIDType">
+      </xsd:element>
+      <xsd:element name="getUserQueuePositionResponse"
+      	type="qu:UserQueueType">
+      </xsd:element>
+      <xsd:element name="removeUserFromQueue" type="qu:UserIDType">
+      </xsd:element>
+      <xsd:element name="removeUserFromQueueResponse"
+      	type="qu:InQueueType">
+      </xsd:element>
+      <xsd:element name="checkResourceAvailability" type="qu:ResourceIDType">
+      </xsd:element>
+      <xsd:element name="checkResourceAvailabilityResponse"
+      	type="qu:QueueType">
+      </xsd:element>
+      <xsd:element name="isUserInQueue" type="qu:UserIDType">
+      </xsd:element>
+      <xsd:element name="isUserInQueueResponse" type="qu:InQueueType">
+      </xsd:element>
+
+      <xsd:complexType name="PermissionIDType">
+      	<xsd:complexContent>
+      		<xsd:extension base="qu:OperationRequestType">
+      			<xsd:sequence>
+      				<xsd:element name="permissionID" type="xsd:int">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="OperationRequestType">
+      	<xsd:sequence>
+      		<xsd:element name="requestorID" type="xsd:int"
+      			maxOccurs="1" minOccurs="0">
+      		</xsd:element>
+      		<xsd:sequence maxOccurs="1" minOccurs="0">
+      			<xsd:element name="requestorName" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      			<xsd:element name="requestorNamespace"
+      				type="xsd:string" maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      		</xsd:sequence>
+      		<xsd:element name="requestorQName" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="UserIDType">
+      	<xsd:complexContent>
+      		<xsd:extension base="qu:OperationRequestType">
+      			<xsd:sequence>
+      				<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:sequence maxOccurs="1" minOccurs="0">
+      					<xsd:element name="userName"
+      						type="xsd:string" maxOccurs="1" minOccurs="0">
+      					</xsd:element>
+      					<xsd:element name="userNamespace"
+      						type="xsd:string" maxOccurs="1" minOccurs="0">
+      					</xsd:element>
+      				</xsd:sequence>
+      				<xsd:element name="userQName"
+      					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+    
+      <xsd:complexType name="InQueueType">
+      	<xsd:sequence>
+      		<xsd:element name="inQueue" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="inSession" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="queueSuccessful" type="xsd:boolean"
+      			maxOccurs="1" minOccurs="0">
+      		</xsd:element>
+      		<xsd:element name="assignedResource"
+      			type="qu:ResourceIDType" maxOccurs="1" minOccurs="0">
+      		</xsd:element>
+      		<xsd:element name="queuedResouce"
+      			type="qu:ResourceIDType" maxOccurs="1" minOccurs="0">
+      		</xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="ResourceIDType">
+      	<xsd:complexContent>
+      		<xsd:extension base="qu:OperationRequestType">
+      			<xsd:sequence>
+      				<xsd:element name="type" type="xsd:string">
+      				</xsd:element>
+      				<xsd:element name="resourceID"
+      					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:element name="resourceName"
+      					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+    
+    
+      <xsd:complexType name="QueueTargetType">
+      	<xsd:sequence>
+      		<xsd:element name="resource" type="qu:ResourceIDType"></xsd:element>
+      		<xsd:element name="viable" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="isFree" type="xsd:boolean"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="QueueRequestType">
+      	<xsd:complexContent>
+      		<xsd:extension base="qu:OperationRequestType">
+      			<xsd:sequence>
+      				<xsd:element name="userID" type="qu:UserIDType">
+      				</xsd:element>
+      				<xsd:element name="permissionID"
+      					type="qu:PermissionIDType" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:element name="resourceID"
+      					type="qu:ResourceIDType" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+    
+    
+      <xsd:complexType name="UserQueueType">
+      	<xsd:complexContent>
+      		<xsd:extension base="qu:InQueueType">
+      			<xsd:sequence>
+      				<xsd:element name="position" type="xsd:int">
+      				</xsd:element>
+      				<xsd:element name="time" type="xsd:int">
+      				</xsd:element>
+      				<xsd:element name="queue" type="qu:QueueType" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+
+      <xsd:complexType name="QueueType">
+      	<xsd:sequence>
+      		<xsd:element name="viable" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="hasFree" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="queuedResource"
+      			type="qu:ResourceIDType">
+      		</xsd:element>
+      		<xsd:element name="queueTarget"
+      			type="qu:QueueTargetType" maxOccurs="unbounded" minOccurs="0">
+      		</xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="checkPermissionAvailabilityRequest">
+    <wsdl:part element="qu:checkPermissionAvailability" name="parameters" />
+  </wsdl:message>
+  <wsdl:message name="checkPermissionAvailabilityResponse">
+    <wsdl:part element="qu:checkPermissionAvailabilityResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addUserToQueueRequest">
+  	<wsdl:part name="parameters" element="qu:addUserToQueue"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserToQueueResponse">
+  	<wsdl:part name="parameters" element="qu:addUserToQueueResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserQueuePositionRequest">
+  	<wsdl:part name="parameters" element="qu:getUserQueuePosition"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserQueuePositionResponse">
+  	<wsdl:part name="parameters" element="qu:getUserQueuePositionResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeUserFromQueueRequest">
+  	<wsdl:part name="parameters" element="qu:removeUserFromQueue"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeUserFromQueueResponse">
+  	<wsdl:part name="parameters" element="qu:removeUserFromQueueResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="checkResourceAvailabilityRequest">
+  	<wsdl:part name="parameters" element="qu:checkResourceAvailability"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="checkResourceAvailabilityResponse">
+  	<wsdl:part name="parameters" element="qu:checkResourceAvailabilityResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="isUserInQueueRequest">
+  	<wsdl:part name="parameters" element="qu:isUserInQueue"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="isUserInQueueResponse">
+  	<wsdl:part name="parameters" element="qu:isUserInQueueResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="Queuer">
+    <wsdl:operation name="checkPermissionAvailability">
+      <wsdl:input message="qu:checkPermissionAvailabilityRequest"/>
+      <wsdl:output message="qu:checkPermissionAvailabilityResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="checkResourceAvailability">
+    	<wsdl:input message="qu:checkResourceAvailabilityRequest"></wsdl:input>
+    	<wsdl:output message="qu:checkResourceAvailabilityResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="isUserInQueue">
+    	<wsdl:input message="qu:isUserInQueueRequest"></wsdl:input>
+    	<wsdl:output message="qu:isUserInQueueResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addUserToQueue">
+    	<wsdl:input message="qu:addUserToQueueRequest"></wsdl:input>
+    	<wsdl:output message="qu:addUserToQueueResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserQueuePosition">
+    	<wsdl:input message="qu:getUserQueuePositionRequest"></wsdl:input>
+    	<wsdl:output message="qu:getUserQueuePositionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeUserFromQueue">
+    	<wsdl:input message="qu:removeUserFromQueueRequest"></wsdl:input>
+    	<wsdl:output message="qu:removeUserFromQueueResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="QueuerSOAP" type="qu:Queuer">
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http">
+  	</soap:binding>
+  	<wsdl:operation name="checkPermissionAvailability">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/checkPermissionAvailability">
+  		</soap:operation>
+  		<wsdl:input>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="checkResourceAvailability">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/checkResourceAvailability">
+  		</soap:operation>
+  		<wsdl:input>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="isUserInQueue">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/isUserInQueue">
+  		</soap:operation>
+  		<wsdl:input>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="addUserToQueue">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/addUserToQueue">
+  		</soap:operation>
+  		<wsdl:input>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getUserQueuePosition">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/getUserQueuePosition">
+  		</soap:operation>
+  		<wsdl:input>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="removeUserFromQueue">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/removeUserFromQueue">
+  		</soap:operation>
+  		<wsdl:input>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:output>
+  	</wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Queuer">
+    <wsdl:port binding="qu:QueuerSOAP" name="QueuerSOAP">
+      <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-Queuer/Queuer"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

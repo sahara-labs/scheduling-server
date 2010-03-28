@@ -35,46 +35,35 @@
  * @date 28th March 2009
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.queuer;
+package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
-import org.apache.axis2.transport.http.AxisServlet;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailabilityResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckResourceAvailability;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckResourceAvailabilityResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePositionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueueResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueueResponse;
 
 /**
- * Activator for the queuer bundle.
+ * Interface for the Queuer SOAP interface.
  */
-public class QueueActivator implements BundleActivator 
+public interface QueuerSkeletonInterface
 {
-    /** Service registration for the Permission SOAP interface. */
-    private ServiceRegistration soapRegistration;
-    
-    /** Logger. */
-    private Logger logger;
+    public AddUserToQueueResponse addUserToQueue(AddUserToQueue request);
 
-    @Override
-    public void start(BundleContext context) throws Exception 
-    {
-        this.logger = LoggerActivator.getLogger();
-        this.logger.info("Starting queuer bundle...");
-        
-        /* Register the queuer service. */
-        this.logger.debug("Registering the Queuer SOAP interface service.");
-        ServletContainerService soapService = new ServletContainerService();
-	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapRegistration = context.registerService(ServletContainerService.class.getName(), soapService, null);
-	}
+    public RemoveUserFromQueueResponse removeUserFromQueue(RemoveUserFromQueue request);
 
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Shutting down the queuer bundle.");
-	    this.soapRegistration.unregister();
-	}
+    public CheckPermissionAvailabilityResponse checkPermissionAvailability(CheckPermissionAvailability request);
+
+    public GetUserQueuePositionResponse getUserQueuePosition(GetUserQueuePosition request);
+
+    public CheckResourceAvailabilityResponse checkResourceAvailability(CheckResourceAvailability request);
+
+    public IsUserInQueueResponse isUserInQueue(IsUserInQueue request);
 }
