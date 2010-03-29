@@ -65,5 +65,12 @@ public interface QueuerSkeletonInterface
 
     public CheckResourceAvailabilityResponse checkResourceAvailability(CheckResourceAvailability request);
 
+    /**
+     * Checks if a user is either in queue or in session. If in session, 
+     * details of the in session rig is provided.
+     * 
+     * @param request
+     * @return response
+     */
     public IsUserInQueueResponse isUserInQueue(IsUserInQueue request);
 }

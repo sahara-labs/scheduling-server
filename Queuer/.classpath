@@ -51,5 +51,11 @@
 	<classpathentry kind="lib" path="lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.3.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-DataAccess"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Logger"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
+	<classpathentry kind="lib" path="/SchedServer-Logger/bin"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-annotations.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

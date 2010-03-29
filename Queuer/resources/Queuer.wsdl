@@ -104,8 +104,8 @@
       			<xsd:sequence>
       				<xsd:element name="type" type="xsd:string">
       				</xsd:element>
-      				<xsd:element name="resourceID"
-      					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				<xsd:element name="resourceID" type="xsd:int"
+      					maxOccurs="1" minOccurs="0">
       				</xsd:element>
       				<xsd:element name="resourceName"
       					type="xsd:string" maxOccurs="1" minOccurs="0">

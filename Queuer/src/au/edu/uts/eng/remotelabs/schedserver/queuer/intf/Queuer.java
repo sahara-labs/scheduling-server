@@ -37,10 +37,13 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
-import org.hibernate.Session;
-
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -49,11 +52,13 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckResourceAvai
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckResourceAvailabilityResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePositionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.InQueueType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueueResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
 
 /**
@@ -61,6 +66,14 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
  */
 public class Queuer implements QueuerSkeletonInterface
 {
+    /** Logger. */
+    private Logger logger;
+    
+    public Queuer()
+    {
+        this.logger = LoggerActivator.getLogger();
+    }
+    
     @Override
     public AddUserToQueueResponse addUserToQueue(final AddUserToQueue request)
     {
@@ -98,13 +111,58 @@ public class Queuer implements QueuerSkeletonInterface
                 + "#checkResourceAvailability");
     }
 
+    @Override
     public IsUserInQueueResponse isUserInQueue(final IsUserInQueue request)
     {
         /* Request parameters. */
+        UserIDType uid = request.getIsUserInQueue();
+        this.logger.debug("Received is user in queue request with user id=" + uid.getUserID() + ", user namespace="
+                + uid.getUserNamespace() + ", user name=" + uid.getUserName() + '.');
         
         /* Response parameters. */
+        IsUserInQueueResponse resp = new IsUserInQueueResponse();
+        InQueueType inQueue = new InQueueType();
+        resp.setIsUserInQueueResponse(inQueue);
+        inQueue.setInQueue(false);
+        inQueue.setInSession(false);
         
-        return null;
+        SessionDao dao = new SessionDao();
+        Session ses;
+        User user;
+        if (!this.checkPermission(uid))
+        {
+            this.logger.info("Unable to check if user is in queue because of invalid permissions.");
+        }
+        else if ((user = this.getUserFromUserID(uid, dao.getSession())) != null &&
+                (ses = dao.findActiveSession(user)) != null)
+        {
+            if (ses.getAssignmentTime() == null)
+            {
+                /* User is currently in queue. */
+                inQueue.setInQueue(true);
+            }
+            else
+            {
+                /* User is currently in session. */
+                inQueue.setInSession(true);
+                Rig rig = ses.getRig();
+                ResourceIDType res = new ResourceIDType();
+                inQueue.setAssignedResource(res);
+                res.setType("RIG");
+                res.setResourceID(rig.getId().intValue());
+                res.setResourceName(rig.getName());
+            }
+            
+            /* Add requested resource. */
+            ResourceIDType res = new ResourceIDType();
+            inQueue.setQueuedResouce(res);
+            res.setType(ses.getResourceType());
+            res.setResourceID(ses.getRequestedResourceId().intValue());
+            res.setResourceName(ses.getRequestedResourceName());
+        }
+        
+        dao.closeSession();
+        return resp;
     }
     
     /**
@@ -112,7 +170,7 @@ public class Queuer implements QueuerSkeletonInterface
      */
     private boolean checkPermission(OperationRequestType req)
     {
-        // TODO check request permissions.
+        // TODO Check request permissions for queuer
         return true;
     }
     
@@ -123,7 +181,7 @@ public class Queuer implements QueuerSkeletonInterface
      * @param ses database session
      * @return user or null if not found
      */
-    private User getUserFromUserID(UserIDType uid, Session ses)
+    private User getUserFromUserID(UserIDType uid, org.hibernate.Session ses)
     {
         UserDao dao = new UserDao(ses);
         User user;
