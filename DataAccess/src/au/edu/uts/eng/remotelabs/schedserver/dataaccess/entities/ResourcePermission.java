@@ -125,7 +125,7 @@ public class ResourcePermission implements java.io.Serializable
     private Date expiryTime;
     
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
-    private Set<Session> sessionsForResourcePermissionId = new HashSet<Session>(0);
+    private Set<Session> sessionsForResourcePermission = new HashSet<Session>(0);
 
     public ResourcePermission()
     {
@@ -165,7 +165,7 @@ public class ResourcePermission implements java.io.Serializable
         this.queueActivityTimeout = queueActivityTimeout;
         this.sessionActivityTimeout = sessionActivityTimeout;
         this.userLocks = userLocks;
-        this.sessionsForResourcePermissionId = sessionsForResourcePermissionId;
+        this.sessionsForResourcePermission = sessionsForResourcePermissionId;
     }
 
     @Id
@@ -329,14 +329,14 @@ public class ResourcePermission implements java.io.Serializable
         this.userLocks = userLocks;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "resourcePermissionByResourcePermissionId")
-    public Set<Session> getSessionsForResourcePermissionId()
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "resourcePermission")
+    public Set<Session> getSessionsForResourcePermission()
     {
-        return this.sessionsForResourcePermissionId;
+        return this.sessionsForResourcePermission;
     }
 
-    public void setSessionsForResourcePermissionId(final Set<Session> sessionsForResourcePermissionId)
+    public void setSessionsForResourcePermission(final Set<Session> sessionsForResourcePermission)
     {
-        this.sessionsForResourcePermissionId = sessionsForResourcePermissionId;
+        this.sessionsForResourcePermission = sessionsForResourcePermission;
     }
 }

@@ -74,7 +74,7 @@ public class Session implements java.io.Serializable
     private User user;
     
     /** The resource permission which granting access to the resource in use. */
-    private ResourcePermission resourcePermissionByResourcePermissionId;
+    private ResourcePermission resourcePermission;
     
     /** The rig this session is using. */
     private Rig rig;
@@ -170,7 +170,7 @@ public class Session implements java.io.Serializable
             final short extensions, final Set<Rig> rigs)
     {
         this.user = user;
-        this.resourcePermissionByResourcePermissionId = resourcePermissionByResourcePermissionId;
+        this.resourcePermission = resourcePermissionByResourcePermissionId;
         this.rig = rig;
         this.userName = userName;
         this.userNamespace = userNamespace;
@@ -217,15 +217,14 @@ public class Session implements java.io.Serializable
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_permission_id")
-    public ResourcePermission getResourcePermissionByResourcePermissionId()
+    public ResourcePermission getResourcePermission()
     {
-        return this.resourcePermissionByResourcePermissionId;
+        return this.resourcePermission;
     }
 
-    public void setResourcePermissionByResourcePermissionId(
-            final ResourcePermission resourcePermissionByResourcePermissionId)
+    public void setResourcePermission(final ResourcePermission resourcePermission)
     {
-        this.resourcePermissionByResourcePermissionId = resourcePermissionByResourcePermissionId;
+        this.resourcePermission = resourcePermission;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -330,7 +329,7 @@ public class Session implements java.io.Serializable
         this.activityLastUpdated = activityLastUpdated;
     }
 
-    @Column(name = "assigned_rig_name", nullable = false, length = 65535)
+    @Column(name = "assigned_rig_name", nullable = true, length = 65535)
     public String getAssignedRigName()
     {
         return this.assignedRigName;
@@ -342,7 +341,7 @@ public class Session implements java.io.Serializable
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "assignment_time", nullable = false, length = 19)
+    @Column(name = "assignment_time", nullable = true, length = 19)
     public Date getAssignmentTime()
     {
         return this.assignmentTime;
@@ -365,7 +364,7 @@ public class Session implements java.io.Serializable
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "removal_time", nullable = false, length = 19)
+    @Column(name = "removal_time", nullable = true, length = 19)
     public Date getRemovalTime()
     {
         return this.removalTime;
@@ -376,7 +375,7 @@ public class Session implements java.io.Serializable
         this.removalTime = removalTime;
     }
 
-    @Column(name = "removal_reason", nullable = false, length = 65535)
+    @Column(name = "removal_reason", nullable = true, length = 65535)
     public String getRemovalReason()
     {
         return this.removalReason;
@@ -387,7 +386,7 @@ public class Session implements java.io.Serializable
         this.removalReason = removalReason;
     }
 
-    @Column(name = "code_reference", nullable = false, length = 65535)
+    @Column(name = "code_reference", nullable = true, length = 65535)
     public String getCodeReference()
     {
         return this.codeReference;
@@ -398,7 +397,7 @@ public class Session implements java.io.Serializable
         this.codeReference = codeReference;
     }
 
-    @Column(name = "extensions", nullable = false)
+    @Column(name = "extensions", nullable = true)
     public short getExtensions()
     {
         return this.extensions;

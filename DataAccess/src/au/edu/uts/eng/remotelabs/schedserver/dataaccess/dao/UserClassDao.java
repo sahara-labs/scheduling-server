@@ -104,9 +104,9 @@ public class UserClassDao extends GenericDao<UserClass>
         {
             /* Null out any sessions which have this resource permission. */
             for (au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses : 
-                    perm.getSessionsForResourcePermissionId())
+                    perm.getSessionsForResourcePermission())
             {
-                ses.setResourcePermissionByResourcePermissionId(null);
+                ses.setResourcePermission(null);
             }
             this.session.delete(perm);
         }
