@@ -397,7 +397,7 @@ public class Session implements java.io.Serializable
         this.codeReference = codeReference;
     }
 
-    @Column(name = "extensions", nullable = true)
+    @Column(name = "extensions", nullable = false)
     public short getExtensions()
     {
         return this.extensions;
