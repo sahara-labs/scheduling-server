@@ -124,6 +124,9 @@ public class ResourcePermission implements java.io.Serializable
     /** The time at which the resource permission is no longer valid. */
     private Date expiryTime;
     
+    /** The name of the permission. */
+    private String displayName;
+
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
     private Set<Session> sessionsForResourcePermission = new HashSet<Session>(0);
 
@@ -316,6 +319,17 @@ public class ResourcePermission implements java.io.Serializable
     public void setExpiryTime(final Date expiryTime)
     {
         this.expiryTime = expiryTime;
+    }
+    
+    @Column(name = "display_name", nullable = true, length = 255)
+    public String getDisplayName()
+    {
+        return this.displayName;
+    }
+    
+    public void setDisplayName(final String displayName)
+    {
+        this.displayName = displayName;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "resourcePermission")
