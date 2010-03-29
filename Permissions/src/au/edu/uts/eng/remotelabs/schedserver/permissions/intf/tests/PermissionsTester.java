@@ -1184,11 +1184,13 @@ public class PermissionsTester extends TestCase
         perm1.setRigType(rigType1);
         perm1.setStartTime(new Date());
         perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("display_name1");
         ses.save(perm1);
         ResourcePermission perm2 = new ResourcePermission(uclass1, "RIG", 3600, 300, (short) 10, 300, 300);
         perm2.setRig(rig1);
         perm2.setStartTime(new Date());
         perm2.setExpiryTime(new Date());
+        perm2.setDisplayName("display_name2");
         ses.save(perm2);
         ResourcePermission perm3 = new ResourcePermission(uclass1, "RIG", 3600, 300, (short) 10, 300, 300);
         perm3.setRig(rig2);
@@ -1340,6 +1342,7 @@ public class PermissionsTester extends TestCase
         perm1.setRigType(rigType1);
         perm1.setStartTime(new Date());
         perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("display_name1");
         ses.save(perm1);
         UserLock lock1 = new UserLock(user, perm1, true, "abc123");
         ses.save(lock1);
@@ -1389,6 +1392,7 @@ public class PermissionsTester extends TestCase
         assertEquals(perm1.getSessionActivityTimeout(), p.getSessionActivityTmOut());
         assertEquals(perm1.getSessionDuration(), p.getSessionDuration());
         assertEquals("TYPE", p.getResourceClass().getValue());
+        assertEquals(perm1.getDisplayName(), p.getDisplayName());
         
         ResourceIDType res = p.getResource();
         assertNotNull(res);

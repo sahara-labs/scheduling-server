@@ -901,6 +901,7 @@ public class Permissions implements PermissionsSkeletonInterface
                 Calendar expiry = Calendar.getInstance();
                 expiry.setTime(resPerm.getExpiryTime());
                 perm.setExpiry(expiry);
+                perm.setDisplayName(resPerm.getDisplayName());
                 
                 /* Add if the resource permission is locked. */
                 permWithLock.setIsLocked(lockedResources.contains(resPerm.getId()));

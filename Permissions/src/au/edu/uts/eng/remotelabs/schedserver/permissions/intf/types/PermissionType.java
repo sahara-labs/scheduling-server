@@ -90,6 +90,8 @@ public class PermissionType extends PermissionIDType implements ADBBean
     protected boolean startTracker = false;
     protected Calendar expiry;
     protected boolean expiryTracker = false;
+    protected String displayName;
+    protected boolean displayNameTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -117,9 +119,7 @@ public class PermissionType extends PermissionIDType implements ADBBean
 
     public void setResourceClass(final ResourceClass param)
     {
-
         this.localResourceClass = param;
-
     }
 
     public ResourceIDType getResource()
@@ -264,6 +264,25 @@ public class PermissionType extends PermissionIDType implements ADBBean
         }
 
         this.expiry = param;
+    }
+    
+    public String getDisplayName()
+    {
+        return this.displayName;
+    }
+    
+    public void setDisplayName(final String param)
+    {
+        if (param != null)
+        {
+            this.displayNameTracker = true;
+        }
+        else
+        {
+            this.displayNameTracker = false;
+        }
+        
+        this.displayName = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -720,6 +739,43 @@ public class PermissionType extends PermissionIDType implements ADBBean
             }
             xmlWriter.writeEndElement();
         }
+        
+        if (this.displayNameTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+
+                if (prefix == null)
+                {
+                    prefix = PermissionType.generatePrefix(namespace);
+
+                    xmlWriter.writeStartElement(prefix, "displayName", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "displayName");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("displayName");
+            }
+
+            if (this.displayName == null)
+            {
+                throw new ADBException("displayName cannot be null.");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.displayName));
+            }
+            xmlWriter.writeEndElement();
+        }
+        
         xmlWriter.writeEndElement();
     }
 
@@ -869,6 +925,19 @@ public class PermissionType extends PermissionIDType implements ADBBean
             else
             {
                 throw new ADBException("expiry cannot be null!!");
+            }
+        }
+        
+        if (this.displayNameTracker)
+        {
+            elementList.add(new QName("", "displayName"));
+            if (this.displayName != null)
+            {
+                elementList.add(ConverterUtil.convertToString(this.displayName));
+            }
+            else
+            {
+                throw new ADBException("displayName cannot be null.");
             }
         }
 
@@ -1102,6 +1171,17 @@ public class PermissionType extends PermissionIDType implements ADBBean
                     object.setExpiry(ConverterUtil.convertToDateTime(content));
                     reader.next();
                 }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "displayName").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setDisplayName(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
@@ -1111,7 +1191,6 @@ public class PermissionType extends PermissionIDType implements ADBBean
                 {
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
-
             }
             catch (final XMLStreamException e)
             {
