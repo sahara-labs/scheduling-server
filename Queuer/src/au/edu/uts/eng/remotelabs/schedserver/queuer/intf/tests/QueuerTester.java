@@ -45,7 +45,6 @@ import junit.framework.TestCase;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
-import org.apache.log4j.lf5.util.ResourceUtils;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -602,7 +601,6 @@ public class QueuerTester extends TestCase
     @Test
     public void testIsUserInQueueNoSessions() throws Exception
     {
-        Date now = new Date();
         org.hibernate.Session db = DataAccessActivator.getNewSession();
         db.beginTransaction();
         User user = new User("locktest", "ns", "USER");
