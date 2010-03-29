@@ -75,6 +75,8 @@ public class QueueType implements ADBBean
     
     protected boolean viable;
     protected boolean hasFree;
+    protected boolean isQueueable;
+    protected boolean isCodeAssignable;
     protected ResourceIDType queuedResource;
     protected QueueTargetType[] queueTarget;
     protected boolean queueTargetTracker = false;
@@ -106,6 +108,26 @@ public class QueueType implements ADBBean
     public void setHasFree(final boolean param)
     {
         this.hasFree = param;
+    }
+    
+    public boolean getIsQueueable()
+    {
+        return this.isQueueable;
+    }
+    
+    public void setIsQueuable(final boolean param)
+    {
+        this.isQueueable = param;
+    }
+    
+    public boolean getIsCodeAssignable()
+    {
+        return this.isCodeAssignable;
+    }
+    
+    public void setIsCodeAssignable(final boolean param)
+    {
+        this.isCodeAssignable = param;
     }
 
     public ResourceIDType getQueuedResource()
@@ -275,6 +297,52 @@ public class QueueType implements ADBBean
         }
         xmlWriter.writeCharacters(ConverterUtil.convertToString(this.hasFree));
         xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = QueueType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "isQueueable", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "isQueueable");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("isQueueable");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isQueueable));
+        xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = QueueType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "isCodeAssignable", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "isCodeAssignable");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("isCodeAssignable");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isCodeAssignable));
+        xmlWriter.writeEndElement();
 
         if (this.queuedResource == null)
         {
@@ -338,6 +406,12 @@ public class QueueType implements ADBBean
         
         elementList.add(new QName("", "hasFree"));
         elementList.add(ConverterUtil.convertToString(this.hasFree));
+        
+        elementList.add(new QName("", "isQueueable"));
+        elementList.add(ConverterUtil.convertToString(this.isQueueable));
+        
+        elementList.add(new QName("", "isCodeAssignable"));
+        elementList.add(ConverterUtil.convertToString(this.isCodeAssignable));
         
         elementList.add(new QName("", "queuedResource"));
         if (this.queuedResource == null)
@@ -427,6 +501,36 @@ public class QueueType implements ADBBean
                 {
                     final String content = reader.getElementText();
                     object.setHasFree(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "isQueueable").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setIsQueuable(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "isCodeAssignable").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setIsCodeAssignable(ConverterUtil.convertToBoolean(content));
                     reader.next();
                 }
                 else

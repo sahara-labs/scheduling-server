@@ -136,6 +136,9 @@
       				<xsd:element name="resourceID"
       					type="qu:ResourceIDType" maxOccurs="1" minOccurs="0">
       				</xsd:element>
+      				<xsd:element name="code"
+      					type="xsd:base64Binary" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>
       	</xsd:complexContent>
@@ -161,11 +164,13 @@
       	<xsd:sequence>
       		<xsd:element name="viable" type="xsd:boolean"></xsd:element>
       		<xsd:element name="hasFree" type="xsd:boolean"></xsd:element>
-      		<xsd:element name="queuedResource"
+                    <xsd:element name="isQueueable" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="isCodeAssignable" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="queuedResource"
       			type="qu:ResourceIDType">
       		</xsd:element>
-      		<xsd:element name="queueTarget"
-      			type="qu:QueueTargetType" maxOccurs="unbounded" minOccurs="0">
+      		<xsd:element name="queueTarget" type="qu:QueueTargetType"
+      			maxOccurs="unbounded" minOccurs="0">
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
