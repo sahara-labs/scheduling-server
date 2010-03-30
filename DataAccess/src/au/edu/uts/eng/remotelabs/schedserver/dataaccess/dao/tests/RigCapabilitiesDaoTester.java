@@ -221,5 +221,36 @@ public class RigCapabilitiesDaoTester extends TestCase
         }
         this.dao.delete(caps);
     }
+    
+    @Test
+    public void testDelete()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RequestCapabilities req1 = new RequestCapabilities("a,b");
+        ses.persist(req1);
+        RequestCapabilities req2 = new RequestCapabilities("c,d");
+        ses.persist(req2);
+        RigCapabilities rig = new RigCapabilities("a,b,c,d");
+        ses.persist(rig);
+        MatchingCapabilities match1 = new MatchingCapabilities(new MatchingCapabilitiesId(rig.getId(), req1.getId()), req1, rig);
+        ses.persist(match1);
+        MatchingCapabilities match2 = new MatchingCapabilities(new MatchingCapabilitiesId(rig.getId(), req2.getId()), req2, rig);
+        ses.persist(match2);
+        ses.getTransaction().commit();
+        
+        this.dao.delete(rig.getId());
+        assertNull(this.dao.get(rig.getId()));
+        
+        ses.refresh(req1);
+        assertEquals(0, req1.getMatchingCapabilitieses().size());
+        ses.refresh(req2);
+        assertEquals(0, req2.getMatchingCapabilitieses().size());
+        
+        ses.beginTransaction();
+        ses.delete(req1);
+        ses.delete(req2);
+        ses.getTransaction().commit();
+    }
 
 }

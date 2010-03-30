@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -221,4 +222,76 @@ public class RequestCapabilitiesDaoTester extends TestCase
         this.dao.delete(caps);
     }
 
+    @Test
+    public void testDelete()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RequestCapabilities req = new RequestCapabilities("a,b");
+        ses.persist(req);
+        RigCapabilities rig1 = new RigCapabilities("a,b,c,d");
+        ses.persist(rig1);
+        RigCapabilities rig2 = new RigCapabilities("a,b,c,d,e");
+        ses.persist(rig2);
+        MatchingCapabilities match1 = new MatchingCapabilities(new MatchingCapabilitiesId(rig1.getId(), req.getId()), req, rig1);
+        ses.persist(match1);
+        MatchingCapabilities match2 = new MatchingCapabilities(new MatchingCapabilitiesId(rig2.getId(), req.getId()), req, rig2);
+        ses.persist(match2);
+        ses.getTransaction().commit();
+        
+        this.dao.delete(req.getId());
+        assertNull(this.dao.get(req.getId()));
+        
+        ses.refresh(rig1);
+        assertEquals(0, rig1.getMatchingCapabilitieses().size());
+        ses.refresh(rig2);
+        assertEquals(0, rig2.getMatchingCapabilitieses().size());
+        
+        ses.beginTransaction();
+        ses.delete(rig1);
+        ses.delete(rig2);
+        ses.getTransaction().commit();
+    }
+    
+    public void testDeleteResourcePermission()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RequestCapabilities req = new RequestCapabilities("a,b");
+        ses.persist(req);
+        UserClass uc = new UserClass();
+        uc.setName("user_class");
+        ses.persist(uc);
+        RigCapabilities rig1 = new RigCapabilities("a,b,c,d");
+        ses.persist(rig1);
+        RigCapabilities rig2 = new RigCapabilities("a,b,c,d,e");
+        ses.persist(rig2);
+        ResourcePermission rc = new ResourcePermission();
+        rc.setType("CAPABILITY");
+        rc.setRequestCapabilities(req);
+        rc.setExpiryTime(new Date());
+        rc.setStartTime(new Date());
+        rc.setUserClass(uc);
+        ses.persist(rc);
+        MatchingCapabilities match1 = new MatchingCapabilities(new MatchingCapabilitiesId(rig1.getId(), req.getId()), req, rig1);
+        ses.persist(match1);
+        MatchingCapabilities match2 = new MatchingCapabilities(new MatchingCapabilitiesId(rig2.getId(), req.getId()), req, rig2);
+        ses.persist(match2);
+        ses.getTransaction().commit();
+        
+        this.dao.delete(req.getId());
+        assertNull(this.dao.get(req.getId()));
+        
+        ses.refresh(rig1);
+        assertEquals(0, rig1.getMatchingCapabilitieses().size());
+        ses.refresh(rig2);
+        assertEquals(0, rig2.getMatchingCapabilitieses().size());
+        
+        ses.beginTransaction();
+        ses.delete(rig1);
+        ses.delete(rig2);
+        ses.delete(rc);
+        ses.delete(uc);
+        ses.getTransaction().commit();
+    }
 }

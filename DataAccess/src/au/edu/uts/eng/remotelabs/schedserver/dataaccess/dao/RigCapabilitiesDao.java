@@ -36,6 +36,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -138,5 +139,36 @@ public class RigCapabilitiesDao extends GenericDao<RigCapabilities>
 
         this.session.refresh(rigCaps);
         return rigCaps;
+    }
+    
+    /**
+     * Deletes the rig capabilities identified by its primary key, including
+     * all matches with request capabilities.
+     * 
+     * @param id primary key of rig capabilities to delete.
+     */
+    @Override
+    public void delete(Serializable id)
+    {
+        this.delete(this.get(id));
+    }
+    
+    /**
+     * Deletes the rig capabilities, including all matches with request 
+     * capabilities.
+     * 
+     * @param caps rig capabilities to delete.
+     */
+    @Override
+    public void delete(RigCapabilities caps)
+    {
+        this.session.beginTransaction();
+        for (MatchingCapabilities matches : caps.getMatchingCapabilitieses())
+        {
+            this.session.delete(matches);
+        }
+        
+        this.session.delete(caps);
+        this.session.getTransaction().commit();
     }
 }

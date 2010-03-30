@@ -36,6 +36,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -47,6 +48,7 @@ import org.hibernate.criterion.Restrictions;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl.Capabilities;
 
@@ -128,5 +130,41 @@ public class RequestCapabilitiesDao extends GenericDao<RequestCapabilities>
 
         this.session.refresh(reqCaps);
         return reqCaps;
+    }
+    
+    /**
+     * Deletes the request capabilities identified by its primary key, including
+     * all matches with rig capabilities.
+     * 
+     * @param id primary key of request capabilities to delete
+     */
+    @Override
+    public void delete(Serializable id)
+    {
+        this.delete(this.get(id));
+    }
+    
+    /**
+     * Deletes the request capabilities, including all matches with rig
+     * capabilities.
+     * 
+     * @param caps request capabilities to delete.
+     */
+    @Override
+    public void delete(RequestCapabilities caps)
+    {
+        this.session.beginTransaction();
+        for (MatchingCapabilities match : caps.getMatchingCapabilitieses())
+        {
+            this.session.delete(match);
+        }
+        
+        for (ResourcePermission perm : caps.getResourcePermissions())
+        {
+            perm.setRequestCapabilities(null);
+        }
+        
+        this.session.delete(caps);
+        this.session.getTransaction().commit();
     }
 }
