@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 4th January 2010
+ * @date 28th March 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf.tests;
 
@@ -50,6 +50,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -68,9 +70,14 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailabilityResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.InQueueType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueueResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.PermissionIDType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueTargetType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserNSNameSequence;
@@ -155,10 +162,863 @@ public class QueuerTester extends TestCase
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
-    public void testCheckPermissionAvailability()
+    public void testCheckPermissionAvailability() throws Exception
     {
-        fail("Not yet implemented"); // TODO
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(true);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        db.persist(type);
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        db.persist(caps);
+        Rig rig1 = new Rig();
+        rig1.setName("rig1");
+        rig1.setActive(true);
+        rig1.setOnline(true);
+        rig1.setInSession(false);
+        rig1.setContactUrl("foo://bar");
+        rig1.setLastUpdateTimestamp(now);
+        rig1.setRigType(type);
+        rig1.setRigCapabilities(caps);
+        db.persist(rig1);
+        Rig rig2 = new Rig();
+        rig2.setName("rig2");
+        rig2.setActive(true);
+        rig2.setOnline(true);
+        rig2.setInSession(false);
+        rig2.setContactUrl("foo://bar");
+        rig2.setLastUpdateTimestamp(now);
+        rig2.setRigType(type);
+        rig2.setRigCapabilities(caps);
+        db.persist(rig2);
+        Rig rig3 = new Rig();
+        rig3.setName("rig3");
+        rig3.setActive(true);
+        rig3.setOnline(true);
+        rig3.setInSession(true);
+        rig3.setContactUrl("foo://bar");
+        rig3.setLastUpdateTimestamp(now);
+        rig3.setRigType(type);
+        rig3.setRigCapabilities(caps);
+        db.persist(rig3);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("TYPE");
+        perm.setRigType(type);
+        db.persist(perm);
+        
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(rig1);
+        db.delete(rig2);
+        db.delete(rig3);
+        db.delete(caps);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertTrue(queue.getViable());
+        assertTrue(queue.getHasFree());
+        assertTrue(queue.getIsQueueable());
+        assertFalse(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("TYPE", res.getType());
+        assertEquals(type.getId().intValue(), res.getResourceID());
+        assertEquals(type.getName(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(3, targets.length);
+        QueueTargetType targ = targets[0];
+        assertNotNull(targ);
+        assertTrue(targ.getIsFree());
+        assertTrue(targ.getViable());
+        ResourceIDType tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig1.getId().intValue(), tres.getResourceID());
+        assertEquals(rig1.getName(), tres.getResourceName());
+        targ = targets[1];
+        assertNotNull(targ);
+        assertTrue(targ.getIsFree());
+        assertTrue(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig2.getId().intValue(), tres.getResourceID());
+        assertEquals(rig2.getName(), tres.getResourceName());
+        targ = targets[2];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertTrue(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig3.getId().intValue(), tres.getResourceID());
+        assertEquals(rig3.getName(), tres.getResourceName());
+        
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
     }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     */
+    public void testCheckPermissionAvailabilityAllOffline() throws Exception
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(true);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        db.persist(type);
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        db.persist(caps);
+        Rig rig1 = new Rig();
+        rig1.setName("rig1");
+        rig1.setActive(true);
+        rig1.setOnline(false);
+        rig1.setInSession(false);
+        rig1.setContactUrl("foo://bar");
+        rig1.setLastUpdateTimestamp(now);
+        rig1.setRigType(type);
+        rig1.setRigCapabilities(caps);
+        db.persist(rig1);
+        Rig rig2 = new Rig();
+        rig2.setName("rig2");
+        rig2.setActive(true);
+        rig2.setOnline(false);
+        rig2.setInSession(false);
+        rig2.setContactUrl("foo://bar");
+        rig2.setLastUpdateTimestamp(now);
+        rig2.setRigType(type);
+        rig2.setRigCapabilities(caps);
+        db.persist(rig2);
+        Rig rig3 = new Rig();
+        rig3.setName("rig3");
+        rig3.setActive(true);
+        rig3.setOnline(false);
+        rig3.setInSession(true);
+        rig3.setContactUrl("foo://bar");
+        rig3.setLastUpdateTimestamp(now);
+        rig3.setRigType(type);
+        rig3.setRigCapabilities(caps);
+        db.persist(rig3);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("TYPE");
+        perm.setRigType(type);
+        db.persist(perm);
+        
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(rig1);
+        db.delete(rig2);
+        db.delete(rig3);
+        db.delete(caps);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertFalse(queue.getViable());
+        assertFalse(queue.getHasFree());
+        assertTrue(queue.getIsQueueable());
+        assertFalse(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("TYPE", res.getType());
+        assertEquals(type.getId().intValue(), res.getResourceID());
+        assertEquals(type.getName(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(3, targets.length);
+        QueueTargetType targ = targets[0];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertFalse(targ.getViable());
+        ResourceIDType tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig1.getId().intValue(), tres.getResourceID());
+        assertEquals(rig1.getName(), tres.getResourceName());
+        targ = targets[1];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertFalse(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig2.getId().intValue(), tres.getResourceID());
+        assertEquals(rig2.getName(), tres.getResourceName());
+        targ = targets[2];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertFalse(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig3.getId().intValue(), tres.getResourceID());
+        assertEquals(rig3.getName(), tres.getResourceName());
+        
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     */
+    public void testCheckPermissionAvailabilityAllInSession() throws Exception
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(false);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        type.setCodeAssignable(true);
+        db.persist(type);
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        db.persist(caps);
+        Rig rig1 = new Rig();
+        rig1.setName("rig1");
+        rig1.setActive(true);
+        rig1.setOnline(true);
+        rig1.setInSession(true);
+        rig1.setContactUrl("foo://bar");
+        rig1.setLastUpdateTimestamp(now);
+        rig1.setRigType(type);
+        rig1.setRigCapabilities(caps);
+        db.persist(rig1);
+        Rig rig2 = new Rig();
+        rig2.setName("rig2");
+        rig2.setActive(true);
+        rig2.setOnline(true);
+        rig2.setInSession(true);
+        rig2.setContactUrl("foo://bar");
+        rig2.setLastUpdateTimestamp(now);
+        rig2.setRigType(type);
+        rig2.setRigCapabilities(caps);
+        db.persist(rig2);
+        Rig rig3 = new Rig();
+        rig3.setName("rig3");
+        rig3.setActive(true);
+        rig3.setOnline(true);
+        rig3.setInSession(true);
+        rig3.setContactUrl("foo://bar");
+        rig3.setLastUpdateTimestamp(now);
+        rig3.setRigType(type);
+        rig3.setRigCapabilities(caps);
+        db.persist(rig3);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("TYPE");
+        perm.setRigType(type);
+        db.persist(perm);
+        
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(rig1);
+        db.delete(rig2);
+        db.delete(rig3);
+        db.delete(caps);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertTrue(queue.getViable());
+        assertFalse(queue.getHasFree());
+        assertFalse(queue.getIsQueueable());
+        assertTrue(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("TYPE", res.getType());
+        assertEquals(type.getId().intValue(), res.getResourceID());
+        assertEquals(type.getName(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(3, targets.length);
+        QueueTargetType targ = targets[0];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertTrue(targ.getViable());
+        ResourceIDType tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig1.getId().intValue(), tres.getResourceID());
+        assertEquals(rig1.getName(), tres.getResourceName());
+        targ = targets[1];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertTrue(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig2.getId().intValue(), tres.getResourceID());
+        assertEquals(rig2.getName(), tres.getResourceName());
+        targ = targets[2];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertTrue(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig3.getId().intValue(), tres.getResourceID());
+        assertEquals(rig3.getName(), tres.getResourceName());
+        
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     */
+    public void testCheckPermissionAvailabilityNoRigs() throws Exception
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(true);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        db.persist(type);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("TYPE");
+        perm.setRigType(type);
+        db.persist(perm);
+        
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertFalse(queue.getViable());
+        assertFalse(queue.getHasFree());
+        assertTrue(queue.getIsQueueable());
+        assertFalse(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("TYPE", res.getType());
+        assertEquals(type.getId().intValue(), res.getResourceID());
+        assertEquals(type.getName(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNull(targets);
+        
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     */
+    public void testCheckPermissionAvailabilityRig() throws Exception
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(true);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        db.persist(type);
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        db.persist(caps);
+        Rig rig1 = new Rig();
+        rig1.setName("rig1");
+        rig1.setActive(true);
+        rig1.setOnline(true);
+        rig1.setInSession(false);
+        rig1.setContactUrl("foo://bar");
+        rig1.setLastUpdateTimestamp(now);
+        rig1.setRigType(type);
+        rig1.setRigCapabilities(caps);
+        db.persist(rig1);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("RIG");
+        perm.setRig(rig1);
+        db.persist(perm);
+        
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(rig1);
+        db.delete(caps);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertTrue(queue.getViable());
+        assertTrue(queue.getHasFree());
+        assertTrue(queue.getIsQueueable());
+        assertFalse(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("RIG", res.getType());
+        assertEquals(rig1.getId().intValue(), res.getResourceID());
+        assertEquals(rig1.getName(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(1, targets.length);
+        QueueTargetType targ = targets[0];
+        assertNotNull(targ);
+        assertTrue(targ.getIsFree());
+        assertTrue(targ.getViable());
+        ResourceIDType tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig1.getId().intValue(), tres.getResourceID());
+        assertEquals(rig1.getName(), tres.getResourceName());
+
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     */
+    public void testCheckPermissionAvailabilityRigOffline() throws Exception
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(true);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        db.persist(type);
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        db.persist(caps);
+        Rig rig1 = new Rig();
+        rig1.setName("rig1");
+        rig1.setActive(true);
+        rig1.setOnline(false);
+        rig1.setInSession(false);
+        rig1.setContactUrl("foo://bar");
+        rig1.setLastUpdateTimestamp(now);
+        rig1.setRigType(type);
+        rig1.setRigCapabilities(caps);
+        db.persist(rig1);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("RIG");
+        perm.setRig(rig1);
+        db.persist(perm);
+        
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(rig1);
+        db.delete(caps);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertFalse(queue.getViable());
+        assertFalse(queue.getHasFree());
+        assertTrue(queue.getIsQueueable());
+        assertFalse(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("RIG", res.getType());
+        assertEquals(rig1.getId().intValue(), res.getResourceID());
+        assertEquals(rig1.getName(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(1, targets.length);
+        QueueTargetType targ = targets[0];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertFalse(targ.getViable());
+        ResourceIDType tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig1.getId().intValue(), tres.getResourceID());
+        assertEquals(rig1.getName(), tres.getResourceName());
+
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     */
+    public void testCheckPermissionAvailabilityRigInSession() throws Exception
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(true);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        type.setCodeAssignable(true);
+        db.persist(type);
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        db.persist(caps);
+        Rig rig1 = new Rig();
+        rig1.setName("rig1");
+        rig1.setActive(true);
+        rig1.setOnline(true);
+        rig1.setInSession(true);
+        rig1.setContactUrl("foo://bar");
+        rig1.setLastUpdateTimestamp(now);
+        rig1.setRigType(type);
+        rig1.setRigCapabilities(caps);
+        db.persist(rig1);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("RIG");
+        perm.setRig(rig1);
+        db.persist(perm);
+        
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(rig1);
+        db.delete(caps);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertTrue(queue.getViable());
+        assertFalse(queue.getHasFree());
+        assertTrue(queue.getIsQueueable());
+        assertTrue(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("RIG", res.getType());
+        assertEquals(rig1.getId().intValue(), res.getResourceID());
+        assertEquals(rig1.getName(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(1, targets.length);
+        QueueTargetType targ = targets[0];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertTrue(targ.getViable());
+        ResourceIDType tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig1.getId().intValue(), tres.getResourceID());
+        assertEquals(rig1.getName(), tres.getResourceName());
+
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     */
+    public void testCheckPermissionAvailabilityCaps() throws Exception
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        RigCapabilitiesDao dao = new RigCapabilitiesDao(db);
+        RigCapabilities a = dao.addCapabilities("a");
+        RigCapabilities ab = dao.addCapabilities("a,b");
+        RigCapabilities abc = dao.addCapabilities("a,b,c");
+        RequestCapabilitiesDao reqCapsDao = new RequestCapabilitiesDao(db);
+        RequestCapabilities ra = reqCapsDao.addCapabilities("a");
+        
+        db.beginTransaction();
+        UserClass userClass = new UserClass();
+        userClass.setName("uc");
+        userClass.setQueuable(true);
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        db.persist(type);
+        Rig rig1 = new Rig();
+        rig1.setName("rig1");
+        rig1.setActive(true);
+        rig1.setOnline(true);
+        rig1.setInSession(false);
+        rig1.setContactUrl("foo://bar");
+        rig1.setLastUpdateTimestamp(now);
+        rig1.setRigType(type);
+        rig1.setRigCapabilities(a);
+        db.persist(rig1);
+        Rig rig2 = new Rig();
+        rig2.setName("rig2");
+        rig2.setActive(true);
+        rig2.setOnline(true);
+        rig2.setInSession(false);
+        rig2.setContactUrl("foo://bar");
+        rig2.setLastUpdateTimestamp(now);
+        rig2.setRigType(type);
+        rig2.setRigCapabilities(ab);
+        db.persist(rig2);
+        Rig rig3 = new Rig();
+        rig3.setName("rig3");
+        rig3.setActive(true);
+        rig3.setOnline(true);
+        rig3.setInSession(false);
+        rig3.setContactUrl("foo://bar");
+        rig3.setLastUpdateTimestamp(now);
+        rig3.setRigType(type);
+        rig3.setRigCapabilities(abc);
+        db.persist(rig3);
+        Rig rig4 = new Rig();
+        rig4.setName("rig4");
+        rig4.setActive(true);
+        rig4.setOnline(true);
+        rig4.setInSession(false);
+        rig4.setContactUrl("foo://bar");
+        rig4.setLastUpdateTimestamp(now);
+        rig4.setRigType(type);
+        rig4.setRigCapabilities(abc);
+        db.persist(rig4);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("CAPABILITY");
+        perm.setRequestCapabilities(ra);
+        db.persist(perm);
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        CheckPermissionAvailability request = new CheckPermissionAvailability();
+        PermissionIDType pId = new PermissionIDType();
+        request.setCheckPermissionAvailability(pId);
+        pId.setPermissionID(perm.getId().intValue());
+        
+        CheckPermissionAvailabilityResponse resp = this.queuer.checkPermissionAvailability(request);
+        
+        db.beginTransaction();
+        db.delete(perm);
+        db.delete(rig1);
+        db.delete(rig2);
+        db.delete(rig3);
+        db.delete(rig4);
+        db.delete(a);
+        db.delete(ab);
+        db.delete(abc);
+        db.delete(type);
+        db.delete(userClass);
+        db.getTransaction().commit();  
+        
+        assertNotNull(resp);
+        QueueType queue = resp.getCheckPermissionAvailabilityResponse();
+        assertNotNull(queue);
+        assertTrue(queue.getViable());
+        assertTrue(queue.getHasFree());
+        assertTrue(queue.getIsQueueable());
+        assertFalse(queue.getIsCodeAssignable());
+        
+        ResourceIDType res = queue.getQueuedResource();
+        assertNotNull(res);
+        assertEquals("CAPABILITY", res.getType());
+        assertEquals(ra.getId().intValue(), res.getResourceID());
+        assertEquals(ra.getCapabilities(), res.getResourceName());
+        
+        QueueTargetType targets[] = queue.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(3, targets.length);
+        QueueTargetType targ = targets[0];
+        assertNotNull(targ);
+        assertTrue(targ.getIsFree());
+        assertTrue(targ.getViable());
+        ResourceIDType tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig1.getId().intValue(), tres.getResourceID());
+        assertEquals(rig1.getName(), tres.getResourceName());
+        targ = targets[1];
+        assertNotNull(targ);
+        assertTrue(targ.getIsFree());
+        assertTrue(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig2.getId().intValue(), tres.getResourceID());
+        assertEquals(rig2.getName(), tres.getResourceName());
+        targ = targets[2];
+        assertNotNull(targ);
+        assertFalse(targ.getIsFree());
+        assertTrue(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig3.getId().intValue(), tres.getResourceID());
+        assertEquals(rig3.getName(), tres.getResourceName());
+        targ = targets[3];
+        assertNotNull(targ);
+        assertTrue(targ.getIsFree());
+        assertTrue(targ.getViable());
+        tres = targ.getResource();
+        assertNotNull(targ);
+        assertEquals("RIG", tres.getType());
+        assertEquals(rig4.getId().intValue(), tres.getResourceID());
+        assertEquals(rig4.getName(), tres.getResourceName());
+        
+        OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
 
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.

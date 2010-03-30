@@ -37,9 +37,14 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -56,6 +61,9 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.InQueueType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.OperationRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.PermissionIDType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueTargetType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
@@ -89,28 +97,14 @@ public class Queuer implements QueuerSkeletonInterface
         throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
                 + "#removeUserFromQueue");
     }
-
-    public CheckPermissionAvailabilityResponse checkPermissionAvailability(final CheckPermissionAvailability request)
-    {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#checkPermissionAvailability");
-    }
-
+    
     public GetUserQueuePositionResponse getUserQueuePosition(final GetUserQueuePosition request)
     {
         //TODO : fill this with the necessary business logic
         throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
                 + "#getUserQueuePosition");
     }
-
-    public CheckResourceAvailabilityResponse checkResourceAvailability(final CheckResourceAvailability request)
-    {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#checkResourceAvailability");
-    }
-
+    
     @Override
     public IsUserInQueueResponse isUserInQueue(final IsUserInQueue request)
     {
@@ -131,7 +125,7 @@ public class Queuer implements QueuerSkeletonInterface
         User user;
         if (!this.checkPermission(uid))
         {
-            this.logger.info("Unable to check if user is in queue because of invalid permissions.");
+            this.logger.warn("Unable to check if user is in queue because of invalid permission.");
         }
         else if ((user = this.getUserFromUserID(uid, dao.getSession())) != null &&
                 (ses = dao.findActiveSession(user)) != null)
@@ -164,15 +158,146 @@ public class Queuer implements QueuerSkeletonInterface
         dao.closeSession();
         return resp;
     }
-    
-    /**
-     * Checks whether the request has the specified permission.
-     */
-    private boolean checkPermission(OperationRequestType req)
+
+    @Override
+    public CheckPermissionAvailabilityResponse checkPermissionAvailability(final CheckPermissionAvailability request)
     {
-        // TODO Check request permissions for queuer
-        return true;
+        /* Request parameters. */
+        PermissionIDType permResp = request.getCheckPermissionAvailability();
+        long pId = permResp.getPermissionID();
+        this.logger.debug("Received permission availability request with permission identifier=" + pId + '.');
+        
+        /* Response parameters. */
+        CheckPermissionAvailabilityResponse resp = new CheckPermissionAvailabilityResponse();
+        QueueType queue = new QueueType();
+        resp.setCheckPermissionAvailabilityResponse(queue);
+        queue.setViable(false);
+        queue.setHasFree(false);
+        queue.setIsQueuable(false);
+        queue.setIsCodeAssignable(false);
+        ResourceIDType resource = new ResourceIDType();
+        queue.setQueuedResource(resource);
+        resource.setType("NOTFOUND");
+        
+        if (!this.checkPermission(permResp))
+        {
+            this.logger.warn("Unable to check the resource permission because of invalid permission.");
+            return resp;
+        }
+        
+        ResourcePermissionDao dao = new ResourcePermissionDao();
+        ResourcePermission perm = dao.get(pId);
+        if (perm != null)
+        {
+            /* Queuable is based on the resource class. */
+            queue.setIsQueuable(perm.getUserClass().isQueuable());
+            
+            String type = perm.getType();
+            resource.setType(type);
+            if (ResourcePermission.RIG_PERMISSION.equals(type))
+            {
+                /* Rig resource. */
+                Rig rig = perm.getRig();
+                resource.setResourceID(rig.getId().intValue());
+                resource.setResourceName(rig.getName());
+
+                queue.setHasFree(rig.isOnline() && !rig.isInSession());
+                queue.setViable(rig.isOnline());
+                
+                /* Code assignable is defined by the rig type of the rig. */
+                queue.setIsCodeAssignable(rig.getRigType().isCodeAssignable());
+                
+                /* Only one resource, the actual rig. */
+                QueueTargetType target = new QueueTargetType();
+                target.setViable(rig.isOnline());
+                target.setIsFree(rig.isOnline() && !rig.isInSession());
+                target.setResource(resource);
+                queue.addQueueTarget(target);
+                
+            }
+            else if (ResourcePermission.TYPE_PERMISSION.equals(type))
+            {
+                /* Rig type resource. */
+                RigType rigType = perm.getRigType();
+                resource.setResourceID(rigType.getId().intValue());
+                resource.setResourceName(rigType.getName());
+                queue.setIsCodeAssignable(rigType.isCodeAssignable());
+                
+                /* The targets are the rigs in the rig type. */
+                for (Rig rig : rigType.getRigs())
+                {
+                    if (rig.isOnline()) queue.setViable(true);
+                    if (rig.isOnline() && !rig.isInSession()) queue.setHasFree(true);
+                    
+                    QueueTargetType target = new QueueTargetType();
+                    target.setViable(rig.isOnline());
+                    target.setIsFree(rig.isOnline() && !rig.isInSession());
+                    ResourceIDType resourceRig = new ResourceIDType();
+                    resourceRig.setType(ResourcePermission.RIG_PERMISSION);
+                    resourceRig.setResourceID(rig.getId().intValue());
+                    resourceRig.setResourceName(rig.getName());
+                    target.setResource(resourceRig);
+                    queue.addQueueTarget(target);
+                }
+            }
+            else if (ResourcePermission.CAPS_PERMISSION.equals(type))
+            {
+                /* Capabilities resource. */
+                RequestCapabilities requestCaps = perm.getRequestCapabilities();
+                resource.setResourceID(requestCaps.getId().intValue());
+                resource.setResourceName(requestCaps.getCapabilities());
+                
+                /* For code assignable to be true, all rigs who match the
+                 * request capabilities, must be code assignable. */
+                queue.setIsCodeAssignable(true);
+                
+                /* Are all the rigs who have match rig capabilities to the
+                 * request capabilities. */
+                for (MatchingCapabilities match : requestCaps.getMatchingCapabilitieses())
+                {
+                    for (Rig capRig : match.getRigCapabilities().getRigs())
+                    {
+                        if (!capRig.getRigType().isCodeAssignable()) queue.setIsCodeAssignable(false);
+                        
+                        /* To be viable, only one rig needs to be online. */
+                        if (capRig.isOnline()) queue.setViable(true);
+                        
+                        /* To be 'has free', only one rig needs to be free. */
+                        if (capRig.isOnline() && !capRig.isInSession()) queue.setHasFree(true);
+                        
+                        /* Add target. */
+                        QueueTargetType target = new QueueTargetType();
+                        target.setViable(capRig.isOnline());
+                        target.setIsFree(capRig.isOnline() && !capRig.isInSession());
+                        queue.addQueueTarget(target);
+                        ResourceIDType resTarget = new ResourceIDType();
+                        resTarget.setType(ResourcePermission.RIG_PERMISSION);
+                        resTarget.setResourceID(capRig.getId().intValue());
+                        resTarget.setResourceName(capRig.getName());
+                        target.setResource(resTarget);
+                    }
+                }
+            }
+        }
+        else
+        {
+            this.logger.debug("Resource permission with ID " + pId + " not found.");
+        }
+        
+        dao.closeSession();
+        return resp;
     }
+
+    
+
+    public CheckResourceAvailabilityResponse checkResourceAvailability(final CheckResourceAvailability request)
+    {
+        //TODO : fill this with the necessary business logic
+        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
+                + "#checkResourceAvailability");
+    }
+
+    
     
     /**
      * Gets the user identified by the user id type. 
@@ -218,5 +343,17 @@ public class Queuer implements QueuerSkeletonInterface
         {
             return 0;
         }
+    }    
+    
+    /**
+     * Checks whether the request has the specified permission. Currently this
+     * is a stub and always return, irrespective of the provided user.
+     * 
+     * @return true if the request has the appropriate permission
+     */
+    private boolean checkPermission(OperationRequestType req)
+    {
+        // TODO Check request permissions for queuer
+        return true;
     }
 }

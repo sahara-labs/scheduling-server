@@ -59,6 +59,23 @@ public interface QueuerSkeletonInterface
 
     public RemoveUserFromQueueResponse removeUserFromQueue(RemoveUserFromQueue request);
 
+    /**
+     * Returns information about the avaliability of a permission. The information
+     * returned is:
+     * <ul>
+     *  <li>viable - Whether this resource is ready to be queued.</li>
+     *  <li>hasFree - Whether there are free rigs that match this permission.</li>
+     *  <li>isQueueable - Whether this permission is queuable.</li>
+     *  <li>isCodeAssignable - Whether code can be assigned during the request
+     *  of this resource.</li>
+     *  <li>queuedResource - The resource that the permission queues for.</li>
+     *  <li>queueTarget - The list of rigs that match this permission, including
+     *  whether they are online and in session.</li>
+     * </ul>
+     * 
+     * @param request
+     * @return response
+     */
     public CheckPermissionAvailabilityResponse checkPermissionAvailability(CheckPermissionAvailability request);
 
     public GetUserQueuePositionResponse getUserQueuePosition(GetUserQueuePosition request);
