@@ -50,6 +50,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -131,6 +132,7 @@ public class RigCapabilities implements java.io.Serializable
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "rigCapabilities")
+    @OrderBy("name ASC")
     public Set<Rig> getRigs()
     {
         return this.rigs;
