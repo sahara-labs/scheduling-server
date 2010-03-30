@@ -67,6 +67,11 @@ public class Capabilities
         this.normalize(caps);
     }
     
+    public Capabilities()
+    {
+        this.tokens = new ArrayList<String>();
+    }
+    
     /**
      * Returns a normalized version of the capabilities string.
      * 
@@ -130,6 +135,18 @@ public class Capabilities
     }
     
     /**
+     * Resets this capabilities, adds the specified capabilities and
+     * normalizes them.
+     * 
+     * @param caps new capabilities string
+     */
+    public void setCapabilitiesString(final String caps)
+    {
+        this.tokens.clear();
+        this.normalize(caps);
+    }
+    
+    /**
      * Returns the normalized capabilities string.
      */
     @Override
@@ -152,7 +169,11 @@ public class Capabilities
         if (!(obj instanceof Capabilities)) return false;
         
         Capabilities caps = (Capabilities)obj;
-        return this.normalizedCaps.equals(caps.asCapabilitiesString());
+        if (this.normalizedCaps != null)
+        {
+            return this.normalizedCaps.equals(caps.asCapabilitiesString());
+        }
+        return false;
     }
     
     /**
@@ -164,7 +185,10 @@ public class Capabilities
     public int hashCode()
     {
         int hashcode = 17;
-        hashcode = 31 * hashcode + this.normalizedCaps.hashCode();
+        if (this.normalizedCaps != null)
+        {
+            hashcode = 31 * hashcode + this.normalizedCaps.hashCode();
+        }
         return hashcode;
     }
     
