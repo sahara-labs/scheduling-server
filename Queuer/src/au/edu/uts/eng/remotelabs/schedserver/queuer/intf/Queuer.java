@@ -37,7 +37,10 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -288,13 +291,140 @@ public class Queuer implements QueuerSkeletonInterface
         return resp;
     }
 
-    
-
+    @Override
     public CheckResourceAvailabilityResponse checkResourceAvailability(final CheckResourceAvailability request)
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#checkResourceAvailability");
+        /* Request parameters. */
+        ResourceIDType resReq = request.getCheckResourceAvailability();
+        long rId = resReq.getResourceID();
+        String type = resReq.getType(), name = resReq.getResourceName();
+        this.logger.debug("Received resource availability request with resource type=" + type +", resource identifier=" +
+                rId + ", resource name=" + name + '.');
+        
+        /* Response parameters. */
+        CheckResourceAvailabilityResponse resp = new CheckResourceAvailabilityResponse();
+        QueueType queue = new QueueType();
+        resp.setCheckResourceAvailabilityResponse(queue);
+        queue.setViable(false);
+        queue.setHasFree(false);
+        queue.setIsCodeAssignable(false);
+        
+        /* This is always true because queueable is stored as a user class
+         * permission. There isn't enough information to determine this
+         * so the best case is assumed. */
+        queue.setIsQueuable(true);
+        
+        ResourceIDType resource = new ResourceIDType();
+        queue.setQueuedResource(resource);
+        resource.setType(type);
+        
+        if (!this.checkPermission(resReq))
+        {
+            this.logger.warn("Unable to provide resource information because of insufficient permission.");
+            return resp;
+        }
+        
+        RigDao rigDao = new RigDao();
+        Rig rig;
+        RigTypeDao typeDao = new RigTypeDao(rigDao.getSession());
+        RigType rigType;
+        RequestCapabilitiesDao capsDao = new RequestCapabilitiesDao(rigDao.getSession());
+        RequestCapabilities requestCaps;
+        if (ResourcePermission.RIG_PERMISSION.equals(type) &&
+                ((rId > 0 && (rig = rigDao.get(rId)) != null) || (name != null && (rig = rigDao.findByName(name)) != null)))
+        {
+            /* Rig resource. */
+            resource.setResourceID(rig.getId().intValue());
+            resource.setResourceName(rig.getName());
+            
+            queue.setHasFree(rig.isOnline() && !rig.isInSession());
+            queue.setViable(rig.isOnline());
+
+            /* Code assignable is defined by the rig type of the rig. */
+            queue.setIsCodeAssignable(rig.getRigType().isCodeAssignable());
+
+            /* Only one resource, the actual rig. */
+            QueueTargetType target = new QueueTargetType();
+            target.setViable(rig.isOnline());
+            target.setIsFree(rig.isOnline() && !rig.isInSession());
+            target.setResource(resource);
+            queue.addQueueTarget(target);
+
+        }
+        else if (ResourcePermission.TYPE_PERMISSION.equals(type) && 
+                ((rId > 0 && (rigType = typeDao.get(rId)) != null) || 
+                 (name != null && (rigType = typeDao.findByName(name)) != null)))
+        {
+            /* Rig type resource. */
+            resource.setResourceID(rigType.getId().intValue());
+            resource.setResourceName(rigType.getName());
+            
+            queue.setIsCodeAssignable(rigType.isCodeAssignable());
+
+            /* The targets are the rigs in the rig type. */
+            for (Rig r: rigType.getRigs())
+            {
+                if (r.isOnline()) queue.setViable(true);
+                if (r.isOnline() && !r.isInSession()) queue.setHasFree(true);
+
+                QueueTargetType target = new QueueTargetType();
+                target.setViable(r.isOnline());
+                target.setIsFree(r.isOnline() && !r.isInSession());
+                ResourceIDType resourceRig = new ResourceIDType();
+                resourceRig.setType(ResourcePermission.RIG_PERMISSION);
+                resourceRig.setResourceID(r.getId().intValue());
+                resourceRig.setResourceName(r.getName());
+                target.setResource(resourceRig);
+                queue.addQueueTarget(target);
+            }
+        }
+        else if (ResourcePermission.CAPS_PERMISSION.equals(type) &&
+                ((rId > 0 && (requestCaps = capsDao.get(rId)) != null) || 
+                 (name != null && (requestCaps = capsDao.findCapabilites(name)) != null)))
+        {
+            /* Capabilities resource. */
+            resource.setResourceID(requestCaps.getId().intValue());
+            resource.setResourceName(requestCaps.getCapabilities());
+
+            /* For code assignable to be true, all rigs who match the
+             * request capabilities, must be code assignable. */
+            queue.setIsCodeAssignable(true);
+
+            /* Are all the rigs who have match rig capabilities to the
+             * request capabilities. */
+            for (MatchingCapabilities match : requestCaps.getMatchingCapabilitieses())
+            {
+                for (Rig capRig : match.getRigCapabilities().getRigs())
+                {
+                    if (!capRig.getRigType().isCodeAssignable()) queue.setIsCodeAssignable(false);
+
+                    /* To be viable, only one rig needs to be online. */
+                    if (capRig.isOnline()) queue.setViable(true);
+
+                    /* To be 'has free', only one rig needs to be free. */
+                    if (capRig.isOnline() && !capRig.isInSession()) queue.setHasFree(true);
+
+                    /* Add target. */
+                    QueueTargetType target = new QueueTargetType();
+                    target.setViable(capRig.isOnline());
+                    target.setIsFree(capRig.isOnline() && !capRig.isInSession());
+                    queue.addQueueTarget(target);
+                    ResourceIDType resTarget = new ResourceIDType();
+                    resTarget.setType(ResourcePermission.RIG_PERMISSION);
+                    resTarget.setResourceID(capRig.getId().intValue());
+                    resTarget.setResourceName(capRig.getName());
+                    target.setResource(resTarget);
+                }
+            }
+        }
+        else
+        {
+            this.logger.info("Unable to find resource of type " + type + " with ID " + rId + " and name " + name + '.');
+            resource.setType("NOTFOUND");
+        }
+
+        rigDao.closeSession();
+        return resp;
     }
 
     
