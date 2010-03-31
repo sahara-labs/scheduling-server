@@ -50,8 +50,11 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -120,12 +123,14 @@ public class Queuer implements QueuerSkeletonInterface
         User user;
         ResourcePermissionDao permDao = new ResourcePermissionDao();
         ResourcePermission perm;
+        QueueEntry entry = new QueueEntry(permDao.getSession());
         if (pId != null && (perm = permDao.get(Long.valueOf(pId.getPermissionID()))) != null && 
                 (user = this.getUserFromUserID(uId, permDao.getSession())) != null)
         {
-            /******************************************************************
-             ** 1) Check the user has access to the resource.                **
-             ******************************************************************/
+            if (entry.hasPermission(user, perm))
+            {
+                
+            }
         }
         
         

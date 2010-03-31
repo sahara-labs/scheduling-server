@@ -141,8 +141,6 @@ public class QueuerTester extends TestCase
     {
         super.setUp();
         this.queuer = new Queuer();
-        
-        
     }
 
     /**
