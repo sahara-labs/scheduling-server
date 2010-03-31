@@ -1,7 +1,7 @@
 Bundle-Name: Queuer
 Bundle-SymbolicName: SchedulingServer-Queuer
 Bundle-Version: 1.0.0.alpha
-Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.queuer.QueuerActivator
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
