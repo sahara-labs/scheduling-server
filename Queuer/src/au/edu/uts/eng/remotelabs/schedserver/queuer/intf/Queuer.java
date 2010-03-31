@@ -88,9 +88,51 @@ public class Queuer implements QueuerSkeletonInterface
     @Override
     public AddUserToQueueResponse addUserToQueue(final AddUserToQueue request)
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#addUserToQueue");
+        /* Request parameters. */
+        UserIDType uId = request.getAddUserToQueue().getUserID();
+        PermissionIDType pId = request.getAddUserToQueue().getPermissionID();
+        ResourceIDType rId = request.getAddUserToQueue().getResourceID();
+        this.logger.debug("Received queue request from user (id=" + uId.getUserID() + ", namespace=" + 
+                uId.getUserNamespace() + ", name=" + uId.getUserName() + ") for " +
+                (pId != null ? "permission with identifier " + pId.getPermissionID() : (rId != null ? 
+                "resource with identifer " + rId.getResourceID() + " and name " + rId.getResourceName() :
+                "neither a permission or a resource (this will invalid and will fail)")) + '.');
+        if (pId != null && rId != null)
+        {
+            this.logger.info("Both a permission identifier and a resource have been submitted, so only the " +
+            		"permission will be used and the resource will be ignored.");
+        }
+        
+        /* Response parameters. */
+        AddUserToQueueResponse resp = new AddUserToQueueResponse();
+        InQueueType inQu = new InQueueType();
+        resp.setAddUserToQueueResponse(inQu);
+        inQu.setInQueue(false);
+        inQu.setInSession(false);
+        inQu.setQueueSuccessful(false);
+        
+        if (!this.checkPermission(request.getAddUserToQueue()))
+        {
+            this.logger.warn("Unable to add user to queue because of invalid permission.");
+            return resp;
+        }
+        
+        User user;
+        ResourcePermissionDao permDao = new ResourcePermissionDao();
+        ResourcePermission perm;
+        if (pId != null && (perm = permDao.get(Long.valueOf(pId.getPermissionID()))) != null && 
+                (user = this.getUserFromUserID(uId, permDao.getSession())) != null)
+        {
+            /******************************************************************
+             ** 1) Check the user has access to the resource.                **
+             ******************************************************************/
+        }
+        
+        
+        
+        
+        permDao.closeSession();
+        return resp;
     }
 
     @Override
