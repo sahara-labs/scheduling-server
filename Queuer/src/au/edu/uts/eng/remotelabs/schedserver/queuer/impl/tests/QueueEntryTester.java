@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.queuer.impl.tests;
 
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Properties;
 
@@ -136,63 +137,1283 @@ public class QueueEntryTester extends TestCase
     {
         this.session.close();
     }
-
+    
     @Test
-    public void testHasPermission()
+    public void testHasPermissionResRig()
     {
-        Date now = new Date();
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
         this.session.beginTransaction();
         User user = new User("qperm1", "testns", "USER");
         this.session.persist(user);
-        UserClass uc = new UserClass();
-        uc.setName("uc1");
-        this.session.persist(uc);
+        
         UserClass uc1 = new UserClass();
-        uc1.setName("uc2");
+        uc1.setName("uc1");
+        uc1.setActive(true);
         this.session.persist(uc1);
-        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc.getId()), uc, user);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
         this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
         ResourcePermission p1 = new ResourcePermission();
-        p1.setType("Rig");
-        p1.setUserClass(uc);
-        p1.setStartTime(now);
-        p1.setExpiryTime(now);
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
         this.session.persist(p1);
-        ResourcePermission p2 = new ResourcePermission();
-        p2.setType("Rig");
-        p2.setUserClass(uc);
-        p2.setStartTime(now);
-        p2.setExpiryTime(now);
-        this.session.persist(p2);
-        ResourcePermission p3 = new ResourcePermission();
-        p3.setType("Type");
-        p3.setUserClass(uc);
-        p3.setStartTime(now);
-        p3.setExpiryTime(now);
-        this.session.persist(p3);
-        ResourcePermission p4 = new ResourcePermission();
-        p4.setType("Rig");
-        p4.setUserClass(uc1);
-        p4.setStartTime(now);
-        p4.setExpiryTime(now);
-        this.session.persist(p4);
         this.session.getTransaction().commit();
         
+        this.session.refresh(uc1);
         this.session.refresh(user);
         this.session.refresh(p1);
-        boolean res = this.entry.hasPermission(user, p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
         
         this.session.beginTransaction();
-        this.session.delete(p4);
-        this.session.delete(p3);
-        this.session.delete(p2);
         this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
         this.session.delete(ass);
-        this.session.delete(uc);
         this.session.delete(uc1);
         this.session.delete(user);
         this.session.getTransaction().commit();
         
         assertTrue(res);
     }
+    
+    @Test
+    public void testHasPermissionResRigQueuable()
+    {
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setKickable(false);
+        uc1.setQueuable(false);
+        this.session.persist(uc1);
+        
+        UserClass uc2 = new UserClass();
+        uc2.setName("uc2");
+        uc2.setActive(true);
+        uc2.setKickable(false);
+        uc2.setQueuable(true);
+        this.session.persist(uc2);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user.getId(), uc2.getId()), uc2, user);
+        this.session.persist(ass2);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("RIG");
+        p2.setUserClass(uc2);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRig(r);
+        this.session.persist(p2);
+        
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(uc2);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(ass2);
+        this.session.delete(uc2);
+        this.session.delete(uc1);
+        this.session.delete(uc2);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        ResourcePermission f = this.entry.getResourcePermission();
+        assertNotNull(f);
+        assertTrue(f.getUserClass().isQueuable());
+        assertEquals(f.getId(), p2.getId());
+        assertEquals(f.getUserClass().getId(), uc2.getId());
+    }
+    
+    @Test
+    public void testHasPermissionResRigKickable()
+    {
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setKickable(true);
+        this.session.persist(uc1);
+        
+        UserClass uc2 = new UserClass();
+        uc2.setName("uc2");
+        uc2.setActive(true);
+        uc2.setKickable(false);
+        uc2.setQueuable(true);
+        this.session.persist(uc2);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user.getId(), uc2.getId()), uc2, user);
+        this.session.persist(ass2);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("RIG");
+        p2.setUserClass(uc2);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRig(r);
+        this.session.persist(p2);
+        
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(uc2);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(ass2);
+        this.session.delete(uc2);
+        this.session.delete(uc1);
+        this.session.delete(uc2);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        ResourcePermission f = this.entry.getResourcePermission();
+        assertNotNull(f);
+        assertTrue(f.getUserClass().isQueuable());
+        assertFalse(f.getUserClass().isKickable());
+        assertEquals(f.getId(), p2.getId());
+        assertEquals(f.getUserClass().getId(), uc2.getId());
+    }
+    
+    @Test
+    public void testHasPermissionResRigName()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        UserClass uc2 = new UserClass();
+        uc2.setName("uc2");
+        uc2.setActive(true);
+        this.session.persist(uc2);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc2.getId()), uc2, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc2);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(uc2);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "RIG", 0, r.getName());
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(uc2);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+    }
+    
+    @Test
+    public void testHasPermissionResRigNotActive()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(false);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionResRigExpired()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(after);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionResType()
+    {
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("TYPE");
+        p2.setUserClass(uc1);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRigType(rt);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "TYPE", rt.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+    }
+    
+    @Test
+    public void testHasPermissionResNoType()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("TYPE");
+        p2.setUserClass(uc1);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRigType(rt);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "TYPE", 0, "wrong_type");
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionResWrongType()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigType rt2 = new RigType();
+        rt2.setName("Perm_Test_Rig_Type2");
+        this.session.persist(rt2);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("TYPE");
+        p2.setUserClass(uc1);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRigType(rt);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "TYPE", 0, rt2.getName());
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(rt2);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionResTypeName()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("TYPE");
+        p2.setUserClass(uc1);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRigType(rt);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "TYPE", 0, rt.getName());
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+    }
+    
+    @Test
+    public void testHasPermissionResTypeNotActive()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(false);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("TYPE");
+        p2.setUserClass(uc1);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRigType(rt);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "TYPE", rt.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionResTypeExpired()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("TYPE");
+        p2.setUserClass(uc1);
+        p2.setStartTime(after);
+        p2.setExpiryTime(after);
+        p2.setRigType(rt);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        boolean res = this.entry.hasPermission(user, "TYPE", rt.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionResCaps()
+    {
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        
+        RequestCapabilities caps = new RequestCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("TYPE");
+        p2.setUserClass(uc1);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        this.session.persist(p2);
+        ResourcePermission p3 = new ResourcePermission();
+        p3.setType("CAPABILITY");
+        p3.setUserClass(uc1);
+        p3.setStartTime(before);
+        p3.setExpiryTime(after);
+        p3.setRequestCapabilities(caps);
+        this.session.persist(p3);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(caps);
+        
+        boolean res = this.entry.hasPermission(user, "CAPABILITY", caps.getId(), null);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(p3);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+    }
+
+    @Test
+    public void testHasPermission()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        
+        boolean res = this.entry.hasPermission(user, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+    }
+    
+    @Test
+    public void testHasPermissionMultiple()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        UserClass uc2 = new UserClass();
+        uc2.setName("uc2");
+        uc2.setActive(true);
+        this.session.persist(uc2);
+        UserClass uc3 = new UserClass();
+        uc3.setName("uc3");
+        uc3.setActive(true);
+        this.session.persist(uc3);
+        UserClass uc4 = new UserClass();
+        uc4.setName("uc4");
+        uc4.setActive(true);
+        this.session.persist(uc4);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc4.getId()), uc4, user);
+        this.session.persist(ass);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc4);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(uc2);
+        this.session.refresh(uc3);
+        this.session.refresh(uc4);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        
+        boolean res = this.entry.hasPermission(user, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(uc2);
+        this.session.delete(uc3);
+        this.session.delete(uc4);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+    }
+    
+    @Test
+    public void testHasPermissionUCNotActive()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(false);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        
+        boolean res = this.entry.hasPermission(user, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionUCExpired()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(before);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        
+        boolean res = this.entry.hasPermission(user, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionUserNotAMember()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        
+        boolean res = this.entry.hasPermission(user, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    @Test
+    public void testHasPermissionMultipleNotAMember()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        UserClass uc2 = new UserClass();
+        uc2.setName("uc2");
+        uc2.setActive(true);
+        this.session.persist(uc2);
+        UserClass uc3 = new UserClass();
+        uc3.setName("uc3");
+        uc3.setActive(true);
+        this.session.persist(uc3);
+        UserClass uc4 = new UserClass();
+        uc4.setName("uc4");
+        uc4.setActive(true);
+        this.session.persist(uc4);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc3.getId()), uc3, user);
+        this.session.persist(ass);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc4);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(uc2);
+        this.session.refresh(uc3);
+        this.session.refresh(uc4);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        
+        boolean res = this.entry.hasPermission(user, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(uc2);
+        this.session.delete(uc3);
+        this.session.delete(uc4);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(res);
+    }
+    
+    public void testIsResourcePermissionActive() throws Exception
+    {
+        this.session.beginTransaction();
+        UserClass uc = new UserClass();
+        uc.setName("name_1");
+        this.session.persist(uc);
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc);
+        p1.setStartTime(new Date(System.currentTimeMillis() - 10000));
+        p1.setExpiryTime(new Date(System.currentTimeMillis() + 10000));
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        Method m = QueueEntry.class.getDeclaredMethod("isResourcePermissionActive", ResourcePermission.class);
+        m.setAccessible(true);
+        boolean valid = (Boolean) m.invoke(this.entry, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(uc);
+        this.session.getTransaction().commit();
+        
+        assertTrue(valid);
+    }
+    
+    public void testIsResourcePermissionActiveBeforeStart() throws Exception
+    {
+        this.session.beginTransaction();
+        UserClass uc = new UserClass();
+        uc.setName("name_1");
+        this.session.persist(uc);
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc);
+        p1.setStartTime(new Date(System.currentTimeMillis() + 10000));
+        p1.setExpiryTime(new Date(System.currentTimeMillis() + 10000));
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        Method m = QueueEntry.class.getDeclaredMethod("isResourcePermissionActive", ResourcePermission.class);
+        m.setAccessible(true);
+        boolean valid = (Boolean) m.invoke(this.entry, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(uc);
+        this.session.getTransaction().commit();
+        
+        assertFalse(valid);
+    }
+    
+    public void testIsResourcePermissionActiveAfterExpiry() throws Exception
+    {
+        this.session.beginTransaction();
+        UserClass uc = new UserClass();
+        uc.setName("name_1");
+        this.session.persist(uc);
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("Rig");
+        p1.setUserClass(uc);
+        p1.setStartTime(new Date(System.currentTimeMillis() - 10000));
+        p1.setExpiryTime(new Date(System.currentTimeMillis() - 10000));
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        Method m = QueueEntry.class.getDeclaredMethod("isResourcePermissionActive", ResourcePermission.class);
+        m.setAccessible(true);
+        boolean valid = (Boolean) m.invoke(this.entry, p1);
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(uc);
+        this.session.getTransaction().commit();
+        
+        assertFalse(valid);
+    }
+    
 }

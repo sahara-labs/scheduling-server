@@ -103,7 +103,7 @@ public class Queuer implements QueuerSkeletonInterface
         if (pId != null && rId != null)
         {
             this.logger.info("Both a permission identifier and a resource have been submitted, so only the " +
-            		"permission will be used and the resource will be ignored.");
+            		"permission will be used if it exists and the resource will be ignored.");
         }
         
         /* Response parameters. */
@@ -123,17 +123,30 @@ public class Queuer implements QueuerSkeletonInterface
         User user;
         ResourcePermissionDao permDao = new ResourcePermissionDao();
         ResourcePermission perm;
+        
         QueueEntry entry = new QueueEntry(permDao.getSession());
-        if (pId != null && (perm = permDao.get(Long.valueOf(pId.getPermissionID()))) != null && 
-                (user = this.getUserFromUserID(uId, permDao.getSession())) != null)
+        
+        if ((user = this.getUserFromUserID(uId, permDao.getSession())) != null)
         {
+            this.logger.warn("User with with identifier=" + uId.getUserID() + " and name=" + uId.getUserNamespace() + 
+                    ':' + uId.getUserName() + " not found.");
+        }
+        else if (pId != null && (perm = permDao.get(Long.valueOf(pId.getPermissionID()))) != null)
+        {
+            /* Case of queue permission request type. */
             if (entry.hasPermission(user, perm))
             {
                 
             }
         }
-        
-        
+        else if (rId != null)
+        {
+            /* Case of resource request type. */
+            if (entry.hasPermission(user, rId.getType(), rId.getResourceID(), rId.getResourceName()))
+            {
+                
+            }
+        }
         
         
         permDao.closeSession();

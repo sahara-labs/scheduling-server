@@ -36,10 +36,18 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
 
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.CAPS_PERMISSION;
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.RIG_PERMISSION;
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.TYPE_PERMISSION;
+
+import java.util.Date;
+
 import org.hibernate.Session;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
@@ -84,8 +92,36 @@ public class QueueEntry
     public boolean hasPermission(User user,  ResourcePermission perm)
     {
         UserClass permClass = perm.getUserClass();
-        for (UserAssociation assoc : permClass.getUserAssociations())
+        
+        /* First check, whether the user class the permission is part of 
+         * is active. */
+        if (!permClass.isActive())
         {
+            this.logger.warn("Failed permission check for resoruce permission " + perm.getId() + " as it's user class " +
+            		"is not active.");
+            return false;
+        }
+        
+        /* Second check, whether the resource permission is active. */
+        if (!this.isResourcePermissionActive(perm))
+        {
+            if (perm.getStartTime().after(new Date()))
+            {
+                this.logger.warn("Failed permission check for resource permission " + perm.getId() + " because the  " +
+                		"permissions time window has not begun yet. (Starts on " + perm.getStartTime().toString() + ")");
+            }
+            else
+            {
+                this.logger.warn("Failed permission check for resource permission " + perm.getId() + " because the  " +
+                        "permissions time window has expired. (Ended on " + perm.getExpiryTime().toString() + ")");
+            }
+            return false;
+        }
+        
+        /* Third check, whether the user is a member of the user class which 
+         * has the resource permission. */
+        for (UserAssociation assoc : permClass.getUserAssociations())
+        {   
             if (assoc.getUserClass().getId().longValue() == permClass.getId().longValue())
             {
                 this.resourcePerm = perm;
@@ -132,38 +168,162 @@ public class QueueEntry
         RigType rigType;
         RigTypeDao rigTypeDao = new RigTypeDao(this.session);
         
-        if (type.equals(ResourcePermission.RIG_PERMISSION) && 
-                (resId > 0 && (rig = rigDao.get(resId)) != null || 
+        RequestCapabilities caps;
+        RequestCapabilitiesDao capsDao = new RequestCapabilitiesDao(this.session);
+        
+        
+        if (RIG_PERMISSION.equals(type) && (resId > 0 && (rig = rigDao.get(resId)) != null || 
                  resName != null && (rig = rigDao.findByName(resName)) != null))
         {
             for (UserAssociation assoc : user.getUserAssociations())
             {
+                /* Discard the user class if it is not valid. */
+                UserClass userClass = assoc.getUserClass();
+                if (!assoc.getUserClass().isActive()) continue;
+                
                 /* Look at the resource permissions of the classes the user is a member of
                  * and check if any provide the requested rig. */
-                for (ResourcePermission rp : assoc.getUserClass().getResourcePermissions())
+                for (ResourcePermission rp : userClass.getResourcePermissions())
                 {
+                    if (!this.isResourcePermissionActive(rp)) continue;
                     /* If the resource class contains a rig resource, the user has 
                      * permission if the requested rig is the same rig. */
-                    if (rp.getType().equals(ResourcePermission.RIG_PERMISSION) && rig.getId().equals(rp.getRig().getId()))
+                    if (RIG_PERMISSION.equals(rp.getType()) && rig.getId().equals(rp.getRig().getId()))
                     {
                         this.resourcePerm = rp;
-                        return true;
+                        
+                        /* One last case to account, a valid permission with undesirable constraints:
+                         *   - Queueable - Not having this prohibts access to the queue (only assignment
+                         *                 to free resources is allowed.
+                         *   - Kickable  - If a user who isn't kickable wants access, this user will
+                         *                 be removed.
+                         */
+                        if (userClass.isQueuable() && !userClass.isKickable())
+                        {
+                            /* This is the best case for a permission, so finish the search and
+                             * return true. */
+                            return true;
+                        }
+                        else
+                        {
+                            /* As there is undesirable consequences of the found permission, 
+                             * continue the search with a different user class so a 
+                             * potentially better case may be found. */
+                            break;
+                        }
                     }
                 }
             }
+            
+            /* This is the case where a permission is found in a user class that isn't queueable
+             * or is kickable. The resource is still valid so permission succeeds. */
+            if (this.resourcePerm != null) return true;
+            
+            /* No permission found so fail permission. */
             this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " does not have permission to use " +
-            		"rig " + rig.getName());
+                    "rig " + rig.getName() + '.');
         }
-        else if (type.equals(ResourcePermission.TYPE_PERMISSION) && 
-                (resId > 0 && (rigType = rigTypeDao.get(resId)) != null ||
+        else if (TYPE_PERMISSION.equals(type) && (resId > 0 && (rigType = rigTypeDao.get(resId)) != null ||
                  resName != null && (rigType = rigTypeDao.findByName(resName)) != null))
         {
             for (UserAssociation assoc : user.getUserAssociations())
             {
-                /* Look at the resource permissions of the classes  the user is a member of
-                 * and check if any provide the requested rig. */
+                /* Discard the user class if it is not valid. */
+                UserClass userClass = assoc.getUserClass();
+                if (!userClass.isActive()) continue;
                 
+                /* Look at the resource permissions of the classes the user is a member of
+                 * and check if any provide the requested type. */
+                for (ResourcePermission rp : userClass.getResourcePermissions())
+                {
+                    if (!this.isResourcePermissionActive(rp)) continue;
+                    /* If the resource class contains a type resource, the user has 
+                     * permission if the requested type is the same type. */
+                    if (TYPE_PERMISSION.equals(rp.getType()) && rigType.getId().equals(rp.getRigType().getId()))
+                    {
+                         this.resourcePerm = rp;
+                        
+                        /* One last case to account, a valid permission with undesirable constraints:
+                         *   - Queueable - Not having this prohibts access to the queue (only assignment
+                         *                 to free resources is allowed.
+                         *   - Kickable  - If a user who isn't kickable wants access, this user will
+                         *                 be removed.
+                         */
+                        if (userClass.isQueuable() && !userClass.isKickable())
+                        {
+                            /* This is the best case for a permission, so finish the search and
+                             * return true. */
+                            return true;
+                        }
+                        else
+                        {
+                            /* As there is undesirable consequences of the found permission, 
+                             * continue the search with a different user class so a 
+                             * potentially better case may be found. */
+                            break;
+                        }
+                    }
+                }
             }
+            
+            /* This is the case where a permission is found in a user class that isn't queueable
+             * or is kickable. The resource is still valid so permission succeeds. */
+            if (this.resourcePerm != null) return true;
+            
+            /* No permission found so fail permission. */
+            this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " does not have permission to use " +
+                    "rig type " + rigType.getName() + '.');
+        }
+        else if (CAPS_PERMISSION.equals(type) && (resId > 0 && (caps = capsDao.get(resId)) != null ||
+                resName != null && (caps = capsDao.findCapabilites(resName)) != null))
+        {
+            for (UserAssociation assoc : user.getUserAssociations())
+            {
+                UserClass userClass = assoc.getUserClass();
+                /* Discard the user class if it is not valid. */
+                if (!userClass.isActive()) continue;
+                
+                /* Look at the resource permissions of the classes the user is a member of
+                 * and check if any provide the requested request capabilities. */
+                for (ResourcePermission rp : userClass.getResourcePermissions())
+                {
+                    if (!this.isResourcePermissionActive(rp)) continue;
+                    /* If the resource class contains a request capabilities resource, the user 
+                     * has permission if the requested capabilites are the same. */
+                    if (CAPS_PERMISSION.equals(rp.getType()) && caps.getId().equals(rp.getRequestCapabilities().getId()))
+                    {
+                        this.resourcePerm = rp;
+                        
+                        /* One last case to account, a valid permission with undesirable constraints:
+                         *   - Queueable - Not having this prohibts access to the queue (only assignment
+                         *                 to free resources is allowed.
+                         *   - Kickable  - If a user who isn't kickable wants access, this user will
+                         *                 be removed.
+                         */
+                        if (userClass.isQueuable() && !userClass.isKickable())
+                        {
+                            /* This is the best case for a permission, so finish the search and
+                             * return true. */
+                            return true;
+                        }
+                        else
+                        {
+                            /* As there is undesirable consequences of the found permission, 
+                             * continue the search with a different user class so a 
+                             * potentially better case may be found. */
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            /* This is the case where a permission is found in a user class that isn't queueable
+             * or is kickable. The resource is still valid so permission succeeds. */
+            if (this.resourcePerm != null) return true;
+            
+            /* No permission found so fail permission. */
+            this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " does not have permission to use " +
+                    "request capabilites " + caps.getCapabilities() + '.');
         }
         else
         {
@@ -177,10 +337,92 @@ public class QueueEntry
         return false;
     }
     
-    public boolean isViable()
+    /**
+     * Returns true if the resource permission resource is viable and can be
+     * queued for. A user can queue if:
+     * <ul>
+     * <li>The resource is free and online.</li>
+     * <li>The resource is in use and online and the resource permission has 
+     * the queue permission.</li>
+     * </ul>
+     *
+     * @return true if the user can enter the queue
+     */
+    public boolean canUserQueue()
     {
+        if (RIG_PERMISSION.equals(this.resourcePerm.getType()))
+        {
+            Rig rig = this.resourcePerm.getRig();
+            
+            if (rig.isOnline() && !rig.isInSession())
+            {
+                /* Direct assignment is always allowed. */
+                return true;
+            }
+            else if (rig.isOnline() && rig.isInSession())
+            {
+                /* If the rig is in session, the ability to queue is based on
+                 * whether the user class can queue. */
+                return this.resourcePerm.getUserClass().isQueuable();
+            }
+        }
+        else if (TYPE_PERMISSION.equals(this.resourcePerm.getType()))
+        {
+            RigType type = this.resourcePerm.getRigType();
+            
+            // TODO 
+        }
+        else if (CAPS_PERMISSION.equals(this.resourcePerm.getType()))
+        {
+            
+        }
+        else
+        {
+            this.logger.error("Unknown resource permission type " + this.resourcePerm.getType() + ". This must be " +
+            		"either RIG for a rig permission, TYPE for a rig type permission or CAPABILITY for a request " +
+            		"capabilities permission.");
+        }
         
         
         return false;
     }
+    
+    /**
+     * Returns true if the resource permission is valid. A resource permission
+     * is valid if the current time is after the start time and after the end 
+     * time.
+     * 
+     * @return true if the resource permission is valid
+     */
+    private boolean isResourcePermissionActive(ResourcePermission rp)
+    {
+        Date now = new Date();
+        if (rp.getStartTime().before(now) && rp.getExpiryTime().after(now))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Returns the resource permission that will be used when adding a queue 
+     * entry.
+     * 
+     * @return resource permission
+     */
+    public ResourcePermission getResourcePermission()
+    {
+        return this.resourcePerm;
+    }
+    
+    /**
+     * Returns the user that will be used when queuing a user.
+     * 
+     * @return user who is to be queued
+     */
+    public User getUser()
+    {
+        return this.user;
+    }
+
 }
