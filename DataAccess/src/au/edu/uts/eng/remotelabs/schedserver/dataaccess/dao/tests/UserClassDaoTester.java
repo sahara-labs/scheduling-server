@@ -128,7 +128,7 @@ public class UserClassDaoTester extends TestCase
     {
         UserClass cls = new UserClass();
         cls.setName("class");
-        cls.setPriority(10);
+        cls.setPriority((short) 10);
         this.dao.persist(cls);
         
         UserClass ldCls = this.dao.findByName("class");
@@ -150,16 +150,16 @@ public class UserClassDaoTester extends TestCase
     {
         Session ses = DataAccessActivator.getNewSession();
         ses.beginTransaction();
-        RigType ty = new RigType("type", 10, false);
+        RigType ty = new RigType("type123", 10, false);
         ses.save(ty);
         RigCapabilities caps = new RigCapabilities("a,b");
         ses.save(caps);
-        Rig rig = new Rig(ty, caps, "rig", "http://rig/", new Date(), true, null, false, true, true);
+        Rig rig = new Rig(ty, caps, "rig123", "http://rig/", new Date(), true, null, false, true, true);
         ses.save(rig);
         
         User us = new User("user", "userns", "ADMIN");
         ses.save(us);
-        UserClass uc = new UserClass("clazz", 10, true, true, true, true);
+        UserClass uc = new UserClass("clazz", (short) 10, true, true, true, true);
         ses.save(uc);
         ResourcePermission perm = new ResourcePermission(uc, "RIG", 3600, 300, (short) 5, 300, 300);
         perm.setExpiryTime(new Date());
@@ -192,16 +192,16 @@ public class UserClassDaoTester extends TestCase
     {
         Session ses = DataAccessActivator.getNewSession();
         ses.beginTransaction();
-        RigType ty = new RigType("type", 10, false);
+        RigType ty = new RigType("type23", 10, false);
         ses.save(ty);
         RigCapabilities caps = new RigCapabilities("a,b");
         ses.save(caps);
-        Rig rig = new Rig(ty, caps, "rig", "http://rig/", new Date(), true, null, false, true, true);
+        Rig rig = new Rig(ty, caps, "rig23", "http://rig/", new Date(), true, null, false, true, true);
         ses.save(rig);
         
         User us = new User("user", "userns", "ADMIN");
         ses.save(us);
-        UserClass uc = new UserClass("clazz", 10, true, true, true, true);
+        UserClass uc = new UserClass("clazz", (short) 10, true, true, true, true);
         ses.save(uc);
         ResourcePermission perm = new ResourcePermission(uc, "RIG", 3600, 300, (short) 5, 300, 300);
         perm.setExpiryTime(new Date());

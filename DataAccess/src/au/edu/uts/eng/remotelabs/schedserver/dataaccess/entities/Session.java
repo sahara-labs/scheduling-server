@@ -114,6 +114,9 @@ public class Session implements java.io.Serializable
     /** Whether the session is active (either in queue or on rig). */
     private boolean active;
     
+    /** Whether the session is ready for use or still allocating. */
+    private boolean ready;
+    
     /** The time at which the rig session must terminate. */
     private Date removalTime;
     
@@ -273,7 +276,7 @@ public class Session implements java.io.Serializable
         this.requestTime = requestTime;
     }
 
-    @Column(name = "resource_type", nullable = false, length = 5)
+    @Column(name = "resource_type", nullable = false, length = 10)
     public String getResourceType()
     {
         return this.resourceType;
@@ -361,6 +364,17 @@ public class Session implements java.io.Serializable
     public void setActive(final boolean active)
     {
         this.active = active;
+    }
+    
+    @Column(name = "ready", nullable = true)
+    public boolean isReady()
+    {
+        return this.ready;
+    }
+    
+    public void setReady(final boolean ready)
+    {
+        this.ready = ready;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

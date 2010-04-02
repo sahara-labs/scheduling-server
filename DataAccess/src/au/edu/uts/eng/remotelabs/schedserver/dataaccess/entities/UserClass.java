@@ -83,7 +83,7 @@ public class UserClass implements java.io.Serializable
     
     /** Priority a user gets when requesting a resource this class provides 
      *  permission for. */
-    private int priority;
+    private short priority;
     
     /** Whether a user may queue for resources. If not, they must be assigned
      *  to a free resource or the request fails. */
@@ -108,7 +108,7 @@ public class UserClass implements java.io.Serializable
         /* Bean style class. */
     }
 
-    public UserClass(final String name, final int priority,
+    public UserClass(final String name, final short priority,
             final boolean queuable, final boolean kickable,
             final boolean usersLockable, final boolean active)
     {
@@ -120,7 +120,7 @@ public class UserClass implements java.io.Serializable
         this.active = active;
     }
 
-    public UserClass(final String name, final int priority,
+    public UserClass(final String name, final short priority,
             final boolean queuable, final boolean kickable,
             final boolean usersLockable, final boolean active,
             final Set<UserAssociation> userAssociations,
@@ -163,12 +163,12 @@ public class UserClass implements java.io.Serializable
     }
 
     @Column(name = "priority", nullable = false)
-    public int getPriority()
+    public short getPriority()
     {
         return this.priority;
     }
 
-    public void setPriority(final int priority)
+    public void setPriority(final short priority)
     {
         this.priority = priority;
     }
