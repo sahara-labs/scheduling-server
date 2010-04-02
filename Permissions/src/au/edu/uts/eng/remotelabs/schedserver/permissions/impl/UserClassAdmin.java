@@ -79,7 +79,7 @@ public class UserClassAdmin
     {
         UserClass userClass = new UserClass();
         userClass.setName(name);
-        userClass.setPriority(priority);
+        userClass.setPriority((short) priority);
         userClass.setActive(active);
         userClass.setQueuable(queuable);
         userClass.setKickable(kickable);
@@ -122,7 +122,7 @@ public class UserClassAdmin
             return false;
         }
         
-        userClass.setPriority(priority);
+        userClass.setPriority((short) priority);
         userClass.setActive(active);
         userClass.setQueuable(queuable);
         userClass.setKickable(kickable);
@@ -168,7 +168,7 @@ public class UserClassAdmin
             userClass.setName(name);
         }
         
-        userClass.setPriority(priority);
+        userClass.setPriority((short) priority);
         userClass.setActive(active);
         userClass.setQueuable(queuable);
         userClass.setKickable(kickable);

@@ -175,7 +175,7 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testAddUserExists()
     {
-        UserClass uc = new UserClass("clazz", 50, true, true, false, false);
+        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -190,7 +190,7 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testEditUser()
     {
-        UserClass uc = new UserClass("clazz", 50, true, true, false, false);
+        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -214,7 +214,7 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testEditUserId()
     {
-        UserClass uc = new UserClass("clazz", 50, true, true, false, false);
+        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -244,7 +244,7 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testDeleteUserClass()
     {
-        UserClass uc = new UserClass("clazz", 50, true, true, false, false);
+        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -260,7 +260,7 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testDeleteUserClassId()
     {
-        UserClass uc = new UserClass("clazz", 50, true, true, false, false);
+        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);

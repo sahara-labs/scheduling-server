@@ -311,7 +311,7 @@ public class UserAdminTester extends TestCase
         Session ses = DataAccessActivator.getNewSession();
         
         ses.beginTransaction();
-        UserClass uc = new UserClass("test1", 10, true, true, true, true);
+        UserClass uc = new UserClass("test1", (short) 10, true, true, true, true);
         ses.save(uc);
         User us = new User("del1", "ns1", "ACADEMIC");
         ses.save(us);

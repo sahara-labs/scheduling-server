@@ -598,7 +598,7 @@ public class PermissionsTester extends TestCase
         UserClassDao dao = new UserClassDao();
         UserClass uc = new UserClass();
         uc.setName("exists");
-        uc.setPriority(190);
+        uc.setPriority((short) 190);
         dao.persist(uc);
         
         AddUserClass req = new AddUserClass();
@@ -959,7 +959,7 @@ public class PermissionsTester extends TestCase
         UserClassDao dao = new UserClassDao();
         UserClass uc = new UserClass();
         uc.setName("uclass");
-        uc.setPriority(190);
+        uc.setPriority((short) 190);
         dao.persist(uc);
         
         EditUserClass req = new EditUserClass();
@@ -1009,7 +1009,7 @@ public class PermissionsTester extends TestCase
         UserClassDao dao = new UserClassDao();
         UserClass uc = new UserClass();
         uc.setName("uclass");
-        uc.setPriority(190);
+        uc.setPriority((short) 190);
         dao.persist(uc);
         
         EditUserClass req = new EditUserClass();
@@ -1704,7 +1704,7 @@ public class PermissionsTester extends TestCase
     public void testGetUserClass() throws Exception
     {
         UserClassDao dao = new UserClassDao();
-        UserClass cls = new UserClass("ucTest", 50, true, false, true, false);
+        UserClass cls = new UserClass("ucTest", (short) 50, true, false, true, false);
         dao.persist(cls);
         
         GetUserClass req = new GetUserClass();
@@ -1741,7 +1741,7 @@ public class PermissionsTester extends TestCase
     public void testGetUserClassName() throws Exception
     {
         UserClassDao dao = new UserClassDao();
-        UserClass cls = new UserClass("ucTest", 50, true, false, true, false);
+        UserClass cls = new UserClass("ucTest", (short) 50, true, false, true, false);
         dao.persist(cls);
         
         GetUserClass req = new GetUserClass();
