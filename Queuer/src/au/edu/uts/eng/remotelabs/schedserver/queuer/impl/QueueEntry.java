@@ -42,23 +42,45 @@ import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Resource
 
 import java.util.Date;
 
-import org.hibernate.Session;
-
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserLockDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Class which provides utility for entry to the queue.
+ * Class which provides utility for entry to the queue. To add a user to the
+ * queue the following methods must be called in sequence:
+ * <ol>
+ *  <li><tt>isInQueue</tt> - Checks whether the user is already in the queue
+ *  or if they have an in progress rig session. If the response is 
+ *  <code>false</code> queue entry can procede.</li>
+ *  <li><tt>hasPermission</tt> - Checks whether the user (set up in the call
+ *  to <tt>isInQueue</tt>) has access to the requested permission OR resource,
+ *  depending on which overloaded method is called. If the response is 
+ *  <code>true</code> queue entry can procede.</li>
+ *  <li><tt>canUserQueue</tt> - Checks whether can queue. The ability can 
+ *  queue is based on rig viability and rig use.If the response is 
+ *  <code>true</code> queue entry can procede.</li>
+ *  <li><tt>addToQueue</tt> - Actually add the user to the queue for the 
+ *  requested resource (set up in the call to one of <tt>hasPermission</tt>
+ *  overloaded methods). If the response is <code>true</code> the user
+ *  may either be in the queue for a resource or directly assigned to a 
+ *  resource.</li>
+ * </ol>
  */
 public class QueueEntry
 {
@@ -68,16 +90,34 @@ public class QueueEntry
     /** User to add to queue. */
     private User user;
     
+    /** Active queue or rig session. */
+    private Session activeSession;
+    
     /** Database session. */
-    private Session session;
+    private org.hibernate.Session db;
 
     /** Logger. */
     private Logger logger;
     
-    public QueueEntry(Session session)
+    public QueueEntry(org.hibernate.Session session)
     {
-        this.session = session;
+        this.db = session;
         this.logger = LoggerActivator.getLogger();
+    }
+    
+    /**
+     * Checks whether the user is already in the queue.
+     * 
+     * @param user user record
+     * @return true if in queue
+     */
+    public boolean isInQueue(User user)
+    {
+        SessionDao dao = new SessionDao(this.db);
+
+        this.user = user;
+        this.activeSession = dao.findActiveSession(user);
+        return this.activeSession != null;
     }
     
     /**
@@ -86,11 +126,18 @@ public class QueueEntry
      * owns the resource permission.
      * 
      * @param user user to check permission of 
-     * @param perm resource permission 
+     * @param permId resource permission identifier
      * @return true if the user has permission use the resource permission 
      */
-    public boolean hasPermission(User user,  ResourcePermission perm)
+    public boolean hasPermission(long permId)
     {
+        ResourcePermission perm = new ResourcePermissionDao(this.db).get(permId);
+        if (perm == null)
+        {
+            this.logger.warn("Resource permission with identifier " + permId + " not found.");
+            return false;
+        }
+        
         UserClass permClass = perm.getUserClass();
         
         /* First check, whether the user class the permission is part of 
@@ -120,17 +167,16 @@ public class QueueEntry
         
         /* Third check, whether the user is a member of the user class which 
          * has the resource permission. */
-        for (UserAssociation assoc : permClass.getUserAssociations())
+        for (UserAssociation assoc : this.user.getUserAssociations())
         {   
             if (assoc.getUserClass().getId().longValue() == permClass.getId().longValue())
             {
                 this.resourcePerm = perm;
-                this.user = user;
                 return true;
             }
         }
 
-        this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " does not have " +
+        this.logger.warn("User " + this.user.getNamespace() + ':' + this.user.getName() + " does not have " +
                 		"permission to queue for permission with identifier " + perm.getId() + '.');
         return false;
     }
@@ -152,30 +198,27 @@ public class QueueEntry
      * precendence. To force using the resource name, provide 0 as the 
      * resource identifier.
      * 
-     * @param user user requesting resource
      * @param type type of resource (either RIG, TYPE or CAPABILITY)
      * @param resId resource identifier (optional, may be 0)
      * @param resName resource name (optional, may be null) 
      * @return true if the user has permission
      */
-    public boolean hasPermission(User user, String type, long resId, String resName)
-    {
-        this.user = user;
-        
+    public boolean hasPermission(String type, long resId, String resName)
+    {   
         Rig rig;
-        RigDao rigDao = new RigDao(this.session);
+        RigDao rigDao = new RigDao(this.db);
         
         RigType rigType;
-        RigTypeDao rigTypeDao = new RigTypeDao(this.session);
+        RigTypeDao rigTypeDao = new RigTypeDao(this.db);
         
         RequestCapabilities caps;
-        RequestCapabilitiesDao capsDao = new RequestCapabilitiesDao(this.session);
+        RequestCapabilitiesDao capsDao = new RequestCapabilitiesDao(this.db);
         
         
         if (RIG_PERMISSION.equals(type) && (resId > 0 && (rig = rigDao.get(resId)) != null || 
                  resName != null && (rig = rigDao.findByName(resName)) != null))
         {
-            for (UserAssociation assoc : user.getUserAssociations())
+            for (UserAssociation assoc : this.user.getUserAssociations())
             {
                 /* Discard the user class if it is not valid. */
                 UserClass userClass = assoc.getUserClass();
@@ -220,13 +263,13 @@ public class QueueEntry
             if (this.resourcePerm != null) return true;
             
             /* No permission found so fail permission. */
-            this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " does not have permission to use " +
+            this.logger.warn("User " + this.user.getNamespace() + ':' + this.user.getName() + " does not have permission to use " +
                     "rig " + rig.getName() + '.');
         }
         else if (TYPE_PERMISSION.equals(type) && (resId > 0 && (rigType = rigTypeDao.get(resId)) != null ||
                  resName != null && (rigType = rigTypeDao.findByName(resName)) != null))
         {
-            for (UserAssociation assoc : user.getUserAssociations())
+            for (UserAssociation assoc : this.user.getUserAssociations())
             {
                 /* Discard the user class if it is not valid. */
                 UserClass userClass = assoc.getUserClass();
@@ -271,13 +314,13 @@ public class QueueEntry
             if (this.resourcePerm != null) return true;
             
             /* No permission found so fail permission. */
-            this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " does not have permission to use " +
+            this.logger.warn("User " + this.user.getNamespace() + ':' + this.user.getName() + " does not have permission to use " +
                     "rig type " + rigType.getName() + '.');
         }
         else if (CAPS_PERMISSION.equals(type) && (resId > 0 && (caps = capsDao.get(resId)) != null ||
                 resName != null && (caps = capsDao.findCapabilites(resName)) != null))
         {
-            for (UserAssociation assoc : user.getUserAssociations())
+            for (UserAssociation assoc : this.user.getUserAssociations())
             {
                 UserClass userClass = assoc.getUserClass();
                 /* Discard the user class if it is not valid. */
@@ -322,7 +365,7 @@ public class QueueEntry
             if (this.resourcePerm != null) return true;
             
             /* No permission found so fail permission. */
-            this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " does not have permission to use " +
+            this.logger.warn("User " + this.user.getNamespace() + ':' + this.user.getName() + " does not have permission to use " +
                     "request capabilites " + caps.getCapabilities() + '.');
         }
         else
@@ -350,31 +393,125 @@ public class QueueEntry
      */
     public boolean canUserQueue()
     {
+        /* Check the resource permission isn't locked. */
+        UserLock lock = new UserLockDao(this.db).findLock(this.user, this.resourcePerm);
+        if (lock != null && lock.isIsLocked())
+        {
+            this.logger.warn("Cannot queue for resource permission because it is locked for the user.");
+            return false;
+        }
+        
         if (RIG_PERMISSION.equals(this.resourcePerm.getType()))
         {
             Rig rig = this.resourcePerm.getRig();
+            if (rig == null)
+            {
+                this.logger.error("Incorrect configuration of a rig type permission. The rig for it was not set.");
+                return false;
+            }
             
             if (rig.isOnline() && !rig.isInSession())
             {
                 /* Direct assignment is always allowed. */
                 return true;
             }
-            else if (rig.isOnline() && rig.isInSession())
+            else if (rig.isOnline())
             {
                 /* If the rig is in session, the ability to queue is based on
                  * whether the user class can queue. */
-                return this.resourcePerm.getUserClass().isQueuable();
+                if (this.resourcePerm.getUserClass().isQueuable())
+                {
+                    return true;
+                }
+                this.logger.info("Cannot queue for rig " + rig.getName() + " because it is in use and the user doesn't " +
+                		"have permission to queue for the rig.");
+                return false;
+            }
+            else
+            {
+                this.logger.info("Cannot queue for rig " + rig.getName() + " because it is offline.");
             }
         }
         else if (TYPE_PERMISSION.equals(this.resourcePerm.getType()))
         {
+            boolean hasOnline = false;
             RigType type = this.resourcePerm.getRigType();
+            if (type == null)
+            {
+                this.logger.error("Incorrect configuration of a rig type permission. The rig type for it was not set.");
+                return false;
+            }
             
-            // TODO 
+            for (Rig rig : type.getRigs())
+            {
+                if (rig.isOnline() && !rig.isInSession())
+                {
+                    /* Direct assignment is always allowed. */
+                    return true;
+                }
+                else if (rig.isOnline())
+                {
+                    hasOnline = true;
+                }
+            }
+            
+            if (hasOnline)
+            {
+                if (this.resourcePerm.getUserClass().isQueuable())
+                {
+                    return true;
+                }
+                this.logger.info("Cannot queue for rig type " + type.getName() + " because none of its rigs are " +
+                		"free and the user doesn't have permission to queue for it.");
+                return false;
+            }
+            
+            this.logger.info("Cannot queue for rig type " + type.getName() + " because none of its rigs are " +
+            		"online.");
         }
         else if (CAPS_PERMISSION.equals(this.resourcePerm.getType()))
         {
+            boolean hasOnline = false;
+            RequestCapabilities caps = this.resourcePerm.getRequestCapabilities();
+            if (caps == null)
+            {
+                this.logger.error("Incorrect configuration of a request capabilities permission. The request " +
+                		"capabilities for it was not set.");
+                return false;
+            }
             
+            /* Check all the matching rigs to the request capabililites. */
+            for (MatchingCapabilities match : caps.getMatchingCapabilitieses())
+            {
+                for (Rig rig : match.getRigCapabilities().getRigs())
+                {
+                    if (rig.isOnline() && !rig.isInSession())
+                    {
+                        /* Direct assignment is always allowed to a rig. */
+                        return true;
+                    }
+                    else if (rig.isOnline())
+                    {
+                        /* If there is atleast one online, but in use, the
+                         * queue access will be based on the user class
+                         * queueable flag. */
+                        hasOnline = true;
+                    }
+                }
+            }
+            
+            if (hasOnline)
+            {
+                if (this.resourcePerm.getUserClass().isQueuable())
+                {
+                    return true;
+                }
+                this.logger.info("Unable to queue for request capabilities " + caps.getCapabilities() + " as no matching " +
+                		"rigs are free and the user doesn't have permission to queue for it.");
+                return false;
+            }
+            this.logger.info("Unable to queue for request capabilities " + caps.getCapabilities() + " as no " +
+            		"matching rigs are online.");
         }
         else
         {
@@ -383,8 +520,66 @@ public class QueueEntry
             		"capabilities permission.");
         }
         
-        
         return false;
+    }
+
+    /**
+     * Creates a session and adds it to the queue with the user and resource
+     * permission loaded from a call to <code>hasPermission</code>. The code
+     * parameter is a file system reference to batch code, or <code>null</code>
+     * if interactive session.
+     * 
+     * @return whether entering the queue was successful
+     */
+    public boolean addToQueue(String code)
+    {
+        Date now = new Date();
+        
+        Session ses = new Session();
+        ses.setResourcePermission(this.resourcePerm);
+        
+        /* Start the session. */
+        ses.setActive(true);
+        ses.setActivityLastUpdated(now);
+        ses.setRequestTime(now);
+        
+        /* Information about the user. */
+        ses.setUser(this.user);
+        ses.setUserNamespace(this.user.getNamespace());
+        ses.setUserName(this.user.getName());
+        
+        /* Information about the queued resource. */
+        String type = this.resourcePerm.getType();
+        ses.setResourceType(type);
+        if (RIG_PERMISSION.equals(type))
+        {
+            Rig rig = this.resourcePerm.getRig();
+            ses.setRequestedResourceId(rig.getId());
+            ses.setRequestedResourceName(rig.getName());
+        }
+        else if (TYPE_PERMISSION.equals(type))
+        {
+            RigType rigType = this.resourcePerm.getRigType();
+            ses.setRequestedResourceId(rigType.getId());
+            ses.setRequestedResourceName(rigType.getName());
+        }
+        else if (CAPS_PERMISSION.equals(type))
+        {
+            RequestCapabilities caps = this.resourcePerm.getRequestCapabilities();
+            ses.setRequestedResourceId(caps.getId());
+            ses.setRequestedResourceName(caps.getCapabilities());
+        }
+
+        ses.setCodeReference(code);
+        ses.setExtensions(this.resourcePerm.getAllowedExtensions());
+        ses.setPriority(this.resourcePerm.getUserClass().getPriority());
+        
+        SessionDao sessionDao = new SessionDao(this.db);
+        sessionDao.persist(ses);
+        
+        /* Add the session to the queue. */
+        this.activeSession = Queue.getInstance().addEntry(ses, this.db);
+        return this.activeSession != null;
     }
     
     /**
@@ -424,5 +619,14 @@ public class QueueEntry
     {
         return this.user;
     }
-
+    
+    /**
+     * Returns the users active session.
+     * 
+     * @return active session or null if none exists
+     */
+    public Session getActiveSession()
+    {
+        return this.activeSession;
+    }
 }

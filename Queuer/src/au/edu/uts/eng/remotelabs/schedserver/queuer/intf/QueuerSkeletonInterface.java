@@ -55,6 +55,12 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQue
  */
 public interface QueuerSkeletonInterface
 {
+    /**
+     * Adds a user to the queue.
+     * 
+     * @param request 
+     * @return resposne
+     */
     public AddUserToQueueResponse addUserToQueue(AddUserToQueue request);
 
     public RemoveUserFromQueueResponse removeUserFromQueue(RemoveUserFromQueue request);

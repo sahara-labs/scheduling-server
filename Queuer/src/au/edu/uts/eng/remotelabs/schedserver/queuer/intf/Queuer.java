@@ -50,8 +50,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
@@ -100,11 +98,6 @@ public class Queuer implements QueuerSkeletonInterface
                 (pId != null ? "permission with identifier " + pId.getPermissionID() : (rId != null ? 
                 "resource with identifer " + rId.getResourceID() + " and name " + rId.getResourceName() :
                 "neither a permission or a resource (this will invalid and will fail)")) + '.');
-        if (pId != null && rId != null)
-        {
-            this.logger.info("Both a permission identifier and a resource have been submitted, so only the " +
-            		"permission will be used if it exists and the resource will be ignored.");
-        }
         
         /* Response parameters. */
         AddUserToQueueResponse resp = new AddUserToQueueResponse();
@@ -120,36 +113,76 @@ public class Queuer implements QueuerSkeletonInterface
             return resp;
         }
         
+        org.hibernate.Session db = new UserDao().getSession();
+        QueueEntry entry = new QueueEntry(db);
         User user;
-        ResourcePermissionDao permDao = new ResourcePermissionDao();
-        ResourcePermission perm;
-        
-        QueueEntry entry = new QueueEntry(permDao.getSession());
-        
-        if ((user = this.getUserFromUserID(uId, permDao.getSession())) != null)
+        /**********************************************************************
+         ** 1) Load user and continue if they exist.                         **
+         **********************************************************************/
+        if ((user = this.getUserFromUserID(uId, db)) == null)
         {
             this.logger.warn("User with with identifier=" + uId.getUserID() + " and name=" + uId.getUserNamespace() + 
                     ':' + uId.getUserName() + " not found.");
         }
-        else if (pId != null && (perm = permDao.get(Long.valueOf(pId.getPermissionID()))) != null)
+        /*********************************************************************
+         ** 2) Check the user isn't in queue and continue if they aren't    **
+         **    already in the queue.                                        **
+         *********************************************************************/
+        else if (entry.isInQueue(user))
         {
-            /* Case of queue permission request type. */
-            if (entry.hasPermission(user, perm))
-            {
-                
-            }
+            this.logger.warn("User with with identifier=" + uId.getUserID() + " and name=" + uId.getUserNamespace() + 
+                    ':' + uId.getUserName() + " already in queue.");
         }
-        else if (rId != null)
+        /**********************************************************************
+         ** 3) Check the user has permission to use either the requested     **
+         **    resource permission or requested resource.                    **
+         **********************************************************************/
+        else if ((pId == null || !entry.hasPermission(pId.getPermissionID())) &&
+                 (rId == null || !entry.hasPermission(rId.getType(), rId.getResourceID(), rId.getResourceName())))
+        {            
+            this.logger.warn("User does not have permission to access requested resource permission or resource.");
+        }
+        /**********************************************************************
+         ** 4) Check the user can queue.                                     **
+         **********************************************************************/
+        else if (!entry.canUserQueue())
         {
-            /* Case of resource request type. */
-            if (entry.hasPermission(user, rId.getType(), rId.getResourceID(), rId.getResourceName()))
+            this.logger.warn("Failed queueing because the user cannot queue. This may be because the requested " +
+            		"resource is offline or the user does not have the queue permission for in use resources.");
+        }
+        /**********************************************************************
+         ** 5) Every pre-queue predicate is satisfied so add the user to the **
+         *     queue.                                                        **
+         **********************************************************************/
+        else
+        {
+            // TODO Queue entry - Upload batch code.
+            inQu.setQueueSuccessful(entry.addToQueue(null));
+        }
+        
+        /* Populate queue return details if successful. */
+        Session activeSes = entry.getActiveSession();
+        if (activeSes != null)
+        {
+            ResourceIDType resource = new ResourceIDType();
+            resource.setType(activeSes.getResourceType());
+            if (activeSes.getRig() == null)
             {
-                
+                inQu.setInQueue(true);
+                resource.setResourceID(activeSes.getRequestedResourceId().intValue());
+                resource.setResourceName(activeSes.getRequestedResourceName());
+                inQu.setQueuedResouce(resource);
+            }
+            else
+            {
+                inQu.setInSession(true);
+                resource.setResourceID(activeSes.getRig().getId().intValue());
+                resource.setResourceName(activeSes.getRig().getName());
+                inQu.setAssignedResource(resource);
             }
         }
         
-        
-        permDao.closeSession();
+        db.close();
         return resp;
     }
 

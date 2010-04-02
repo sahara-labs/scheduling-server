@@ -44,13 +44,13 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.hibernate.Session;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -60,6 +60,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
@@ -78,7 +79,7 @@ public class QueueEntryTester extends TestCase
     private QueueEntry entry;
     
     /* Session for test. */
-    private Session session;
+    private org.hibernate.Session session;
     
     public QueueEntryTester(String name) throws Exception
     {
@@ -139,6 +140,1589 @@ public class QueueEntryTester extends TestCase
     }
     
     @Test
+    public void testIsInQueue()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        this.session.persist(ses);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(ses);
+                
+        boolean inQueue = this.entry.isInQueue(user); 
+        
+        this.session.beginTransaction();
+        this.session.delete(ses);
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(inQueue);
+    }
+    
+        @Test
+    public void testAddToQueue()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setPriority((short)4);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        p1.setAllowedExtensions((short)10);
+        this.session.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        this.session.persist(ses);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(ses);
+                
+        assertTrue(this.entry.isInQueue(user));
+        assertTrue(this.entry.hasPermission(p1.getId()));
+        assertTrue(this.entry.canUserQueue());
+        assertTrue(this.entry.addToQueue("/foo/bar"));
+        
+        Session ent = this.entry.getActiveSession();
+        assertNotNull(ent);
+        assertTrue(ent.isActive());
+        assertFalse(ent.isReady());
+        assertEquals(uc1.getPriority(), ent.getPriority());
+        assertEquals(p1.getAllowedExtensions(), ent.getExtensions());
+        assertEquals(Math.floor(now.getTime() / 1000), Math.floor(ent.getActivityLastUpdated().getTime() / 1000));
+        assertEquals("/foo/bar", ent.getCodeReference());
+        assertEquals(Math.floor(now.getTime() / 1000), Math.floor(ent.getRequestTime().getTime() / 1000));
+        assertEquals("RIG", ent.getResourceType());
+        assertEquals(r.getId(), ent.getRequestedResourceId());
+        assertEquals(r.getName(), ent.getRequestedResourceName());
+        assertEquals(p1.getId(), ent.getResourcePermission().getId());
+        assertEquals(user.getId(), ent.getUser().getId());
+        assertEquals(user.getName(), ent.getUserName());
+        assertEquals(user.getNamespace(), ent.getUserNamespace());
+        
+        this.session.beginTransaction();
+        this.session.delete(ent);
+        this.session.delete(ses);
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+    }
+    
+    @Test
+    public void testIsInQueueNotIn()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(false);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        this.session.persist(ses);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(ses);
+                
+        boolean inQueue = this.entry.isInQueue(user); 
+        
+        this.session.beginTransaction();
+        this.session.delete(ses);
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertFalse(inQueue);
+    }
+    
+    @Test
+    public void testCanQueueRig()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+    
+    @Test
+    public void testCanQueueRigOffline()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(false);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertFalse(canQue);
+    }
+    
+    
+    @Test
+    public void testCanQueueRigInUse()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        this.session.persist(r);
+        
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+    
+    @Test
+    public void testCanQueueRigQueue()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(false);
+        this.session.persist(uc1);
+        
+        UserClass uc2 = new UserClass();
+        uc2.setName("uc2");
+        uc2.setActive(true);
+        uc2.setQueuable(true);
+        this.session.persist(uc2);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user.getId(), uc2.getId()), uc2, user);
+        this.session.persist(ass2);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("RIG");
+        p2.setUserClass(uc2);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRig(r);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(uc2);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(ass2);
+        this.session.delete(uc1);
+        this.session.delete(uc2);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+    
+    @Test
+    public void testCanQueueRigNoQueue()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(false);
+        this.session.persist(uc1);
+        
+        UserClass uc2 = new UserClass();
+        uc2.setName("uc2");
+        uc2.setActive(true);
+        uc2.setQueuable(false);
+        this.session.persist(uc2);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user.getId(), uc2.getId()), uc2, user);
+        this.session.persist(ass2);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        this.session.persist(p1);
+        ResourcePermission p2 = new ResourcePermission();
+        p2.setType("RIG");
+        p2.setUserClass(uc2);
+        p2.setStartTime(before);
+        p2.setExpiryTime(after);
+        p2.setRig(r);
+        this.session.persist(p2);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(uc2);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(p2);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(p2);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(ass2);
+        this.session.delete(uc1);
+        this.session.delete(uc2);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertFalse(canQue);
+    }
+    
+    @Test
+    public void testCanQueueType()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(false);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(true);
+        r1.setInSession(false);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(false);
+        r3.setInSession(false);
+        this.session.persist(r3);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("TYPE");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRigType(rt);
+        this.session.persist(p1);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+    
+    @Test
+    public void testCanQueueTypeLocked()
+    {
+        Date before = new Date(System.currentTimeMillis() - 100000);
+        Date after = new Date(System.currentTimeMillis() + 100000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(false);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(true);
+        r1.setInSession(false);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(false);
+        r3.setInSession(false);
+        this.session.persist(r3);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("TYPE");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRigType(rt);
+        this.session.persist(p1);
+        
+        UserLock lock = new UserLock(user, p1, true, "abc123");
+        this.session.persist(lock);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(lock);
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertFalse(canQue);
+    }
+    
+    @Test
+    public void testCanQueueTypeLockedUnlocked()
+    {
+        Date before = new Date(System.currentTimeMillis() - 100000);
+        Date after = new Date(System.currentTimeMillis() + 100000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(false);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(true);
+        r1.setInSession(false);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(false);
+        r3.setInSession(false);
+        this.session.persist(r3);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("TYPE");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRigType(rt);
+        this.session.persist(p1);
+        
+        UserLock lock = new UserLock(user, p1, false, "abc123");
+        this.session.persist(lock);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(lock);
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+
+    @Test
+    public void testCanQueueTypeOffline()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(false);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("TYPE");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRigType(rt);
+        this.session.persist(p1);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertFalse(canQue);
+    }
+
+    @Test
+    public void testCanQueueTypeNoQueue()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(false);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        this.session.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("TYPE");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRigType(rt);
+        this.session.persist(p1);
+
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.delete(r);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertFalse(canQue);
+    }
+
+    @Test
+    public void testCanQueueCaps()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(false);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(true);
+        r1.setInSession(false);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(false);
+        r3.setInSession(false);
+        this.session.persist(r3);
+        this.session.getTransaction().commit();
+
+        this.entry.isInQueue(user);
+        RequestCapabilitiesDao dao = new RequestCapabilitiesDao(this.session);
+        RequestCapabilities reqCaps = dao.addCapabilities("perm");
+        
+        this.session.beginTransaction();
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("CAPABILITY");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRequestCapabilities(reqCaps);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(reqCaps);
+        this.session.refresh(caps);
+        
+        boolean res = this.entry.hasPermission("CAPABILITY", 0, reqCaps.getCapabilities());
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.getTransaction().commit();
+        
+        dao.delete(reqCaps);
+        
+        this.session.beginTransaction();
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+    
+    @Test
+    public void testCanQueueCapsAllOffline()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(false);
+        r.setInSession(false);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(false);
+        r1.setInSession(false);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(false);
+        r3.setInSession(false);
+        this.session.persist(r3);
+        this.session.getTransaction().commit();
+        
+        RequestCapabilitiesDao dao = new RequestCapabilitiesDao(this.session);
+        RequestCapabilities reqCaps = dao.addCapabilities("perm");
+        
+        this.session.beginTransaction();
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("CAPABILITY");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRequestCapabilities(reqCaps);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(reqCaps);
+        this.session.refresh(caps);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("CAPABILITY", 0, reqCaps.getCapabilities());
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.getTransaction().commit();
+        
+        dao.delete(reqCaps);
+        
+        this.session.beginTransaction();
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertFalse(canQue);
+    }
+    
+    @Test
+    public void testCanQueueCapsQueue()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(true);
+        r1.setInSession(true);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(true);
+        r3.setInSession(true);
+        this.session.persist(r3);
+        this.session.getTransaction().commit();
+        
+        RequestCapabilitiesDao dao = new RequestCapabilitiesDao(this.session);
+        RequestCapabilities reqCaps = dao.addCapabilities("perm");
+        
+        this.session.beginTransaction();
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("CAPABILITY");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRequestCapabilities(reqCaps);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(reqCaps);
+        this.session.refresh(caps);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("CAPABILITY", 0, reqCaps.getCapabilities());
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.getTransaction().commit();
+        
+        dao.delete(reqCaps);
+        
+        this.session.beginTransaction();
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+    
+    @Test
+    public void testCanQueueCapsNoQueue()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(false);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(true);
+        r1.setInSession(false);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(true);
+        r3.setInSession(true);
+        this.session.persist(r3);
+        this.session.getTransaction().commit();
+        
+        RequestCapabilitiesDao dao = new RequestCapabilitiesDao(this.session);
+        RequestCapabilities reqCaps = dao.addCapabilities("perm");
+        
+        this.session.beginTransaction();
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("CAPABILITY");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRequestCapabilities(reqCaps);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(reqCaps);
+        this.session.refresh(caps);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("CAPABILITY", 0, reqCaps.getCapabilities());
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.getTransaction().commit();
+        
+        dao.delete(reqCaps);
+        
+        this.session.beginTransaction();
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertTrue(canQue);
+    }
+    
+    @Test
+    public void testCanQueueCapsNoQueueNonFree()
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        this.session.beginTransaction();
+        User user = new User("qperm1", "testns", "USER");
+        this.session.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(false);
+        this.session.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        this.session.persist(ass);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        this.session.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        this.session.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        this.session.persist(r);
+        
+        Rig r1 = new Rig();
+        r1.setName("Perm_Rig_Test_Rig2");
+        r1.setRigType(rt);
+        r1.setRigCapabilities(caps);
+        r1.setLastUpdateTimestamp(before);
+        r1.setActive(true);
+        r1.setOnline(true);
+        r1.setInSession(true);
+        this.session.persist(r1);
+        
+        Rig r3 = new Rig();
+        r3.setName("Perm_Rig_Test_Rig3");
+        r3.setRigType(rt);
+        r3.setRigCapabilities(caps);
+        r3.setLastUpdateTimestamp(before);
+        r3.setActive(true);
+        r3.setOnline(true);
+        r3.setInSession(true);
+        this.session.persist(r3);
+        this.session.getTransaction().commit();
+
+        this.entry.isInQueue(user);
+        RequestCapabilitiesDao dao = new RequestCapabilitiesDao(this.session);
+        RequestCapabilities reqCaps = dao.addCapabilities("perm");
+        
+        this.session.beginTransaction();
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("CAPABILITY");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRequestCapabilities(reqCaps);
+        this.session.persist(p1);
+        this.session.getTransaction().commit();
+        
+        this.session.refresh(uc1);
+        this.session.refresh(user);
+        this.session.refresh(p1);
+        this.session.refresh(r);
+        this.session.refresh(rt);
+        this.session.refresh(reqCaps);
+        this.session.refresh(caps);
+        
+        boolean res = this.entry.hasPermission("CAPABILITY", 0, reqCaps.getCapabilities());
+        boolean canQue = this.entry.canUserQueue();
+        
+        this.session.beginTransaction();
+        this.session.delete(p1);
+        this.session.getTransaction().commit();
+        
+        dao.delete(reqCaps);
+        
+        this.session.beginTransaction();
+        this.session.delete(r);
+        this.session.delete(r1);
+        this.session.delete(r3);
+        this.session.delete(rt);
+        this.session.delete(caps);
+        this.session.delete(ass);
+        this.session.delete(uc1);
+        this.session.delete(user);
+        this.session.getTransaction().commit();
+        
+        assertTrue(res);
+        assertFalse(canQue);
+    }
+
+    @Test
     public void testHasPermissionResRig()
     {
         Date before = new Date(System.currentTimeMillis() - 10000);
@@ -183,8 +1767,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p1);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -266,8 +1851,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -358,8 +1944,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -434,8 +2021,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p1);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "RIG", 0, r.getName());
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", 0, r.getName());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -496,8 +2084,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p1);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -557,8 +2146,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p1);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "RIG", r.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("RIG", r.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -626,8 +2216,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "TYPE", rt.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -696,8 +2287,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "TYPE", 0, "wrong_type");
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", 0, "wrong_type");
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -770,8 +2362,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "TYPE", 0, rt2.getName());
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", 0, rt2.getName());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -841,8 +2434,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "TYPE", 0, rt.getName());
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", 0, rt.getName());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -911,8 +2505,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "TYPE", rt.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -981,8 +2576,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p2);
         this.session.refresh(r);
         this.session.refresh(rt);
-        
-        boolean res = this.entry.hasPermission(user, "TYPE", rt.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("TYPE", rt.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1045,8 +2641,9 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(p1);
         this.session.refresh(p2);
         this.session.refresh(caps);
-        
-        boolean res = this.entry.hasPermission(user, "CAPABILITY", caps.getId(), null);
+
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission("CAPABILITY", caps.getId(), null);
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1090,7 +2687,8 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(user);
         this.session.refresh(p1);
         
-        boolean res = this.entry.hasPermission(user, p1);
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission(p1.getId());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1146,7 +2744,8 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(user);
         this.session.refresh(p1);
         
-        boolean res = this.entry.hasPermission(user, p1);
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission(p1.getId());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1190,7 +2789,8 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(user);
         this.session.refresh(p1);
         
-        boolean res = this.entry.hasPermission(user, p1);
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission(p1.getId());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1230,7 +2830,8 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(user);
         this.session.refresh(p1);
         
-        boolean res = this.entry.hasPermission(user, p1);
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission(p1.getId());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1268,7 +2869,8 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(user);
         this.session.refresh(p1);
         
-        boolean res = this.entry.hasPermission(user, p1);
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission(p1.getId());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1323,7 +2925,8 @@ public class QueueEntryTester extends TestCase
         this.session.refresh(user);
         this.session.refresh(p1);
         
-        boolean res = this.entry.hasPermission(user, p1);
+        this.entry.isInQueue(user);
+        boolean res = this.entry.hasPermission(p1.getId());
         
         this.session.beginTransaction();
         this.session.delete(p1);
@@ -1415,5 +3018,4 @@ public class QueueEntryTester extends TestCase
         
         assertFalse(valid);
     }
-    
 }
