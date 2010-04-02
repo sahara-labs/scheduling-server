@@ -52,7 +52,7 @@ public class Queue
         return ses;
     }
     
-    public void removeEntry(Session ses)
+    public void removeEntry(Session ses, org.hibernate.Session db)
     {
         // TODO
     }

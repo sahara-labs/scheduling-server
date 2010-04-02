@@ -37,6 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
+import java.util.Date;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
@@ -52,6 +54,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
@@ -189,9 +192,48 @@ public class Queuer implements QueuerSkeletonInterface
     @Override
     public RemoveUserFromQueueResponse removeUserFromQueue(final RemoveUserFromQueue request)
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#removeUserFromQueue");
+        /* Request parameters. */
+        UserIDType uId = request.getRemoveUserFromQueue();
+        this.logger.debug("Received remove user from queue request with user id=" + uId.getUserID() + ", user namespace " +
+        		uId.getUserNamespace() + ", user name=" + uId.getUserName() + '.');
+        
+        /* Response parameters. */
+        RemoveUserFromQueueResponse resp = new RemoveUserFromQueueResponse();
+        InQueueType inQueue = new InQueueType();
+        resp.setRemoveUserFromQueueResponse(inQueue);
+        inQueue.setInQueue(false);
+        inQueue.setInSession(false);
+        
+        if (!this.checkPermission(uId))
+        {
+            this.logger.warn("Unable to remove user from queue because of a lack of permission.");
+            return resp;
+        }
+        
+        SessionDao dao = new SessionDao();
+        Session ses;
+        User user;
+        
+        if ((user = this.getUserFromUserID(uId, dao.getSession())) == null)
+        {
+            this.logger.warn("Unable to terminate user session because the user was not found.");
+        }
+        else if ((ses = dao.findActiveSession(user)) == null)   
+        {
+            this.logger.warn("Unable to terminate user session because the user does not have an active session.");
+        }
+        else
+        {
+            /* User has an active session so invalidate it. */
+            ses.setActive(false);
+            ses.setRemovalTime(new Date());
+            ses.setRemovalReason("User request.");
+            dao.flush();
+            Queue.getInstance().removeEntry(ses, dao.getSession());
+        }
+        
+        dao.closeSession();
+        return resp; 
     }
     
     public GetUserQueuePositionResponse getUserQueuePosition(final GetUserQueuePosition request)
