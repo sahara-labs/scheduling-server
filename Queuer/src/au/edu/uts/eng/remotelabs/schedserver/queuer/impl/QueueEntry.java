@@ -125,7 +125,6 @@ public class QueueEntry
      * Permission is having an association to the user class which 
      * owns the resource permission.
      * 
-     * @param user user to check permission of 
      * @param permId resource permission identifier
      * @return true if the user has permission use the resource permission 
      */

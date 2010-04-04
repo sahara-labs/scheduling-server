@@ -84,8 +84,21 @@ public interface QueuerSkeletonInterface
      */
     public CheckPermissionAvailabilityResponse checkPermissionAvailability(CheckPermissionAvailability request);
 
+    /**
+     * Returns the position the user in the queue. Also returned is the time the
+     * user has been in the queue and information about the queue.
+     * 
+     * @param request 
+     * @return response
+     */
     public GetUserQueuePositionResponse getUserQueuePosition(GetUserQueuePosition request);
 
+    /**
+     * Finds information about the avaliability of a resource,
+     * 
+     * @param request 
+     * @return response
+     */
     public CheckResourceAvailabilityResponse checkResourceAvailability(CheckResourceAvailability request);
 
     /**

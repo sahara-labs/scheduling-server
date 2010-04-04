@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.queuer.intf.tests;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -70,6 +71,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.InnerQueue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
@@ -77,6 +80,8 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAv
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailabilityResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckResourceAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckResourceAvailabilityResponse;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePositionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.InQueueType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueueResponse;
@@ -89,6 +94,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQue
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserNSNameSequence;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserQueueType;
 
 /**
  * Tests the {@link Queuer} class.
@@ -147,6 +153,17 @@ public class QueuerTester extends TestCase
     {
         super.setUp();
         this.queuer = new Queuer();
+        
+        Queue q = Queue.getInstance();
+        Field f = Queue.class.getDeclaredField("rigQueues");
+        f.setAccessible(true);
+        f.set(q, new HashMap<Long, InnerQueue>());
+        f = Queue.class.getDeclaredField("typeQueues");
+        f.setAccessible(true);
+        f.set(q, new HashMap<Long, InnerQueue>());
+        f = Queue.class.getDeclaredField("capabilityQueues");
+        f.setAccessible(true);
+        f.set(q, new HashMap<Long, InnerQueue>());
     }
 
     /**
@@ -250,15 +267,14 @@ public class QueuerTester extends TestCase
         db.delete(uc1);
         db.delete(user);
         db.getTransaction().commit();
+        db.close();
         
         assertNotNull(ent);
         assertTrue(ent.isActive());
         assertFalse(ent.isReady());
         assertEquals(uc1.getPriority(), ent.getPriority());
         assertEquals(p1.getAllowedExtensions(), ent.getExtensions());
-        assertEquals(Math.floor(now.getTime() / 100000), Math.floor(ent.getActivityLastUpdated().getTime() / 100000));
         assertNull(ent.getCodeReference());
-        assertEquals(Math.floor(now.getTime() / 100000), Math.floor(ent.getRequestTime().getTime() / 100000));
         assertEquals("RIG", ent.getResourceType());
         assertEquals(r.getId(), ent.getRequestedResourceId());
         assertEquals(r.getName(), ent.getRequestedResourceName());
@@ -384,6 +400,7 @@ public class QueuerTester extends TestCase
         db.delete(uc1);
         db.delete(user);
         db.getTransaction().commit();
+        db.close();
         
         assertNotNull(ent);
         assertTrue(ent.isActive());
@@ -518,6 +535,7 @@ public class QueuerTester extends TestCase
         db.delete(uc1);
         db.delete(user);
         db.getTransaction().commit();
+        db.close();
         
         assertNotNull(ent);
         assertTrue(ent.isActive());
@@ -647,6 +665,7 @@ public class QueuerTester extends TestCase
         db.delete(uc1);
         db.delete(user);
         db.getTransaction().commit();
+        db.close();
         
         assertNotNull(resp);
         InQueueType in = resp.getAddUserToQueueResponse();
@@ -738,6 +757,7 @@ public class QueuerTester extends TestCase
         db.delete(uc1);
         db.delete(user);
         db.getTransaction().commit();
+        db.close();
         
         assertNotNull(resp);
         InQueueType in = resp.getAddUserToQueueResponse();
@@ -839,6 +859,7 @@ public class QueuerTester extends TestCase
         db.delete(uc1);
         db.delete(user);
         db.getTransaction().commit();
+        db.close();
         
         assertNotNull(resp);
         InQueueType in = resp.getRemoveUserFromQueueResponse();
@@ -938,6 +959,7 @@ public class QueuerTester extends TestCase
         db.delete(uc1);
         db.delete(user);
         db.getTransaction().commit();
+        db.close();
         
         assertNotNull(resp);
         InQueueType in = resp.getRemoveUserFromQueueResponse();
@@ -1023,6 +1045,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1150,6 +1173,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1278,6 +1302,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1369,6 +1394,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1446,6 +1472,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1533,6 +1560,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1621,6 +1649,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1749,6 +1778,7 @@ public class QueuerTester extends TestCase
         dao.delete(ab);
         dao.delete(abc);
         reqCapsDao.delete(ra);
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1870,6 +1900,7 @@ public class QueuerTester extends TestCase
         dao.delete(abc);
         dao.delete(df);
         reqCapsDao.delete(ra);
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckPermissionAvailabilityResponse();
@@ -1977,6 +2008,7 @@ public class QueuerTester extends TestCase
         db.delete(type2);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckResourceAvailabilityResponse();
@@ -2114,6 +2146,7 @@ public class QueuerTester extends TestCase
         db.delete(type2);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckResourceAvailabilityResponse();
@@ -2214,6 +2247,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckResourceAvailabilityResponse();
@@ -2294,6 +2328,7 @@ public class QueuerTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.getTransaction().commit();  
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckResourceAvailabilityResponse();
@@ -2426,6 +2461,7 @@ public class QueuerTester extends TestCase
         dao.delete(abc);
         dao.delete(df);
         reqCapsDao.delete(ra);
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckResourceAvailabilityResponse();
@@ -2548,6 +2584,7 @@ public class QueuerTester extends TestCase
         dao.delete(abc);
         dao.delete(df);
         reqCapsDao.delete(ra);
+        db.close();
         
         assertNotNull(resp);
         QueueType queue = resp.getCheckResourceAvailabilityResponse();
@@ -2577,9 +2614,665 @@ public class QueuerTester extends TestCase
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.
      */
-    public void testGetUserQueuePosition()
+    public void testGetUserQueuePosition() throws Exception
     {
-        fail("Not yet implemented"); // TODO
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        db.persist(caps);
+        db.getTransaction().commit();
+        
+        RequestCapabilitiesDao dao = new RequestCapabilitiesDao(db);
+        RequestCapabilities rCaps1 = dao.addCapabilities("rig,test");
+        RequestCapabilities rCaps2 = dao.addCapabilities("type");
+        RequestCapabilities rCaps3 = dao.addCapabilities("perm,rig");
+        
+        db.beginTransaction();
+        User user1 = new User("qperm1", "testns", "USER");
+        db.persist(user1);
+        User user2 = new User("qperm2", "testns", "USER");
+        db.persist(user2);
+        User user3 = new User("qperm3", "testns", "USER");
+        db.persist(user3);
+        User user4 = new User("qperm4", "testns", "USER");
+        db.persist(user4);
+        User user5 = new User("qperm5work", "testns", "USER");
+        db.persist(user5);
+        User user6 = new User("qperm6", "testns", "USER");
+        db.persist(user6);
+        User user7 = new User("qperm7", "testns", "USER");
+        db.persist(user7);
+        User user8 = new User("qperm8", "testns", "USER");
+        db.persist(user8);
+        User user9 = new User("qperm9", "testns", "USER");
+        db.persist(user9);
+        User user10 = new User("qperm10", "testns", "USER");
+        db.persist(user10);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user2.getId(), uc1.getId()), uc1, user2);
+        db.persist(ass2);
+        UserAssociation ass3 = new UserAssociation(new UserAssociationId(user3.getId(), uc1.getId()), uc1, user3);
+        db.persist(ass3);
+        UserAssociation ass4 = new UserAssociation(new UserAssociationId(user4.getId(), uc1.getId()), uc1, user4);
+        db.persist(ass4);
+        UserAssociation ass5 = new UserAssociation(new UserAssociationId(user5.getId(), uc1.getId()), uc1, user5);
+        db.persist(ass5);
+        UserAssociation ass6 = new UserAssociation(new UserAssociationId(user6.getId(), uc1.getId()), uc1, user6);
+        db.persist(ass6);
+        UserAssociation ass7 = new UserAssociation(new UserAssociationId(user7.getId(), uc1.getId()), uc1, user7);
+        db.persist(ass7);
+        UserAssociation ass8 = new UserAssociation(new UserAssociationId(user8.getId(), uc1.getId()), uc1, user8);
+        db.persist(ass8);
+        UserAssociation ass9 = new UserAssociation(new UserAssociationId(user9.getId(), uc1.getId()), uc1, user9);
+        db.persist(ass9);
+        UserAssociation ass10 = new UserAssociation(new UserAssociationId(user10.getId(), uc1.getId()), uc1, user10);
+        db.persist(ass10);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type1");
+        rt.setCodeAssignable(false);
+        db.persist(rt);
+
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig2");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setActive(true);
+        ses1.setReady(true);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 5);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(r.getId());
+        ses1.setRequestedResourceName(r.getName());
+        ses1.setResourceType("RIG");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        db.persist(ses1);
+        Session ses2 = new Session();
+        ses2.setActive(true);
+        ses2.setReady(true);
+        ses2.setActivityLastUpdated(now);
+        ses2.setExtensions((short) 5);
+        ses2.setPriority((short) 5);
+        ses2.setRequestTime(new Date(System.currentTimeMillis() - 1000));
+        ses2.setRequestedResourceId(rt.getId());
+        ses2.setRequestedResourceName(rt.getName());
+        ses2.setResourceType("TYPE");
+        ses2.setResourcePermission(p1);
+        ses2.setUser(user2);
+        ses2.setUserName(user2.getName());
+        ses2.setUserNamespace(user2.getNamespace());
+        db.persist(ses2);
+        Session ses3 = new Session();
+        ses3.setActive(true);
+        ses3.setReady(true);
+        ses3.setActivityLastUpdated(now);
+        ses3.setExtensions((short) 5);
+        ses3.setPriority((short) 5);
+        ses3.setRequestTime(new Date(System.currentTimeMillis() - 2000));
+        ses3.setRequestedResourceId(rCaps1.getId());
+        ses3.setRequestedResourceName(rCaps1.getCapabilities());
+        ses3.setResourceType("CAPABILITY");
+        ses3.setResourcePermission(p1);
+        ses3.setUser(user3);
+        ses3.setUserName(user3.getName());
+        ses3.setUserNamespace(user3.getNamespace());
+        db.persist(ses3);
+        Session ses4 = new Session();
+        ses4.setActive(true);
+        ses4.setReady(true);
+        ses4.setActivityLastUpdated(now);
+        ses4.setExtensions((short) 5);
+        ses4.setPriority((short) 5);
+        ses4.setRequestTime(new Date(System.currentTimeMillis() - 3000));
+        ses4.setRequestedResourceId(rt.getId());
+        ses4.setRequestedResourceName(rt.getName());
+        ses4.setResourceType("TYPE");
+        ses4.setResourcePermission(p1);
+        ses4.setUser(user4);
+        ses4.setUserName(user4.getName());
+        ses4.setUserNamespace(user4.getNamespace());
+        db.persist(ses4);
+        Session ses5 = new Session();
+        ses5.setActive(true);
+        ses5.setReady(true);
+        ses5.setActivityLastUpdated(before);
+        ses5.setExtensions((short) 5);
+        ses5.setPriority((short) 5);
+        ses5.setRequestTime(new Date(System.currentTimeMillis() - 300000));
+        ses5.setRequestedResourceId(r.getId());
+        ses5.setRequestedResourceName(r.getName());
+        ses5.setResourceType("RIG");
+        ses5.setResourcePermission(p1);
+        ses5.setUser(user5);
+        ses5.setUserName(user5.getName());
+        ses5.setUserNamespace(user5.getNamespace());
+        db.persist(ses5);
+        Session ses6 = new Session();
+        ses6.setActive(true);
+        ses6.setReady(true);
+        ses6.setActivityLastUpdated(now);
+        ses6.setExtensions((short) 5);
+        ses6.setPriority((short) 6);
+        ses6.setRequestTime(now);
+        ses6.setRequestedResourceId(r.getId());
+        ses6.setRequestedResourceName(r.getName());
+        ses6.setResourceType("RIG");
+        ses6.setResourcePermission(p1);
+        ses6.setUser(user6);
+        ses6.setUserName(user6.getName());
+        ses6.setUserNamespace(user6.getNamespace());
+        db.persist(ses6);
+        Session ses7 = new Session();
+        ses7.setActive(true);
+        ses7.setReady(true);
+        ses7.setActivityLastUpdated(now);
+        ses7.setExtensions((short) 5);
+        ses7.setPriority((short) 6);
+        ses7.setRequestTime(new Date(System.currentTimeMillis() - 1000));
+        ses7.setRequestedResourceId(rCaps1.getId());
+        ses7.setRequestedResourceName(rCaps1.getCapabilities());
+        ses7.setResourceType("CAPABILITY");
+        ses7.setResourcePermission(p1);
+        ses7.setUser(user7);
+        ses7.setUserName(user7.getName());
+        ses7.setUserNamespace(user7.getNamespace());
+        db.persist(ses7);
+        Session ses8 = new Session();
+        ses8.setActive(true);
+        ses8.setReady(true);
+        ses8.setActivityLastUpdated(now);
+        ses8.setExtensions((short) 5);
+        ses8.setPriority((short) 6);
+        ses8.setRequestTime(new Date(System.currentTimeMillis() - 2000));
+        ses8.setRequestedResourceId(rCaps2.getId());
+        ses8.setRequestedResourceName(rCaps2.getCapabilities());
+        ses8.setResourceType("CAPABILITY");
+        ses8.setResourcePermission(p1);
+        ses8.setUser(user8);
+        ses8.setUserName(user8.getName());
+        ses8.setUserNamespace(user8.getNamespace());
+        db.persist(ses8);
+        Session ses9 = new Session();
+        ses9.setActive(true);
+        ses9.setReady(true);
+        ses9.setActivityLastUpdated(now);
+        ses9.setExtensions((short) 5);
+        ses9.setPriority((short) 6);
+        ses9.setRequestTime(new Date(System.currentTimeMillis() - 3000));
+        ses9.setRequestedResourceId(rt.getId());
+        ses9.setRequestedResourceName(rt.getName());
+        ses9.setResourceType("TYPE");
+        ses9.setResourcePermission(p1);
+        ses9.setUser(user9);
+        ses9.setUserName(user9.getName());
+        ses9.setUserNamespace(user9.getNamespace());
+        db.persist(ses9);
+        Session ses10 = new Session();
+        ses10.setActive(true);
+        ses10.setReady(true);
+        ses10.setActivityLastUpdated(now);
+        ses10.setExtensions((short) 5);
+        ses10.setPriority((short) 6);
+        ses10.setRequestTime(new Date(System.currentTimeMillis() - 4000));
+        ses10.setRequestedResourceId(rCaps3.getId());
+        ses10.setRequestedResourceName(rCaps3.getCapabilities());
+        ses10.setResourceType("CAPABILITY");
+        ses10.setResourcePermission(p1);
+        ses10.setUser(user10);
+        ses10.setUserName(user10.getName());
+        ses10.setUserNamespace(user10.getNamespace());
+        db.persist(ses10);
+        db.getTransaction().commit();
+        db.close();
+        
+//        db.beginTransaction();
+//        db.refresh(r);
+//        db.refresh(rt);
+//        db.refresh(caps);
+//        db.refresh(rCaps1);
+//        db.refresh(rCaps2);
+//        db.refresh(rCaps3);
+//        db.refresh(user5);
+//        db.getTransaction().commit();
+        
+        db = DataAccessActivator.getNewSession();
+        ses1 = (Session)db.merge(ses1);
+        ses2 = (Session)db.merge(ses2);
+        ses3 = (Session)db.merge(ses3);
+        ses4 = (Session)db.merge(ses4);
+        ses5 = (Session)db.merge(ses5);
+        ses6 = (Session)db.merge(ses6);
+        ses7 = (Session)db.merge(ses7);
+        ses8 = (Session)db.merge(ses8);
+        ses9 = (Session)db.merge(ses9);
+        ses10 = (Session)db.merge(ses10);
+        
+        Queue.getInstance().addEntry(ses1, db);
+        Queue.getInstance().addEntry(ses2, db);
+        Queue.getInstance().addEntry(ses3, db);
+        Queue.getInstance().addEntry(ses4, db);
+        Queue.getInstance().addEntry(ses5, db);
+        Queue.getInstance().addEntry(ses6, db);
+        Queue.getInstance().addEntry(ses7, db);
+        Queue.getInstance().addEntry(ses8, db);
+        Queue.getInstance().addEntry(ses9, db);
+        Queue.getInstance().addEntry(ses10, db);
+        
+        /* Request parameters. */
+        
+        GetUserQueuePosition request = new GetUserQueuePosition();
+        UserIDType uid = new UserIDType();
+        request.setGetUserQueuePosition(uid);
+        uid.setUserQName(user5.getNamespace() + ':' + user5.getName());
+        
+        GetUserQueuePositionResponse resp = this.queuer.getUserQueuePosition(request);
+        
+        r = (Rig) db.get(Rig.class, r.getId());
+        rt = (RigType) db.get(RigType.class, rt.getId());
+        db.beginTransaction();
+        db.delete(ses1);
+        db.delete(ses2);
+        db.delete(ses3);
+        db.delete(ses4);
+        db.delete(ses5);
+        db.delete(ses6);
+        db.delete(ses7);
+        db.delete(ses8);
+        db.delete(ses9);
+        db.delete(ses10);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(ass1);
+        db.delete(ass2);
+        db.delete(ass3);
+        db.delete(ass4);
+        db.delete(ass5);
+        db.delete(ass6);
+        db.delete(ass7);
+        db.delete(ass8);
+        db.delete(ass9);
+        db.delete(ass10);
+        db.delete(uc1);
+        db.delete(user1);
+        db.delete(user2);
+        db.delete(user3);
+        db.delete(user4);
+        db.delete(user5);
+        db.delete(user6);
+        db.delete(user7);
+        db.delete(user8);
+        db.delete(user9);
+        db.delete(user10);
+        db.getTransaction().commit();
+        
+        dao = new RequestCapabilitiesDao(db);
+        rCaps1 = (RequestCapabilities)db.merge(rCaps1);
+        rCaps2 = (RequestCapabilities)db.merge(rCaps2);
+        rCaps3 = (RequestCapabilities)db.merge(rCaps3);
+        dao.delete(rCaps1);
+        dao.delete(rCaps2);
+        dao.delete(rCaps3);
+        db.beginTransaction();
+        caps = (RigCapabilities)db.merge(caps);
+        db.delete(caps);
+        db.getTransaction().commit();
+        db.close();
+        
+        UserQueueType q = resp.getGetUserQueuePositionResponse();
+        assertNotNull(q);
+        assertTrue(q.getInQueue());
+        assertFalse(q.getInSession());
+        assertFalse(q.getQueueSuccessful());
+        assertNull(q.getAssignedResource());
+        assertEquals(1, q.getPosition());
+        int time = Math.round((System.currentTimeMillis() - ses5.getRequestTime().getTime()) / 60000);
+        assertEquals(time, q.getTime());
+        
+        ResourceIDType res = q.getQueuedResouce();
+        assertNotNull(res);
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals("RIG", res.getType());
+        
+        QueueType qt = q.getQueue();
+        assertNotNull(qt);
+        assertTrue(qt.getIsQueueable());
+        assertTrue(qt.getViable());
+        assertFalse(qt.getHasFree());
+        assertFalse(qt.getIsCodeAssignable());
+        
+        res = qt.getQueuedResource();
+        assertNotNull(res);
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals("RIG", res.getType());
+        
+        QueueTargetType targets[] = qt.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(1, targets.length);
+        
+        assertTrue(targets[0].getViable());
+        assertFalse(targets[0].getIsFree());
+        res = targets[0].getResource();
+        assertNotNull(res);
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals("RIG", res.getType());
+        
+        OMElement ele = resp.getOMElement(GetUserQueuePositionResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.
+     */
+    public void testGetUserQueuePositionAssigned() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        User user1 = new User("qperm12", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        rt.setCodeAssignable(false);
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("foo,bar,baz");
+        db.persist(caps);
+
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setActive(true);
+        ses1.setReady(true);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 5);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(r.getId());
+        ses1.setRequestedResourceName(r.getName());
+        ses1.setResourceType("RIG");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        db.persist(ses1);
+        
+        db.getTransaction().commit();
+        
+        db.refresh(r);
+        db.refresh(rt);
+        db.refresh(caps);
+        
+        Queue.getInstance().addEntry(ses1, db);
+        
+        /* Request parameters. */
+        
+        GetUserQueuePosition request = new GetUserQueuePosition();
+        UserIDType uid = new UserIDType();
+        request.setGetUserQueuePosition(uid);
+        uid.setUserQName(user1.getNamespace() + ':' + user1.getName());
+        
+        GetUserQueuePositionResponse resp = this.queuer.getUserQueuePosition(request);
+        
+        UserQueueType q = resp.getGetUserQueuePositionResponse();
+        assertNotNull(q);
+        assertTrue(q.getInQueue());
+        assertFalse(q.getInSession());
+        assertFalse(q.getQueueSuccessful());
+        assertNull(q.getAssignedResource());
+        assertEquals(1, q.getPosition());
+        int time = Math.round((System.currentTimeMillis() - ses1.getRequestTime().getTime()) / 60000);
+        assertEquals(time, q.getTime());
+        
+        ResourceIDType res = q.getQueuedResouce();
+        assertNotNull(res);
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals("RIG", res.getType());
+        
+        QueueType qt = q.getQueue();
+        assertNotNull(qt);
+        assertTrue(qt.getIsQueueable());
+        assertTrue(qt.getViable());
+        assertFalse(qt.getHasFree());
+        assertFalse(qt.getIsCodeAssignable());
+        
+        res = qt.getQueuedResource();
+        assertNotNull(res);
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals("RIG", res.getType());
+        
+        QueueTargetType targets[] = qt.getQueueTarget();
+        assertNotNull(targets);
+        assertEquals(1, targets.length);
+        
+        assertTrue(targets[0].getViable());
+        assertFalse(targets[0].getIsFree());
+        res = targets[0].getResource();
+        assertNotNull(res);
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals("RIG", res.getType());
+        
+        r.setInSession(false);
+        db.beginTransaction();
+        db.flush();
+        db.getTransaction().commit();
+        
+        Queue.getInstance().runRigAssignment(r.getId(), db);
+        resp = this.queuer.getUserQueuePosition(request);
+        
+        db.beginTransaction();
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit();
+        db.close();
+        
+        q = resp.getGetUserQueuePositionResponse();
+        assertNotNull(q);
+        assertFalse(q.getInQueue());
+        assertTrue(q.getInSession());
+        assertFalse(q.getQueueSuccessful());
+        assertNull(q.getQueuedResouce());
+        assertEquals(0, q.getPosition());
+        
+        time = Math.round((System.currentTimeMillis() - ses1.getAssignmentTime().getTime()) / 60000);
+        assertEquals(time, q.getTime());
+        
+        res = q.getAssignedResource();
+        assertNotNull(res);
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals("RIG", res.getType());
+        
+        qt = q.getQueue();
+        assertNull(qt);
+        
+        OMElement ele = resp.getOMElement(GetUserQueuePositionResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.
+     */
+    public void testGetUserQueuePositionNotInQueue() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);       
+        
+        db.beginTransaction();
+        User user1 = new User("qperm1", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        rt.setCodeAssignable(false);
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("foo,bar,baz");
+        db.persist(caps);
+
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setActive(false);
+        ses1.setReady(true);
+        ses1.setActivityLastUpdated(before);
+        ses1.setExtensions((short) 5);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(before);
+        ses1.setRequestedResourceId(r.getId());
+        ses1.setRequestedResourceName(r.getName());
+        ses1.setResourceType("RIG");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        db.persist(ses1);
+        db.getTransaction().commit();
+        
+        /* Request parameters. */
+        
+        GetUserQueuePosition request = new GetUserQueuePosition();
+        UserIDType uid = new UserIDType();
+        request.setGetUserQueuePosition(uid);
+        uid.setUserQName(user1.getNamespace() + ':' + user1.getName());
+        
+        GetUserQueuePositionResponse resp = this.queuer.getUserQueuePosition(request);
+
+        db.beginTransaction();
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit();
+        db.close();
+        
+        UserQueueType q = resp.getGetUserQueuePositionResponse();
+        assertNotNull(q);
+        assertFalse(q.getInQueue());
+        assertFalse(q.getInSession());
+        assertFalse(q.getQueueSuccessful());
+        assertNull(q.getQueuedResouce());
+        assertNull(q.getAssignedResource());
+        assertNull(q.getQueue());
+        assertEquals(-1, q.getPosition());
+        assertEquals(0, q.getTime());
+        
+        OMElement ele = resp.getOMElement(GetUserQueuePositionResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
     }
 
     /**
