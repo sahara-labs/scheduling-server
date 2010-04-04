@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
+Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess,
+ au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
  au.edu.uts.eng.remotelabs.schedserver.logger,
  au.edu.uts.eng.remotelabs.schedserver.server,

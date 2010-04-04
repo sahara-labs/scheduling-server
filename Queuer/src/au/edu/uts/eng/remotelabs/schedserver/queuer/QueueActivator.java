@@ -38,6 +38,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.queuer;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
@@ -49,6 +50,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueStaleSessionTask;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -59,6 +61,9 @@ public class QueueActivator implements BundleActivator
 {
     /** Service registration for the Permission SOAP interface. */
     private ServiceRegistration soapRegistration;
+    
+    /** Service registration for the queue stale session timeout task. */
+    private ServiceRegistration staleTimeoutTaskReg;
     
     /** Logger. */
     private Logger logger;
@@ -83,6 +88,13 @@ public class QueueActivator implements BundleActivator
         }
         dao.closeSession();
         
+        /* Register the queue stale session timeout task. */
+        QueueStaleSessionTask task = new QueueStaleSessionTask();
+        task.run(); // Clean up any old stale sessions
+        Properties props = new Properties();
+        props.put("period", "60");
+        this.staleTimeoutTaskReg = context.registerService(Runnable.class.getName(), task, props);
+        
         /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
@@ -95,5 +107,6 @@ public class QueueActivator implements BundleActivator
 	{
 	    this.logger.info("Shutting down the queuer bundle.");
 	    this.soapRegistration.unregister();
+	    this.staleTimeoutTaskReg.unregister();
 	}
 }
