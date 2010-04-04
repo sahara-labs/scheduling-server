@@ -129,7 +129,10 @@ public class GenericDao<T>
     @SuppressWarnings("unchecked")
     public T get(Serializable id)
     {
-        return (T) this.session.get(this.clazz, id);
+        this.begin();
+        T t = (T) this.session.get(this.clazz, id);
+        this.commit();
+        return t;
     }
     
     /**
@@ -190,7 +193,9 @@ public class GenericDao<T>
      */
     public void refresh(T obj)
     {
+        this.begin();
         this.session.refresh(obj);
+        this.commit();
     }
 
     /**
