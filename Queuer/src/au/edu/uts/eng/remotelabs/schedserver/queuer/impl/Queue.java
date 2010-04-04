@@ -501,6 +501,16 @@ public class Queue
     }
     
     /**
+     * Clears the queue of all sessions.
+     */
+    public void expunge()
+    {
+        this.rigQueues.clear();
+        this.typeQueues.clear();
+        this.capabilityQueues.clear();
+    }
+    
+    /**
      * Returns the singleton instance of this queue.
      * 
      * @return queue instance.

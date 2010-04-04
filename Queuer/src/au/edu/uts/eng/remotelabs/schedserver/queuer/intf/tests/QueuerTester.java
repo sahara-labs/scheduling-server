@@ -2958,7 +2958,7 @@ public class QueuerTester extends TestCase
         assertFalse(q.getQueueSuccessful());
         assertNull(q.getAssignedResource());
         assertEquals(1, q.getPosition());
-        int time = Math.round((System.currentTimeMillis() - ses5.getRequestTime().getTime()) / 60000);
+        int time = Math.round((System.currentTimeMillis() - ses5.getRequestTime().getTime()) / 1000);
         assertEquals(time, q.getTime());
         
         ResourceIDType res = q.getQueuedResouce();
@@ -3089,7 +3089,7 @@ public class QueuerTester extends TestCase
         assertFalse(q.getQueueSuccessful());
         assertNull(q.getAssignedResource());
         assertEquals(1, q.getPosition());
-        int time = Math.round((System.currentTimeMillis() - ses1.getRequestTime().getTime()) / 60000);
+        int time = Math.round((System.currentTimeMillis() - ses1.getRequestTime().getTime()) / 1000);
         assertEquals(time, q.getTime());
         
         ResourceIDType res = q.getQueuedResouce();

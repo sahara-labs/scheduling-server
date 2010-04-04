@@ -275,7 +275,7 @@ public class Queuer implements QueuerSkeletonInterface
                 /* User is currently in queue. */
                 queue.setInQueue(true);
                 queue.setPosition(Queue.getInstance().getEntryPosition(ses, dao.getSession()));
-                queue.setTime(Math.round((System.currentTimeMillis() - ses.getRequestTime().getTime()) / ( 60000)));
+                queue.setTime(Math.round((System.currentTimeMillis() - ses.getRequestTime().getTime()) / 1000));
                 
                 /* Add requested resource. */
                 ResourceIDType res = new ResourceIDType();
@@ -297,7 +297,7 @@ public class Queuer implements QueuerSkeletonInterface
                 res.setType("RIG");
                 res.setResourceID(rig.getId().intValue());
                 res.setResourceName(rig.getName());
-                queue.setTime((Math.round(System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 60000));
+                queue.setTime((Math.round(System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000));
             }
         }
         

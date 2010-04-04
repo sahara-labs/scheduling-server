@@ -37,13 +37,18 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer;
 
+import java.util.List;
+
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -63,6 +68,20 @@ public class QueueActivator implements BundleActivator
     {
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting queuer bundle...");
+        
+        /* Reload all the active queue sessions. */
+        Queue queue = Queue.getInstance();
+        queue.expunge();
+        SessionDao dao = new SessionDao();
+        List<Session> sessions = dao.findAllActiveSessions();
+        for (Session ses : sessions)
+        {
+            if (ses.getAssignmentTime() == null)
+            {
+                queue.addEntry(ses, dao.getSession());
+            }
+        }
+        dao.closeSession();
         
         /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
