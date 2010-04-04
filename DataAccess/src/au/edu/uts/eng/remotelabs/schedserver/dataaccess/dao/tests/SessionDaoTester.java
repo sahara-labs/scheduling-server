@@ -37,7 +37,9 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -335,7 +337,103 @@ public class SessionDaoTester extends TestCase
         db.delete(type);
         db.delete(userClass);
         db.delete(user);
-        db.getTransaction().commit();   
+        db.getTransaction().commit();
+        db.close();
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao#findActiveSession(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User)}.
+     */
+    @Test
+    public void testFindAllActiveSessions()
+    {
+        Date now = new Date();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        db.beginTransaction();
+        User user = new User("sestest", "ns", "USER");
+        db.persist(user);
+        User user2 = new User("sestest2", "ns", "USER");
+        db.persist(user2);
+        UserClass userClass= new UserClass();
+        userClass.setName("uc");
+        db.persist(userClass);
+        RigType type = new RigType();
+        type.setName("rig_type");
+        db.persist(type);
+        ResourcePermission perm = new ResourcePermission();         
+        perm.setStartTime(now);
+        perm.setExpiryTime(now);
+        perm.setUserClass(userClass);
+        perm.setType("TYPE");
+        perm.setRigType(type);
+        db.persist(perm);
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setActivityLastUpdated(now);
+        ses.setPriority((short) 1);
+        ses.setRequestTime(now);
+        ses.setUser(user2);
+        ses.setUserName(user2.getName());
+        ses.setUserNamespace(user2.getNamespace());
+        ses.setRequestedResourceId(type.getId());
+        ses.setRequestedResourceName(type.getName());
+        ses.setResourcePermission(perm);
+        ses.setResourceType("TYPE");
+        db.persist(ses);
+        Session ses2 = new Session();
+        ses2.setActive(true);
+        ses2.setActivityLastUpdated(now);
+        ses2.setPriority((short) 1);
+        ses2.setRequestTime(new Date(System.currentTimeMillis() - 1000));
+        ses2.setUser(user);
+        ses2.setUserName(user.getName());
+        ses2.setUserNamespace(user.getNamespace());
+        ses2.setRequestedResourceId(type.getId());
+        ses2.setRequestedResourceName(type.getName());
+        ses2.setResourcePermission(perm);
+        ses2.setResourceType("TYPE");
+        db.persist(ses2);
+        Session ses3 = new Session();
+        ses3.setActive(false);
+        ses3.setActivityLastUpdated(now);
+        ses3.setPriority((short) 1);
+        ses3.setRequestTime(new Date(System.currentTimeMillis() - 1000));
+        ses3.setUser(user);
+        ses3.setUserName(user.getName());
+        ses3.setUserNamespace(user.getNamespace());
+        ses3.setRequestedResourceId(type.getId());
+        ses3.setRequestedResourceName(type.getName());
+        ses3.setResourcePermission(perm);
+        ses3.setResourceType("TYPE");
+        db.persist(ses3);
+        
+        db.getTransaction().commit();
+        
+        List<Session> sessions = this.dao.findAllActiveSessions();
+        
+        db.beginTransaction();
+        db.delete(ses);
+        db.delete(ses2);
+        db.delete(ses3);
+        db.delete(ses);
+        db.delete(perm);
+        db.delete(type);
+        db.delete(userClass);
+        db.delete(user);
+        db.delete(user2);
+        db.getTransaction().commit();
+        
+        assertNotNull(sessions);
+        assertEquals(2, sessions.size());
+        
+        List<Long> ids = new ArrayList<Long>(2);
+        for (Session s : sessions)
+        {
+            ids.add(s.getId());
+        }
+        
+        assertTrue(ids.contains(ses.getId()));
+        assertTrue(ids.contains(ses2.getId()));
     }
 
 }

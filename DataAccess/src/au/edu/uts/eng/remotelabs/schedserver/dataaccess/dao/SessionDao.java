@@ -85,4 +85,18 @@ public class SessionDao extends GenericDao<Session>
         }
         return sessions.get(0);
     }
+    
+    /**
+     * Returns all the currently active sessions. If no active sessions are
+     * found, an empty list is returned.
+     * 
+     * @return active sessions
+     */
+    @SuppressWarnings("unchecked")
+    public List<Session> findAllActiveSessions()
+    {
+        Criteria cri = this.session.createCriteria(Session.class);
+        cri.add(Restrictions.eq("active", Boolean.TRUE));
+        return cri.list();        
+    }
 }
