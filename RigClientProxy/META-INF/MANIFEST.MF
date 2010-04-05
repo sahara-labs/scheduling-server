@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RigClientProxy
+Bundle-SymbolicName: SchedulingServer-RigClientProxy
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientProxyActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.osgi.framework;version="1.3.0"
