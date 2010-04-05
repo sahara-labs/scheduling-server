@@ -35,7 +35,7 @@
  * @date 5th April 2009
  */
 
-package au.edu.uts.edu.uts.eng.remotelabs.schedserver.session;
+package au.edu.uts.eng.remotelabs.schedserver.session;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
