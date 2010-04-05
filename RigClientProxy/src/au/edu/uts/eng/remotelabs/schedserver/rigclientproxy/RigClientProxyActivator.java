@@ -39,7 +39,6 @@ package au.edu.uts.eng.remotelabs.schedserver.rigclientproxy;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -64,8 +63,8 @@ public class RigClientProxyActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Rig client proxy bundle starting up...");
         
-        ServiceReference ref = context.getServiceReference(IdentityToken.class.getName());
-        RigClientProxyActivator.idenTokTracker = new ServiceTracker(context, ref, null);
+        RigClientProxyActivator.idenTokTracker = new ServiceTracker(context, IdentityToken.class.getName(), null);
+        RigClientProxyActivator.idenTokTracker.open();        
 	}
 
 	@Override
