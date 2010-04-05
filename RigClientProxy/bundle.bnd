@@ -1,0 +1,17 @@
+Bundle-Name: RigClientProxy
+Bundle-SymbolicName: SchedulingServer-RigClientProxy
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientProxyActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
+!org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
+!org.jdom.*, !javax.*, !sun.*, !nu.xom, \
+au.edu.uts.eng.remotelabs.schedserver.server, \
+*
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf
+Include-Resource: lib/=lib/;-donotcopy=.svn
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy, \
+au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types
+Bundle-ClassPath: ., \
+${findpath;lib/.*.jar}

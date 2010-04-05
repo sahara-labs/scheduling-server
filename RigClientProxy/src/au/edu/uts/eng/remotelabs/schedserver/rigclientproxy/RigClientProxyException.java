@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2009, University of Technology, Sydney
+ * Copyright (c) 2010, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,61 +32,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 5th April 2009
+ * @date 5th April 2010
  */
-
 package au.edu.uts.eng.remotelabs.schedserver.rigclientproxy;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
-
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
+import java.rmi.RemoteException;
 
 /**
- * The RigClient proxy bundles provides a client side implementation of the
- * RigClient SOAP interface.
+ * Exception thrown if error using the Rig Client proxy.
  */
-public class RigClientProxyActivator implements BundleActivator 
+public class RigClientProxyException extends RemoteException
 {
-    /** Identity token register. */
-    private static ServiceTracker idenTokTracker;
-    
-    /** Logger. */
-    private Logger logger;
-    
-    @Override
-	public void start(BundleContext context) throws Exception 
-	{
-        this.logger = LoggerActivator.getLogger();
-        this.logger.info("Rig client proxy bundle starting up...");
-        
-        ServiceReference ref = context.getServiceReference(IdentityToken.class.getName());
-        RigClientProxyActivator.idenTokTracker = new ServiceTracker(context, ref, null);
-	}
+    private static final long serialVersionUID = -6913650293362893564L;
 
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Rig client proxy bundle shutting down...");
-	    if (RigClientProxyActivator.idenTokTracker != null)
-	    {
-	        RigClientProxyActivator.idenTokTracker.close();
-	    }
-	}
+    public RigClientProxyException()
+    { /* Default. */ }
 
-	/**
-	 * Returns an identity token register instance if the identity token service
-	 * is registered. Returns if <code>null</code> if no identity token service 
-	 * is registered.
-	 * 
-	 * @return identity token register instance or null
-	 */
-	public static IdentityToken getIdentityTokenRegister()
-	{
-	    return (IdentityToken) RigClientProxyActivator.idenTokTracker.getService();
-	}
+    public RigClientProxyException(String message)
+    {
+        super(message);
+    }
+
+    public RigClientProxyException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }
