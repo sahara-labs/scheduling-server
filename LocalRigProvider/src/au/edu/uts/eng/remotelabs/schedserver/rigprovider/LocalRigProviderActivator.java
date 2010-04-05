@@ -70,7 +70,7 @@ public class LocalRigProviderActivator implements BundleActivator
     /** Runnable status timeout checker service registration. */
     private ServiceRegistration runnableReg;
     
-    /** Rig event callback list. */
+    /** Rig event listeners list. */
     private static List<RigEventListener> listenerList;
     
     /** Configuration service tracker. */
