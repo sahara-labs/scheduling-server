@@ -84,6 +84,9 @@ public class Queue
     /** Logger. */
     private Logger logger;
     
+    /** Flag to specify if this is a test run. */
+    private boolean notTest = true;
+    
     private Queue()
     {
         this.rigQueues = new HashMap<Long, InnerQueue>();
@@ -163,7 +166,7 @@ public class Queue
         }
         
         /**********************************************************************
-         ** If a target is found, assign it.                                 **
+         ** 4) If a target is found, assign it.                              **
          **********************************************************************/
         if (targetSes != null)
         {
@@ -208,7 +211,13 @@ public class Queue
             this.logger.info("Assigned " + targetSes.getUserNamespace() + ':' + targetSes.getUserName() + " to rig " +
                     rig.getName() + " (session=" + targetSes.getId() + ").");
             
-            // TODO call session assignment.
+            /******************************************************************
+             ** 5) Allocate the user to the rig.                             **
+             ******************************************************************/
+            if (this.notTest)
+            {
+                new Allocator().allocate(targetSes, db);
+            }
         }
     }
 

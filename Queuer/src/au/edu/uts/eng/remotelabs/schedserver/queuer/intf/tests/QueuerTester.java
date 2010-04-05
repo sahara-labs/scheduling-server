@@ -164,6 +164,10 @@ public class QueuerTester extends TestCase
         f = Queue.class.getDeclaredField("capabilityQueues");
         f.setAccessible(true);
         f.set(q, new HashMap<Long, InnerQueue>());
+        
+        f = Queue.class.getDeclaredField("notTest");
+        f.setAccessible(true);
+        f.set(q, Boolean.FALSE);
     }
 
     /**
