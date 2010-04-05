@@ -35,6 +35,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
@@ -68,6 +69,9 @@ public class LocalRigProviderActivator implements BundleActivator
     
     /** Runnable status timeout checker service registration. */
     private ServiceRegistration runnableReg;
+    
+    /** Rig event callback list. */
+    private static List<RigEventListener> listenerList;
     
     /** Configuration service tracker. */
     private static ServiceTracker configTracker;
@@ -141,5 +145,24 @@ public class LocalRigProviderActivator implements BundleActivator
         }
         
         return config.getProperty(prop, def);
+    }
+    
+    /**
+     * Returns the list of registered rig state change event listeners.
+     * 
+     * @return list of event listeners
+     */
+    public static RigEventListener[] getRigEventListeners()
+    {
+        if (LocalRigProviderActivator.listenerList == null)
+        {
+            return new RigEventListener[0];
+        }
+        
+        synchronized (LocalRigProviderActivator.listenerList)
+        {
+            return LocalRigProviderActivator.listenerList.toArray(
+                    new RigEventListener[LocalRigProviderActivator.listenerList.size()]);
+        }
     }
 }
