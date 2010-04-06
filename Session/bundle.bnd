@@ -1,0 +1,18 @@
+Bundle-Name: Session
+Bundle-SymbolicName: SchedulingServer-Session
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
+!org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
+!org.jdom.*, !javax.*, !sun.*, !nu.xom, \
+au.edu.uts.eng.remotelabs.schedserver.server, *
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.session.intf, \
+au.edu.uts.eng.remotelabs.schedserver.session.intf.types, \
+au.edu.uts.eng.remotelabs.schedserver.session.impl
+Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
+lib/=lib/;-donotcopy=.svn
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.session
+Bundle-ClassPath: ., \
+${findpath;lib/.*.jar}
