@@ -434,7 +434,7 @@ public class ServerImpl
 	    {
 	        try
 	        {
-	            this.logger.debug("Starting the Scheduling Server server now.");
+	            this.logger.debug("Stopping the Scheduling Server server now.");
 	            this.server.stop();
 	        }
 	        catch (Exception e)
