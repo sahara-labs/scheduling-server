@@ -47,6 +47,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.RigClientAsyncServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Allocate;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Release;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.UserType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 
@@ -171,5 +172,23 @@ public class RigClientAsyncService
         user.setIdentityToken(this.tok.getIdentityToken(this.rig));
 
         this.service.callAllocate(request, callback);
+    }
+    
+    /**
+     * Request to release the specified user from the rig.
+     * 
+     * @param name user to release
+     * @param callback response call back handler
+     * @throws RemoteException
+     */
+    public void release(String name, RigClientAsyncServiceCallbackHandler callback) throws RemoteException
+    {
+        Release request = new Release();
+        UserType user = new UserType();
+        request.setRelease(user);
+        user.setUser(name);
+        user.setIdentityToken(this.tok.getIdentityToken(this.rig));
+        
+        this.service.callRelease(request, callback);
     }
 }

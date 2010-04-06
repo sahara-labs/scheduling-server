@@ -928,7 +928,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startrelease(final Release request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callRelease(final Release request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[5].getName());
@@ -957,12 +957,12 @@ public class RigClientAsyncServiceImpl extends Stub
 
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             ReleaseResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultrelease((ReleaseResponse) object);
+                    callback.releaseResponseCallback((ReleaseResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorrelease(e);
+                    callback.releaseErrorCallback(e);
                 }
             }
 
@@ -992,50 +992,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorrelease(new RemoteException(ex.getMessage(), ex));
+                                callback.releaseErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {       
-                                callback.receiveErrorrelease(f);
+                                callback.releaseErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorrelease(f);
+                                callback.releaseErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorrelease(f);
+                                callback.releaseErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorrelease(f);
+                                callback.releaseErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorrelease(f);
+                                callback.releaseErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorrelease(f);
+                                callback.releaseErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorrelease(f);
+                                callback.releaseErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorrelease(f);
+                            callback.releaseErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorrelease(f);
+                        callback.releaseErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorrelease(error);
+                    callback.releaseErrorCallback(error);
                 }
             }
 
@@ -1053,7 +1053,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorrelease(axisFault);
+                    callback.releaseErrorCallback(axisFault);
                 }
             }
         });

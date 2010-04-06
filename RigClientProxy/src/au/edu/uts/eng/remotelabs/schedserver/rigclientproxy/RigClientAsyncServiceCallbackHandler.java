@@ -62,18 +62,36 @@ public abstract class RigClientAsyncServiceCallbackHandler
      * Method to override to receive the response from an allocate operation
      * call.
      * 
-     * @param response response from call.
+     * @param response response from call
      */
     public void allocateResponseCallback(final AllocateResponse response)
     { /* Does nothing by default. */ }
 
     /**
      * Method to override to receive error information from a failed 
-     * allocate operaion call.
+     * allocate operation call.
      * 
      * @param e error exception
      */
     public void allocateErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an release operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void releaseResponseCallback(final ReleaseResponse response)
+    { /* Does nothing by default. */ }
+
+    /**
+     * Method to override to receive error information from a failed 
+     * release operation call.
+     * 
+     * @param e error exception
+     */
+    public void releaseErrorCallback(final Exception e)
     { /* Does nothing by default. */ }
 
     public void receiveResultslaveAllocate(final SlaveAllocateResponse result)
@@ -107,12 +125,6 @@ public abstract class RigClientAsyncServiceCallbackHandler
     { /* Does nothing by default. */ }
 
     public void receiveErrorslaveRelease(final Exception e)
-    { /* Does nothing by default. */ }
-
-    public void receiveResultrelease(final ReleaseResponse result)
-    { /* Does nothing by default. */ }
-
-    public void receiveErrorrelease(final Exception e)
     { /* Does nothing by default. */ }
 
     public void receiveResultnotify(final NotifyResponse result)
