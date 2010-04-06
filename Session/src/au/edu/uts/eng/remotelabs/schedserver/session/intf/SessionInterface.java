@@ -63,7 +63,7 @@ public class SessionInterface implements SessionSkeletonInterface
     private Logger logger;
     
     /** Flag for unit testing to disable rig client communication. */ 
-    private boolean notTest = false;
+    private boolean notTest = true;
     
     public SessionInterface()
     {

@@ -37,25 +37,45 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.session;
 
+import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * Activator for the Session bundle which handles running sessions.
  */
 public class SessionActivator implements BundleActivator 
 {
-
+    /** Service registration for the Session SOAP interface. */
+    private ServiceRegistration soapReg;
+    
+    /** Logger. */
+    private Logger logger;
+    
     @Override
 	public void start(BundleContext context) throws Exception 
 	{
-        // TODO
+        this.logger = LoggerActivator.getLogger();
+        this.logger.info("Starting the Session bunde...");
+        
+        /* Register the queuer service. */
+        this.logger.debug("Registering the Queuer SOAP interface service.");
+        ServletContainerService soapService = new ServletContainerService();
+        soapService.addServlet(new ServletContainer(new AxisServlet(), true));
+        this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
-	    // TODO 
+	    this.logger.info("Stopping the Session bundle...");
+	    this.soapReg.unregister();
 	}
 
 }
