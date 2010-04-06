@@ -70,10 +70,12 @@ public class UserIDType extends OperationRequestType implements ADBBean
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/session
      * Namespace Prefix = ns1
      */
+    
+    public static final String QNAME_DELIM = ":";
 
     private static final long serialVersionUID = -8438218023888317759L;
     
-    protected int userID;
+    protected String userID;
     protected boolean userIDTracker = false;
     
     protected UserNSNameSequence userNSNameSequence;
@@ -91,14 +93,14 @@ public class UserIDType extends OperationRequestType implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    public int getUserID()
+    public String getUserID()
     {
         return this.userID;
     }
 
-    public void setUserID(final int param)
+    public void setUserID(final String param)
     {
-        if (param == Integer.MIN_VALUE)
+        if (param == null)
         {
             this.userIDTracker = false;
         }
@@ -108,6 +110,40 @@ public class UserIDType extends OperationRequestType implements ADBBean
         }
 
         this.userID = param;
+    }
+    
+    public String getUserName()
+    {
+        if (this.getUserNSNameSequence() != null && this.userNSNameSequence.getUserName() != null)
+        {
+            return this.userNSNameSequence.getUserName();
+        }
+        
+        if (this.userQName != null)
+        {
+            String idParts[] = this.userQName.split(UserIDType.QNAME_DELIM, 2);
+            if (idParts.length == 2)
+            {
+                return idParts[1];
+            }
+        }
+        
+        return null;
+    }
+    
+    public String getUserNamespace()
+    {
+        if (this.getUserNSNameSequence() != null && this.getUserNSNameSequence().getUserNamespace() != null)
+        {
+            return this.getUserNSNameSequence().getUserNamespace();
+        }
+        
+        if (this.userQName != null)
+        {
+            return this.userQName.split(UserIDType.QNAME_DELIM, 2)[0];
+        }
+        
+        return null;
     }
 
     public UserNSNameSequence getUserNSNameSequence()
@@ -328,13 +364,13 @@ public class UserIDType extends OperationRequestType implements ADBBean
                 xmlWriter.writeStartElement("userID");
             }
 
-            if (this.userID == Integer.MIN_VALUE)
+            if (this.userID == null)
             {
                 throw new ADBException("userID cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.userID));
+                xmlWriter.writeCharacters(this.userID);
             }
             xmlWriter.writeEndElement();
         }
@@ -569,12 +605,8 @@ public class UserIDType extends OperationRequestType implements ADBBean
                 if (reader.isStartElement() && new QName("", "userID").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setUserID(ConverterUtil.convertToInt(content));
+                    object.setUserID(content);
                     reader.next();
-                }
-                else
-                {
-                    object.setUserID(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

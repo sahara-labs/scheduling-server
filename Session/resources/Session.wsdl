@@ -17,7 +17,7 @@
       	<xsd:complexContent>
       		<xsd:extension base="ses:OperationRequestType">
       			<xsd:sequence>
-      				<xsd:element name="userID" type="xsd:int" maxOccurs="1" minOccurs="0">
+      				<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="0">
       				</xsd:element>
       				<xsd:sequence maxOccurs="1" minOccurs="0">
       					<xsd:element name="userName"
