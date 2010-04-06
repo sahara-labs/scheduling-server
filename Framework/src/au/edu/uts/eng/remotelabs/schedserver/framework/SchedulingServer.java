@@ -304,6 +304,7 @@ public class SchedulingServer
         {
             System.out.println("Starting bundle " + bundle.getSymbolicName() + " (id " + bundle.getBundleId() + ").");
             bundle.start();
+            Thread.sleep(5000);
         }
     }
 
