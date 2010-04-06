@@ -39,7 +39,8 @@ Date: 28th March 2010
 	<property name="component.name" value="Scheduling Server Queuer Bundle"/>
 	<property name="service.archive.name" value="Queuer.aar" />
 	
-    <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,serverBundle">
+    <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,
+									rigClientProxyBundle,localRigProviderBundle,serverBundle">
         <buildProject/>
     </target>
 </project>
