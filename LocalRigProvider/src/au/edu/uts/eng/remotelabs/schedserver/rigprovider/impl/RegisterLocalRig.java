@@ -47,6 +47,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 
 /**
  * Adds a rig to the Scheduling Server.
@@ -149,6 +152,12 @@ public class RegisterLocalRig
             this.rig = this.rigDao.persist(this.rig);
         }
         this.rigDao.flush();
+        
+        /* Provide notification a new rig is registered. */
+        for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+        {
+            list.eventOccurred(RigStateChangeEvent.REGISTERED, this.rig, this.rigDao.getSession());
+        }
 
         return this.rig.getId() > 0;
     }

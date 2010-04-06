@@ -110,7 +110,7 @@ public class LocalRigProvider implements LocalRigProviderSkeletonInterface
             providerResp.setErrorReason(register.getFailedReason());
         }
         
-        register.getSession().disconnect();
+        register.getSession().close();
         return response;
     }
 
@@ -138,7 +138,7 @@ public class LocalRigProvider implements LocalRigProviderSkeletonInterface
             providerResp.setErrorReason(remover.getFailedReason());
         }
         
-        remover.getSession().disconnect();
+        remover.getSession().close();
         return response;
     }
 
@@ -169,7 +169,7 @@ public class LocalRigProvider implements LocalRigProviderSkeletonInterface
             providerResp.setErrorReason(updater.getFailedReason());
         }
         
-        updater.getSession().disconnect();
+        updater.getSession().close();
         return response;
     }
 

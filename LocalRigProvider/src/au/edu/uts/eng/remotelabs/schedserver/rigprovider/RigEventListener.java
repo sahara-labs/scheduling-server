@@ -70,5 +70,5 @@ public interface RigEventListener
      * @param rig the rig which caused the state change
      * @param db the database session the rig is attached to
      */
-    public void receiveEvent(RigStateChangeEvent event, Rig rig, Session db);
+    public void eventOccurred(RigStateChangeEvent event, Rig rig, Session db);
 }

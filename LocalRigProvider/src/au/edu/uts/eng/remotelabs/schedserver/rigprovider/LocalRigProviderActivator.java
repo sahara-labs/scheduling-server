@@ -35,12 +35,16 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -49,6 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RigEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.StatusTimeoutChecker;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -64,7 +69,7 @@ public class LocalRigProviderActivator implements BundleActivator
     /** Identity token service registration. */
     private ServiceRegistration idenTokReg;
     
-    /** Rig status messasge timeout checker. */
+    /** Rig status message timeout checker. */
     private StatusTimeoutChecker tmChecker;
     
     /** Runnable status timeout checker service registration. */
@@ -103,6 +108,21 @@ public class LocalRigProviderActivator implements BundleActivator
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new AxisServlet(), true));
         this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
+        
+        /* Add service listener to add and remove registered rig event listeners. */
+        LocalRigProviderActivator.listenerList = new ArrayList<RigEventListener>();
+        RigEventServiceListener listener = new RigEventServiceListener(LocalRigProviderActivator.listenerList, context);
+        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
+        
+        /* Fire pseudo events for all registered services. */
+        ServiceReference refs[] = context.getServiceReferences(RigEventListener.class.getName(), null);
+        if (refs != null)
+        {
+            for (ServiceReference ref : refs)
+            {
+                listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+            }
+        }
     }
 
     @Override

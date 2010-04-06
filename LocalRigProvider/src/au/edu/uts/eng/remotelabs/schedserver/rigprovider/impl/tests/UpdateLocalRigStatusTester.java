@@ -150,7 +150,7 @@ public class UpdateLocalRigStatusTester extends TestCase
         Date ts = rig.getLastUpdateTimestamp();
         assertNotNull(ts);
         assertTrue(new Date().after(ts));
-        assertTrue(new Date(System.currentTimeMillis() - 5000).before(ts));
+        assertTrue(new Date(System.currentTimeMillis() - 50000).before(ts));
         
         ses.beginTransaction();
         ses.delete(rig);

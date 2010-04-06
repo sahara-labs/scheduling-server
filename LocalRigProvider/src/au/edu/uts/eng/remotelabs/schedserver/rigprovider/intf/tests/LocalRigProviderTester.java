@@ -151,9 +151,9 @@ public class LocalRigProviderTester extends TestCase
     {
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "lp1";
+        String type = "localrigprovidertest";
+        String caps = "localrig,providertest";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType typeRecord = new RigType(type, 180, false);
@@ -211,9 +211,9 @@ public class LocalRigProviderTester extends TestCase
     {
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "lp1";
+        String type = "localrigprovidertest";
+        String caps = "localrig,providertest";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType typeRecord = new RigType(type, 180, false);
@@ -270,9 +270,9 @@ public class LocalRigProviderTester extends TestCase
     {
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "lp1";
+        String type = "localrigprovidertest";
+        String caps = "localrig,providertest";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType typeRecord = new RigType(type, 180, false);
@@ -324,7 +324,7 @@ public class LocalRigProviderTester extends TestCase
     @Test
     public void testUpdateRigStatusError() throws Exception
     {        
-        String name = "lb1";
+        String name = "lp1";
                
         UpdateRigStatus up = new UpdateRigStatus();
         UpdateRigType upTy = new UpdateRigType();
@@ -359,9 +359,9 @@ public class LocalRigProviderTester extends TestCase
     {
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "lp1";
+        String type = "localrigprovidertest";
+        String caps = "localrig,providertest";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType typeRecord = new RigType(type, 180, false);
@@ -414,7 +414,7 @@ public class LocalRigProviderTester extends TestCase
         RemoveRig rm = new RemoveRig();
         RemoveRigType rmTy = new RemoveRigType();
         rm.setRemoveRig(rmTy);
-        rmTy.setName("lb1");
+        rmTy.setName("lp1");
         rmTy.setRemovalReason("Doesn't exist");
     
         RemoveRigResponse resp = this.provider.removeRig(rm);

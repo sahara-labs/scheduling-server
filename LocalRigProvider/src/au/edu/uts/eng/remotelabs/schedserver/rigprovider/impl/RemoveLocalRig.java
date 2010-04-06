@@ -44,6 +44,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 
 /**
  * Removes a local rig by setting it to inactive. The provided removal reason
@@ -101,6 +104,12 @@ public class RemoveLocalRig
         rig.setLastUpdateTimestamp(new Date());
         
         this.rigDao.flush();
+        
+        /* Provide notification a rig has been removed. */
+        for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+        {
+            list.eventOccurred(RigStateChangeEvent.REMOVED, rig, this.rigDao.getSession());
+        }
         return true;
     }
 

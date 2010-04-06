@@ -135,9 +135,9 @@ public class RegisterLocalRigTester extends TestCase
     {
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "register1";
+        String type = "registertest";
+        String caps = "a,b,c,d,e,f";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         assertTrue(this.register.registerRig(name, type, caps, contactUrl));
@@ -145,6 +145,7 @@ public class RegisterLocalRigTester extends TestCase
         
         Rig rig = this.register.getRegisteredRig();
         assertNotNull(rig);
+        this.register.getSession().close();
         
         assertEquals(name, rig.getName());
         assertEquals(type, rig.getRigType().getName());
@@ -210,9 +211,9 @@ public class RegisterLocalRigTester extends TestCase
     {   
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "register1";
+        String type = "registertest";
+        String caps = "a,b,c,d,e,f";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType existType = new RigType(type, 180, false);
@@ -292,9 +293,9 @@ public class RegisterLocalRigTester extends TestCase
     {   
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "register1";
+        String type = "registertest";
+        String caps = "a,b,c,d,e,f";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType existType = new RigType(type, 180, false);
@@ -377,9 +378,9 @@ public class RegisterLocalRigTester extends TestCase
     {   
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "register1";
+        String type = "registertest";
+        String caps = "a,b,c,d,e,f";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType existType = new RigType(type, 180, false);
@@ -470,9 +471,9 @@ public class RegisterLocalRigTester extends TestCase
     {   
         Session ses = DataAccessActivator.getNewSession();
         
-        String name = "lb1";
-        String type = "loadedbeam";
-        String caps = "cantilever,horizbean,vertbeam";
+        String name = "register1";
+        String type = "registertest";
+        String caps = "a,b,c,d,e,f";
         String contactUrl = "http://lbremote1.eng.uts.edu.au:7070/services/RigClientService";
         
         RigType existType = new RigType(type, 180, false);

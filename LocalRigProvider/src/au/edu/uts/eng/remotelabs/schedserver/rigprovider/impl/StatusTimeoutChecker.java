@@ -50,6 +50,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 
 /**
  * Puts rigs offline if they have not provided a status update with the
@@ -156,13 +158,16 @@ public class StatusTimeoutChecker implements Runnable
                 rig.setActive(false);
                 rig.setOnline(false);
                 rig.setOfflineReason("Timed out");
-            }
-            
-            if (session.isDirty())
-            {
+                
                 session.beginTransaction();
                 session.flush();
                 session.getTransaction().commit();
+                
+                /* Fire a notification the rig has gone offline. */
+                for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+                {
+                    list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, session);
+                }
             }
         }
         catch (Throwable thr)

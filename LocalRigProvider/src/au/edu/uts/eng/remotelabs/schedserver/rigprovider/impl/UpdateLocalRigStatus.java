@@ -44,6 +44,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 
 /**
  * Updates the status of an exist rig. The rig status is composed of a
@@ -111,17 +114,50 @@ public class UpdateLocalRigStatus
             		"does not have a contact URL.");
             return false;
         }
+        
         if (!rig.isActive())
         {
             rig.setActive(true);
-            this.logger.info("Reactivating rig with name '" + name + "' because a status update was received.");
+            this.logger.info("Reactivating rig '" + name + "' because a status update was received.");
         }
         
-        rig.setOnline(online);
-        rig.setOfflineReason(offlineReason);
-        rig.setLastUpdateTimestamp(new Date());
+        if (!rig.isOnline() && online)
+        {
+            /* Rig was offline but now came online. */
+            this.logger.info("Rig '" + name + "' came online.");
+            rig.setOnline(true);
+            rig.setOfflineReason(null);
+            rig.setLastUpdateTimestamp(new Date());
+            this.rigDao.flush();
+            
+            /* Fire online rig event. */
+            for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+            {
+                list.eventOccurred(RigStateChangeEvent.ONLINE, rig, this.rigDao.getSession());
+            }    
+        }
+        else if (rig.isOnline() && !online)
+        {
+            /* Rig was online but now has gone offline. */
+            this.logger.info("Rig '" + name + "' has gone offline with reason " + offlineReason + ".");
+            rig.setOnline(false);
+            rig.setOfflineReason(offlineReason);
+            rig.setLastUpdateTimestamp(new Date());
+            this.rigDao.flush();
+            
+            /* Fire offline rig event. */
+            for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+            {
+                list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, this.rigDao.getSession());
+            }
+        }
+        else
+        {
+            /* Nothing interesting happened, just update the heart beat. */
+            rig.setLastUpdateTimestamp(new Date());
+            this.rigDao.flush();
+        }
         
-        this.rigDao.flush();
         return true;
     }
 
