@@ -40,6 +40,7 @@ package au.edu.uts.eng.remotelabs.schedserver.queuer.impl.tests;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -68,6 +69,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.InnerQueue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 
 /**
@@ -128,6 +131,21 @@ public class QueueEntryTester extends TestCase
     @Before
     public void setUp() throws Exception
     {
+        Queue queue = Queue.getInstance();
+        Field f = Queue.class.getDeclaredField("rigQueues");
+        f.setAccessible(true);
+        f.set(queue, new HashMap<Long, InnerQueue>());
+        f = Queue.class.getDeclaredField("typeQueues");
+        f.setAccessible(true);
+        f.set(queue, new HashMap<Long, InnerQueue>());
+        f = Queue.class.getDeclaredField("capabilityQueues");
+        f.setAccessible(true);
+        f.set(queue, new HashMap<Long, InnerQueue>());
+
+        f = Queue.class.getDeclaredField("notTest");
+        f.setAccessible(true);
+        f.set(queue, Boolean.FALSE);
+     
         this.session = DataAccessActivator.getNewSession();
         this.entry = new QueueEntry(this.session);
     }

@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 4th January 2010
+ * @date 6th April 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.queuer;
 
