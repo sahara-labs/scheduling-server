@@ -112,5 +112,11 @@ Date: 28th December 2009
 	<target name="rigClientProxyBundle" if="missing.rigClientProxy">
 		<buildRequiredBundle bundle="SchedulingServer-RigClientProxy.jar" bundleProject="RigClientProxy" />
 	</target>
+	
+	<!-- ### Session Bundle. -->
+	<detectIfBundlePresent property="missing.session" bundle="SchedulingServer-Session.jar" />
+	<target name="sessionBundle" if="missing.session">
+		<buildRequiredBundle bundle="SchedulingServer-Session.jar" bundleProject="Session" />
+	</target>
 
 </project>
