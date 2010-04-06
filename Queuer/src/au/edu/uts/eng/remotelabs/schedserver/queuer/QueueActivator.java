@@ -50,7 +50,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueListenerRun;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueStaleSessionTask;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -60,10 +62,13 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class QueueActivator implements BundleActivator 
 {
     /** Service registration for the Permission SOAP interface. */
-    private ServiceRegistration soapRegistration;
+    private ServiceRegistration soapReg;
     
     /** Service registration for the queue stale session timeout task. */
     private ServiceRegistration staleTimeoutTaskReg;
+    
+    /** Service registration for a rig event listener. */
+    private ServiceRegistration rigListenerReg;
     
     /** Logger. */
     private Logger logger;
@@ -95,18 +100,22 @@ public class QueueActivator implements BundleActivator
         props.put("period", "60");
         this.staleTimeoutTaskReg = context.registerService(Runnable.class.getName(), task, props);
         
+        /* Register the rig event listener service. */
+        this.rigListenerReg = context.registerService(RigEventListener.class.getName(), new QueueListenerRun(), null);
+        
         /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapRegistration = context.registerService(ServletContainerService.class.getName(), soapService, null);
+	    this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
 	    this.logger.info("Shutting down the queuer bundle.");
-	    this.soapRegistration.unregister();
+	    this.soapReg.unregister();
 	    this.staleTimeoutTaskReg.unregister();
+	    this.rigListenerReg.unregister();
 	}
 }
