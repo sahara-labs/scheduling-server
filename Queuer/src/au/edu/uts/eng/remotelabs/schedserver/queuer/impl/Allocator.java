@@ -168,7 +168,7 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
         
         rig.setInSession(false);
         rig.setOnline(false);
-        rig.setOfflineReason("Allocation failured with reason " + e.getMessage() + '.');
+        rig.setOfflineReason("Allocation failed with reason " + e.getMessage() + '.');
         dao.flush();
         
         dao.closeSession();
