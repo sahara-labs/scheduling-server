@@ -97,7 +97,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.SlaveRele
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.SlaveReleaseResponse;
 
 /**
- * RigClient client service implementation.
+ * RigClient client service implementation (asyncronous style).
  */
 @SuppressWarnings("unchecked")
 public class RigClientAsyncServiceImpl extends Stub

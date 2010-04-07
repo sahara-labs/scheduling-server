@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 5th April 2010
+ * @date 7th April 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigclientproxy;
 
@@ -45,31 +45,27 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.RigClientAsyncServiceImpl;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.RigClientServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Allocate;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.AllocateResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.IsActivityDetectable;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.IsActivityDetectableResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.NullType;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Release;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.UserType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 
 /**
- * Proxies call to the rig client, using a asynchronous message exchange pattern.
- * All calls take the same a callback of base case {@link RigClientAsyncServiceCallbackHandler}
- * which contains methods that will be invoked on operation response. For each service
- * (for exampele <tt>allocate</tt>), there are two methods which can be overridden which may
- * be invoked on response or error of the call:
- * <ul>
- *  <li><tt><em>&lt;operation&gt;</em>ResponseCallback</tt> - Invoked on response from the operation.
- *  </li>
- *  <li><tt><em>&lt;operation&gt;</em>ErrorCallback</tt> - Invoked if a SOAP fault is received instead
- *  of the operation response.</li>
- * </ul> 
+ * Proxies calls to the rig client using a synchronous message.
+ * <b />
  * All calls using this proxy are provided with an identity token
  * the rig client is registered with.
  */
-public class RigClientAsyncService
+public class RigClientService
 {
     /** The proxy implementation. */
-    private RigClientAsyncServiceImpl service;
+    private RigClientServiceImpl service;
     
     /** The rig clients name. */
     private String rig;
@@ -80,7 +76,7 @@ public class RigClientAsyncService
     /** Logger. */
     private Logger logger;
     
-    public RigClientAsyncService(String rig) throws RigClientProxyException
+    public RigClientService(String rig) throws RigClientProxyException
     {
         this.rig = rig;
         this.logger = LoggerActivator.getLogger();
@@ -105,7 +101,7 @@ public class RigClientAsyncService
         
         try
         {
-            this.service = new RigClientAsyncServiceImpl(record.getContactUrl());
+            this.service = new RigClientServiceImpl(record.getContactUrl());
         }
         catch (AxisFault e)
         {
@@ -114,7 +110,7 @@ public class RigClientAsyncService
         }
     }
     
-    public RigClientAsyncService(String rig, Session db) throws RigClientProxyException
+    public RigClientService(String rig, Session db) throws RigClientProxyException
     {
         this.rig = rig;
         this.logger = LoggerActivator.getLogger();
@@ -137,7 +133,7 @@ public class RigClientAsyncService
         
         try
         {
-            this.service = new RigClientAsyncServiceImpl(record.getContactUrl());
+            this.service = new RigClientServiceImpl(record.getContactUrl());
             
         }
         catch (AxisFault e)
@@ -151,10 +147,10 @@ public class RigClientAsyncService
      * Request to allocate a specified user to the rig.
      * 
      * @param name user to allocate
-     * @param callback response call back handler
+     * @response response
      * @throws RemoteException 
      */
-    public void allocate(String name, RigClientAsyncServiceCallbackHandler callback) throws RemoteException 
+    public AllocateResponse allocate(String name) throws RemoteException 
     {        
         Allocate request = new Allocate();
         UserType user = new UserType();
@@ -162,17 +158,17 @@ public class RigClientAsyncService
         user.setUser(name);
         user.setIdentityToken(this.tok.getIdentityToken(this.rig));
 
-        this.service.callAllocate(request, callback);
+        return this.service.allocate(request);
     }
     
     /**
      * Request to release the specified user from the rig.
      * 
      * @param name user to release
-     * @param callback response call back handler
+     * @return response
      * @throws RemoteException
      */
-    public void release(String name, RigClientAsyncServiceCallbackHandler callback) throws RemoteException
+    public ReleaseResponse release(String name) throws RemoteException
     {
         Release request = new Release();
         UserType user = new UserType();
@@ -180,6 +176,22 @@ public class RigClientAsyncService
         user.setUser(name);
         user.setIdentityToken(this.tok.getIdentityToken(this.rig));
         
-        this.service.callRelease(request, callback);
+        return this.service.release(request);
+    }
+    
+    /**
+     * Request to detect session activity.
+     * 
+     * @return response
+     * @throws RemoteException
+     */
+    public IsActivityDetectableResponse isActivityDetectable() throws RemoteException
+    {
+        IsActivityDetectable request = new IsActivityDetectable();
+        NullType nt = new NullType();
+        request.setIsActivityDetectable(nt);
+        nt.set_void("The world wonders...");
+        
+        return this.service.isActivityDetectable(request);
     }
 }
