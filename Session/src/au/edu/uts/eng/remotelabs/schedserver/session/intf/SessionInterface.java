@@ -108,6 +108,7 @@ public class SessionInterface implements SessionSkeletonInterface
             dao.flush();
             
             /* Call rig release. */
+            // TODO terminate code assigned
             if (this.notTest) new RigReleaser().release(ses, dao.getSession());
         }
         
