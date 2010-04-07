@@ -69,7 +69,11 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.InSessionType;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.ResourceIDType;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.UserIDType;
 
 /**
@@ -254,9 +258,263 @@ public class SessionInterfaceTester extends TestCase
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
      */
     @Test
-    public void testGetSessionInformation()
+    public void testGetSessionInformation() throws Exception
     {
-        fail("Not yet implemented");
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date(System.currentTimeMillis() - 1000);
+        
+        db.beginTransaction();
+        
+        User user = new User("sessiontest", "testns", "USER");
+        db.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("sessclass");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setPriority((short)4);
+        db.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        db.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Session_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("session,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Session_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        p1.setAllowedExtensions((short)10);
+        p1.setExtensionDuration(300);
+        p1.setSessionDuration(3600);
+        db.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 10);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        ses.setAssignedRigName(r.getName());
+        ses.setAssignmentTime(before);
+        ses.setRig(r);
+        db.persist(ses);
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
+        db.refresh(uc1);
+        db.refresh(user);
+        db.refresh(p1);
+        db.refresh(r);
+        db.refresh(rt);
+        db.getTransaction().commit();
+                
+        GetSessionInformation request = new GetSessionInformation();
+        UserIDType uid = new UserIDType();
+        request.setGetSessionInformation(uid);
+        uid.setUserQName(user.getNamespace() + ':' + user.getName());
+        
+        GetSessionInformationResponse resp = this.sessionIntf.getSessionInformation(request);
+        
+        db.beginTransaction();
+        db.delete(ses);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass);
+        db.delete(uc1);
+        db.delete(user);
+        db.getTransaction().commit();
+        
+        assertNotNull(resp);
+        SessionType s = resp.getGetSessionInformationResponse();
+        assertNotNull(s);
+        assertTrue(s.getIsInSession());
+        assertTrue(s.getIsReady());
+        assertFalse(s.getIsCodeAssigned());
+        
+        ResourceIDType res = s.getResource();
+        assertNotNull(res);
+        assertEquals("RIG", res.getType());
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals(r.getContactUrl(), s.getContactURL());
+        
+        assertEquals(ses.getExtensions(), s.getExtensions());
+        
+        int tm = 10;
+        assertEquals(tm, s.getTime());
+        
+        tm = 3590;
+        assertEquals(tm, s.getTimeLeft());
+        
+        assertNull(s.getWarningMessage());
+        
+        OMElement ele = resp.getOMElement(GetSessionInformation.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
     }
-
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
+     */
+    @Test
+    public void testGetSessionInformationExtension() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date(System.currentTimeMillis() - 1000);
+        
+        db.beginTransaction();
+        
+        User user = new User("sessiontest", "testns", "USER");
+        db.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("sessclass");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setPriority((short)4);
+        db.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        db.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Session_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("session,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Session_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        p1.setAllowedExtensions((short)10);
+        p1.setExtensionDuration(300);
+        p1.setSessionDuration(3600);
+        db.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 8);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        ses.setAssignedRigName(r.getName());
+        ses.setAssignmentTime(before);
+        ses.setRig(r);
+        db.persist(ses);
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
+        db.refresh(uc1);
+        db.refresh(user);
+        db.refresh(p1);
+        db.refresh(r);
+        db.refresh(rt);
+        db.getTransaction().commit();
+                
+        GetSessionInformation request = new GetSessionInformation();
+        UserIDType uid = new UserIDType();
+        request.setGetSessionInformation(uid);
+        uid.setUserQName(user.getNamespace() + ':' + user.getName());
+        
+        GetSessionInformationResponse resp = this.sessionIntf.getSessionInformation(request);
+        
+        db.beginTransaction();
+        db.delete(ses);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass);
+        db.delete(uc1);
+        db.delete(user);
+        db.getTransaction().commit();
+        
+        assertNotNull(resp);
+        SessionType s = resp.getGetSessionInformationResponse();
+        assertNotNull(s);
+        assertTrue(s.getIsInSession());
+        assertTrue(s.getIsReady());
+        assertFalse(s.getIsCodeAssigned());
+        
+        ResourceIDType res = s.getResource();
+        assertNotNull(res);
+        assertEquals("RIG", res.getType());
+        assertEquals(r.getId().intValue(), res.getResourceID());
+        assertEquals(r.getName(), res.getResourceName());
+        assertEquals(r.getContactUrl(), s.getContactURL());
+        
+        assertEquals(ses.getExtensions(), s.getExtensions());
+        
+        int tm = 10;
+        assertEquals(tm, s.getTime());
+        
+        tm = 4190;
+        assertEquals(tm, s.getTimeLeft());
+        
+        assertNull(s.getWarningMessage());
+        
+        OMElement ele = resp.getOMElement(GetSessionInformation.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
 }

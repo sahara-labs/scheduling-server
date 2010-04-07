@@ -40,7 +40,7 @@ Date: 28th March 2010
 	<property name="service.archive.name" value="Session.aar" />
 	
     <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,
-									rigClientProxyBundle,localRigProviderBundle,serverBundle">
+									rigClientProxyBundle,localRigProviderBundle,serverBundle,queuerBundle">
         <buildProject/>
     </target>
 </project>

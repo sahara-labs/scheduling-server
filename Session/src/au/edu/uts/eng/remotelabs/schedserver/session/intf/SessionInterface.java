@@ -41,10 +41,14 @@ import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientService;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.IsActivityDetectableResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
@@ -52,6 +56,8 @@ import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInform
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.InSessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.OperationRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.ResourceIDType;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.UserIDType;
 
 /**
@@ -112,8 +118,83 @@ public class SessionInterface implements SessionSkeletonInterface
     @Override
     public GetSessionInformationResponse getSessionInformation(final GetSessionInformation request)
     {
-        throw new UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#getSessionInformation");
+        /* Request parameters. */
+        UserIDType uID = request.getGetSessionInformation();
+        this.logger.debug("Received session information request for user with id=" + uID.getUserID() + ", namespace="
+                + uID.getUserNamespace() + ", name=" + uID.getUserName() + '.');
+        
+        /* Response parameters. */
+        GetSessionInformationResponse resp = new GetSessionInformationResponse();
+        SessionType info = new SessionType();
+        resp.setGetSessionInformationResponse(info);
+        info.setIsInSession(false);
+        
+        SessionDao dao = new SessionDao();
+        Session ses;
+        User user = this.getUserFromUserID(uID, new UserDao(dao.getSession()));
+        if (user != null && (ses = dao.findActiveSession(user)) != null && ses.getRig() != null)
+        {
+            info.setIsInSession(true);
+            info.setIsReady(ses.isReady());
+            info.setIsCodeAssigned(ses.getCodeReference() != null);
+            
+            /* Resource. */
+            Rig rig = ses.getRig();
+            ResourceIDType res = new ResourceIDType();
+            info.setResource(res);
+            res.setType(ResourcePermission.RIG_PERMISSION);
+            res.setResourceID(rig.getId().intValue());
+            res.setResourceName(rig.getName());
+            info.setContactURL(rig.getContactUrl());
+            
+            /* Session time and remaining time. */
+            ResourcePermission perm = ses.getResourcePermission();
+            int time = Math.round((System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000);
+            info.setTime(time);
+            int remainingTime = perm.getSessionDuration() + (perm.getAllowedExtensions() - ses.getExtensions()) *  
+                    perm.getExtensionDuration() - time;
+            info.setTimeLeft(remainingTime);
+            info.setExtensions(ses.getExtensions());
+            
+            /* Warning messages. */
+            if (ses.isInGrace())
+            {
+                info.setWarningMessage("In end of session grace period, you have " + remainingTime + "seconds left " +
+                		"to log off from the rig before you are removed.");
+            }
+            else
+            {
+                /* Find out about activity. */
+                try
+                {
+                    if (this.notTest)
+                    {
+                        IsActivityDetectableResponse detectResponse = new RigClientService(rig, dao.getSession()).isActivityDetectable();
+                        if (!detectResponse.getIsActivityDetectableResponse().getActivity())
+                        {
+                            int rmTime = perm.getSessionActivityTimeout() -  
+                                    (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
+                                     Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
+                            info.setWarningMessage("If you do not log into the rig before " + rmTime + " you will be removed " +
+                                    "from the rig.");
+                        }
+                        else
+                        {
+                            ses.setActivityLastUpdated(new Date());
+                            dao.flush();
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    this.logger.warn("Unable to call activity detection on rig client " + rig.getName() + " at " +
+                            rig.getContactUrl() + ", error " + e.getMessage() + '.');
+                }
+            }
+        }
+        
+        dao.closeSession();
+        return resp;
     }
     
     /**
