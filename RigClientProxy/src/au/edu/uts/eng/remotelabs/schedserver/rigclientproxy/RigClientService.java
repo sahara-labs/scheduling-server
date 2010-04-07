@@ -76,6 +76,11 @@ public class RigClientService
     /** Logger. */
     private Logger logger;
     
+    public RigClientService(Rig rig) throws RigClientProxyException
+    {
+        this(rig.getName());
+    }
+    
     public RigClientService(String rig) throws RigClientProxyException
     {
         this.rig = rig;
@@ -108,6 +113,11 @@ public class RigClientService
             this.logger.error("Unable to create a rig client proxy because of Axis fault with message: " + e.getMessage() + ".");
             throw new RigClientProxyException(e.getMessage(), e);
         }
+    }
+    
+    public RigClientService(Rig rig, Session db) throws RigClientProxyException
+    {
+        this(rig.getName(), db);
     }
     
     public RigClientService(String rig, Session db) throws RigClientProxyException
