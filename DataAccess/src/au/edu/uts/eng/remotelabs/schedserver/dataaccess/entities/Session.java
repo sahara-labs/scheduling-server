@@ -117,6 +117,9 @@ public class Session implements java.io.Serializable
     /** Whether the session is ready for use or still allocating. */
     private boolean ready;
     
+    /** Whether the session has the grace period initiated (forced log-off grace). */
+    private boolean inGrace;
+    
     /** The time at which the rig session must terminate. */
     private Date removalTime;
     
@@ -375,6 +378,17 @@ public class Session implements java.io.Serializable
     public void setReady(final boolean ready)
     {
         this.ready = ready;
+    }
+    
+    @Column(name = "in_grace", nullable = true)
+    public boolean isInGrace()
+    {
+        return this.inGrace;
+    }
+    
+    public void setInGrace(final boolean inGrace)
+    {
+        this.inGrace = inGrace;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
