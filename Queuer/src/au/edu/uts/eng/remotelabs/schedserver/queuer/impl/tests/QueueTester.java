@@ -3120,4 +3120,292 @@ public class QueueTester extends TestCase
         assertNotNull(que);
         assertEquals(0, que.size());
     }
+    
+    @Test
+    public void testIsRigQueued() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        User user1 = new User("qperm1", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setActive(true);
+        ses1.setReady(true);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 5);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(r.getId());
+        ses1.setRequestedResourceName(r.getName());
+        ses1.setResourceType("RIG");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        db.persist(ses1);
+        db.getTransaction().commit();
+        
+        this.queue.addEntry(ses1, db);
+        
+        assertTrue(this.queue.isRigQueued(r.getId(), db));
+        
+        db.beginTransaction();
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit();
+        db.close();
+    }
+    
+    @Test
+    public void testIsRigQueuedType() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        User user1 = new User("qperm1", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("TYPE");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRigType(rt);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setActive(true);
+        ses1.setReady(true);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 5);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(rt.getId());
+        ses1.setRequestedResourceName(rt.getName());
+        ses1.setResourceType("TYPE");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        db.persist(ses1);
+        db.getTransaction().commit();
+        
+        this.queue.addEntry(ses1, db);
+        
+        assertTrue(this.queue.isRigQueued(r.getId(), db));
+        
+        db.beginTransaction();
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit();
+        db.close();
+    }
+    
+    @Test
+    public void testIsRigQueuedCaps() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        User user1 = new User("qperm1", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        db.persist(caps);
+        
+        RequestCapabilities reqCaps = new RequestCapabilities("perm");
+        db.persist(reqCaps);
+        
+        MatchingCapabilities match = new MatchingCapabilities(
+                new MatchingCapabilitiesId(caps.getId(), reqCaps.getId()), reqCaps, caps);
+        db.persist(match);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("CAPABILITY");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRequestCapabilities(reqCaps);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setActive(true);
+        ses1.setReady(true);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 5);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(reqCaps.getId());
+        ses1.setRequestedResourceName(reqCaps.getCapabilities());
+        ses1.setResourceType("CAPABILITY");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        db.persist(ses1);
+        db.getTransaction().commit();
+        
+        db.refresh(reqCaps);
+        db.refresh(caps);
+        
+        this.queue.addEntry(ses1, db);
+        
+        assertTrue(this.queue.isRigQueued(r.getId(), db));
+        
+        db.beginTransaction();
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(match);
+        db.delete(reqCaps);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit();
+        db.close();
+    }
+    
+    @Test
+    public void testIsRigQueuedNotQueued() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        
+        db.beginTransaction();
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        db.getTransaction().commit();
+        
+        assertFalse(this.queue.isRigQueued(r.getId(), db));
+        
+        db.beginTransaction();
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.getTransaction().commit();
+        db.close();
+    }
 }

@@ -140,7 +140,6 @@ public class StatusTimeoutChecker implements Runnable
             List<Rig> timedOut = session.createCriteria(Rig.class)
                 .add(Restrictions.eq("managed", true))    // Unmanaged rigs need not provide a status update
                 .add(Restrictions.eq("active", true))
-                .add(Restrictions.eq("online", true))
                 .add(Restrictions.eq("inSession", false)) // In session rigs need not provide a status update
                 .add(Restrictions.lt("lastUpdateTimestamp", new Date(System.currentTimeMillis() - this.timeout * 1000)))
                 .list();

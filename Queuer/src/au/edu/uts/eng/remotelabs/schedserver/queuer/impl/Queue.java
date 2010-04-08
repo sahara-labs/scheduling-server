@@ -99,6 +99,45 @@ public class Queue
     }
     
     /**
+     * Returns true if the rig, the rig's type or a matching request capabilites is queued.
+     * That is, if a session is queued that a rig may be assigned to, <code>true</code>
+     * is returned.
+     * 
+     * @param id identifier of rig
+     * @return true if the rig is queued for
+     */
+    public synchronized boolean isRigQueued(Long id, org.hibernate.Session db)
+    {
+        Rig rig = new RigDao(db).get(id);
+        
+        if (this.rigQueues.containsKey(rig.getId()) && this.rigQueues.get(rig.getId()).size() > 0)
+        {
+            /* The rig itself is queued. */
+            return true;
+        }
+
+        if (this.typeQueues.containsKey(rig.getRigType().getId()) && 
+                this.typeQueues.get(rig.getRigType().getId()).size() > 0)
+        {
+            /* The rig's type is queued. */
+            return true;
+        }
+
+        for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
+        {
+            RequestCapabilities caps = match.getRequestCapabilities();
+            if (this.capabilityQueues.containsKey(caps.getId()) && 
+                    this.capabilityQueues.get(caps.getId()).size() > 0)
+            {
+                /* A matching request capability is queued. */
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
      * Attempts to assigned the specified rig to a queued session. If there is
      * queued session for the rig, a queued session for its rig type or a
      * queued session for a request capabilities matching its rig capabilites,
@@ -220,7 +259,7 @@ public class Queue
             }
         }
     }
-
+    
     /**
      * Runs rig type assigning by loading free rigs in the type and calling
      * rig assignment.
