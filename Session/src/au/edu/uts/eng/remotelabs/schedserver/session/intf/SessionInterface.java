@@ -160,8 +160,7 @@ public class SessionInterface implements SessionSkeletonInterface
             /* Warning messages. */
             if (ses.isInGrace())
             {
-                info.setWarningMessage("In end of session grace period, you have " + remainingTime + "seconds left " +
-                		"to log off from the rig before you are removed.");
+                info.setWarningMessage("You will be removed from the rig in " + remainingTime + " seconds.");
             }
             else
             {
@@ -176,8 +175,8 @@ public class SessionInterface implements SessionSkeletonInterface
                             int rmTime = perm.getSessionActivityTimeout() -  
                                     (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
                                      Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
-                            info.setWarningMessage("If you do not log into the rig before " + rmTime + " you will be removed " +
-                                    "from the rig.");
+                            info.setWarningMessage("If you do not use the rig before " + rmTime + " seconds you will be " +
+                                    "removed from the rig.");
                         }
                         else
                         {
