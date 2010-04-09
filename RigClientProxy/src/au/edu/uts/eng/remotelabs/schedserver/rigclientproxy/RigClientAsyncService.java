@@ -47,6 +47,8 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.RigClientAsyncServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Allocate;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.NotificationRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Notify;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Release;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.UserType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
@@ -181,5 +183,23 @@ public class RigClientAsyncService
         user.setIdentityToken(this.tok.getIdentityToken(this.rig));
         
         this.service.callRelease(request, callback);
+    }
+    
+    /**
+     * Request to notify the in session users of a message.
+     * 
+     * @param message message to notify
+     * @param callback response call back handler
+     * @throws RemoteException
+     */
+    public void notify(String message, RigClientAsyncServiceCallbackHandler callback) throws RemoteException
+    {
+        Notify request = new Notify();
+        NotificationRequestType notif = new NotificationRequestType();
+        request.setNotify(notif);
+        notif.setIdentityToken(this.tok.getIdentityToken(this.rig));
+        notif.setMessage(message);
+        
+        this.service.callNotify(request, callback);
     }
 }

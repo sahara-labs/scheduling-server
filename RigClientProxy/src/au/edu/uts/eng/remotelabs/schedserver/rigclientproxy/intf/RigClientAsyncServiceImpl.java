@@ -1068,7 +1068,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startnotify(final Notify request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callNotify(final Notify request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[6].getName());
@@ -1094,12 +1094,12 @@ public class RigClientAsyncServiceImpl extends Stub
                     final SOAPEnvelope resultEnv = resultContext.getEnvelope();
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             NotifyResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultnotify((NotifyResponse) object);
+                    callback.notifyResponseCallback((NotifyResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrornotify(e);
+                    callback.notifyErrorCallback(e);
                 }
             }
 
@@ -1129,50 +1129,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrornotify(new RemoteException(ex.getMessage(), ex));
+                                callback.notifyErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {       
-                                callback.receiveErrornotify(f);
+                                callback.notifyErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {
-                                callback.receiveErrornotify(f);
+                                callback.notifyErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrornotify(f);
+                                callback.notifyErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {                                
-                                callback.receiveErrornotify(f);
+                                callback.notifyErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrornotify(f);
+                                callback.notifyErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrornotify(f);
+                                callback.notifyErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrornotify(f);
+                                callback.notifyErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrornotify(f);
+                            callback.notifyErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrornotify(f);
+                        callback.notifyErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrornotify(error);
+                    callback.notifyErrorCallback(error);
                 }
             }
 
@@ -1190,7 +1190,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrornotify(axisFault);
+                    callback.notifyErrorCallback(axisFault);
                 }
             }
         });

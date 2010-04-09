@@ -93,6 +93,23 @@ public abstract class RigClientAsyncServiceCallbackHandler
      */
     public void releaseErrorCallback(final Exception e)
     { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response form a notify operation call.
+     * 
+     * @param response response from call
+     */
+    public void notifyResponseCallback(final NotifyResponse response)
+    { /* Does nothing by default. */ }
+
+    /**
+     * Method to override to receive error information from a failed notify operation
+     * operation call.
+     * 
+     * @param e error exception
+     */
+    public void notifyErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
 
     public void receiveResultslaveAllocate(final SlaveAllocateResponse result)
     { /* Does nothing by default. */ }
@@ -125,12 +142,6 @@ public abstract class RigClientAsyncServiceCallbackHandler
     { /* Does nothing by default. */ }
 
     public void receiveErrorslaveRelease(final Exception e)
-    { /* Does nothing by default. */ }
-
-    public void receiveResultnotify(final NotifyResponse result)
-    { /* Does nothing by default. */ }
-
-    public void receiveErrornotify(final Exception e)
     { /* Does nothing by default. */ }
 
     public void receiveResultsetTestInterval(final SetTestIntervalResponse result)
