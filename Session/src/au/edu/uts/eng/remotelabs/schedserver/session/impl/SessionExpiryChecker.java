@@ -53,7 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueInfo;
  * Either expires or extends the time of all sessions which are close to 
  * the session duration duration.
  */
-public class SessionExpiryChceker implements Runnable
+public class SessionExpiryChecker implements Runnable
 {
     /** Logger. */
     private Logger logger;
@@ -61,7 +61,7 @@ public class SessionExpiryChceker implements Runnable
     /** Flag to specify if this is a test run. */
     private boolean notTest = true;
     
-    public SessionExpiryChceker()
+    public SessionExpiryChecker()
     {
         this.logger = LoggerActivator.getLogger();
     }
@@ -96,15 +96,20 @@ public class SessionExpiryChceker implements Runnable
              * For sessions that have been marked for termination, terminate  * 
              * those that have no more remaining time.                        *
              ******************************************************************/
-            if (ses.isInGrace() && remaining <= 0)
+            if (ses.isInGrace())
             {
-                ses.setActive(false);
-                ses.setRemovalTime(now);
-                db.flush();
-                
-                this.logger.info("Terminating session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
-                        ses.getAssignedRigName() + " because it is expired and the grace period has elapsed.");
-                if (this.notTest) new RigReleaser().release(ses, db);
+                if (remaining <= 0)
+                {
+                    ses.setActive(false);
+                    ses.setRemovalTime(now);
+                    db.beginTransaction();
+                    db.flush();
+                    db.getTransaction().commit();
+                    
+                    this.logger.info("Terminating session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
+                            ses.getAssignedRigName() + " because it is expired and the grace period has elapsed.");
+                    if (this.notTest) new RigReleaser().release(ses, db);
+                }
             }
             /******************************************************************
              * For sessions with remaining time less than the grace duration: *
@@ -124,9 +129,13 @@ public class SessionExpiryChceker implements Runnable
                             "session for expiry and giving a grace period.");
                     ses.setInGrace(true);
                     ses.setRemovalReason("No more session time extensions.");
+                    db.beginTransaction();
                     db.flush();
+                    db.getTransaction().commit();
                     
                     /* Notification warning. */
+                    if (this.notTest) new RigNotifier().notify("Your session will end in " + remaining + " seconds. " +
+                    		"After this you be removed, so please logoff.", ses, db);
                 }
                 else if (QueueInfo.isQueued(ses.getRig(), db))
                 {
@@ -135,26 +144,52 @@ public class SessionExpiryChceker implements Runnable
                             "session for expiry and giving a grace period.");
                     ses.setInGrace(true);
                     ses.setRemovalReason("Rig is queued.");
+                    db.beginTransaction();
                     db.flush();
+                    db.getTransaction().commit();
                     
                     /* Notification warning. */
+                    if (this.notTest) new RigNotifier().notify("Your session will end in " + remaining + " seconds. " +
+                            "After this you be removed, so please logoff.", ses, db);
                 }
                 else
                 {
+                    this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
+                            "rig " + ses.getAssignedRigName() + " is expired and is having its session time extended.");
                     ses.setExtensions((short)(ses.getExtensions() - 1));
+                    db.beginTransaction();
                     db.flush();
+                    db.getTransaction().commit();
                 }
             }
             /******************************************************************
-             * 
-             */
-            else if (remaining < perm.getSessionActivityTimeout())
+             * For sessions created with a user class that can be kicked off, * 
+             * if the rig is queued, the user is kicked off immediately.      *
+             ******************************************************************/
+            else if (QueueInfo.isQueued(ses.getRig(), db) && perm.getUserClass().isKickable())
             {
+                /* No grace is being given. */
+                this.logger.info("A kickable user is using a rig that is queued for, so they are being removed.");
+                ses.setActive(false);
+                ses.setRemovalTime(now);
+                ses.setRemovalReason("Resource was queued and user was kickable."); 
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
+                
+                if (this.notTest) new RigReleaser().release(ses, db);
+            }
+            /******************************************************************
+             * Finally, for sessions with time still remaining, check         *
+             * session activity timeout.                                      * 
+             ******************************************************************/
+            else if ((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000 > perm.getSessionActivityTimeout())
+            {
+                /* Check activity. */
                 
             }
         }
         
         db.close();
     }
-
 }

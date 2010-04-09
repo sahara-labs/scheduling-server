@@ -37,6 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.session;
 
+import java.util.Properties;
+
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -46,6 +48,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionExpiryChecker;
 
 /**
  * Activator for the Session bundle which handles running sessions.
@@ -55,6 +58,9 @@ public class SessionActivator implements BundleActivator
     /** Service registration for the Session SOAP interface. */
     private ServiceRegistration soapReg;
     
+    /** Session expiry checked runnable task service. */
+    private ServiceRegistration sessionCheckerReg;
+    
     /** Logger. */
     private Logger logger;
     
@@ -63,6 +69,13 @@ public class SessionActivator implements BundleActivator
 	{
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting the Session bunde...");
+        
+        /* Register the session timeout checker service. */
+        Properties props = new Properties();
+        props.put("period", "30");
+        SessionExpiryChecker task = new SessionExpiryChecker();
+        task.run(); // Expire any old sessions
+        this.sessionCheckerReg = context.registerService(Runnable.class.getName(), task, props);
         
         /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
@@ -76,6 +89,7 @@ public class SessionActivator implements BundleActivator
 	{
 	    this.logger.info("Stopping the Session bundle...");
 	    this.soapReg.unregister();
+	    this.sessionCheckerReg.unregister();
 	}
 
 }

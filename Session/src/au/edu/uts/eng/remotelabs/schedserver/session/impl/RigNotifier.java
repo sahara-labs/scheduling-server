@@ -32,27 +32,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 6th April 2010
+ * @date 9th April 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.session.impl;
-
-import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueRun;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncService;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncServiceCallbackHandler;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.NotifyResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.OperationResponseType;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse;
 
 /**
- * Calls the rig client release operation to remove a user from the rig client.
+ * Notifies the in session user on the rig of a message.
  */
-public class RigReleaser extends RigClientAsyncServiceCallbackHandler
+public class RigNotifier extends RigClientAsyncServiceCallbackHandler
 {
     /** Rig to release. */
     private Rig rig;
@@ -60,30 +57,29 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
     /** Logger. */
     private Logger logger;
     
-    public RigReleaser()
+    public RigNotifier()
     {
         this.logger = LoggerActivator.getLogger();
     }
     
-    public void release(Session ses, org.hibernate.Session db)
+    public void notify(String message, Session ses, org.hibernate.Session db)
     {
         this.rig = ses.getRig();
         
         try
         {
             RigClientAsyncService service = new RigClientAsyncService(this.rig.getName(), db);
-            service.release(ses.getUserName(), this);
+            service.notify(message, this);
         }
         catch (Exception e)
         {
-            this.logger.error("Failed calling rig client release from " + this.rig.getName() + " at " + 
+            this.logger.error("Failed calling rig client notify from " + this.rig.getName() + " at " + 
                     this.rig.getContactUrl() + " because of error " + e.getMessage() + ".");
 
             /* Put the rig offline. */
             this.rig.setInSession(false);
             this.rig.setOnline(false);
-            this.rig.setOfflineReason("Release failed for session " + ses.getId() + ".");
-            this.rig.setSession(null);
+            this.rig.setOfflineReason("Notify failed for session " + ses.getId() + ".");
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
@@ -91,28 +87,17 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
     }
     
     @Override
-    public void releaseResponseCallback(final ReleaseResponse response)
+    public void notifyResponseCallback(final NotifyResponse response)
     {
         RigDao dao = new RigDao();
         this.rig = dao.merge(this.rig);
             
-        OperationResponseType op = response.getReleaseResponse();
-        if (op.getSuccess())
-        {
-            this.logger.debug("Received release callback, releasing " + this.rig.getName() + " was successful.");
-            
-            this.rig.setLastUpdateTimestamp(new Date());
-            this.rig.setInSession(false);
-            dao.flush();
-            
-            /* Give the rig to the queue to attempt allocation. */
-            QueueRun.attemptAssignment(this.rig, dao.getSession());
-        }
-        else
+        OperationResponseType op = response.getNotifyResponse();
+        if (!op.getSuccess())
         {
             /* Failed release so take rig offline. */
             this.rig.setOnline(false);
-            this.rig.setOfflineReason("Release failed with reason " + op.getError().getReason() + '.');
+            this.rig.setOfflineReason("Notify failed with reason " + op.getError().getReason() + '.');
             dao.flush();
         }
         
@@ -125,12 +110,12 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         RigDao dao = new RigDao();
         this.rig = dao.merge(this.rig);
         
-        this.logger.error("Received error response from release of rig " + this.rig.getName() + " at " 
+        this.logger.error("Received error response from notify of rig " + this.rig.getName() + " at " 
                 + this.rig.getContactUrl() + ". Error message" + " is " + e.getMessage() + '.');
         
         /* Release failed so take the rig offline. */
         this.rig.setOnline(false);
-        this.rig.setOfflineReason("Release failed with reason " + e.getMessage() + '.');
+        this.rig.setOfflineReason("Notify failed with reason " + e.getMessage() + '.');
         dao.flush();
         
         dao.closeSession();
