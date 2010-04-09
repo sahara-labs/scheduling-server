@@ -241,6 +241,7 @@ public class Queue
             
             targetSes.setAssignmentTime(new Date());
             targetSes.setAssignedRigName(rig.getName());
+            targetSes.setActivityLastUpdated(new Date());
             targetSes.setRig(rig);
             rig.setInSession(true);
             db.beginTransaction();
@@ -277,7 +278,8 @@ public class Queue
         query.add(Restrictions.eq("rigType", type))
              .add(Restrictions.eq("active", true))
              .add(Restrictions.eq("online", true))
-             .add(Restrictions.eq("inSession", false));
+             .add(Restrictions.eq("inSession", false))
+             .setMaxResults(1);
         
         Rig freeRig;
         while (this.typeQueues.containsKey(id) && this.typeQueues.get(id).size() > 0 &&
