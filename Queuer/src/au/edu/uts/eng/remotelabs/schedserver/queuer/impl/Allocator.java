@@ -113,7 +113,7 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
         OperationResponseType op = response.getAllocateResponse();
         
         SessionDao dao = new SessionDao();
-        this.session = dao.merge(this.session);
+        this.session = dao.get(this.session.getId());
         if (op.getSuccess())
         {
             this.logger.debug("Received allocate response for " + this.session.getUserNamespace() + ':' + 
