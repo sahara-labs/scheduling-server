@@ -147,6 +147,7 @@ public class SessionInterface implements SessionSkeletonInterface
             res.setResourceID(rig.getId().intValue());
             res.setResourceName(rig.getName());
             info.setContactURL(rig.getContactUrl());
+            info.setRigType(rig.getRigType().getName());
             
             /* Session time and remaining time. */
             ResourcePermission perm = ses.getResourcePermission();
@@ -160,7 +161,9 @@ public class SessionInterface implements SessionSkeletonInterface
             /* Warning messages. */
             if (ses.isInGrace())
             {
-                info.setWarningMessage("You will be removed from the rig in " + remainingTime + " seconds.");
+                info.setWarningMessage(remainingTime > 0 ? 
+                        "You will be removed from the rig in " + remainingTime + " seconds." :
+                        "You are being removed from the rig.");
             }
             else
             {
@@ -175,8 +178,9 @@ public class SessionInterface implements SessionSkeletonInterface
                             int rmTime = perm.getSessionActivityTimeout() -  
                                     (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
                                      Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
-                            info.setWarningMessage("If you do not use the rig before " + rmTime + " seconds you will be " +
-                                    "removed from the rig.");
+                            info.setWarningMessage(rmTime > 0 ?
+                                    "If you do not use the rig before " + rmTime + " seconds you will be removed from the rig." :
+                                    "You are being removed from the rig.");
                         }
                         else
                         {

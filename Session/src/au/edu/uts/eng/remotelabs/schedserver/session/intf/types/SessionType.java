@@ -80,6 +80,9 @@ public class SessionType extends InSessionType implements ADBBean
 
     protected ResourceIDType resource;
     protected boolean resourceTracker = false;
+    
+    protected String rigType;
+    protected boolean rigTypeTracker = false;
 
     protected String contactURL;
     protected boolean contactURLTracker = false;
@@ -144,6 +147,24 @@ public class SessionType extends InSessionType implements ADBBean
         }
 
         this.resource = param;
+    }
+    
+    public String getRigType()
+    {
+        return this.rigType;
+    }
+    
+    public void setRigType(final String param)
+    {
+        if (param != null)
+        {
+            this.rigTypeTracker = true;
+        }
+        else
+        {
+            this.rigTypeTracker = false;
+        }
+        this.rigType = param;
     }
 
     public String getContactURL()
@@ -404,6 +425,41 @@ public class SessionType extends InSessionType implements ADBBean
             }
             this.resource.serialize(new QName("", "resource"), factory, xmlWriter);
         }
+        
+        if (this.rigTypeTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+
+                if (prefix == null)
+                {
+                    prefix = SessionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "rigType", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "rigType");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("rigType");
+            }
+
+            if (this.rigType == null)
+            {
+                throw new ADBException("rigType cannot be null!!");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(this.rigType);
+            }
+            xmlWriter.writeEndElement();
+        }
 
         if (this.contactURLTracker)
         {
@@ -646,6 +702,16 @@ public class SessionType extends InSessionType implements ADBBean
             elementList.add(this.resource);
         }
 
+        if (this.rigTypeTracker)
+        {
+            elementList.add(new QName("", "rigType"));
+            if (this.rigType == null)
+            {
+                throw new ADBException("rigType cannot be null.");
+            }
+            elementList.add(this.rigType);
+        }
+        
         if (this.contactURLTracker)
         {
             elementList.add(new QName("", "contactURL"));
@@ -771,6 +837,17 @@ public class SessionType extends InSessionType implements ADBBean
                 if (reader.isStartElement() && new QName("", "resource").equals(reader.getName()))
                 {
                     object.setResource(ResourceIDType.Factory.parse(reader));
+                    reader.next();
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "rigType").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setRigType(content);
                     reader.next();
                 }
 

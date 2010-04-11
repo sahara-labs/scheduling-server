@@ -52,21 +52,28 @@
       	<xsd:complexContent>
       		<xsd:extension base="ses:InSessionType">
       			<xsd:sequence>
-      				<xsd:element name="isReady" type="xsd:boolean" maxOccurs="1" minOccurs="0">
+      				<xsd:element name="isReady" type="xsd:boolean"
+      					maxOccurs="1" minOccurs="0">
       				</xsd:element>
-                            <xsd:element name="isCodeAssigned" type="xsd:boolean" maxOccurs="1" minOccurs="0">
+      				<xsd:element name="isCodeAssigned"
+      					type="xsd:boolean" maxOccurs="1" minOccurs="0">
       				</xsd:element>
-                            <xsd:element name="resource"
+      				<xsd:element name="resource"
       					type="ses:ResourceIDType" maxOccurs="1" minOccurs="0">
       				</xsd:element>
-      				<xsd:element name="contactURL"
-      					type="xsd:string" maxOccurs="1" minOccurs="0">
+                            <xsd:element name="rigType" type="xsd:string" maxOccurs="1" minOccurs="0">
       				</xsd:element>
-      				<xsd:element name="time" type="xsd:int" maxOccurs="1" minOccurs="0">
+                            <xsd:element name="contactURL" type="xsd:string"
+      					maxOccurs="1" minOccurs="0">
       				</xsd:element>
-      				<xsd:element name="timeLeft" type="xsd:int" maxOccurs="1" minOccurs="0">
+      				<xsd:element name="time" type="xsd:int"
+      					maxOccurs="1" minOccurs="0">
       				</xsd:element>
-      				<xsd:element name="extensions" type="xsd:int" maxOccurs="1" minOccurs="0">
+      				<xsd:element name="timeLeft" type="xsd:int"
+      					maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:element name="extensions" type="xsd:int"
+      					maxOccurs="1" minOccurs="0">
       				</xsd:element>
       				<xsd:element name="warningMessage"
       					type="xsd:string" maxOccurs="1" minOccurs="0">
