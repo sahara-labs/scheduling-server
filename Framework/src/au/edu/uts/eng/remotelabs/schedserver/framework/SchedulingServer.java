@@ -187,6 +187,7 @@ public class SchedulingServer
             final Map<String, File> jars = this.getBundleJars(FrameworkProperties.BUNDLE_DIR);
 
             /* Install mandatory scheduling server bundles in order. */
+            /* First pass installs the bundle. */
             for (int i = 0; i < SchedulingServer.SS_Bundles.size(); i++)
             {
                 final String symName = SchedulingServer.SS_Bundles.get(i);
@@ -196,8 +197,18 @@ public class SchedulingServer
                     throw new IllegalStateException("Bundle " + symName + " not found");
                 }
                 System.out.println("Installing bundle " + symName + " from " + bundleJar.toURI().toString() + ".");
-                this.installOrUpdateBundle(context, symName, bundleJar, true);
+                this.installOrUpdateBundle(context, symName, bundleJar, false);
             }
+            /* Start the bundles. */
+            for (final Bundle b : context.getBundles())
+            {
+                if (!(b.getState() == Bundle.ACTIVE || b.getState() == Bundle.STARTING))
+                {
+                    System.out.println("Starting bundle " + b.getSymbolicName() + " (id " + b.getBundleId() + ").");
+                    b.start();
+                }
+            }
+
 
             /* Install the rest of the detected bundles. */
             for (final Entry<String, File> e : jars.entrySet())
@@ -250,16 +261,11 @@ public class SchedulingServer
      * Installs the specified bundle if it is not already installed. If it is,
      * the bundle is updated with the provided bundle jar.
      * 
-     * @param context
-     *            a bundle context
-     * @param name
-     *            symbolic name of a bundle
-     * @param bundleJar
-     *            bundle file
-     * @param doStart
-     *            whether to start the bundle immediately
-     * @throws Exception
-     *             error installing or updating a bundle
+     * @param context a bundle context
+     * @param name  symbolic name of a bundle
+     * @param bundleJar  bundle file
+     * @param doStart   whether to start the bundle immediately
+     * @throws Exception  error installing or updating a bundle
      */
     private void installOrUpdateBundle(final BundleContext context, final String name, final File bundleJar,
             final boolean doStart) throws Exception
