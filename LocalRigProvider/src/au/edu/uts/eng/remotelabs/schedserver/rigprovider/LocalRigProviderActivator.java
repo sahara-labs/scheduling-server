@@ -91,6 +91,7 @@ public class LocalRigProviderActivator implements BundleActivator
         this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
         
         LocalRigProviderActivator.configTracker = new ServiceTracker(context, Config.class.getName(), null);
+        LocalRigProviderActivator.configTracker.open();
         
         /* Service to allow other bundles to obtain identity tokens for rigs. */
         Properties props = new Properties();
