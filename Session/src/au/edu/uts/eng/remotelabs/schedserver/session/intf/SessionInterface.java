@@ -136,7 +136,8 @@ public class SessionInterface implements SessionSkeletonInterface
         if (user != null && (ses = dao.findActiveSession(user)) != null && ses.getRig() != null)
         {
             info.setIsInSession(true);
-            info.setIsReady(ses.isReady());
+        
+          
             info.setIsCodeAssigned(ses.getCodeReference() != null);
             
             /* Resource. */
@@ -157,6 +158,9 @@ public class SessionInterface implements SessionSkeletonInterface
                     perm.getExtensionDuration() - time;
             info.setTimeLeft(remainingTime);
             info.setExtensions(ses.getExtensions());
+            
+            /* DODGY This is a hack for some callbacks not correctly updating the ready flag. */
+            info.setIsReady(ses.isReady() || time > 60);
             
             /* Warning messages. */
             if (ses.isInGrace())
