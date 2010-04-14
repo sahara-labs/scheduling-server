@@ -186,7 +186,7 @@ public class SessionExpiryChecker implements Runnable
             else if ((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000 > perm.getSessionActivityTimeout())
             {
                 /* Check activity. */
-                
+                if (this.notTest) new SessionIdleKicker().kickIfIdle(ses, db);
             }
         }
         
