@@ -47,8 +47,10 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.RigClientAsyncServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Allocate;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.IsActivityDetectable;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.NotificationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Notify;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.NullType;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Release;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.UserType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
@@ -201,5 +203,21 @@ public class RigClientAsyncService
         notif.setMessage(message);
         
         this.service.callNotify(request, callback);
+    }
+    
+    /**
+     * Request to check if there is session activity on a rig.
+     * 
+     * @param callback response call back handler
+     * @throws RemoteException
+     */
+    public void isActivityDetectable(RigClientAsyncServiceCallbackHandler callback) throws RemoteException
+    {
+        IsActivityDetectable request = new IsActivityDetectable();
+        NullType nll = new NullType();
+        request.setIsActivityDetectable(nll);
+        nll.set_void("Hello, World!");
+        
+        this.service.callIsActivityDetectable(request, callback);
     }
 }

@@ -506,7 +506,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startisActivityDetectable(final IsActivityDetectable request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callIsActivityDetectable(final IsActivityDetectable request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[2].getName());
@@ -533,12 +533,12 @@ public class RigClientAsyncServiceImpl extends Stub
 
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             IsActivityDetectableResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultisActivityDetectable((IsActivityDetectableResponse) object);
+                    callback.activityDetectionResponseCallback((IsActivityDetectableResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorisActivityDetectable(e);
+                    callback.activityDetectionErrorCallback(e);
                 }
             }
 
@@ -568,50 +568,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorisActivityDetectable(new RemoteException(ex.getMessage(), ex));
+                                callback.activityDetectionErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {
-                                callback.receiveErrorisActivityDetectable(f);
+                                callback.activityDetectionErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {
-                                callback.receiveErrorisActivityDetectable(f);
+                                callback.activityDetectionErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {
-                                callback.receiveErrorisActivityDetectable(f);
+                                callback.activityDetectionErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {
-                                callback.receiveErrorisActivityDetectable(f);
+                                callback.activityDetectionErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {
-                                callback.receiveErrorisActivityDetectable(f);
+                                callback.activityDetectionErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {
-                                callback.receiveErrorisActivityDetectable(f);
+                                callback.activityDetectionErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {
-                                callback.receiveErrorisActivityDetectable(f);
+                                callback.activityDetectionErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorisActivityDetectable(f);
+                            callback.activityDetectionErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorisActivityDetectable(f);
+                        callback.activityDetectionErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorisActivityDetectable(error);
+                    callback.activityDetectionErrorCallback(error);
                 }
             }
 
@@ -629,7 +629,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorisActivityDetectable(axisFault);
+                    callback.activityDetectionErrorCallback(axisFault);
                 }
             }
         });

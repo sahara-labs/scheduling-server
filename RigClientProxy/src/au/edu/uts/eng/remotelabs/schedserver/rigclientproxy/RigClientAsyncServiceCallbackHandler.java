@@ -104,11 +104,28 @@ public abstract class RigClientAsyncServiceCallbackHandler
 
     /**
      * Method to override to receive error information from a failed notify operation
-     * operation call.
+     * call.
      * 
      * @param e error exception
      */
     public void notifyErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from a activity detection call.
+     * 
+     * @param response response from call
+     */
+    public void activityDetectionResponseCallback(final IsActivityDetectableResponse response)
+    { /* Does nothing by default. */ }
+
+    /**
+     * Method to override to receive error information from a failed activity
+     * detection operation call.
+     * 
+     * @param e error exception
+     */
+    public void activityDetectionErrorCallback(final Exception e)
     { /* Does nothing by default. */ }
 
     public void receiveResultslaveAllocate(final SlaveAllocateResponse result)
@@ -124,12 +141,6 @@ public abstract class RigClientAsyncServiceCallbackHandler
     { /* Does nothing by default. */ }
 
     public void receiveErrorgetBatchControlStatus(final Exception e)
-    { /* Does nothing by default. */ }
-
-    public void receiveResultisActivityDetectable(final IsActivityDetectableResponse result)
-    { /* Does nothing by default. */ }
-
-    public void receiveErrorisActivityDetectable(final Exception e)
     { /* Does nothing by default. */ }
 
     public void receiveResultgetAttribute(final GetAttributeResponse result)
