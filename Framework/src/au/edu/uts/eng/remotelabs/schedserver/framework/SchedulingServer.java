@@ -115,6 +115,22 @@ public class SchedulingServer
                         {
                             runningBundles.put(b.getSymbolicName(), b);
                         }
+                        
+                        /* First shutdown the Server bundle. */
+                        try
+                        {
+                            System.err.println("##### Stopping bundle SchedulingServer-Server " +
+                            		"##################################");
+                            runningBundles.get("SchedulingServer-Server").stop(); // Small sleep to allow the bundle threads to interrupt
+                            Thread.sleep(4000);  // and stop.
+                        }
+                        catch (BundleException ex)
+                        {
+                            System.err.println("Bundle SchedulingServer-Server throw exception " + 
+                                    ex.getCause().getClass().getName() + ", with message " + ex.getMessage() + '.');
+                        }
+                        catch (InterruptedException ex)  { /* Swallow, already shutting down. */}
+                        
                      
                         /* Stop all the bundles (except the framework) that aren't in the Scheduling 
                          * Server bundle list in no particular order. */
@@ -124,9 +140,14 @@ public class SchedulingServer
                             {
                                 try
                                 {
-                                    System.err.println("#### Stopping bundle " + e.getKey() + "####");
+                                    StringBuilder mess = new StringBuilder(80);
+                                    mess.append("##### Stopping bundle ");
+                                    mess.append(e.getKey());
+                                    mess.append(' ');
+                                    for (int m = 0; m < 63 - e.getKey().length(); m++) mess.append('#');
+                                    System.err.println(mess.toString());
                                     e.getValue().stop(); // Small sleep to allow the bundle threads to interrupt
-                                    Thread.sleep(3000);  // and stop.
+                                    Thread.sleep(1000);  // and stop.
                                 }
                                 catch (BundleException ex)
                                 {
@@ -146,9 +167,15 @@ public class SchedulingServer
                             {
                                 try
                                 {
-                                    System.err.println("#### Stopping bundle " + key + "####");
+                                    StringBuilder mess = new StringBuilder(80);
+                                    mess.append("##### Stopping bundle ");
+                                    mess.append(key);
+                                    mess.append(' ');
+                                    for (int m = 0; m < 63 - key.length(); m++) mess.append('#');
+            
+                                    System.err.println(mess.toString());
                                     runningBundles.get(key).stop(); // Small sleep to allow the bundle threads to interrupt
-                                    Thread.sleep(3000);             // and stop.
+                                    Thread.sleep(1000);             // and stop.
                                 }
                                 catch (BundleException ex)
                                 {
