@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\mdiponio\Desktop\RigClient\servicewrapper\win32&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\mdiponio\Desktop\SchedServer_Servicewrapper\win32&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -134,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\rigclientservice.exe"
+				OutputFile="$(OutDir)\schedulingservice.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
