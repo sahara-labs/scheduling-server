@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# Starts the Sahara Rig Client.
+#
+# description: rigclient
+# processname: rigclient
+#
+# author: tmachet (tania.machet@eng.uts.edu.au)
+# date: 12/03/2010
+
+INST_DIR=/usr/local/rigclient
+test -d $INST_DIR || exit 0
+
+# Executables
+EXEC=rigclientservice
+
+RETVAL=0
+
+start() {
+
+
+
+	echo "Starting the Rig Client..."
+	pushd .
+	cd $INST_DIR
+	$INST_DIR/$EXEC &
+	popd
+}
+
+stop() {
+    echo "Shutting down rigclient..."
+    PID=`ps -C $EXEC | grep rigclient | cut -d ' ' -f1`
+    if [ $PID > 0 ]; then
+		kill -SIGTERM $PID &> /dev/null
+    fi
+}
+
+
+restart() {
+    echo "Restarting rigclient..."
+    stop
+    start
+}	
+
+reload() {
+	restart
+}	
+
+
+case "$1" in
+start)
+	start
+	;;
+stop)
+	stop
+	;;
+reload|restart)
+	restart
+	;;
+*)
+	echo $"Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
+
