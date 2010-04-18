@@ -72,7 +72,7 @@ public class SessionActivator implements BundleActivator
         
         /* Register the session timeout checker service. */
         Properties props = new Properties();
-        props.put("period", "30");
+        props.put("period", "10");
         SessionExpiryChecker task = new SessionExpiryChecker();
         task.run(); // Expire any old sessions
         this.sessionCheckerReg = context.registerService(Runnable.class.getName(), task, props);

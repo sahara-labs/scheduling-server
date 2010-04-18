@@ -71,6 +71,9 @@ public class SessionExpiryChecker implements Runnable
     public void run()
     {
         org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        boolean kicked = false;
+        
         if (db == null)
         {
             this.logger.warn("Unable to obtain a database session, for rig session status checker. Ensure the " +
@@ -166,8 +169,14 @@ public class SessionExpiryChecker implements Runnable
              * For sessions created with a user class that can be kicked off, * 
              * if the rig is queued, the user is kicked off immediately.      *
              ******************************************************************/
-            else if (QueueInfo.isQueued(ses.getRig(), db) && perm.getUserClass().isKickable())
+             /* DODGY The 'kicked' flag is to only allow a single kick per 
+              * pass. This is allow time for the rig to be released and take the
+              * queued session. This is a hack at best, but should be addressed 
+              * by a released - cleaning up meta state. */
+            else if (!kicked && QueueInfo.isQueued(ses.getRig(), db) && perm.getUserClass().isKickable())
             {
+                kicked = true;
+                
                 /* No grace is being given. */
                 this.logger.info("A kickable user is using a rig that is queued for, so they are being removed.");
                 ses.setActive(false);
