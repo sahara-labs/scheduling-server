@@ -87,10 +87,10 @@ extern "C"
 #define JAR_FILE "bin/SchedulingServer.jar"
 
 /** Log file for Service. */
-#define LOG_FILE "schedulingserverservice.log"
+#define LOG_FILE "schedulingservice.log"
 
 /** Configuration file containing location. */
-#define CONFIG_FILE "conf/schedulingserver_service.ini"
+#define CONFIG_FILE "conf/scheduling_service.ini"
 
 /******************************************************************************
  ** Global variables.                                                        **

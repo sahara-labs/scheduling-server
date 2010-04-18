@@ -51,7 +51,7 @@
 
 #define SERVICE_NAME "Scheduling Server"
 
-#define SERVICE_DESC "Schedules and assigns remote laboratory rigs"
+#define SERVICE_DESC "Schedules and assigns remote laboratory rigs."
 
 /*******************************************************************************
  ** Functions                                                                 **

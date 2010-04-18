@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\mdiponio\Desktop\SchedServer_Servicewrapper\win32&quot;"
+				AdditionalIncludeDirectories="&quot;$(OutDir)/../../win32&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
