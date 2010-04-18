@@ -108,96 +108,7 @@ public class SchedulingServer
                 @Override
                 public void run()
                 {
-                    if (SchedulingServer.framework != null)
-                    {
-                        Map<String, Bundle> runningBundles = new HashMap<String, Bundle>();
-                        for (Bundle b : SchedulingServer.framework.getBundleContext().getBundles())
-                        {
-                            runningBundles.put(b.getSymbolicName(), b);
-                        }
-                        
-                        /* First shutdown the Server bundle. */
-                        try
-                        {
-                            System.err.println("##### Stopping bundle SchedulingServer-Server " +
-                            		"##################################");
-                            runningBundles.get("SchedulingServer-Server").stop(); // Small sleep to allow the bundle threads to interrupt
-                            Thread.sleep(4000);  // and stop.
-                        }
-                        catch (BundleException ex)
-                        {
-                            System.err.println("Bundle SchedulingServer-Server throw exception " + 
-                                    ex.getCause().getClass().getName() + ", with message " + ex.getMessage() + '.');
-                        }
-                        catch (InterruptedException ex)  { /* Swallow, already shutting down. */}
-                        
-                     
-                        /* Stop all the bundles (except the framework) that aren't in the Scheduling 
-                         * Server bundle list in no particular order. */
-                        for (Entry<String, Bundle> e : runningBundles.entrySet())
-                        {
-                            if (!SchedulingServer.SS_Bundles.contains(e.getKey()) && e.getValue().getBundleId() != 0)
-                            {
-                                try
-                                {
-                                    StringBuilder mess = new StringBuilder(80);
-                                    mess.append("##### Stopping bundle ");
-                                    mess.append(e.getKey());
-                                    mess.append(' ');
-                                    for (int m = 0; m < 63 - e.getKey().length(); m++) mess.append('#');
-                                    System.err.println(mess.toString());
-                                    e.getValue().stop(); // Small sleep to allow the bundle threads to interrupt
-                                    Thread.sleep(1000);  // and stop.
-                                }
-                                catch (BundleException ex)
-                                {
-                                    System.err.println("Bundle" + e.getKey() + " throw exception " + 
-                                            ex.getCause().getClass().getName() + ", with message " + ex.getMessage() + '.');
-                                }
-                                catch (InterruptedException ex)  { /* Swallow, already shutting down. */}
-                            }
-                        }
-                        
-                        /* Stops the Scheduling Server bundles in the opposite order they are started. */
-                        int sz = SchedulingServer.SS_Bundles.size();
-                        for (int i = 1; i < sz; i++)
-                        {
-                            String key = SchedulingServer.SS_Bundles.get(sz - i);
-                            if (runningBundles.containsKey(key))
-                            {
-                                try
-                                {
-                                    StringBuilder mess = new StringBuilder(80);
-                                    mess.append("##### Stopping bundle ");
-                                    mess.append(key);
-                                    mess.append(' ');
-                                    for (int m = 0; m < 63 - key.length(); m++) mess.append('#');
-            
-                                    System.err.println(mess.toString());
-                                    runningBundles.get(key).stop(); // Small sleep to allow the bundle threads to interrupt
-                                    Thread.sleep(1000);             // and stop.
-                                }
-                                catch (BundleException ex)
-                                {
-                                    System.err.println("Bundle" + key + " throw exception " + 
-                                            ex.getCause().getClass().getName() + ", with message " + ex.getMessage() + '.');
-                                }
-                                catch (InterruptedException ex)  { /* Swallow, already shutting down. */}
-                            }
-                        }
-                        
-                        /* Stop the framework. */
-                        try
-                        {
-                            System.err.println("Shutting down Scheduling Server...");
-                            SchedulingServer.framework.stop();
-                            SchedulingServer.framework.waitForStop(0);
-                        }
-                        catch (final Exception e)
-                        {
-                            System.err.println("Unable to shutdown framework cleanly.");
-                        }
-                    }
+                    SchedulingServer.stopFramework();
                 }
             });
 
@@ -262,7 +173,6 @@ public class SchedulingServer
             System.out.println("Failed... Exception: " + ex.getClass().getCanonicalName() + ", Message: "
                     + ex.getMessage() + ".");
             ex.printStackTrace();
-            System.exit(-1);
         }
     }
 
@@ -280,8 +190,7 @@ public class SchedulingServer
      */
     public static void stop()
     {   
-        /* The shutdown hook will shutdown the framework. */
-        System.exit(0);
+       SchedulingServer.stopFramework();
     }
 
     /**
@@ -443,5 +352,100 @@ public class SchedulingServer
         }
 
         throw new Exception("Unable to find FrameworkFactory class.");
+    }
+
+    /**
+     * Shutdowns the OSGI framework, so shutdowns the Scheduling Server.
+     */
+    private static void stopFramework()
+    {
+        if (SchedulingServer.framework != null)
+        {
+            Map<String, Bundle> runningBundles = new HashMap<String, Bundle>();
+            for (Bundle b : SchedulingServer.framework.getBundleContext().getBundles())
+            {
+                runningBundles.put(b.getSymbolicName(), b);
+            }
+            
+            /* First shutdown the Server bundle. */
+            try
+            {
+                System.err.println("##### Stopping bundle SchedulingServer-Server ##################################");
+                runningBundles.get("SchedulingServer-Server").stop(); // Small sleep to allow the bundle threads to interrupt
+                Thread.sleep(4000);  // and stop.
+            }
+            catch (BundleException ex)
+            {
+                System.err.println("Bundle SchedulingServer-Server throw exception " + 
+                        ex.getCause().getClass().getName() + ", with message " + ex.getMessage() + '.');
+            }
+            catch (InterruptedException ex)  { /* Swallow, already shutting down. */}
+            
+         
+            /* Stop all the bundles (except the framework) that aren't in the Scheduling 
+             * Server bundle list in no particular order. */
+            for (Entry<String, Bundle> e : runningBundles.entrySet())
+            {
+                if (!SchedulingServer.SS_Bundles.contains(e.getKey()) && e.getValue().getBundleId() != 0)
+                {
+                    try
+                    {
+                        StringBuilder mess = new StringBuilder(80);
+                        mess.append("##### Stopping bundle ");
+                        mess.append(e.getKey());
+                        mess.append(' ');
+                        for (int m = 0; m < 63 - e.getKey().length(); m++) mess.append('#');
+                        System.err.println(mess.toString());
+                        e.getValue().stop(); // Small sleep to allow the bundle threads to interrupt
+                        Thread.sleep(1000);  // and stop.
+                    }
+                    catch (BundleException ex)
+                    {
+                        System.err.println("Bundle" + e.getKey() + " throw exception " + 
+                                ex.getCause().getClass().getName() + ", with message " + ex.getMessage() + '.');
+                    }
+                    catch (InterruptedException ex)  { /* Swallow, already shutting down. */}
+                }
+            }
+            
+            /* Stops the Scheduling Server bundles in the opposite order they are started. */
+            int sz = SchedulingServer.SS_Bundles.size();
+            for (int i = 1; i < sz; i++)
+            {
+                String key = SchedulingServer.SS_Bundles.get(sz - i);
+                if (runningBundles.containsKey(key))
+                {
+                    try
+                    {
+                        StringBuilder mess = new StringBuilder(80);
+                        mess.append("##### Stopping bundle ");
+                        mess.append(key);
+                        mess.append(' ');
+                        for (int m = 0; m < 63 - key.length(); m++) mess.append('#');
+         
+                        System.err.println(mess.toString());
+                        runningBundles.get(key).stop(); // Small sleep to allow the bundle threads to interrupt
+                        Thread.sleep(1000);             // and stop.
+                    }
+                    catch (BundleException ex)
+                    {
+                        System.err.println("Bundle" + key + " throw exception " + 
+                                ex.getCause().getClass().getName() + ", with message " + ex.getMessage() + '.');
+                    }
+                    catch (InterruptedException ex)  { /* Swallow, already shutting down. */}
+                }
+            }
+            
+            /* Stop the framework. */
+            try
+            {
+                System.err.println("Shutting down Scheduling Server...");
+                SchedulingServer.framework.stop();
+            }
+            catch (final Exception e)
+            {
+                System.err.println("Unable to shutdown framework cleanly.");
+            }
+        }
     }
 }
