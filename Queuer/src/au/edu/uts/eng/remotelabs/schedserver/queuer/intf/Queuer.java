@@ -330,12 +330,12 @@ public class Queuer implements QueuerSkeletonInterface
         else if ((user = this.getUserFromUserID(uid, dao.getSession())) != null &&
                 (ses = dao.findActiveSession(user)) != null)
         {
-            /* Update the last contact timestamp. */
-            ses.setActivityLastUpdated(new Date());
-            dao.flush();
-            
             if (ses.getAssignmentTime() == null)
             {
+                /* Update the last contact timestamp. */
+                ses.setActivityLastUpdated(new Date());
+                dao.flush();
+                
                 /* User is currently in queue. */
                 inQueue.setInQueue(true);
             }
