@@ -1,0 +1,76 @@
+#!/bin/bash
+#
+# Starts the Sahara Scheduling Server.
+#
+# description: schedulingserver
+# processname: schedulingserver
+#
+# author: tmachet (tania.machet@eng.uts.edu.au)
+# date: 12/03/2010
+#
+# chkconfig: 345 95 5
+# description: Scheduling Server service for Sahara 
+
+
+INST_DIR=/usr/lib/schedulingserver
+test -d $INST_DIR || exit 0
+
+# Executables
+EXEC=schedulingservice
+
+RETVAL=0
+
+start() {
+    PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
+    if [[ ! "$PID" > 0 ]]; then
+		echo "Starting the Scheduling Server..."
+		pushd .
+		cd $INST_DIR
+		$INST_DIR/$EXEC &
+		popd
+	else
+		echo "Scheduling Server has already started. Process ID "$PID
+    fi
+}
+
+stop() {
+    PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
+    if [[ "$PID" > 0 ]]; then
+    	echo "Shutting down Scheduling Server with PID "$PID"..."
+		kill -SIGTERM $PID &> /dev/null
+	else
+		echo "No Scheduling Server found to shut down"
+    fi
+}
+
+
+restart() {
+    echo "Restarting Scheduling Server..."
+    stop
+    sleep 10
+    start
+}
+
+reload() {
+	restart
+}
+
+
+case "$1" in
+start)
+	start
+	;;
+stop)
+	stop
+	;;
+reload|restart)
+	restart
+	;;
+*)
+	echo $"Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
+
