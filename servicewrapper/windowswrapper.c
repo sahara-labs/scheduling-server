@@ -153,7 +153,7 @@ void WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv)
 
 	/* Set the service start to running. */
 	serviceStatus.dwCurrentState = SERVICE_RUNNING;
-	serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+	serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
 	serviceStatus.dwWaitHint = 0;
 	SetServiceStatus(serviceHandle, &serviceStatus);
 
