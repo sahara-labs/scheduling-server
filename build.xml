@@ -38,6 +38,7 @@ Date: 28th December 2009
     <property name="bin.dir" location="bin" />
     <property name="package.name" location="SchedulingServer" />
     <property name="package.dir" location="package" />
+	<property name="tool.lib.dir" location="test/tools" /> <!-- Static analysis tools. -->
     
     <macrodef name="iterate">
       <attribute name="target"/>
@@ -47,6 +48,13 @@ Date: 28th December 2009
           </subant>
       </sequential>
     </macrodef>
+	
+	   <!-- NSIS tools classpath -->
+	    <path id="nsis.tools"> 
+	    	<fileset dir="${tool.lib.dir}">
+	            <include name="nsisant-1.2.jar" />
+	        </fileset>
+	    </path>
     
     <!-- Build all source and generate all bundles. -->
     <target name="build">
@@ -105,18 +113,13 @@ Date: 28th December 2009
     </target>
     
     <!-- Do all tasks on all nested ant build files. -->
-    <target name="all" depends="package">
+    <target name="all" depends="package,installer">
         <iterate target="all" />
 	<copy todir="${bundles.dir}" flatten="yes">
             <fileset dir=".">
                 <include name="**/bundle/*.jar" />
             </fileset>
         </copy>
-    </target>
-
-    <!-- Do the test target on all the nested build files. -->
-    <target name="test" depends="build">
-        <iterate target="test" />
     </target>
     
     <!-- Clean all. -->
@@ -126,6 +129,18 @@ Date: 28th December 2009
 	<delete dir="${bin.dir}" />
 	<delete dir="cache" />
 	<delete dir="${package.dir}" />
+    <delete file="SaharaSchedulingServer.exe" />
     </target>
-    
+
+
+    <property name="NSIS_Install_Path" value="C:\Program Files\NSIS" />
+    <target name="installer" depends="build">
+    	<subant target="schema" verbose="true">
+    	            <fileset dir="." includes="DataAccess/build.xml"/>
+    	</subant>
+        <taskdef name="nsis" classpathref="nsis.tools" classname="net.sf.nsisant.Task" />
+        <nsis script="SaharaSSInstall.nsi" verbosity="3" out="SaharaSSInstaller.log" path="${NSIS_Install_Path}">
+        </nsis>
+    </target>    
+
 </project>
