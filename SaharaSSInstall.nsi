@@ -297,7 +297,6 @@ Function .onInstSuccess
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "DisplayName"  "$(^Name)"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "DisplayVersion" "${VERSION}"
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "InstallLocation" "$INSTDIR\SchedulingServer"
-	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "Comments" "Uninstaller can be run directly by executing $\"$INSTDIR\uninstallSchedulingServer.exe$\""
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "UninstallString" "$\"$INSTDIR\uninstallSchedulingServer.exe$\""
 	WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "NoModify" 1
 	WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "NoRepair" 1
@@ -342,6 +341,7 @@ Section "un.Sahara Scheduling Server" un.SchedulingServer
 	RMDir /r $R1\bundles 
     RMDir /r $R1\bin 
     RMDir /r $R1\conf
+    RMDir /r $R1\cache
     Delete $R1\LICENSE
     Delete $R1\schedulingservice*
     Delete $R1\*.sql
@@ -358,7 +358,7 @@ Function un.onInit
 
 	; Check if the components are installed and enable only the installed components for uninstallation
 	Push $R0
-
+    ClearErrors
 	ReadRegStr $R0 HKLM "${REGKEY}" "Path"
 	${If} $R0 S== ""
 	      	!insertmacro disableSection ${un.SchedulingServer}
