@@ -121,6 +121,11 @@ Date: 28th December 2009
             </fileset>
         </copy>
     </target>
+
+    <!-- Do the test target on all the nested build files. -->
+    <target name="test" depends="build">
+        <iterate target="test" />
+    </target>
     
     <!-- Clean all. -->
     <target name="clean">
