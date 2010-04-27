@@ -13,8 +13,8 @@ function getDatabaseOption {
     DBOPT=""
     # Database options
     echo "Database options:"
-    echo "   1. MySQL"
-    echo "   2. PostgreSQL (default)"
+    echo "   1. MySQL (default)"
+    echo "   2. PostgreSQL"
     echo 
     read -p "Which database option? [1] " DBOPT
 
@@ -135,18 +135,45 @@ if [[ $CREATEDB == 'y' && $DATABASE == "mysql" ]] ; then # Import the MySQL data
     # Root password 
     read -p "What is the database server root password? [no password] " ROOTPASSWORD
 
-else if [[ $CREATEDB == 'y' && $DATABASE == 'postgresql' ]] ; then # Import the PostgreSQL database
-    
-    # First make sure the server is running. 
-    if [[ `ps -C postgres | grep postgres | awk -F' '{ printf $1 }'` > 0 ]] ; then
-	echo "### Detected PostgreSQL is running."
-    else
-	echo "Attempting to start PostgreSQL"
-	if [[ -f /etc/init.d/postgresql ]] ; then
-	    
+elif [[ $CREATEDB == 'y' && $DATABASE == "postgresql" ]] ; then # Import the PostgreSQL database
+    if [[ $HOST == "127.0.0.1" || $HOST == "localhost" ]] ; then
+        # First make sure the server is running.
+	if [[ `ps -C postgres | grep postgres | awk -F' ' '{ printf $1 }'` -gt 0 ]] ; then
+	    echo
+	    echo "Detected PostgreSQL is running..."
+	else
+	    echo
+	    echo "Attempting to start PostgreSQL..."
+	    if [[ -f /etc/init.d/postgresql ]] ; then
+		/etc/init.d/postgresql start
+		sleep 2
+	    elif [[ PINIT=`ls /etc/init.d/postgresql-*` && $? -eq 0 ]] ; then
+                # Some distrubutions use a init script with the version number
+	        # appended to it.
+		PINIT=`ls /etc/init.d/postgresql-*`
+		if [[ $? == 0 ]] ; then
+		    $PINIT start
+		    sleep 2
+		fi
+	    else
+		echo "Local PostgreSQL database is not running and cannot be started."
+		echo "Please check PostgreSQL is installed and start it manually."
+		exit 1
+	    fi
 	fi
 
-    populatePostgresql
+	# Check the server actually started
+	if [[ `ps -C postgres | grep postgres | awk -F' ' '{ printf $1 }'` -eq 0 ]] ; then
+	    echo 
+	    echo "Unable to start database, failing. Please manually start the database"
+	    echo "server, then rerun this script."
+	    exit 1
+	fi
+	echo
+    fi
+    
+    populatePostgreSQL
 fi
 
 popd &> /dev/null
+
