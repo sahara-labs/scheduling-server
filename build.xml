@@ -148,6 +148,9 @@ Date: 28th December 2009
 			<tarfileset prefix="SchedulingServer" dir="servicewrapper/WindowsServiceWrapper/Release/" username="${user.name}" group="${user.name}">
 				<include name="schedulingservice.exe" />
 			</tarfileset>
+			<tarfileset prefix="SchedulingServer" dir="doc/db/schema" username="${user.name}" group="${user.name}">
+				<include name="*.sql" />
+			</tarfileset>
 		</tar>
 		<move file="${package.name}_${package.time}.tar.gz" todir="${package.dir}" />
 	</target>
