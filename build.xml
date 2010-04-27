@@ -158,8 +158,9 @@ Date: 28th December 2009
 	<!-- Windows Installer. -->
 	<property name="NSIS_Install_Path" value="C:\Program Files\NSIS" />
 	<target name="win-package" depends="build,schema" if="isWindows">
+		<mkdir dir="${package.dir}" />
 		<taskdef name="nsis" classpathref="nsis.tools" classname="net.sf.nsisant.Task" />
-		<nsis script="SchedulingServer.nsi" verbosity="3" out="SaharaSSInstaller.log" path="${NSIS_Install_Path}" />
+		<nsis script="SchedulingServer.nsi" verbosity="3" out="${package.dir}/SaharaSSInstaller.log" path="${NSIS_Install_Path}" />
 	</target>
 	
 	<!-- Redhat installer. -->
