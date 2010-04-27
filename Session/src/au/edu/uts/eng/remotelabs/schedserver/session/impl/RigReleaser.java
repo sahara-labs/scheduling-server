@@ -103,6 +103,7 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             
             this.rig.setLastUpdateTimestamp(new Date());
             this.rig.setInSession(false);
+            this.rig.setSession(null);
             dao.flush();
             
             /* Give the rig to the queue to attempt allocation. */
@@ -113,6 +114,8 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             /* Failed release so take rig offline. */
             this.rig.setOnline(false);
             this.rig.setOfflineReason("Release failed with reason " + op.getError().getReason() + '.');
+            this.rig.setInSession(false);
+            this.rig.setSession(null);
             dao.flush();
         }
         
@@ -132,6 +135,7 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         this.rig.setOnline(false);
         this.rig.setOfflineReason("Release failed with reason " + e.getMessage() + '.');
         this.rig.setSession(null);
+        this.rig.setInSession(false);
         dao.flush();
         
         dao.closeSession();
