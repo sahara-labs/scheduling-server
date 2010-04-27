@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-                     ## Sahara Scheduling Server ##
+					## Sahara Scheduling Server ##
 
 Copyright (c) 2009, University of Technology, Sydney
 All rights reserved.
@@ -8,14 +8,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
-      this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright 
-      notice, this list of conditions and the following disclaimer in the 
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the University of Technology, Sydney nor the names 
-      of its contributors may be used to endorse or promote products derived from 
-      this software without specific prior written permission.
+	* Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright 
+	notice, this list of conditions and the following disclaimer in the 
+	documentation and/or other materials provided with the distribution.
+	* Neither the name of the University of Technology, Sydney nor the names 
+	of its contributors may be used to endorse or promote products derived from 
+	this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
@@ -32,120 +32,169 @@ Author: Michael Diponio (mdiponio)
 Date: 28th December 2009
 -->
 <project name="Scheduling Server" default="build" basedir=".">
-    
-    <!-- Generate bundle location. -->
-    <property name="bundles.dir" location="bundles" />
-    <property name="bin.dir" location="bin" />
-    <property name="package.name" location="SchedulingServer" />
-    <property name="package.dir" location="package" />
-	<property name="tool.lib.dir" location="test/tools" /> <!-- Static analysis tools. -->
-    
-    <macrodef name="iterate">
-      <attribute name="target"/>
-      <sequential>
-          <subant target="@{target}" verbose="true">
-              <fileset dir="." includes="*/build.xml"/>
-          </subant>
-      </sequential>
-    </macrodef>
 	
-	   <!-- NSIS tools classpath -->
-	    <path id="nsis.tools"> 
-	    	<fileset dir="${tool.lib.dir}">
-	            <include name="nsisant-1.2.jar" />
-	        </fileset>
-	    </path>
-    
-    <!-- Build all source and generate all bundles. -->
-    <target name="build">
-        <iterate target="bundle" />
-	<mkdir dir="${bundles.dir}" />
-        <copy todir="${bundles.dir}" flatten="yes">
-            <fileset dir=".">
-                <include name="**/bundle/*.jar" />
-            </fileset>
-        </copy>
-	<subant target="dist" verbose="true">
-            <fileset dir="." includes="Framework/build.xml"/>
-        </subant>
-	<mkdir dir="${bin.dir}" />
-	<copy todir="${bin.dir}" flatten="yes">
-            <fileset dir=".">
-                <include name="**/dist/*.jar" />
-            </fileset>
-        </copy>
-    </target>
-    
-    <!-- Move all the built system to a seperate directory. -->
-    <target name="package" depends="build">
-        <tstamp>
-	    <format property="package.time" pattern="MM-dd-yyyy_hh.mm"/>
-	</tstamp>
-	<mkdir dir="${package.dir}" />
-	<tar destfile="${package.name}_${package.time}.tar.gz" compression="gzip">
-	<tarfileset prefix="SchedulingServer/bin" dir="${bin.dir}" username="${user.name}" group="${user.name}">
-	        <include name="*" />
-		<exclude name="**/.svn/* "/>
-		<exclude name="**/.*" />
-	    </tarfileset>
-	    <tarfileset prefix="SchedulingServer/bundles" dir="${bundles.dir}" username="${user.name}" group="${user.name}">
-	        <include name="*" />
-		<exclude name="**/.svn/* "/>
-		<exclude name="**/.*" />
-	    </tarfileset>
-	    <tarfileset prefix="SchedulingServer/conf" dir="conf" username="${user.name}" group="${user.name}">
-	        <include name="*" />
-		<exclude name="**/.svn/* "/>
-		<exclude name="**/.*" />
-	    </tarfileset>
-	    <tarfileset prefix="SchedulingServer/doc" dir="doc" username="${user.name}" group="${user.name}">
-	        <include name="*" />
-		<exclude name="**/.svn/* "/>
-		<exclude name="**/.*" />
-	    </tarfileset>
-	    <tarfileset prefix="SchedulingServer" dir="." username="${user.name}" group="${user.name}">
-	        <include name="LICENSE" />
-		<exclude name="**/.svn/* "/>
-		<exclude name="**/.*" />
-	    </tarfileset>
-	</tar>
-	<move file="${package.name}_${package.time}.tar.gz" todir="${package.dir}" />
-    </target>
-    
-    <!-- Do all tasks on all nested ant build files. -->
-    <target name="all" depends="package,installer">
-        <iterate target="all" />
-	<copy todir="${bundles.dir}" flatten="yes">
-            <fileset dir=".">
-                <include name="**/bundle/*.jar" />
-            </fileset>
-        </copy>
-    </target>
+	<!-- Generate bundle location. -->
+	<property name="bundles.dir" location="bundles" />
+	<property name="bin.dir" location="bin" />
+	<property name="package.name" location="SchedulingServer" />
+	<property name="package.dir" location="package" />
+	<property name="tool.lib.dir" location="test/tools" /> <!-- Static analysis tools. -->
+	
+	<macrodef name="iterate">
+	<attribute name="target"/>
+	<sequential>
+		<subant target="@{target}" verbose="true">
+			<fileset dir="." includes="*/build.xml"/>
+		</subant>
+	</sequential>
+	</macrodef>
+	
+	<!-- NSIS tools classpath -->
+	<path id="nsis.tools"> 
+		<fileset dir="${tool.lib.dir}">
+			<include name="nsisant-1.2.jar" />
+		</fileset>
+	</path>
+	
+	<!-- Conditions to determine Operating System. -->
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+	<condition property="isUNIX">
+		<os family="unix" />
+	</condition>
+	
+	<!-- Do all tasks on all nested ant build files. -->
+	<target name="all">
+		<iterate target="all" />
+		<copy todir="${bundles.dir}" flatten="yes">
+			<fileset dir=".">
+				<include name="**/bundle/*.jar" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- Build all source and generate all bundles. -->
+	<target name="build">
+		<iterate target="bundle" />
+		<mkdir dir="${bundles.dir}" />
+		<copy todir="${bundles.dir}" flatten="yes">
+			<fileset dir=".">
+				<include name="**/bundle/*.jar" />
+			</fileset>
+		</copy>
+		<subant target="dist" verbose="true">
+			<fileset dir="." includes="Framework/build.xml"/>
+		</subant>
+		<mkdir dir="${bin.dir}" />
+		<copy todir="${bin.dir}" flatten="yes">
+			<fileset dir=".">
+				<include name="**/dist/*.jar" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- Do the test target on all the nested build files. -->
+	<target name="test" depends="build">
+		<iterate target="test" />
+	</target>
+	
+	<!-- Generate the schema using the DataAccess project. -->
+	<target name="schema">
+		<subant target="schema" verbose="true">
+			<fileset dir="." includes="DataAccess/build.xml"/>
+		</subant>
+	</target>
+	
+	<!-- Package generates all packages. -->
+	<target name="package" depends="tar-package,win-package,rpm-package" />
+	
+	<!-- System agnostic tar package. -->
+	<target name="tar-package" depends="build,schema">
+		<exec executable="make" dir="servicewrapper" failonerror="true" />
+		<tstamp>
+			<format property="package.time" pattern="MM-dd-yyyy_hh.mm"/>
+		</tstamp>
+		<mkdir dir="${package.dir}" />
+		<tar destfile="${package.name}_${package.time}.tar.gz" compression="gzip">
+			<tarfileset prefix="SchedulingServer/bin" dir="${bin.dir}" username="${user.name}" group="${user.name}">
+				<include name="*" />
+				<exclude name="**/.svn/* "/>
+				<exclude name="**/.*" />
+			</tarfileset>
+			<tarfileset prefix="SchedulingServer/bundles" dir="${bundles.dir}" username="${user.name}" group="${user.name}">
+				<include name="*" />
+				<exclude name="**/.svn/* "/>
+				<exclude name="**/.*" />
+			</tarfileset>
+			<tarfileset prefix="SchedulingServer/conf" dir="conf" username="${user.name}" group="${user.name}">
+				<include name="*" />
+				<exclude name="**/.svn/* "/>
+				<exclude name="**/.*" />
+			</tarfileset>
+			<tarfileset prefix="SchedulingServer/doc" dir="doc" username="${user.name}" group="${user.name}">
+				<include name="*" />
+					<exclude name="**/.svn/* "/>
+					<exclude name="**/.*" />
+			</tarfileset>
+			<tarfileset prefix="SchedulingServer" dir="." username="${user.name}" group="${user.name}">
+				<include name="LICENSE" />
+				<exclude name="**/.svn/* "/>
+				<exclude name="**/.*" />
+			</tarfileset>
+			<tarfileset prefix="SchedulingServer" dir="servicewrapper" username="${user.name}" group="${user.name}">
+				<include name="schedulingservice" />
+			</tarfileset>
+			<tarfileset prefix="SchedulingServer" dir="servicewrapper/WindowsServiceWrapper/Release/" username="${user.name}" group="${user.name}">
+				<include name="schedulingservice.exe" />
+			</tarfileset>
+		</tar>
+		<move file="${package.name}_${package.time}.tar.gz" todir="${package.dir}" />
+	</target>
 
-    <!-- Do the test target on all the nested build files. -->
-    <target name="test" depends="build">
-        <iterate target="test" />
-    </target>
-    
-    <!-- Clean all. -->
-    <target name="clean">
-        <iterate target="clean" />
-        <delete dir="${bundles.dir}" />
-	<delete dir="${bin.dir}" />
-	<delete dir="cache" />
-	<delete dir="${package.dir}" />
-    <delete file="SaharaSchedulingServer.exe" />
-    </target>
-
-
-    <property name="NSIS_Install_Path" value="C:\Program Files\NSIS" />
-    <target name="installer" depends="build">
-    	<subant target="schema" verbose="true">
-    	            <fileset dir="." includes="DataAccess/build.xml"/>
-    	</subant>
-        <taskdef name="nsis" classpathref="nsis.tools" classname="net.sf.nsisant.Task" />
-        <nsis script="SaharaSSInstall.nsi" verbosity="3" out="SaharaSSInstaller.log" path="${NSIS_Install_Path}">
-        </nsis>
-    </target>    
-
+	<!-- Windows Installer. -->
+	<property name="NSIS_Install_Path" value="C:\Program Files\NSIS" />
+	<target name="win-package" depends="build,schema" if="isWindows">
+		<taskdef name="nsis" classpathref="nsis.tools" classname="net.sf.nsisant.Task" />
+		<nsis script="SchedulingServer.nsi" verbosity="3" out="SaharaSSInstaller.log" path="${NSIS_Install_Path}" />
+	</target>
+	
+	<!-- Redhat installer. -->
+	<target name="rpm-package" depends="build,schema" if="isUNIX">
+		<exec executable="make" dir="servicewrapper" failonerror="true" />
+		<mkdir dir="rpmtmp" />
+		<mkdir dir="rpmtmp/BUILD" />
+		<mkdir dir="rpmtmp/BUILDROOT" />
+		<mkdir dir="rpmtmp/RPMS" />
+		<mkdir dir="rpmtmp/SOURCES" />
+		<mkdir dir="rpmtmp/SPECS" />
+		<mkdir dir="rpmtmp/SRPMS" />
+		<rpm specFile="../../schedulingserver.spec"  
+ 			command="--buildroot=${basedir}/rpmtmp/BUILDROOT -bb"
+			topDir="${basedir}/rpmtmp"
+			failonerror="true" />
+		<mkdir dir="${package.dir}" />
+		<copy todir="${package.dir}" overwrite="true" flatten="true">
+			<fileset dir="rpmtmp/RPMS" includes="**/*.rpm" />
+		</copy>
+		<delete dir="rpmtmp" />
+	</target>
+	
+	<!-- Clean all. -->
+	<target name="clean">
+		<iterate target="clean" />
+		<delete dir="${bundles.dir}" />
+		<delete dir="${bin.dir}" />
+		<delete dir="cache" />
+		<delete dir="${package.dir}" />
+		<delete file="SaharaSchedulingServer.exe" />
+		<delete>
+			<fileset dir="doc/db/schema" includes="*.sql" />
+		</delete>
+		<delete dir="_axis2" />
+		<exec executable="make" dir="servicewrapper" failonerror="true">
+			<arg value="clean" />
+		</exec>
+	</target>
+	
 </project>

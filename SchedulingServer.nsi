@@ -59,7 +59,7 @@ Name "Sahara Scheduling Server"
 !define JREVersion "1.6"
 
 ; The file to write
-OutFile "SaharaSchedulingServer.exe"
+OutFile "package/SaharaSchedulingServer.exe"
 
 ; The default installation directory
 InstallDir "C:\Program Files\Sahara"
