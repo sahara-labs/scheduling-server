@@ -271,7 +271,8 @@ Section "Sahara Scheduling Server" SchedServer
     SetOutPath $INSTDIR\bin
 	File /r /x *.svn bin\*.*
     SetOutPath $INSTDIR\conf 
-	File /r /x *.svn conf\*.*
+    File /oname=schedulingserver.properties conf\schedulingserver.properties.win
+	File conf\scheduling_service.ini
 	
     SetOutPath $INSTDIR
     ; Add the RigClient service to the windows services
