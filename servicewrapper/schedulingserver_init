@@ -20,7 +20,74 @@ EXEC=schedulingservice
 
 RETVAL=0
 
+function exportLibJvmLocation
+{
+    JAVAPATH=`which java`
+    if [ $? -eq 0 ] ; then
+	
+	# Check the version of java is atleast Java 6
+	if [[ `java -version 2>&1 | head -n 1 | awk -F'"' '{ printf $2 }' | cut -d '.' -f2` -lt 6 ]]; then
+	    echo "Java version isn't Java 6 or above, so unable to use it."
+	    return;
+	fi
+	
+	# Resolve symbloic links to the actual file. This is likely going to be:
+	#     1) /usr/bin/java               -> /etc/alternatives/java
+        #     2) /etc/alternatives/java -> <actual java executable>
+	JAVAPATH=`readlink -f $JAVAPATH`
+
+	# Finding the java executable path, now find the base of the
+	# installation directory which is one up from the java 
+	# executable directory ('bin/')
+	JAVAPATH=`dirname $JAVAPATH`/../
+	JAVAPATH=`readlink -f $JAVAPATH`
+	
+	# If the 'jre' directory exists (i.e. this is a JDK installation),
+	# descend to the jre directory.
+	if [ -d $JAVAPATH/jre ]; then
+	    JAVAPATH=$JAVAPATH/jre
+	fi
+	
+	JAVAPATH=$JAVAPATH/lib
+	
+	# Now find the arch directory in the 'lib' directory.
+	# Known options are (if you know of any other please email
+	# mdiponio@eng.uts.edu.au):
+	#     1) i386     : x86 32 bit UNIX
+	#     2) amd64 : x86 64 bit UNIX
+	#     3) sparc   : sparc arch on Solaris 
+	#     4) arm      : arm (atleast on my N900)
+	ARCHS="i386 amd64 sparc amd"
+	for ARCH in $ARCHS ; do
+	    if [ -d $JAVAPATH/$ARCH ] ; then
+		JAVAPATH=$JAVAPATH/$ARCH
+		break;
+	    fi
+	done
+	
+	# Different JVMs are provided in the arch directory.
+	JVMS="server client" 
+	for JVM in $JVMS; do
+	    if [ -d $JAVAPATH/$JVM ] ; then
+		JAVAPATH=$JAVAPATH/$JVM
+		break;
+	    fi
+	done
+    fi
+    
+    # If 'libjvm.so' is present, export the location.
+    JVMSO=$JAVAPATH/libjvm.so
+    if [ -f $JVMSO ]; then	
+	export JVM_SO=$JVMSO
+    fi
+}
+
 start() {
+	# Check whether user is root in order to stop or start tasks
+	if [[ `id - u` != 0 ]] ; then
+		echo "Only root may start the scheduling server"
+		return
+	fi 	exportLibJvmLocation
     PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
     if [[ ! "$PID" > 0 ]]; then
 		echo "Starting the Scheduling Server..."
@@ -34,6 +101,11 @@ start() {
 }
 
 stop() {
+	# Check whether user is root in order to stop or start tasks
+	if [[ `id - u` != 0 ]] ; then
+		echo "Only root may stop the scheduling server"
+		return
+	fi 
     PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
     if [[ "$PID" > 0 ]]; then
     	echo "Shutting down Scheduling Server with PID "$PID"..."
@@ -43,16 +115,13 @@ stop() {
     fi
 }
 
-
-restart() {
-    echo "Restarting Scheduling Server..."
-    stop
-    sleep 10
-    start
-}
-
-reload() {
-	restart
+status() {
+    PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
+    if [[ ! "$PID" > 0 ]]; then
+		echo "The Scheduling Server is running.  PID is "$PID"."
+	else
+		echo "The Scheduling Server is not running."
+	fi
 }
 
 
@@ -63,11 +132,11 @@ start)
 stop)
 	stop
 	;;
-reload|restart)
-	restart
+status)
+	status
 	;;
 *)
-	echo $"Usage: $0 {start|stop|restart}"
+	echo $"Usage: $0 {start|stop|status}"
 	exit 1
 esac
 
