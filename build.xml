@@ -192,9 +192,6 @@ Date: 28th December 2009
 		<delete dir="cache" />
 		<delete dir="${package.dir}" />
 		<delete file="SaharaSchedulingServer.exe" />
-		<delete>
-			<fileset dir="doc/db/schema" includes="*.sql" />
-		</delete>
 		<delete dir="_axis2" />
 		<exec executable="make" dir="servicewrapper" failonerror="true">
 			<arg value="clean" />
