@@ -84,8 +84,8 @@ function exportLibJvmLocation
 
 start() {
 	# Check whether user is root in order to stop or start tasks
-	if [[ `id - u` != 0 ]] ; then
-		echo "Only root may start the scheduling server"
+	if [[ `id -u` != 0 ]] ; then
+		echo "Only root may start the Scheduling Server."
 		return
 	fi 	
 	exportLibJvmLocation
@@ -97,14 +97,14 @@ start() {
 		$INST_DIR/$EXEC &> /dev/null 
 		popd &> /dev/null 
 	else
-		echo "Scheduling Server has already started. Process ID "$PID
+		echo "Scheduling Server has already started. Process ID "$PID"."
     fi
 }
 
 stop() {
 	# Check whether user is root in order to stop or start tasks
-	if [[ `id - u` != 0 ]] ; then
-		echo "Only root may stop the scheduling server"
+	if [[ `id -u` != 0 ]] ; then
+		echo "Only root may stop the Scheduling Server."
 		return
 	fi 
     PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
@@ -112,13 +112,13 @@ stop() {
     	echo "Shutting down Scheduling Server with PID "$PID"..."
 		kill -SIGTERM $PID &> /dev/null
 	else
-		echo "No Scheduling Server found to shut down"
+		echo "No Scheduling Server found to shut down."
     fi
 }
 
 status() {
     PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
-    if [[ ! "$PID" > 0 ]]; then
+    if [[ "$PID" > 0 ]]; then
 		echo "The Scheduling Server is running.  PID is "$PID"."
 	else
 		echo "The Scheduling Server is not running."
