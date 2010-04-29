@@ -87,14 +87,15 @@ start() {
 	if [[ `id - u` != 0 ]] ; then
 		echo "Only root may start the scheduling server"
 		return
-	fi 	exportLibJvmLocation
+	fi 	
+	exportLibJvmLocation
     PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
     if [[ ! "$PID" > 0 ]]; then
 		echo "Starting the Scheduling Server..."
-		pushd .
+		pushd . &> /dev/null 
 		cd $INST_DIR
-		$INST_DIR/$EXEC &
-		popd
+		$INST_DIR/$EXEC &> /dev/null 
+		popd &> /dev/null 
 	else
 		echo "Scheduling Server has already started. Process ID "$PID
     fi
