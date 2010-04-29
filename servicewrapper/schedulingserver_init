@@ -94,7 +94,7 @@ start() {
 		echo "Starting the Scheduling Server..."
 		pushd . &> /dev/null 
 		cd $INST_DIR
-		$INST_DIR/$EXEC &> /dev/null 
+		$INST_DIR/$EXEC &> /dev/null &
 		popd &> /dev/null 
 	else
 		echo "Scheduling Server has already started. Process ID "$PID"."
