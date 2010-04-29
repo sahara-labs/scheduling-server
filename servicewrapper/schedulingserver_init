@@ -111,6 +111,10 @@ stop() {
     if [[ "$PID" > 0 ]]; then
     	echo "Shutting down Scheduling Server with PID "$PID"..."
 		kill -SIGTERM $PID &> /dev/null
+		while [[ "PID" > 0 ]]; do
+			    PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
+				echo $PID
+		done
 	else
 		echo "No Scheduling Server found to shut down."
     fi
