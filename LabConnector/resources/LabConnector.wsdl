@@ -1,0 +1,1237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="LabConnector" targetNamespace="http://labshare.edu.au:8080/LabConnector/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://labshare.edu.au:8080/LabConnector/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://labshare.edu.au:8080/LabConnector/" xmlns:p="http://schemas.xmlsoap.org/wsdl/soap/">
+      <xsd:element name="getExperimentType">
+      	<xsd:annotation>
+      		</xsd:annotation>
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentTypeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="experimentTypeValue" type="tns:ExperimentType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="submitExperiment">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="labID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="priority" type="xsd:int" maxOccurs="1" minOccurs="0"/>
+      			<xsd:element name="experimentSpecs" type="xsd:string" maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="submitExperimentResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="experimentID" type="xsd:int"/>
+      			<xsd:element name="errorMessage" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="releaseExperiment">
+      	<xsd:complexType>
+      		<xsd:sequence>
+                        <xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1">
+      				</xsd:element>
+                        <xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+                        <xsd:element name="experimentname" type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+                    </xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="releaseExperimentResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="releaseResponse" type="xsd:boolean"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabInfo">
+      	<xsd:complexType>
+      		<xsd:choice>
+      			<xsd:element name="labID" type="xsd:string"></xsd:element>
+      			<xsd:element name="labName" type="xsd:string" />
+      			<xsd:element name="labType" type="xsd:string" />
+      			<xsd:element name="labCapability" type="xsd:string" />
+      		</xsd:choice>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabInfoResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="labDataXML" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentResults">
+      	<xsd:complexType>
+      		<xsd:sequence>
+                        <xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+
+                        <xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+                    </xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentResultsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="availability" type="xsd:boolean" />
+                        <xsd:element name="complete" type="xsd:boolean"></xsd:element>
+                        <xsd:element name="labResultsXML" type="xsd:string" />
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="Response">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="out" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="releaseSlave">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="requestorID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="slaveUserID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="sessionID" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="releaseSlaveResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="releaseResponse" type="xsd:boolean">
+      			</xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabID">
+      	<xsd:complexType>
+      		<xsd:choice>
+      			<xsd:element name="labName" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="labCapability" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      			<xsd:element name="labType" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      		</xsd:choice>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabIDResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="labID" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentSpecs">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentSpecsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="experimentSpecsXML" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveExperimentResults">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="experimentResultsXML" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveExperimentResultsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="storageResponse" type="xsd:boolean">
+      			</xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listPermissions">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="in" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listPermissionsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="out" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getUserPermissions">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="userID" type="xsd:string"
+      				maxOccurs="1" minOccurs="1" />
+      			<xsd:choice>
+      				<xsd:element name="labID"
+      					type="xsd:string">
+      				</xsd:element>
+      				<xsd:element name="experimentID" type="xsd:int"
+      					maxOccurs="1" minOccurs="1">
+      				</xsd:element>
+      			</xsd:choice>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getUserPermissionsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="userPermissions" type="tns:Permissions"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setUserPermissions">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="permissions" type="tns:Permissions"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setUserPermissionsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="success" type="xsd:boolean"/>
+      			<xsd:element name="errorMessage" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="ExperimentType">
+      	<xsd:restriction base="xsd:string">
+      		<xsd:enumeration value="UNKNOWN"/>
+      		<xsd:enumeration value="BATCH"/>
+      		<xsd:enumeration value="INTERACTIVE"/>
+      	</xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="getInteractiveExperimentSession">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+      				<xsd:element name="requestorID" type="xsd:string" maxOccurs="1" minOccurs="1">
+      				</xsd:element>
+      			<xsd:element name="interaction" type="tns:InteractionType" maxOccurs="1" minOccurs="1"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getInteractiveExperimentSessionResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="sessionID" type="xsd:string"></xsd:element>
+      			<xsd:element name="sessionURL" type="xsd:string" />
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+    
+      <xsd:simpleType name="InteractionType">
+      	<xsd:restriction base="xsd:string">
+      	    <xsd:enumeration value="MASTER"/>
+      		<xsd:enumeration value="SLAVE_ACTIVE"/>
+      		<xsd:enumeration value="SLAVE_PASSIVE"/>
+      	</xsd:restriction>
+      </xsd:simpleType>
+    
+      <xsd:complexType name="Permissions">
+      	<xsd:sequence>
+      		<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      		<xsd:element name="userGroup" type="xsd:string" maxOccurs="unbounded" minOccurs="1"/>
+      		<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+
+      		<xsd:element name="runExperiment" type="xsd:boolean" maxOccurs="1" minOccurs="0"/>
+      		<xsd:element name="observeExperiment" type="xsd:boolean" maxOccurs="1" minOccurs="0">
+      		</xsd:element>
+      		<xsd:element name="modifyExperiment" type="xsd:boolean" maxOccurs="1" minOccurs="0"/>
+      		<xsd:element name="storeExperimentResults" type="xsd:boolean" maxOccurs="1" minOccurs="0"/>
+      		<xsd:element name="authorizeUsers" type="xsd:boolean" maxOccurs="1" minOccurs="0"/>
+      	</xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="getExperimentStatus">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentStatusResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="status" type="tns:ExperimentStatus"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+    
+      <xsd:complexType name="ExperimentStatus">
+      	<xsd:sequence>
+      		<xsd:element name="queueLength" type="xsd:int"/>
+
+      		<xsd:element name="waitTime" type="xsd:time"/>
+      		<xsd:element name="runTime" type="xsd:time"/>
+      		<xsd:element name="remainingRunTime" type="xsd:time"/>
+      		<xsd:element name="start" type="xsd:dateTime"/>
+      		<xsd:element name="queueExpiry" type="xsd:dateTime"/>
+      		<xsd:element name="runTimeExpiry" type="xsd:dateTime"/>
+      		<xsd:element name="allowedExtension" type="xsd:boolean"/>
+      		<xsd:element name="extensionTime" type="xsd:time"/>
+      	</xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="getTokenAuthorization">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="in" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getTokenAuthorizationResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="out" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAuthorization">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="in" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAuthorizationResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="out" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getToken">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="key" type="xsd:string"/>
+
+      			<xsd:choice>
+      				<xsd:element name="userID" type="xsd:string">
+      				</xsd:element>
+      				<xsd:element name="institutionID" type="xsd:string">
+      				</xsd:element>
+      			</xsd:choice>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getTokenResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="token" type="xsd:string"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="scheduleBookingTime">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="userID" type="xsd:string"
+      				maxOccurs="1" minOccurs="1" />
+      			<xsd:element name="labID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+
+      			<xsd:element name="type" type="tns:BookingType"
+      				maxOccurs="1" minOccurs="1" />
+      			<xsd:element name="bookingDate" type="xsd:dateTime"
+      				maxOccurs="1" minOccurs="1" />
+      			<xsd:element name="finishDate" type="xsd:dateTime"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="userGroupID" type="xsd:string"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      			<xsd:element name="institutionID" type="xsd:string"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="scheduleBookingTimeResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="success" type="xsd:boolean"/>
+      			<xsd:element name="experimentID" type="xsd:int"/>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+    
+      <xsd:simpleType name="BookingType">
+      	<xsd:restriction base="xsd:string">
+      		<xsd:enumeration value="USER"/>
+      		<xsd:enumeration value="GROUP"/>
+
+      	</xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="cancelBookingTime">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+                        <xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+                        <xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelBookingTimeResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="success" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="successMessage" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveUserExperimentParams">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="in" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveUserExperimentParamsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="out" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentID">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="userID" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="experimentName" type="xsd:string"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      			<xsd:element name="labID" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      			<xsd:element name="labType" type="xsd:string"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      			<xsd:element name="labCapability" type="xsd:string"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      			<xsd:element name="labName" type="xsd:string"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentIDResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="experimentID" type="xsd:int"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveUserExperimentInput">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="userID" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="experimentUserInput"
+      				type="tns:ExperimentUserInput" maxOccurs="unbounded" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveUserExperimentInputResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="success" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="successMessage" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getSavedUserExperimentInput">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getSavedUserExperimentInputResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="experimentSavedUserInput" type="tns:ExperimentUserInput"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteSavedUserExperimentInput">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="experimentID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteSavedUserExperimentInputResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="success" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabStatus">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="labID" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabStatusResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="online" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="active" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="statusMessage" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setMaintenanceTime">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="labID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="userID" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="startTime" type="xsd:dateTime"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="endTime" type="xsd:dateTime"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setMaintenanceTimeResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="success" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="maintenanceID" type="xsd:int"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelMaintenanceTime">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="userID" type="xsd:string"></xsd:element>
+
+      			<xsd:choice>
+      				<xsd:element name="labID"
+      					type="xsd:string" maxOccurs="1" minOccurs="1">
+      				</xsd:element>
+      				<xsd:element name="maintenanceID" type="xsd:int"
+      					maxOccurs="1" minOccurs="1">
+      				</xsd:element>
+      			</xsd:choice>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelMaintenanceTimeResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="success" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="successMessage" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getMaintenanceTime">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="labID" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getMaintenanceTimeResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="scheduledMaintenance" type="xsd:boolean"></xsd:element>
+      			<xsd:element name="maintenanceTime"
+      				type="xsd:dateTime" maxOccurs="unbounded" minOccurs="0">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+
+      <xsd:complexType name="ExperimentUserInput">
+      	<xsd:sequence>
+      		<xsd:element name="inputName" type="xsd:string"></xsd:element>
+      		<xsd:element name="value" type="xsd:string"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="getExperimentTypeRequest">
+    <wsdl:part name="parameters" element="tns:getExperimentType">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabInfoResponse">
+    <wsdl:part name="parameters" element="tns:getLabInfoResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentResultsRequest">
+    <wsdl:part name="parameters" element="tns:getExperimentResults">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="scheduleBookingTimeRequest">
+    <wsdl:part name="parameters" element="tns:scheduleBookingTime">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="Request">
+    <wsdl:part name="parameters" element="tns:">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentStatusResponse">
+    <wsdl:part name="parameters" element="tns:getExperimentStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserPermissionsRequest">
+    <wsdl:part name="parameters" element="tns:getUserPermissions">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTokenAuthorizationRequest">
+    <wsdl:part name="parameters" element="tns:getTokenAuthorization">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listPermissionsResponse">
+    <wsdl:part name="parameters" element="tns:listPermissionsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAuthorizationRequest">
+    <wsdl:part name="parameters" element="tns:getAuthorization">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseSlaveResponse">
+    <wsdl:part name="parameters" element="tns:releaseSlaveResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentResultsResponse">
+    <wsdl:part name="parameters" element="tns:getExperimentResultsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseExperimentResponse">
+    <wsdl:part name="parameters" element="tns:releaseExperimentResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="submitExperimentResponse">
+    <wsdl:part name="parameters" element="tns:submitExperimentResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveExperimentResultsRequest">
+    <wsdl:part name="parameters" element="tns:saveExperimentResults">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabInfoRequest">
+    <wsdl:part name="parameters" element="tns:getLabInfo">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUserPermissionsRequest">
+    <wsdl:part name="parameters" element="tns:setUserPermissions">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getInteractiveExperimentSessionResponse">
+    <wsdl:part name="parameters" element="tns:getInteractiveExperimentSessionResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabIDRequest">
+    <wsdl:part name="parameters" element="tns:getLabID">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="Response">
+    <wsdl:part name="parameters" element="tns:Response">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUserPermissionsResponse">
+    <wsdl:part name="parameters" element="tns:setUserPermissionsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabIDResponse">
+    <wsdl:part name="parameters" element="tns:getLabIDResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentSpecsRequest">
+    <wsdl:part name="parameters" element="tns:getExperimentSpecs">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listPermissionsRequest">
+    <wsdl:part name="parameters" element="tns:listPermissions">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserPermissionsResponse">
+    <wsdl:part name="parameters" element="tns:getUserPermissionsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getInteractiveExperimentSessionRequest">
+    <wsdl:part name="parameters" element="tns:getInteractiveExperimentSession">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTokenResponse">
+    <wsdl:part name="parameters" element="tns:getTokenResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="submitExperimentRequest">
+    <wsdl:part name="parameters" element="tns:submitExperiment">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentTypeResponse">
+    <wsdl:part name="parameters" element="tns:getExperimentTypeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTokenAuthorizationResponse">
+    <wsdl:part name="parameters" element="tns:getTokenAuthorizationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentSpecsResponse">
+    <wsdl:part name="parameters" element="tns:getExperimentSpecsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveExperimentResultsResponse">
+    <wsdl:part name="parameters" element="tns:saveExperimentResultsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="scheduleBookingTimeResponse">
+    <wsdl:part name="parameters" element="tns:scheduleBookingTimeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseExperimentRequest">
+    <wsdl:part name="parameters" element="tns:releaseExperiment">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTokenRequest">
+    <wsdl:part name="parameters" element="tns:getToken">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAuthorizationResponse">
+    <wsdl:part name="parameters" element="tns:getAuthorizationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentStatusRequest">
+    <wsdl:part name="parameters" element="tns:getExperimentStatus">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseSlaveRequest">
+    <wsdl:part name="parameters" element="tns:releaseSlave">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingTimeRequest">
+  	<wsdl:part name="parameters" element="tns:cancelBookingTime"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingTimeResponse">
+  	<wsdl:part name="parameters" element="tns:cancelBookingTimeResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveUserExperimentParamsRequest">
+  	<wsdl:part name="parameters" element="tns:saveUserExperimentParams"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveUserExperimentParamsResponse">
+  	<wsdl:part name="parameters" element="tns:saveUserExperimentParamsResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentIDRequest">
+  	<wsdl:part name="parameters" element="tns:getExperimentID"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentIDResponse">
+  	<wsdl:part name="parameters" element="tns:getExperimentIDResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveUserExperimentInputRequest">
+  	<wsdl:part name="parameters" element="tns:saveUserExperimentInput"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveUserExperimentInputResponse">
+  	<wsdl:part name="parameters" element="tns:saveUserExperimentInputResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getSavedUserExperimentInputRequest">
+  	<wsdl:part name="parameters" element="tns:getSavedUserExperimentInput"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getSavedUserExperimentInputResponse">
+  	<wsdl:part name="parameters" element="tns:getSavedUserExperimentInputResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteSavedUserExperimentInputRequest">
+  	<wsdl:part name="parameters" element="tns:deleteSavedUserExperimentInput"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteSavedUserExperimentInputResponse">
+  	<wsdl:part name="parameters" element="tns:deleteSavedUserExperimentInputResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabStatusRequest">
+  	<wsdl:part name="parameters" element="tns:getLabStatus"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabStatusResponse">
+  	<wsdl:part name="parameters" element="tns:getLabStatusResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setMaintenanceTimeRequest">
+  	<wsdl:part name="parameters" element="tns:setMaintenanceTime"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setMaintenanceTimeResponse">
+  	<wsdl:part name="parameters" element="tns:setMaintenanceTimeResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelMaintenanceTimeRequest">
+  	<wsdl:part name="parameters" element="tns:cancelMaintenanceTime"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelMaintenanceTimeResponse">
+  	<wsdl:part name="parameters" element="tns:cancelMaintenanceTimeResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getMaintenanceTimeRequest">
+  	<wsdl:part name="parameters" element="tns:getMaintenanceTime"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getMaintenanceTimeResponse">
+  	<wsdl:part name="parameters" element="tns:getMaintenanceTimeResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetUserIDRequest">
+  	<wsdl:part name="parameters" element="tns:SetUserID"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetUserIDResponse">
+  	<wsdl:part name="parameters" element="tns:SetUserIDResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetUserNameRequest">
+  	<wsdl:part name="parameters" element="tns:SetUserName"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetUserNameResponse">
+  	<wsdl:part name="parameters" element="tns:SetUserNameResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetClientIDRequest">
+  	<wsdl:part name="parameters" element="tns:SetClientID"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetClientIDResponse">
+  	<wsdl:part name="parameters" element="tns:SetClientIDResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetGroupIDRequest">
+  	<wsdl:part name="parameters" element="tns:SetGroupID"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetGroupIDResponse">
+  	<wsdl:part name="parameters" element="tns:SetGroupIDResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetGroupNameRequest">
+  	<wsdl:part name="parameters" element="tns:SetGroupName"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetGroupNameResponse">
+  	<wsdl:part name="parameters" element="tns:SetGroupNameResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="LabConnector">
+    <wsdl:operation name="getExperimentType">
+      <wsdl:input message="tns:getExperimentTypeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getExperimentTypeResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="submitExperiment">
+      <wsdl:input message="tns:submitExperimentRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:submitExperimentResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="releaseExperiment">
+      <wsdl:input message="tns:releaseExperimentRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:releaseExperimentResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getLabInfo">
+      <wsdl:input message="tns:getLabInfoRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getLabInfoResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getExperimentResults">
+      <wsdl:input message="tns:getExperimentResultsRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getExperimentResultsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="releaseSlave">
+      <wsdl:input message="tns:releaseSlaveRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:releaseSlaveResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getLabID">
+      <wsdl:input message="tns:getLabIDRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getLabIDResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getExperimentSpecs">
+      <wsdl:input message="tns:getExperimentSpecsRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getExperimentSpecsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="saveExperimentResults">
+      <wsdl:input message="tns:saveExperimentResultsRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:saveExperimentResultsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserPermissions">
+      <wsdl:input message="tns:getUserPermissionsRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getUserPermissionsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setUserPermissions">
+      <wsdl:input message="tns:setUserPermissionsRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:setUserPermissionsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getInteractiveExperimentSession">
+      <wsdl:input message="tns:getInteractiveExperimentSessionRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getInteractiveExperimentSessionResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getExperimentStatus">
+      <wsdl:input message="tns:getExperimentStatusRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getExperimentStatusResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getToken">
+      <wsdl:input message="tns:getTokenRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:getTokenResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="scheduleBookingTime">
+      <wsdl:input message="tns:scheduleBookingTimeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:scheduleBookingTimeResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelBookingTime">
+    	<wsdl:input message="tns:cancelBookingTimeRequest"></wsdl:input>
+    	<wsdl:output message="tns:cancelBookingTimeResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getExperimentID">
+    	<wsdl:input message="tns:getExperimentIDRequest"></wsdl:input>
+    	<wsdl:output message="tns:getExperimentIDResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="saveUserExperimentInput">
+    	<wsdl:input message="tns:saveUserExperimentInputRequest"></wsdl:input>
+    	<wsdl:output message="tns:saveUserExperimentInputResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getSavedUserExperimentInput">
+    	<wsdl:input message="tns:getSavedUserExperimentInputRequest"></wsdl:input>
+    	<wsdl:output message="tns:getSavedUserExperimentInputResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteSavedUserExperimentInput">
+    	<wsdl:input message="tns:deleteSavedUserExperimentInputRequest"></wsdl:input>
+    	<wsdl:output message="tns:deleteSavedUserExperimentInputResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getLabStatus">
+    	<wsdl:input message="tns:getLabStatusRequest"></wsdl:input>
+    	<wsdl:output message="tns:getLabStatusResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setMaintenanceTime">
+    	<wsdl:input message="tns:setMaintenanceTimeRequest"></wsdl:input>
+    	<wsdl:output message="tns:setMaintenanceTimeResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelMaintenanceTime">
+    	<wsdl:input message="tns:cancelMaintenanceTimeRequest"></wsdl:input>
+    	<wsdl:output message="tns:cancelMaintenanceTimeResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMaintenanceTime">
+    	<wsdl:input message="tns:getMaintenanceTimeRequest"></wsdl:input>
+    	<wsdl:output message="tns:getMaintenanceTimeResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LabConnectorSOAP" type="tns:LabConnector">
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="getExperimentType">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getExperimentType" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="submitExperiment">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/submitExperiment" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="releaseExperiment">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/releaseExperiment" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getLabInfo">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getLabInfo" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getExperimentResults">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getExperimentResults" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="releaseSlave">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/releaseSlave" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getLabID">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getLabID" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getExperimentSpecs">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getExperimentSpecs" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="saveExperimentResults">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/saveExperimentResults" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getUserPermissions">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getUserPermissions" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="setUserPermissions">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/setUserPermissions" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getInteractiveExperimentSession">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getInteractiveExperimentSession" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getExperimentStatus">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getExperimentStatus" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getToken">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getToken" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="scheduleBookingTime">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/scheduleBookingTime" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="cancelBookingTime">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/cancelBookingTime" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getExperimentID">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getExperimentID" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="saveUserExperimentInput">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/saveUserExperimentInput" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getSavedUserExperimentInput">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getSavedUserExperimentInput" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteSavedUserExperimentInput">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/deleteSavedUserExperimentInput" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getLabStatus">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getLabStatus" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="setMaintenanceTime">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/setMaintenanceTime" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="cancelMaintenanceTime">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/cancelMaintenanceTime" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getMaintenanceTime">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/LabConnector/getMaintenanceTime" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LabConnector">
+    <wsdl:port name="LabConnectorSOAP" binding="tns:LabConnectorSOAP">
+      <soap:address location="http://labshare.edu.au:8080/LabConnector"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
