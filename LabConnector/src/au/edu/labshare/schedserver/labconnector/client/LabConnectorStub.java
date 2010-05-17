@@ -405,16 +405,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getExperimentResults
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getExperimentResults
                      * @param getExperimentResults0
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse getExperimentResults(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse getExperimentResults(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults getExperimentResults0)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults getExperimentResults0)
                         
 
                     throws java.rmi.RemoteException
@@ -464,11 +464,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -524,15 +524,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetExperimentResults
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetExperimentResults
                     * @param getExperimentResults0
                 
                 */
                 public  void startgetExperimentResults(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults getExperimentResults0,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults getExperimentResults0,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -575,10 +575,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetExperimentResults(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetExperimentResults(e);
@@ -670,16 +670,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#deleteSavedUserExperimentInput
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#deleteSavedUserExperimentInput
                      * @param deleteSavedUserExperimentInput2
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse deleteSavedUserExperimentInput(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse deleteSavedUserExperimentInput(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput deleteSavedUserExperimentInput2)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput deleteSavedUserExperimentInput2)
                         
 
                     throws java.rmi.RemoteException
@@ -729,11 +729,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -789,15 +789,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startdeleteSavedUserExperimentInput
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startdeleteSavedUserExperimentInput
                     * @param deleteSavedUserExperimentInput2
                 
                 */
                 public  void startdeleteSavedUserExperimentInput(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput deleteSavedUserExperimentInput2,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput deleteSavedUserExperimentInput2,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -840,10 +840,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultdeleteSavedUserExperimentInput(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrordeleteSavedUserExperimentInput(e);
@@ -935,16 +935,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getSavedUserExperimentInput
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getSavedUserExperimentInput
                      * @param getSavedUserExperimentInput4
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse getSavedUserExperimentInput(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse getSavedUserExperimentInput(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput getSavedUserExperimentInput4)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput getSavedUserExperimentInput4)
                         
 
                     throws java.rmi.RemoteException
@@ -994,11 +994,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -1054,15 +1054,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetSavedUserExperimentInput
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetSavedUserExperimentInput
                     * @param getSavedUserExperimentInput4
                 
                 */
                 public  void startgetSavedUserExperimentInput(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput getSavedUserExperimentInput4,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput getSavedUserExperimentInput4,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -1105,10 +1105,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetSavedUserExperimentInput(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetSavedUserExperimentInput(e);
@@ -1200,16 +1200,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#setUserPermissions
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#setUserPermissions
                      * @param setUserPermissions6
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse setUserPermissions(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse setUserPermissions(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions setUserPermissions6)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions setUserPermissions6)
                         
 
                     throws java.rmi.RemoteException
@@ -1259,11 +1259,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -1319,15 +1319,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startsetUserPermissions
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startsetUserPermissions
                     * @param setUserPermissions6
                 
                 */
                 public  void startsetUserPermissions(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions setUserPermissions6,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions setUserPermissions6,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -1370,10 +1370,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultsetUserPermissions(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorsetUserPermissions(e);
@@ -1465,16 +1465,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getLabStatus
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getLabStatus
                      * @param getLabStatus8
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse getLabStatus(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse getLabStatus(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus getLabStatus8)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus getLabStatus8)
                         
 
                     throws java.rmi.RemoteException
@@ -1524,11 +1524,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -1584,15 +1584,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetLabStatus
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetLabStatus
                     * @param getLabStatus8
                 
                 */
                 public  void startgetLabStatus(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus getLabStatus8,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus getLabStatus8,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -1635,10 +1635,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetLabStatus(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetLabStatus(e);
@@ -1730,16 +1730,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getExperimentID
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getExperimentID
                      * @param getExperimentID10
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse getExperimentID(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse getExperimentID(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID getExperimentID10)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID getExperimentID10)
                         
 
                     throws java.rmi.RemoteException
@@ -1789,11 +1789,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -1849,15 +1849,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetExperimentID
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetExperimentID
                     * @param getExperimentID10
                 
                 */
                 public  void startgetExperimentID(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID getExperimentID10,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID getExperimentID10,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -1900,10 +1900,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetExperimentID(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetExperimentID(e);
@@ -1995,16 +1995,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#saveExperimentResults
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#saveExperimentResults
                      * @param saveExperimentResults12
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse saveExperimentResults(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse saveExperimentResults(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults saveExperimentResults12)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults saveExperimentResults12)
                         
 
                     throws java.rmi.RemoteException
@@ -2054,11 +2054,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -2114,15 +2114,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startsaveExperimentResults
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startsaveExperimentResults
                     * @param saveExperimentResults12
                 
                 */
                 public  void startsaveExperimentResults(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults saveExperimentResults12,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults saveExperimentResults12,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -2165,10 +2165,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultsaveExperimentResults(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorsaveExperimentResults(e);
@@ -2260,16 +2260,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#saveUserExperimentInput
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#saveUserExperimentInput
                      * @param saveUserExperimentInput14
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse saveUserExperimentInput(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse saveUserExperimentInput(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput saveUserExperimentInput14)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput saveUserExperimentInput14)
                         
 
                     throws java.rmi.RemoteException
@@ -2319,11 +2319,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -2379,15 +2379,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startsaveUserExperimentInput
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startsaveUserExperimentInput
                     * @param saveUserExperimentInput14
                 
                 */
                 public  void startsaveUserExperimentInput(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput saveUserExperimentInput14,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput saveUserExperimentInput14,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -2430,10 +2430,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultsaveUserExperimentInput(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorsaveUserExperimentInput(e);
@@ -2525,16 +2525,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getExperimentSpecs
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getExperimentSpecs
                      * @param getExperimentSpecs16
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse getExperimentSpecs(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse getExperimentSpecs(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs getExperimentSpecs16)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs getExperimentSpecs16)
                         
 
                     throws java.rmi.RemoteException
@@ -2584,11 +2584,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -2644,15 +2644,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetExperimentSpecs
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetExperimentSpecs
                     * @param getExperimentSpecs16
                 
                 */
                 public  void startgetExperimentSpecs(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs getExperimentSpecs16,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs getExperimentSpecs16,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -2695,10 +2695,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetExperimentSpecs(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetExperimentSpecs(e);
@@ -2790,16 +2790,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getInteractiveExperimentSession
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getInteractiveExperimentSession
                      * @param getInteractiveExperimentSession18
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse getInteractiveExperimentSession(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse getInteractiveExperimentSession(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession getInteractiveExperimentSession18)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession getInteractiveExperimentSession18)
                         
 
                     throws java.rmi.RemoteException
@@ -2849,11 +2849,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -2909,15 +2909,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetInteractiveExperimentSession
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetInteractiveExperimentSession
                     * @param getInteractiveExperimentSession18
                 
                 */
                 public  void startgetInteractiveExperimentSession(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession getInteractiveExperimentSession18,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession getInteractiveExperimentSession18,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -2960,10 +2960,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetInteractiveExperimentSession(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetInteractiveExperimentSession(e);
@@ -3055,16 +3055,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getMaintenanceTime
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getMaintenanceTime
                      * @param getMaintenanceTime20
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse getMaintenanceTime(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse getMaintenanceTime(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime getMaintenanceTime20)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime getMaintenanceTime20)
                         
 
                     throws java.rmi.RemoteException
@@ -3114,11 +3114,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -3174,15 +3174,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetMaintenanceTime
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetMaintenanceTime
                     * @param getMaintenanceTime20
                 
                 */
                 public  void startgetMaintenanceTime(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime getMaintenanceTime20,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime getMaintenanceTime20,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -3225,10 +3225,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetMaintenanceTime(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetMaintenanceTime(e);
@@ -3320,16 +3320,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#cancelBookingTime
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#cancelBookingTime
                      * @param cancelBookingTime22
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse cancelBookingTime(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse cancelBookingTime(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime cancelBookingTime22)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime cancelBookingTime22)
                         
 
                     throws java.rmi.RemoteException
@@ -3379,11 +3379,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -3439,15 +3439,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startcancelBookingTime
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startcancelBookingTime
                     * @param cancelBookingTime22
                 
                 */
                 public  void startcancelBookingTime(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime cancelBookingTime22,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime cancelBookingTime22,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -3490,10 +3490,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultcancelBookingTime(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorcancelBookingTime(e);
@@ -3585,16 +3585,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getLabInfo
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getLabInfo
                      * @param getLabInfo24
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse getLabInfo(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse getLabInfo(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo getLabInfo24)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo getLabInfo24)
                         
 
                     throws java.rmi.RemoteException
@@ -3644,11 +3644,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -3704,15 +3704,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetLabInfo
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetLabInfo
                     * @param getLabInfo24
                 
                 */
                 public  void startgetLabInfo(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo getLabInfo24,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo getLabInfo24,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -3755,10 +3755,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetLabInfo(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetLabInfo(e);
@@ -3850,16 +3850,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#setMaintenanceTime
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#setMaintenanceTime
                      * @param setMaintenanceTime26
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse setMaintenanceTime(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse setMaintenanceTime(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime setMaintenanceTime26)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime setMaintenanceTime26)
                         
 
                     throws java.rmi.RemoteException
@@ -3909,11 +3909,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -3969,15 +3969,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startsetMaintenanceTime
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startsetMaintenanceTime
                     * @param setMaintenanceTime26
                 
                 */
                 public  void startsetMaintenanceTime(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime setMaintenanceTime26,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime setMaintenanceTime26,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -4020,10 +4020,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultsetMaintenanceTime(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorsetMaintenanceTime(e);
@@ -4115,16 +4115,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getLabID
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getLabID
                      * @param getLabID28
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse getLabID(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse getLabID(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetLabID getLabID28)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID getLabID28)
                         
 
                     throws java.rmi.RemoteException
@@ -4174,11 +4174,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -4234,15 +4234,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetLabID
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetLabID
                     * @param getLabID28
                 
                 */
                 public  void startgetLabID(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetLabID getLabID28,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID getLabID28,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -4285,10 +4285,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetLabID(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetLabID(e);
@@ -4380,16 +4380,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#submitExperiment
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#submitExperiment
                      * @param submitExperiment30
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse submitExperiment(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse submitExperiment(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment submitExperiment30)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment submitExperiment30)
                         
 
                     throws java.rmi.RemoteException
@@ -4439,11 +4439,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -4499,15 +4499,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startsubmitExperiment
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startsubmitExperiment
                     * @param submitExperiment30
                 
                 */
                 public  void startsubmitExperiment(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment submitExperiment30,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment submitExperiment30,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -4550,10 +4550,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultsubmitExperiment(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorsubmitExperiment(e);
@@ -4645,16 +4645,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#scheduleBookingTime
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#scheduleBookingTime
                      * @param scheduleBookingTime32
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse scheduleBookingTime(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse scheduleBookingTime(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime scheduleBookingTime32)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime scheduleBookingTime32)
                         
 
                     throws java.rmi.RemoteException
@@ -4704,11 +4704,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -4764,15 +4764,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startscheduleBookingTime
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startscheduleBookingTime
                     * @param scheduleBookingTime32
                 
                 */
                 public  void startscheduleBookingTime(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime scheduleBookingTime32,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime scheduleBookingTime32,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -4815,10 +4815,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultscheduleBookingTime(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorscheduleBookingTime(e);
@@ -4910,16 +4910,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getToken
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getToken
                      * @param getToken34
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse getToken(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse getToken(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetToken getToken34)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken getToken34)
                         
 
                     throws java.rmi.RemoteException
@@ -4969,11 +4969,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -5029,15 +5029,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetToken
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetToken
                     * @param getToken34
                 
                 */
                 public  void startgetToken(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetToken getToken34,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken getToken34,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -5080,10 +5080,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetToken(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetToken(e);
@@ -5175,16 +5175,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#cancelMaintenanceTime
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#cancelMaintenanceTime
                      * @param cancelMaintenanceTime36
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse cancelMaintenanceTime(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse cancelMaintenanceTime(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime cancelMaintenanceTime36)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime cancelMaintenanceTime36)
                         
 
                     throws java.rmi.RemoteException
@@ -5234,11 +5234,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -5294,15 +5294,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startcancelMaintenanceTime
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startcancelMaintenanceTime
                     * @param cancelMaintenanceTime36
                 
                 */
                 public  void startcancelMaintenanceTime(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime cancelMaintenanceTime36,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime cancelMaintenanceTime36,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -5345,10 +5345,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultcancelMaintenanceTime(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorcancelMaintenanceTime(e);
@@ -5440,16 +5440,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#releaseSlave
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#releaseSlave
                      * @param releaseSlave38
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse releaseSlave(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse releaseSlave(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave releaseSlave38)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave releaseSlave38)
                         
 
                     throws java.rmi.RemoteException
@@ -5499,11 +5499,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -5559,15 +5559,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startreleaseSlave
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startreleaseSlave
                     * @param releaseSlave38
                 
                 */
                 public  void startreleaseSlave(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave releaseSlave38,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave releaseSlave38,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -5610,10 +5610,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultreleaseSlave(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorreleaseSlave(e);
@@ -5705,16 +5705,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getExperimentType
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getExperimentType
                      * @param getExperimentType40
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse getExperimentType(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse getExperimentType(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType getExperimentType40)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType getExperimentType40)
                         
 
                     throws java.rmi.RemoteException
@@ -5764,11 +5764,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -5824,15 +5824,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetExperimentType
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetExperimentType
                     * @param getExperimentType40
                 
                 */
                 public  void startgetExperimentType(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType getExperimentType40,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType getExperimentType40,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -5875,10 +5875,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetExperimentType(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetExperimentType(e);
@@ -5970,16 +5970,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getExperimentStatus
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getExperimentStatus
                      * @param getExperimentStatus42
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse getExperimentStatus(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse getExperimentStatus(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus getExperimentStatus42)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus getExperimentStatus42)
                         
 
                     throws java.rmi.RemoteException
@@ -6029,11 +6029,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -6089,15 +6089,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetExperimentStatus
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetExperimentStatus
                     * @param getExperimentStatus42
                 
                 */
                 public  void startgetExperimentStatus(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus getExperimentStatus42,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus getExperimentStatus42,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -6140,10 +6140,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetExperimentStatus(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetExperimentStatus(e);
@@ -6235,16 +6235,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#releaseExperiment
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#releaseExperiment
                      * @param releaseExperiment44
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse releaseExperiment(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse releaseExperiment(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment releaseExperiment44)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment releaseExperiment44)
                         
 
                     throws java.rmi.RemoteException
@@ -6294,11 +6294,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -6354,15 +6354,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startreleaseExperiment
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startreleaseExperiment
                     * @param releaseExperiment44
                 
                 */
                 public  void startreleaseExperiment(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment releaseExperiment44,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment releaseExperiment44,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -6405,10 +6405,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultreleaseExperiment(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorreleaseExperiment(e);
@@ -6500,16 +6500,16 @@
                     /**
                      * Auto generated method signature
                      * 
-                     * @see au.edu.labshare.labconnector.LabConnector#getUserPermissions
+                     * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#getUserPermissions
                      * @param getUserPermissions46
                     
                      */
 
                     
 
-                            public  au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse getUserPermissions(
+                            public  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse getUserPermissions(
 
-                            au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions getUserPermissions46)
+                            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions getUserPermissions46)
                         
 
                     throws java.rmi.RemoteException
@@ -6559,11 +6559,11 @@
                 
                                 java.lang.Object object = fromOM(
                                              _returnEnv.getBody().getFirstElement() ,
-                                             au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse.class,
+                                             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse.class,
                                               getEnvelopeNamespaces(_returnEnv));
 
                                
-                                        return (au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse)object;
+                                        return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse)object;
                                    
          }catch(org.apache.axis2.AxisFault f){
 
@@ -6619,15 +6619,15 @@
                 /**
                 * Auto generated method signature for Asynchronous Invocations
                 * 
-                * @see au.edu.labshare.labconnector.LabConnector#startgetUserPermissions
+                * @see au.edu.labshare.schedserver.labconnector.client.LabConnector#startgetUserPermissions
                     * @param getUserPermissions46
                 
                 */
                 public  void startgetUserPermissions(
 
-                 au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions getUserPermissions46,
+                 au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions getUserPermissions46,
 
-                  final au.edu.labshare.labconnector.LabConnectorCallbackHandler callback)
+                  final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
 
                 throws java.rmi.RemoteException{
 
@@ -6670,10 +6670,10 @@
                                 org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
                                 
                                         java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(),
-                                                                         au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse.class,
+                                                                         au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse.class,
                                                                          getEnvelopeNamespaces(resultEnv));
                                         callback.receiveResultgetUserPermissions(
-                                        (au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse)object);
+                                        (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse)object);
                                         
                             } catch (org.apache.axis2.AxisFault e) {
                                 callback.receiveErrorgetUserPermissions(e);
@@ -44702,12 +44702,12 @@
         }
            
           
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44716,12 +44716,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44730,12 +44730,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44744,12 +44744,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44758,12 +44758,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44772,12 +44772,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44786,12 +44786,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44800,12 +44800,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44814,12 +44814,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44828,12 +44828,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44842,12 +44842,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44856,12 +44856,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44870,12 +44870,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44884,12 +44884,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44898,12 +44898,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44912,12 +44912,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44926,12 +44926,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44940,12 +44940,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44954,12 +44954,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44968,12 +44968,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44982,12 +44982,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -44996,12 +44996,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45010,12 +45010,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45024,12 +45024,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45038,12 +45038,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45052,12 +45052,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45066,12 +45066,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45080,12 +45080,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45094,12 +45094,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetLabID param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabID.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45108,12 +45108,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45122,12 +45122,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45136,12 +45136,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45150,12 +45150,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45164,12 +45164,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45178,12 +45178,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetToken param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetToken.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45192,12 +45192,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45206,12 +45206,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45220,12 +45220,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45234,12 +45234,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45248,12 +45248,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45262,12 +45262,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45276,12 +45276,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45290,12 +45290,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45304,12 +45304,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45318,12 +45318,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45332,12 +45332,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45346,12 +45346,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45360,12 +45360,12 @@
 
             }
         
-            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse param, boolean optimizeContent)
+            private  org.apache.axiom.om.OMElement  toOM(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse param, boolean optimizeContent)
             throws org.apache.axis2.AxisFault {
 
             
                         try{
-                             return param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse.MY_QNAME,
+                             return param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse.MY_QNAME,
                                           org.apache.axiom.om.OMAbstractFactory.getOMFactory());
                         } catch(org.apache.axis2.databinding.ADBException e){
                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45375,14 +45375,14 @@
             }
         
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45396,14 +45396,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45417,14 +45417,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45438,14 +45438,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45459,14 +45459,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45480,14 +45480,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45501,14 +45501,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45522,14 +45522,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45543,14 +45543,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45564,14 +45564,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45585,14 +45585,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45606,14 +45606,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45627,14 +45627,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45648,14 +45648,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45669,14 +45669,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetLabID param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetLabID.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45690,14 +45690,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45711,14 +45711,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45732,14 +45732,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetToken param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetToken.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45753,14 +45753,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45774,14 +45774,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45795,14 +45795,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45816,14 +45816,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45837,14 +45837,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45858,14 +45858,14 @@
 
                              
                                     
-                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions param, boolean optimizeContent)
+                                        private  org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory, au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions param, boolean optimizeContent)
                                         throws org.apache.axis2.AxisFault{
 
                                              
                                                     try{
 
                                                             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions.MY_QNAME,factory));
+                                                            emptyEnvelope.getBody().addChild(param.getOMElement(au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions.MY_QNAME,factory));
                                                             return emptyEnvelope;
                                                         } catch(org.apache.axis2.databinding.ADBException e){
                                                             throw org.apache.axis2.AxisFault.makeFault(e);
@@ -45895,338 +45895,338 @@
 
         try {
         
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResults.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResults.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInput.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInput.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInput.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissions.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetLabStatus.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatus.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentID.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResults.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResults.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInput.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInput.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecs.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecs.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSession.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSession.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetLabInfo.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfo.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetLabID.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetLabID.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabID.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SubmitExperiment.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetToken.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetToken.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetToken.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTime.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlave.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentType.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentType.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatus.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperiment.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperiment.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissions.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }
            
-                if (au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse.class.equals(type)){
+                if (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse.class.equals(type)){
                 
-                           return au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                           return au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
                     
 
                 }

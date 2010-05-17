@@ -49,7 +49,7 @@
             * override this method for handling normal response from getExperimentResults operation
             */
            public void receiveResultgetExperimentResults(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetExperimentResultsResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentResultsResponse result
                         ) {
            }
 
@@ -65,7 +65,7 @@
             * override this method for handling normal response from deleteSavedUserExperimentInput operation
             */
            public void receiveResultdeleteSavedUserExperimentInput(
-                    au.edu.labshare.labconnector.LabConnectorStub.DeleteSavedUserExperimentInputResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse result
                         ) {
            }
 
@@ -81,7 +81,7 @@
             * override this method for handling normal response from getSavedUserExperimentInput operation
             */
            public void receiveResultgetSavedUserExperimentInput(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetSavedUserExperimentInputResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse result
                         ) {
            }
 
@@ -97,7 +97,7 @@
             * override this method for handling normal response from setUserPermissions operation
             */
            public void receiveResultsetUserPermissions(
-                    au.edu.labshare.labconnector.LabConnectorStub.SetUserPermissionsResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissionsResponse result
                         ) {
            }
 
@@ -113,7 +113,7 @@
             * override this method for handling normal response from getLabStatus operation
             */
            public void receiveResultgetLabStatus(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetLabStatusResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabStatusResponse result
                         ) {
            }
 
@@ -129,7 +129,7 @@
             * override this method for handling normal response from getExperimentID operation
             */
            public void receiveResultgetExperimentID(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetExperimentIDResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse result
                         ) {
            }
 
@@ -145,7 +145,7 @@
             * override this method for handling normal response from saveExperimentResults operation
             */
            public void receiveResultsaveExperimentResults(
-                    au.edu.labshare.labconnector.LabConnectorStub.SaveExperimentResultsResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveExperimentResultsResponse result
                         ) {
            }
 
@@ -161,7 +161,7 @@
             * override this method for handling normal response from saveUserExperimentInput operation
             */
            public void receiveResultsaveUserExperimentInput(
-                    au.edu.labshare.labconnector.LabConnectorStub.SaveUserExperimentInputResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SaveUserExperimentInputResponse result
                         ) {
            }
 
@@ -177,7 +177,7 @@
             * override this method for handling normal response from getExperimentSpecs operation
             */
            public void receiveResultgetExperimentSpecs(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetExperimentSpecsResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentSpecsResponse result
                         ) {
            }
 
@@ -193,7 +193,7 @@
             * override this method for handling normal response from getInteractiveExperimentSession operation
             */
            public void receiveResultgetInteractiveExperimentSession(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetInteractiveExperimentSessionResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetInteractiveExperimentSessionResponse result
                         ) {
            }
 
@@ -209,7 +209,7 @@
             * override this method for handling normal response from getMaintenanceTime operation
             */
            public void receiveResultgetMaintenanceTime(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetMaintenanceTimeResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse result
                         ) {
            }
 
@@ -225,7 +225,7 @@
             * override this method for handling normal response from cancelBookingTime operation
             */
            public void receiveResultcancelBookingTime(
-                    au.edu.labshare.labconnector.LabConnectorStub.CancelBookingTimeResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelBookingTimeResponse result
                         ) {
            }
 
@@ -241,7 +241,7 @@
             * override this method for handling normal response from getLabInfo operation
             */
            public void receiveResultgetLabInfo(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetLabInfoResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabInfoResponse result
                         ) {
            }
 
@@ -257,7 +257,7 @@
             * override this method for handling normal response from setMaintenanceTime operation
             */
            public void receiveResultsetMaintenanceTime(
-                    au.edu.labshare.labconnector.LabConnectorStub.SetMaintenanceTimeResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse result
                         ) {
            }
 
@@ -273,7 +273,7 @@
             * override this method for handling normal response from getLabID operation
             */
            public void receiveResultgetLabID(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetLabIDResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse result
                         ) {
            }
 
@@ -289,7 +289,7 @@
             * override this method for handling normal response from submitExperiment operation
             */
            public void receiveResultsubmitExperiment(
-                    au.edu.labshare.labconnector.LabConnectorStub.SubmitExperimentResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse result
                         ) {
            }
 
@@ -305,7 +305,7 @@
             * override this method for handling normal response from scheduleBookingTime operation
             */
            public void receiveResultscheduleBookingTime(
-                    au.edu.labshare.labconnector.LabConnectorStub.ScheduleBookingTimeResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse result
                         ) {
            }
 
@@ -321,7 +321,7 @@
             * override this method for handling normal response from getToken operation
             */
            public void receiveResultgetToken(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetTokenResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetTokenResponse result
                         ) {
            }
 
@@ -337,7 +337,7 @@
             * override this method for handling normal response from cancelMaintenanceTime operation
             */
            public void receiveResultcancelMaintenanceTime(
-                    au.edu.labshare.labconnector.LabConnectorStub.CancelMaintenanceTimeResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.CancelMaintenanceTimeResponse result
                         ) {
            }
 
@@ -353,7 +353,7 @@
             * override this method for handling normal response from releaseSlave operation
             */
            public void receiveResultreleaseSlave(
-                    au.edu.labshare.labconnector.LabConnectorStub.ReleaseSlaveResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlaveResponse result
                         ) {
            }
 
@@ -369,7 +369,7 @@
             * override this method for handling normal response from getExperimentType operation
             */
            public void receiveResultgetExperimentType(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetExperimentTypeResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentTypeResponse result
                         ) {
            }
 
@@ -385,7 +385,7 @@
             * override this method for handling normal response from getExperimentStatus operation
             */
            public void receiveResultgetExperimentStatus(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetExperimentStatusResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse result
                         ) {
            }
 
@@ -401,7 +401,7 @@
             * override this method for handling normal response from releaseExperiment operation
             */
            public void receiveResultreleaseExperiment(
-                    au.edu.labshare.labconnector.LabConnectorStub.ReleaseExperimentResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse result
                         ) {
            }
 
@@ -417,7 +417,7 @@
             * override this method for handling normal response from getUserPermissions operation
             */
            public void receiveResultgetUserPermissions(
-                    au.edu.labshare.labconnector.LabConnectorStub.GetUserPermissionsResponse result
+                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissionsResponse result
                         ) {
            }
 
