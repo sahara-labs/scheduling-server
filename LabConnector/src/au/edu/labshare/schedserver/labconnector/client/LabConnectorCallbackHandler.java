@@ -6,7 +6,7 @@
  * by the Apache Axis2 version: 1.5.1  Built on : Oct 19, 2009 (10:59:00 EDT)
  */
 
-    package au.edu.labshare.labconnector;
+    package au.edu.labshare.schedserver.labconnector.client;
 
     /**
      *  LabConnectorCallbackHandler Callback class, Users can extend this class and implement
