@@ -1,6 +1,6 @@
 /**
- * SAHARA Scheduling Server - LabConnector Activator
- * Activator class for the OSGi Bundle.
+ * SAHARA Scheduling Server - LabConnectorServiceClient
+ * Web Service client to access the LabConnector WebService.
  * 
  * @license See LICENSE in the top level directory for complete license terms.
  * 
@@ -33,29 +33,49 @@
  * @author Herbert Yeung
  * @date 18th May 2010
  */
-package au.edu.labshare.schedserver.labconnector;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+package au.edu.labshare.schedserver.labconnector.client;
 
-public class LabConnectorActivator implements BundleActivator {
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception 
+public class LabConnectorServiceClient 
+{
+	LabConnectorStub labconnectorstub;
+	String soapEndPoint = "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConenctor.asmx";
+	
+	public LabConnectorServiceClient()
 	{
-		
+		try
+		{
+			labconnectorstub = new LabConnectorStub(soapEndPoint);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception 
+	
+	//We want to create a labConnector service client to connect
+	public int submitCall(String experimentSpecs, String labID, int priority, String userID)
 	{
+		try
+		{
+			//Setup the WSDL calling method
+			LabConnectorStub.SubmitExperiment submission = new LabConnectorStub.SubmitExperiment();
+			
+			//Set the parameters for submit call
+			submission.setExperimentSpecs(experimentSpecs);
+			submission.setLabID(labID);
+			submission.setPriority(priority);
+			submission.setUserID(userID);
+			
+			//Setup the WSDL response
+			LabConnectorStub.SubmitExperimentResponse submissionResp = new LabConnectorStub.SubmitExperimentResponse();
+			return submissionResp.getExperimentID();
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		
-	}
-
+		return -1;
+	}		
 }
