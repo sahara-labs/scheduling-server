@@ -36,6 +36,9 @@
 
 package au.edu.labshare.schedserver.labconnector.client;
 
+import java.rmi.RemoteException;
+import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub;
+
 public class LabConnectorServiceClient 
 {
 	LabConnectorStub labconnectorstub;
@@ -54,22 +57,32 @@ public class LabConnectorServiceClient
 	}
 	
 	//We want to create a labConnector service client to connect
-	public int submitCall(String experimentSpecs, String labID, int priority, String userID)
+	/**
+	 * @param args
+	 * @throws RemoteException
+	 */
+	public int submitBatchExperiment(String experimentSpecs, String labID, int priority, String userID)
 	{
 		try
 		{
+			//Derived from: http://www.codeweblog.com/axis2-the-entire-process-of-creating-webservice-client-called-net-web-service/
+			//Axis2 -- HTTP transport adopted the "chunked" mode, while .NET Web server does not support this  
+			labconnectorstub._getServiceClient().getOptions().setProperty(org.apache.axis2.transport.http.HTTPConstants.CHUNKED, Boolean.FALSE);
+			
 			//Setup the WSDL calling method
-			LabConnectorStub.SubmitExperiment submission = new LabConnectorStub.SubmitExperiment();
+			LabConnectorStub.SubmitExperiment submitExpt = new LabConnectorStub.SubmitExperiment();
 			
 			//Set the parameters for submit call
-			submission.setExperimentSpecs(experimentSpecs);
-			submission.setLabID(labID);
-			submission.setPriority(priority);
-			submission.setUserID(userID);
+			submitExpt.setExperimentSpecs(experimentSpecs);
+			submitExpt.setLabID(labID);
+			submitExpt.setPriority(priority);
+			submitExpt.setUserID(userID);
+			
+			return labconnectorstub.submitExperiment(submitExpt).getExperimentID();
 			
 			//Setup the WSDL response
-			LabConnectorStub.SubmitExperimentResponse submissionResp = new LabConnectorStub.SubmitExperimentResponse();
-			return submissionResp.getExperimentID();
+			//LabConnectorStub.SubmitExperimentResponse submissionResp = new LabConnectorStub.SubmitExperimentResponse();
+			//return submissionResp.getExperimentID();
 		} 
 		catch (Exception e)
 		{

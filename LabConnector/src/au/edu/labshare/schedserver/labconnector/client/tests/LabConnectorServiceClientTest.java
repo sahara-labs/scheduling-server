@@ -39,7 +39,7 @@ public class LabConnectorServiceClientTest
 		LabConnectorServiceClient labConnectorServiceClient;
 		labConnectorServiceClient = new LabConnectorServiceClient();
 		
-		experimentID = labConnectorServiceClient.submitCall(experimentSpecs, labID, priority, userID);
+		experimentID = labConnectorServiceClient.submitBatchExperiment(experimentSpecs, labID, priority, userID);
 		
 		assertTrue(experimentID > 0);
 		//fail("Not yet implemented");
