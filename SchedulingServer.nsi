@@ -184,7 +184,7 @@ Function checkJREVersion
 	; Check the JRE version to be 1.6 or higher
 	ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" CurrentVersion 
 	${If} $0 S< ${JREVersion} 
-		MessageBox MB_OK "$(^Name) needs JRE version ${JREVersion} or higher. It is currently $0. Aborting the installation."
+		MessageBox MB_OK|MB_ICONSTOP "$(^Name) needs JRE version ${JREVersion} or higher. It is currently $0. Aborting the installation."
 		Abort ; causes installer to quit.
 	${EndIf}
 FunctionEnd
@@ -221,14 +221,63 @@ Function checkIfServiceInstalled
 	${WordReplace} '$1' 'FAILED' 'FAILED' 'E+1' $R0
 	IfErrors 0 Found
 	StrCmp $R0 '1' 0 Error
-	MessageBox MB_OK "'${Sahara_SSWindows_Service}' service is already installed.  please stop the '${Sahara_SSWindows_Service}' service if it is running (Windows Control Panel->Administrative Tools->Services) $\n$\nUse schedulingservice.exe to uninstall the previous version (schedulingservice.exe uninstall)"
+	MessageBox MB_OK|MB_ICONSTOP "'${Sahara_SSWindows_Service}' service is already installed.  please stop the '${Sahara_SSWindows_Service}' service if it is running (Windows Control Panel->Administrative Tools->Services) $\n$\nUse schedulingservice.exe to uninstall the previous version (schedulingservice.exe uninstall)"
 	Abort
 	Error:
-	MessageBox MB_OK "Error is detecting if '${Sahara_SSWindows_Service}' service is installed"
+	MessageBox MB_OK|MB_ICONSTOP "Error is detecting if '${Sahara_SSWindows_Service}' service is installed"
 	Abort
 	Found:
 FunctionEnd
 
+; Check if RigClient service is running
+Function un.checkIfServiceRunning
+	; Check if the RigClient service is running. (probably need a better way to do this)
+	; If the service is running, the output of 'sc query RigClient' will be like:
+	;	SERVICE_NAME: RigClient
+	;	        TYPE               : 10  WIN32_OWN_PROCESS
+	;	        STATE              : 4  RUNNING
+        ;       		                (STOPPABLE,NOT_PAUSABLE,ACCEPTS_SHUTDOWN)
+	;	        WIN32_EXIT_CODE    : 0  (0x0)
+	;	        SERVICE_EXIT_CODE  : 0  (0x0)
+	;	        CHECKPOINT         : 0x0
+	;	        WAIT_HINT          : 0x0
+	;
+	; If the service is installed but not running, the STATE would be 
+	;		SERVICE_NAME: RigClient
+        ;		TYPE               : 10  WIN32_OWN_PROCESS
+        ;		STATE              : 1  STOPPED
+        ;              		          (NOT_STOPPABLE,NOT_PAUSABLE,IGNORES_SHUTDOWN)
+        ;		WIN32_EXIT_CODE    : 1077       (0x435)
+        ;		SERVICE_EXIT_CODE  : 0  (0x0)
+        ;		CHECKPOINT         : 0x0
+        ;		WAIT_HINT          : 0x0
+        ;
+        ; If the service is not installed, the STATE would be 
+	;		[SC] EnumQueryServicesStatus:OpenService FAILED 1060:
+	;		The specified service does not exist as an installed service.
+	;
+	; Check for the word 'RUNNING' in the output of the above command. If not found, 
+	;
+	; - If function "WordReplace" is successful (the word "RUNNING" is found in the result), the service is running
+	; - If the function "WordReplace" is not successful and the errorlevel (value of $R0) is 1 (the word "RUNNING" not found), the service is stopped or not installed
+	; - If the function "WordReplace" is not successful and the errorlevel (value of $R0) is anything other than 1 then some error has occured in
+	;   executing function "WordReplace"
+	
+	nsExec::ExecToStack /OEM '"sc" query "${Sahara_SSWindows_Service}"'
+	Pop $0	; $0 contains return value/error/timeout
+	Pop $1	; $1 contains printed text, up to ${NSIS_MAX_STRLEN}
+
+	ClearErrors
+	${WordReplace} '$1' 'RUNNING' 'RUNNING' 'E+1' $R0
+	IfErrors Errors 0
+	MessageBox MB_OK|MB_ICONSTOP "Please stop the '${Sahara_SSWindows_Service}' service before continuing the uninstallation."
+	Abort
+	Errors:
+	StrCmp $R0 '1' NotRunning 0
+	MessageBox MB_OK|MB_ICONSTOP "Error is detecting if '${Sahara_SSWindows_Service}' service is installed"
+	Abort
+	NotRunning:
+FunctionEnd
 
 ; Disable the section so that user will not be able to select it
 ; This macro is used mainly for uninstallation. 
@@ -245,7 +294,7 @@ FunctionEnd
 	userInfo::getAccountType
 	pop $0
 	strCmp $0 "Admin" AdminUser
-	MessageBox MB_OK "$(^Name) ${operation} requires administrative privileges"
+	MessageBox MB_OK|MB_ICONSTOP "$(^Name) ${operation} requires administrative privileges"
 	Abort
 	AdminUser:
 !macroend
@@ -278,7 +327,7 @@ Section "Sahara Scheduling Server" SchedServer
     ; Add the RigClient service to the windows services
     ExecWait '"$INSTDIR\schedulingservice" install'
     ifErrors 0 WinServiceNoError
-    MessageBox MB_OK "Error in executing schedulingservice.exe"
+    MessageBox MB_OK|MB_ICONSTOP "Error in executing schedulingservice.exe"
     ; TODO  Revert back the installed SS in case of error?
     Abort
     WinServiceNoError:
@@ -324,6 +373,7 @@ SectionEnd
 ; Uninstall Scheduling Server
 Section "un.Sahara Scheduling Server" un.SchedulingServer
 	!insertmacro checkAdminUser "uninstallation"
+	call un.checkIfServiceRunning
 	Push $R1
 	ReadRegStr $R1 HKLM "${REGKEY}" "Path"
 	ClearErrors
@@ -333,7 +383,7 @@ Section "un.Sahara Scheduling Server" un.SchedulingServer
 	;TryAgain
 	ExecWait '$R1\schedulingservice uninstall'
 	ifErrors 0 WinServiceNoError
-	MessageBox MB_OK "Error in uninstalling Scheduling Server service again. Aborting the uninstallation"
+	MessageBox MB_OK|MB_ICONSTOP "Error in uninstalling Scheduling Server service again. Aborting the uninstallation"
 	AbortUninstall:
 	Abort
 	WinServiceNoError:
