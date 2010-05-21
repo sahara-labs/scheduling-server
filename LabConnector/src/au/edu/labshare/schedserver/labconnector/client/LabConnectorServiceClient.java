@@ -39,10 +39,11 @@ package au.edu.labshare.schedserver.labconnector.client;
 import java.rmi.RemoteException;
 import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub;
 
+
 public class LabConnectorServiceClient 
 {
 	LabConnectorStub labconnectorstub;
-	String soapEndPoint = "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConenctor.asmx";
+	String soapEndPoint = "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx";
 	
 	public LabConnectorServiceClient()
 	{

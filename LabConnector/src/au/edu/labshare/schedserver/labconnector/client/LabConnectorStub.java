@@ -40,12 +40,11 @@
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.5.1  Built on : Oct 19, 2009 (10:59:00 EDT)
  */
-        //package au.edu.uts.eng.ilabs_test.labconnector;
-		package au.edu.labshare.schedserver.labconnector.client;
 
-        
+//package au.edu.uts.eng.ilabs_test.labconnector;
+package au.edu.labshare.schedserver.labconnector.client;
 
-        /*
+/*
         *  LabConnectorServiceStub java implementation
         */
 
@@ -85,7 +84,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getUserPermissions"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getUserPermissions"));
 	    _service.addOperation(__operation);
 	    
 
@@ -97,7 +96,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "saveUserExperimentInput"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "saveUserExperimentInput"));
 	    _service.addOperation(__operation);
 	    
 
@@ -109,7 +108,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "cancelBookingTime"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "cancelBookingTime"));
 	    _service.addOperation(__operation);
 	    
 
@@ -121,7 +120,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getLabInfo"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getLabInfo"));
 	    _service.addOperation(__operation);
 	    
 
@@ -133,7 +132,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getExperimentResults"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getExperimentResults"));
 	    _service.addOperation(__operation);
 	    
 
@@ -145,7 +144,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getMaintenanceTime"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getMaintenanceTime"));
 	    _service.addOperation(__operation);
 	    
 
@@ -157,7 +156,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "deleteSavedUserExperimentInput"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "deleteSavedUserExperimentInput"));
 	    _service.addOperation(__operation);
 	    
 
@@ -169,7 +168,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "cancelMaintenanceTime"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "cancelMaintenanceTime"));
 	    _service.addOperation(__operation);
 	    
 
@@ -181,7 +180,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getSavedUserExperimentInput"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getSavedUserExperimentInput"));
 	    _service.addOperation(__operation);
 	    
 
@@ -193,7 +192,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getExperimentID"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getExperimentID"));
 	    _service.addOperation(__operation);
 	    
 
@@ -205,7 +204,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "submitExperiment"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "submitExperiment"));
 	    _service.addOperation(__operation);
 	    
 
@@ -217,7 +216,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "scheduleBookingTime"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "scheduleBookingTime"));
 	    _service.addOperation(__operation);
 	    
 
@@ -229,7 +228,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "saveExperimentResults"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "saveExperimentResults"));
 	    _service.addOperation(__operation);
 	    
 
@@ -241,7 +240,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getToken"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getToken"));
 	    _service.addOperation(__operation);
 	    
 
@@ -253,7 +252,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getLabID"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getLabID"));
 	    _service.addOperation(__operation);
 	    
 
@@ -265,7 +264,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "setUserPermissions"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "setUserPermissions"));
 	    _service.addOperation(__operation);
 	    
 
@@ -277,7 +276,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getExperimentType"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getExperimentType"));
 	    _service.addOperation(__operation);
 	    
 
@@ -289,7 +288,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "releaseExperiment"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "releaseExperiment"));
 	    _service.addOperation(__operation);
 	    
 
@@ -301,7 +300,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getExperimentStatus"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getExperimentStatus"));
 	    _service.addOperation(__operation);
 	    
 
@@ -313,7 +312,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "releaseSlave"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "releaseSlave"));
 	    _service.addOperation(__operation);
 	    
 
@@ -325,7 +324,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getInteractiveExperimentSession"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getInteractiveExperimentSession"));
 	    _service.addOperation(__operation);
 	    
 
@@ -337,7 +336,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "setMaintenanceTime"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "setMaintenanceTime"));
 	    _service.addOperation(__operation);
 	    
 
@@ -349,7 +348,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getExperimentSpecs"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getExperimentSpecs"));
 	    _service.addOperation(__operation);
 	    
 
@@ -361,7 +360,7 @@
                    __operation = new org.apache.axis2.description.OutInAxisOperation();
                 
 
-            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/", "getLabStatus"));
+            __operation.setName(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/", "getLabStatus"));
 	    _service.addOperation(__operation);
 	    
 
@@ -418,7 +417,7 @@
      */
     public LabConnectorStub(org.apache.axis2.context.ConfigurationContext configurationContext) throws org.apache.axis2.AxisFault {
         
-                    this(configurationContext,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/LabConnector.asmx" );
+                    this(configurationContext,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx" );
                 
     }
 
@@ -427,7 +426,7 @@
      */
     public LabConnectorStub() throws org.apache.axis2.AxisFault {
         
-                    this("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/LabConnector.asmx" );
+                    this("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx" );
                 
     }
 
@@ -462,7 +461,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[0].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getUserPermissions");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getUserPermissions");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -481,7 +480,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getUserPermissions0,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getUserPermissions")));
                                                 
         //adding SOAP soap_headers
@@ -576,7 +575,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[0].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getUserPermissions");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getUserPermissions");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -595,7 +594,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getUserPermissions0,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getUserPermissions")));
                                                 
         // adding SOAP soap_headers
@@ -727,7 +726,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[1].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/saveUserExperimentInput");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/saveUserExperimentInput");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -746,7 +745,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     saveUserExperimentInput2,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "saveUserExperimentInput")));
                                                 
         //adding SOAP soap_headers
@@ -841,7 +840,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[1].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/saveUserExperimentInput");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/saveUserExperimentInput");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -860,7 +859,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     saveUserExperimentInput2,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "saveUserExperimentInput")));
                                                 
         // adding SOAP soap_headers
@@ -992,7 +991,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[2].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/cancelBookingTime");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/cancelBookingTime");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1011,7 +1010,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     cancelBookingTime4,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "cancelBookingTime")));
                                                 
         //adding SOAP soap_headers
@@ -1106,7 +1105,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[2].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/cancelBookingTime");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/cancelBookingTime");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1125,7 +1124,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     cancelBookingTime4,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "cancelBookingTime")));
                                                 
         // adding SOAP soap_headers
@@ -1257,7 +1256,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[3].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getLabInfo");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getLabInfo");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1276,7 +1275,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getLabInfo6,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getLabInfo")));
                                                 
         //adding SOAP soap_headers
@@ -1371,7 +1370,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[3].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getLabInfo");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getLabInfo");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1390,7 +1389,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getLabInfo6,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getLabInfo")));
                                                 
         // adding SOAP soap_headers
@@ -1522,7 +1521,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[4].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentResults");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentResults");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1541,7 +1540,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentResults8,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentResults")));
                                                 
         //adding SOAP soap_headers
@@ -1636,7 +1635,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[4].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentResults");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentResults");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1655,7 +1654,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentResults8,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentResults")));
                                                 
         // adding SOAP soap_headers
@@ -1787,7 +1786,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[5].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getMaintenanceTime");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getMaintenanceTime");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1806,7 +1805,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getMaintenanceTime10,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getMaintenanceTime")));
                                                 
         //adding SOAP soap_headers
@@ -1901,7 +1900,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[5].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getMaintenanceTime");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getMaintenanceTime");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -1920,7 +1919,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getMaintenanceTime10,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getMaintenanceTime")));
                                                 
         // adding SOAP soap_headers
@@ -2052,7 +2051,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[6].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/deleteSavedUserExperimentInput");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/deleteSavedUserExperimentInput");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2071,7 +2070,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     deleteSavedUserExperimentInput12,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "deleteSavedUserExperimentInput")));
                                                 
         //adding SOAP soap_headers
@@ -2166,7 +2165,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[6].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/deleteSavedUserExperimentInput");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/deleteSavedUserExperimentInput");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2185,7 +2184,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     deleteSavedUserExperimentInput12,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "deleteSavedUserExperimentInput")));
                                                 
         // adding SOAP soap_headers
@@ -2317,7 +2316,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[7].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/cancelMaintenanceTime");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/cancelMaintenanceTime");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2336,7 +2335,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     cancelMaintenanceTime14,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "cancelMaintenanceTime")));
                                                 
         //adding SOAP soap_headers
@@ -2431,7 +2430,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[7].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/cancelMaintenanceTime");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/cancelMaintenanceTime");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2450,7 +2449,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     cancelMaintenanceTime14,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "cancelMaintenanceTime")));
                                                 
         // adding SOAP soap_headers
@@ -2582,7 +2581,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[8].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getSavedUserExperimentInput");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getSavedUserExperimentInput");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2601,7 +2600,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getSavedUserExperimentInput16,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getSavedUserExperimentInput")));
                                                 
         //adding SOAP soap_headers
@@ -2696,7 +2695,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[8].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getSavedUserExperimentInput");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getSavedUserExperimentInput");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2715,7 +2714,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getSavedUserExperimentInput16,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getSavedUserExperimentInput")));
                                                 
         // adding SOAP soap_headers
@@ -2847,7 +2846,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[9].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentID");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentID");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2866,7 +2865,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentID18,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentID")));
                                                 
         //adding SOAP soap_headers
@@ -2961,7 +2960,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[9].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentID");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentID");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -2980,7 +2979,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentID18,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentID")));
                                                 
         // adding SOAP soap_headers
@@ -3112,7 +3111,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[10].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/submitExperiment");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/submitExperiment");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -3131,7 +3130,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     submitExperiment20,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "submitExperiment")));
                                                 
         //adding SOAP soap_headers
@@ -3226,7 +3225,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[10].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/submitExperiment");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/submitExperiment");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -3245,7 +3244,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     submitExperiment20,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "submitExperiment")));
                                                 
         // adding SOAP soap_headers
@@ -3377,7 +3376,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[11].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/scheduleBookingTime");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/scheduleBookingTime");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -3396,7 +3395,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     scheduleBookingTime22,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "scheduleBookingTime")));
                                                 
         //adding SOAP soap_headers
@@ -3491,7 +3490,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[11].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/scheduleBookingTime");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/scheduleBookingTime");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -3510,7 +3509,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     scheduleBookingTime22,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "scheduleBookingTime")));
                                                 
         // adding SOAP soap_headers
@@ -3642,7 +3641,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[12].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/saveExperimentResults");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/saveExperimentResults");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -3661,7 +3660,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     saveExperimentResults24,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "saveExperimentResults")));
                                                 
         //adding SOAP soap_headers
@@ -3756,7 +3755,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[12].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/saveExperimentResults");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/saveExperimentResults");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -3775,7 +3774,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     saveExperimentResults24,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "saveExperimentResults")));
                                                 
         // adding SOAP soap_headers
@@ -3907,7 +3906,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[13].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getToken");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getToken");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -3926,7 +3925,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getToken26,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getToken")));
                                                 
         //adding SOAP soap_headers
@@ -4021,7 +4020,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[13].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getToken");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getToken");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4040,7 +4039,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getToken26,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getToken")));
                                                 
         // adding SOAP soap_headers
@@ -4172,7 +4171,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[14].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getLabID");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getLabID");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4191,7 +4190,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getLabID28,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getLabID")));
                                                 
         //adding SOAP soap_headers
@@ -4286,7 +4285,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[14].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getLabID");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getLabID");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4305,7 +4304,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getLabID28,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getLabID")));
                                                 
         // adding SOAP soap_headers
@@ -4437,7 +4436,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[15].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/setUserPermissions");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/setUserPermissions");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4456,7 +4455,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     setUserPermissions30,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "setUserPermissions")));
                                                 
         //adding SOAP soap_headers
@@ -4551,7 +4550,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[15].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/setUserPermissions");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/setUserPermissions");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4570,7 +4569,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     setUserPermissions30,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "setUserPermissions")));
                                                 
         // adding SOAP soap_headers
@@ -4702,7 +4701,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[16].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentType");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentType");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4721,7 +4720,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentType32,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentType")));
                                                 
         //adding SOAP soap_headers
@@ -4816,7 +4815,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[16].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentType");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentType");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4835,7 +4834,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentType32,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentType")));
                                                 
         // adding SOAP soap_headers
@@ -4967,7 +4966,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[17].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/releaseExperiment");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/releaseExperiment");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -4986,7 +4985,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     releaseExperiment34,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "releaseExperiment")));
                                                 
         //adding SOAP soap_headers
@@ -5081,7 +5080,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[17].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/releaseExperiment");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/releaseExperiment");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -5100,7 +5099,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     releaseExperiment34,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "releaseExperiment")));
                                                 
         // adding SOAP soap_headers
@@ -5232,7 +5231,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[18].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentStatus");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentStatus");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -5251,7 +5250,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentStatus36,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentStatus")));
                                                 
         //adding SOAP soap_headers
@@ -5346,7 +5345,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[18].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentStatus");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentStatus");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -5365,7 +5364,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentStatus36,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentStatus")));
                                                 
         // adding SOAP soap_headers
@@ -5497,7 +5496,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[19].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/releaseSlave");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/releaseSlave");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -5516,7 +5515,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     releaseSlave38,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "releaseSlave")));
                                                 
         //adding SOAP soap_headers
@@ -5611,7 +5610,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[19].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/releaseSlave");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/releaseSlave");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -5630,7 +5629,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     releaseSlave38,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "releaseSlave")));
                                                 
         // adding SOAP soap_headers
@@ -5762,7 +5761,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[20].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getInteractiveExperimentSession");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getInteractiveExperimentSession");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -5781,7 +5780,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getInteractiveExperimentSession40,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getInteractiveExperimentSession")));
                                                 
         //adding SOAP soap_headers
@@ -5876,7 +5875,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[20].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getInteractiveExperimentSession");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getInteractiveExperimentSession");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -5895,7 +5894,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getInteractiveExperimentSession40,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getInteractiveExperimentSession")));
                                                 
         // adding SOAP soap_headers
@@ -6027,7 +6026,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[21].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/setMaintenanceTime");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/setMaintenanceTime");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -6046,7 +6045,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     setMaintenanceTime42,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "setMaintenanceTime")));
                                                 
         //adding SOAP soap_headers
@@ -6141,7 +6140,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[21].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/setMaintenanceTime");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/setMaintenanceTime");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -6160,7 +6159,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     setMaintenanceTime42,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "setMaintenanceTime")));
                                                 
         // adding SOAP soap_headers
@@ -6292,7 +6291,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[22].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentSpecs");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentSpecs");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -6311,7 +6310,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentSpecs44,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentSpecs")));
                                                 
         //adding SOAP soap_headers
@@ -6406,7 +6405,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[22].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getExperimentSpecs");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getExperimentSpecs");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -6425,7 +6424,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getExperimentSpecs44,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getExperimentSpecs")));
                                                 
         // adding SOAP soap_headers
@@ -6557,7 +6556,7 @@
               org.apache.axis2.context.MessageContext _messageContext = null;
               try{
                org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[23].getName());
-              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getLabStatus");
+              _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getLabStatus");
               _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -6576,7 +6575,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getLabStatus46,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getLabStatus")));
                                                 
         //adding SOAP soap_headers
@@ -6671,7 +6670,7 @@
                 throws java.rmi.RemoteException{
 
               org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[23].getName());
-             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/getLabStatus");
+             _operationClient.getOptions().setAction("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/getLabStatus");
              _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
 
               
@@ -6690,7 +6689,7 @@
                                                     
                                                     env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                                                     getLabStatus46,
-                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                                                    optimizeContent(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                     "getLabStatus")));
                                                 
         // adding SOAP soap_headers
@@ -6837,14 +6836,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getLabStatusResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -7039,7 +7038,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabStatusResponse",
@@ -7487,14 +7486,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getLabIDResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -7629,7 +7628,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabIDResponse",
@@ -7975,7 +7974,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -8149,7 +8148,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":cancelMaintenanceTimeChoice_type0",
@@ -8492,14 +8491,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getLabInfoResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -8634,7 +8633,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabInfoResponse",
@@ -8974,14 +8973,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getMaintenanceTimeResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -9184,7 +9183,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getMaintenanceTimeResponse",
@@ -9631,14 +9630,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "cancelMaintenanceTimeResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -9803,7 +9802,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":cancelMaintenanceTimeResponse",
@@ -10197,14 +10196,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "cancelMaintenanceTime",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -10369,7 +10368,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":cancelMaintenanceTime",
@@ -10593,7 +10592,7 @@
                                            throw new org.apache.axis2.databinding.ADBException("userID cannot be null!!");
                                         }
                                     }
-                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                       "cancelMaintenanceTimeChoice_type0"));
                             
                             
@@ -10732,14 +10731,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "setMaintenanceTime",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -10992,7 +10991,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":setMaintenanceTime",
@@ -11516,14 +11515,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getInteractiveExperimentSession",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -11762,7 +11761,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getInteractiveExperimentSession",
@@ -12248,14 +12247,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentIDResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -12376,7 +12375,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentIDResponse",
@@ -12709,14 +12708,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentSpecs",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -12881,7 +12880,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentSpecs",
@@ -13279,7 +13278,7 @@
 
               
                   if (
-                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/".equals(namespaceURI) &&
+                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/".equals(namespaceURI) &&
                   "BookingType".equals(typeName)){
                    
                             return  BookingType.Factory.parse(reader);
@@ -13289,7 +13288,7 @@
 
               
                   if (
-                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/".equals(namespaceURI) &&
+                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/".equals(namespaceURI) &&
                   "ExperimentStatus".equals(typeName)){
                    
                             return  ExperimentStatus.Factory.parse(reader);
@@ -13299,7 +13298,7 @@
 
               
                   if (
-                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/".equals(namespaceURI) &&
+                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/".equals(namespaceURI) &&
                   "ExperimentUserInput".equals(typeName)){
                    
                             return  ExperimentUserInput.Factory.parse(reader);
@@ -13309,7 +13308,7 @@
 
               
                   if (
-                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/".equals(namespaceURI) &&
+                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/".equals(namespaceURI) &&
                   "Permissions".equals(typeName)){
                    
                             return  Permissions.Factory.parse(reader);
@@ -13319,7 +13318,7 @@
 
               
                   if (
-                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/".equals(namespaceURI) &&
+                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/".equals(namespaceURI) &&
                   "ExperimentType".equals(typeName)){
                    
                             return  ExperimentType.Factory.parse(reader);
@@ -13329,7 +13328,7 @@
 
               
                   if (
-                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/".equals(namespaceURI) &&
+                  "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/".equals(namespaceURI) &&
                   "InteractionType".equals(typeName)){
                    
                             return  InteractionType.Factory.parse(reader);
@@ -13347,14 +13346,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "BookingType",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -13488,7 +13487,7 @@
 
                             // add the type details if this is used in a simple type
                                if (serializeType){
-                                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                                            namespacePrefix+":BookingType",
@@ -13798,14 +13797,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "saveExperimentResultsResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -13970,7 +13969,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":saveExperimentResultsResponse",
@@ -14364,14 +14363,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getSavedUserExperimentInputResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -14506,7 +14505,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getSavedUserExperimentInputResponse",
@@ -14821,7 +14820,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -14994,7 +14993,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getTokenChoice_type0",
@@ -15345,14 +15344,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "setUserPermissions",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -15531,7 +15530,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":setUserPermissions",
@@ -15907,7 +15906,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -16128,7 +16127,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabIDChoice_type0",
@@ -16535,14 +16534,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "saveExperimentResults",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -16721,7 +16720,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":saveExperimentResults",
@@ -17122,14 +17121,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "deleteSavedUserExperimentInput",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -17308,7 +17307,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":deleteSavedUserExperimentInput",
@@ -17709,14 +17708,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "cancelBookingTime",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -17881,7 +17880,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":cancelBookingTime",
@@ -18275,14 +18274,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getSavedUserExperimentInput",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -18447,7 +18446,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getSavedUserExperimentInput",
@@ -18847,7 +18846,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -19116,7 +19115,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabInfoChoice_type0",
@@ -19585,7 +19584,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -19946,7 +19945,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":ExperimentStatus",
@@ -20767,14 +20766,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentSpecsResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -20909,7 +20908,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentSpecsResponse",
@@ -21249,14 +21248,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getMaintenanceTime",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -21391,7 +21390,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getMaintenanceTime",
@@ -21731,14 +21730,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getLabInfo",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -21859,7 +21858,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabInfo",
@@ -22040,7 +22039,7 @@
                  java.util.ArrayList attribList = new java.util.ArrayList();
 
                 
-                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                       "getLabInfoChoice_type0"));
                             
                             
@@ -22167,7 +22166,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -22346,7 +22345,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":ExperimentUserInput",
@@ -22753,7 +22752,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -22927,7 +22926,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getUserPermissionsChoice_type0",
@@ -23270,14 +23269,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getInteractiveExperimentSessionResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -23456,7 +23455,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getInteractiveExperimentSessionResponse",
@@ -23857,14 +23856,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getUserPermissions",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -24029,7 +24028,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getUserPermissions",
@@ -24253,7 +24252,7 @@
                                            throw new org.apache.axis2.databinding.ADBException("userID cannot be null!!");
                                         }
                                     }
-                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                       "getUserPermissionsChoice_type0"));
                             
                             
@@ -24392,14 +24391,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentStatusResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -24534,7 +24533,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentStatusResponse",
@@ -24843,14 +24842,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentResultsResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -25045,7 +25044,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentResultsResponse",
@@ -25493,14 +25492,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "releaseExperiment",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -25724,7 +25723,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":releaseExperiment",
@@ -26180,14 +26179,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "saveUserExperimentInputResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -26352,7 +26351,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":saveUserExperimentInputResponse",
@@ -26746,14 +26745,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "scheduleBookingTimeResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -26904,7 +26903,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":scheduleBookingTimeResponse",
@@ -27291,14 +27290,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "releaseExperimentResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -27419,7 +27418,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":releaseExperimentResponse",
@@ -27752,14 +27751,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "ExperimentType",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -27899,7 +27898,7 @@
 
                             // add the type details if this is used in a simple type
                                if (serializeType){
-                                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                                            namespacePrefix+":ExperimentType",
@@ -28209,14 +28208,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentStatus",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -28381,7 +28380,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentStatus",
@@ -28775,14 +28774,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "InteractionType",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -28922,7 +28921,7 @@
 
                             // add the type details if this is used in a simple type
                                if (serializeType){
-                                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                                            namespacePrefix+":InteractionType",
@@ -29232,14 +29231,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "submitExperiment",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -29507,7 +29506,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":submitExperiment",
@@ -30024,14 +30023,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getLabID",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -30152,7 +30151,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabID",
@@ -30333,7 +30332,7 @@
                  java.util.ArrayList attribList = new java.util.ArrayList();
 
                 
-                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                       "getLabIDChoice_type0"));
                             
                             
@@ -30454,14 +30453,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "scheduleBookingTime",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -30818,7 +30817,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":scheduleBookingTime",
@@ -31496,14 +31495,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentTypeResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -31624,7 +31623,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentTypeResponse",
@@ -31934,14 +31933,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentResults",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -32106,7 +32105,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentResults",
@@ -32500,14 +32499,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "submitExperimentResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -32672,7 +32671,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":submitExperimentResponse",
@@ -33066,14 +33065,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "setMaintenanceTimeResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -33224,7 +33223,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":setMaintenanceTimeResponse",
@@ -33611,14 +33610,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentType",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -33739,7 +33738,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentType",
@@ -34072,14 +34071,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getUserPermissionsResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -34214,7 +34213,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getUserPermissionsResponse",
@@ -34523,14 +34522,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getToken",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -34695,7 +34694,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getToken",
@@ -34919,7 +34918,7 @@
                                            throw new org.apache.axis2.databinding.ADBException("key cannot be null!!");
                                         }
                                     }
-                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                            elementList.add(new javax.xml.namespace.QName("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                       "getTokenChoice_type0"));
                             
                             
@@ -35058,14 +35057,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "setUserPermissionsResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -35230,7 +35229,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":setUserPermissionsResponse",
@@ -35624,14 +35623,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getLabStatus",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -35766,7 +35765,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getLabStatus",
@@ -36106,14 +36105,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getTokenResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -36248,7 +36247,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getTokenResponse",
@@ -36588,14 +36587,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "getExperimentID",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -36950,7 +36949,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":getExperimentID",
@@ -37595,14 +37594,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "releaseSlaveResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -37767,7 +37766,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":releaseSlaveResponse",
@@ -38161,14 +38160,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "saveUserExperimentInput",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -38415,7 +38414,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":saveUserExperimentInput",
@@ -38902,7 +38901,7 @@
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -39374,7 +39373,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":Permissions",
@@ -40146,14 +40145,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "deleteSavedUserExperimentInputResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -40318,7 +40317,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":deleteSavedUserExperimentInputResponse",
@@ -40712,14 +40711,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "releaseSlave",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -40928,7 +40927,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":releaseSlave",
@@ -41383,14 +41382,14 @@
         implements org.apache.axis2.databinding.ADBBean{
         
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/",
+                "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                 "cancelBookingTimeResponse",
                 "ns1");
 
             
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/")){
+            if(namespace.equals("http://ilabs-test.eng.uts.edu.au:7070/LabConnector/")){
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -41555,7 +41554,7 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx/");
+                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://ilabs-test.eng.uts.edu.au:7070/LabConnector/");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":cancelBookingTimeResponse",
