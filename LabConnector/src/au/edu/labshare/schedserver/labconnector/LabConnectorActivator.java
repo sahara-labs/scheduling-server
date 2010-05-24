@@ -35,10 +35,27 @@
  */
 package au.edu.labshare.schedserver.labconnector;
 
+import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+//import org.osgi.framework.Constants;
+//import org.osgi.framework.ServiceEvent;
+//import org.osgi.framework.ServiceReference;
+//import org.osgi.util.tracker.ServiceTracker;
 
-public class LabConnectorActivator implements BundleActivator {
+//Needed for Sahara
+
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+
+public class LabConnectorActivator implements BundleActivator 
+{
+	/** Servlet container service registration. */
+    private ServiceRegistration serverReg;
+    private Logger				logger;
 
 	/*
 	 * (non-Javadoc)
@@ -46,7 +63,14 @@ public class LabConnectorActivator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception 
 	{
+		/* Used to debug whether servlet service is started or not */
+		this.logger = LoggerActivator.getLogger();
+	    this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
 		
+		/* Service to host the local rig provider interface. */
+        ServletContainerService service = new ServletContainerService();
+        service.addServlet(new ServletContainer(new AxisServlet(), true));
+        this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
 	}
 
 	/*
@@ -54,8 +78,10 @@ public class LabConnectorActivator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception 
-	{
-		
+	{        
+		/* Stop the servlet container service and log it */
+		this.logger.info("Stopping " + context.getBundle().getSymbolicName() + " bundle.");
+		this.serverReg.unregister();
 	}
 
 }
