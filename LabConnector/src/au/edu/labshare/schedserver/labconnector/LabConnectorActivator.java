@@ -67,7 +67,7 @@ public class LabConnectorActivator implements BundleActivator
 		this.logger = LoggerActivator.getLogger();
 	    this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
 		
-		/* Service to host the local rig provider interface. */
+		/* Service to host the labconnector interface. */
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new AxisServlet(), true));
         this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
