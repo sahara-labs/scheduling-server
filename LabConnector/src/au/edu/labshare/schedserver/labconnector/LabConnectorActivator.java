@@ -61,6 +61,7 @@ public class LabConnectorActivator implements BundleActivator
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
+    @Override
 	public void start(BundleContext context) throws Exception 
 	{
 		/* Used to debug whether servlet service is started or not */
@@ -77,6 +78,7 @@ public class LabConnectorActivator implements BundleActivator
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
+    @Override
 	public void stop(BundleContext context) throws Exception 
 	{        
 		/* Stop the servlet container service and log it */

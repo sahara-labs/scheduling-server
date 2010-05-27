@@ -54,5 +54,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Server"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Logger"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/RigClient"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

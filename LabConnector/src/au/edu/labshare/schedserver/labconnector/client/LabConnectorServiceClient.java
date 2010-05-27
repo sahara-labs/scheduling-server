@@ -39,57 +39,70 @@ package au.edu.labshare.schedserver.labconnector.client;
 import java.rmi.RemoteException;
 import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub;
 
-
-public class LabConnectorServiceClient 
+public class LabConnectorServiceClient
 {
-	LabConnectorStub labconnectorstub;
-	String soapEndPoint = "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx";
-	
-	public LabConnectorServiceClient()
-	{
-		try
-		{
-			labconnectorstub = new LabConnectorStub(soapEndPoint);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	//We want to create a labConnector service client to connect
-	/**
-	 * @param args
-	 * @throws RemoteException
-	 */
-	public int submitBatchExperiment(String experimentSpecs, String labID, int priority, String userID)
-	{
-		try
-		{
-			//Derived from: http://www.codeweblog.com/axis2-the-entire-process-of-creating-webservice-client-called-net-web-service/
-			//Axis2 -- HTTP transport adopted the "chunked" mode, while .NET Web server does not support this  
-			labconnectorstub._getServiceClient().getOptions().setProperty(org.apache.axis2.transport.http.HTTPConstants.CHUNKED, Boolean.FALSE);
-			
-			//Setup the WSDL calling method
-			LabConnectorStub.SubmitExperiment submitExpt = new LabConnectorStub.SubmitExperiment();
-			
-			//Set the parameters for submit call
-			submitExpt.setExperimentSpecs(experimentSpecs);
-			submitExpt.setLabID(labID);
-			submitExpt.setPriority(priority);
-			submitExpt.setUserID(userID);
-			
-			return labconnectorstub.submitExperiment(submitExpt).getExperimentID();
-			
-			//Setup the WSDL response
-			//LabConnectorStub.SubmitExperimentResponse submissionResp = new LabConnectorStub.SubmitExperimentResponse();
-			//return submissionResp.getExperimentID();
-		} 
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		return -1;
-	}		
+    LabConnectorStub       labconnectorstub;
+    LabConnectorProperties labconnectorProp;
+
+    // String soapEndPoint =
+    // "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/LabConnector.asmx";
+
+    public LabConnectorServiceClient()
+    {
+        labconnectorProp = new LabConnectorProperties();
+        String soapEndPoint = labconnectorProp.getProperties();
+
+        try
+        {
+            if (soapEndPoint != null)
+                labconnectorstub = new LabConnectorStub(soapEndPoint);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    // We want to create a labConnector service client to connect
+    /**
+     * @param args
+     * @throws RemoteException
+     */
+    public int submitBatchExperiment(String experimentSpecs, String labID,
+            int priority, String userID)
+    {
+        try
+        {
+            // Derived from:
+            // http://www.codeweblog.com/axis2-the-entire-process-of-creating-webservice-client-called-net-web-service/
+            // Axis2 -- HTTP transport adopted the "chunked" mode, while .NET
+            // Web server does not support this
+            labconnectorstub._getServiceClient().getOptions().setProperty(
+                    org.apache.axis2.transport.http.HTTPConstants.CHUNKED,
+                    Boolean.FALSE);
+
+            // Setup the WSDL calling method
+            LabConnectorStub.SubmitExperiment submitExpt = new LabConnectorStub.SubmitExperiment();
+
+            // Set the parameters for submit call
+            submitExpt.setExperimentSpecs(experimentSpecs);
+            submitExpt.setLabID(labID);
+            submitExpt.setPriority(priority);
+            submitExpt.setUserID(userID);
+
+            return labconnectorstub.submitExperiment(submitExpt)
+                    .getExperimentID();
+
+            // Setup the WSDL response
+            // LabConnectorStub.SubmitExperimentResponse submissionResp = new
+            // LabConnectorStub.SubmitExperimentResponse();
+            // return submissionResp.getExperimentID();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
 }
