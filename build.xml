@@ -185,7 +185,7 @@ Date: 28th December 2009
 	</target>
 	
 	<!-- Clean all. -->
-	<target name="clean">
+	<target name="clean" depends="cleanlinux">
 		<iterate target="clean" />
 		<delete dir="${bundles.dir}" />
 		<delete dir="${bin.dir}" />
@@ -193,9 +193,11 @@ Date: 28th December 2009
 		<delete dir="${package.dir}" />
 		<delete file="SaharaSchedulingServer.exe" />
 		<delete dir="_axis2" />
+	</target>
+	
+	<target name="cleanlinux" if="isUNIX">
 		<exec executable="make" dir="servicewrapper" failonerror="true">
 			<arg value="clean" />
 		</exec>
 	</target>
-	
 </project>
