@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetAuthorization bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetAuthorization implements org.apache.axis2.databinding.ADBBean
 {
 

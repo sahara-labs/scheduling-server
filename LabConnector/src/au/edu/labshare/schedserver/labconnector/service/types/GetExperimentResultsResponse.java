@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetExperimentResultsResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetExperimentResultsResponse implements
         org.apache.axis2.databinding.ADBBean
 {
@@ -300,20 +300,7 @@ public class GetExperimentResultsResponse implements
             xmlWriter.writeStartElement("availability");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "availability cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localAvailability));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localAvailability));
         xmlWriter.writeEndElement();
 
         namespace = "";
@@ -341,20 +328,7 @@ public class GetExperimentResultsResponse implements
             xmlWriter.writeStartElement("complete");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "complete cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localComplete));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localComplete));
         xmlWriter.writeEndElement();
 
         namespace = "";

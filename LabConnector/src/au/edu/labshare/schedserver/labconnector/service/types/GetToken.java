@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetToken bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetToken implements org.apache.axis2.databinding.ADBBean
 {
 

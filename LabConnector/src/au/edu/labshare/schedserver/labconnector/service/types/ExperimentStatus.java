@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * ExperimentStatus bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class ExperimentStatus implements org.apache.axis2.databinding.ADBBean
 {
     /*
@@ -780,20 +780,7 @@ public class ExperimentStatus implements org.apache.axis2.databinding.ADBBean
             xmlWriter.writeStartElement("allowedExtension");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "allowedExtension cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localAllowedExtension));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localAllowedExtension));
         xmlWriter.writeEndElement();
 
         namespace = "";

@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetLabStatus bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetLabStatus implements org.apache.axis2.databinding.ADBBean
 {
 

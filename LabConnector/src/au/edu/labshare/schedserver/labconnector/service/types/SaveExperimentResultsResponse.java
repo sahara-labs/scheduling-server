@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * SaveExperimentResultsResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class SaveExperimentResultsResponse implements
         org.apache.axis2.databinding.ADBBean
 {
@@ -272,20 +272,7 @@ public class SaveExperimentResultsResponse implements
             xmlWriter.writeStartElement("storageResponse");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "storageResponse cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localStorageResponse));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localStorageResponse));
         xmlWriter.writeEndElement();
 
         namespace = "";

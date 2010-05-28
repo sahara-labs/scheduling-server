@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetTokenAuthorizationResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetTokenAuthorizationResponse implements
         org.apache.axis2.databinding.ADBBean
 {

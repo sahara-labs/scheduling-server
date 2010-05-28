@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetUserPermissionsResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetUserPermissionsResponse implements
         org.apache.axis2.databinding.ADBBean
 {

@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetLabStatusResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetLabStatusResponse implements
         org.apache.axis2.databinding.ADBBean
 {
@@ -299,20 +299,7 @@ public class GetLabStatusResponse implements
             xmlWriter.writeStartElement("online");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "online cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localOnline));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localOnline));
         xmlWriter.writeEndElement();
 
         namespace = "";
@@ -340,20 +327,7 @@ public class GetLabStatusResponse implements
             xmlWriter.writeStartElement("active");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "active cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localActive));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localActive));
         xmlWriter.writeEndElement();
 
         namespace = "";

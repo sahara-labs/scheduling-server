@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * ReleaseSlaveResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class ReleaseSlaveResponse implements
         org.apache.axis2.databinding.ADBBean
 {
@@ -271,20 +271,7 @@ public class ReleaseSlaveResponse implements
             xmlWriter.writeStartElement("releaseResponse");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "releaseResponse cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localReleaseResponse));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localReleaseResponse));
         xmlWriter.writeEndElement();
 
         namespace = "";

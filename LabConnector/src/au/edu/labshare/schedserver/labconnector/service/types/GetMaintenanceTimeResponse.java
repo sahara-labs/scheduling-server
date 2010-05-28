@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetMaintenanceTimeResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetMaintenanceTimeResponse implements
         org.apache.axis2.databinding.ADBBean
 {
@@ -323,21 +323,9 @@ public class GetMaintenanceTimeResponse implements
             xmlWriter.writeStartElement("scheduledMaintenance");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "scheduledMaintenance cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localScheduledMaintenance));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localScheduledMaintenance));
         xmlWriter.writeEndElement();
+        
         if (localMaintenanceTimeTracker)
         {
             if (localMaintenanceTime != null)

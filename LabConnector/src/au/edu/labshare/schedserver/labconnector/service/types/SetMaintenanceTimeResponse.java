@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * SetMaintenanceTimeResponse bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class SetMaintenanceTimeResponse implements
         org.apache.axis2.databinding.ADBBean
 {
@@ -271,20 +271,7 @@ public class SetMaintenanceTimeResponse implements
             xmlWriter.writeStartElement("success");
         }
 
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException(
-                    "success cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter
-                    .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(localSuccess));
-        }
-
+        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
         xmlWriter.writeEndElement();
 
         namespace = "";

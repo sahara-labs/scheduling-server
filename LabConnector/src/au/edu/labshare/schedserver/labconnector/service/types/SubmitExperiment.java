@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * SubmitExperiment bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class SubmitExperiment implements org.apache.axis2.databinding.ADBBean
 {
 

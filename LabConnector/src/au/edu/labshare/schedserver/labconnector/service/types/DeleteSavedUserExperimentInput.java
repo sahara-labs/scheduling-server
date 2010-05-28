@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * DeleteSavedUserExperimentInput bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class DeleteSavedUserExperimentInput implements
         org.apache.axis2.databinding.ADBBean
 {

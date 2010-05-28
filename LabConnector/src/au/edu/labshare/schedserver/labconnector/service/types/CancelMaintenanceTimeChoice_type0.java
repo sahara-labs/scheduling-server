@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * CancelMaintenanceTimeChoice_type0 bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class CancelMaintenanceTimeChoice_type0 implements
         org.apache.axis2.databinding.ADBBean
 {

@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetExperimentResults bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetExperimentResults implements
         org.apache.axis2.databinding.ADBBean
 {

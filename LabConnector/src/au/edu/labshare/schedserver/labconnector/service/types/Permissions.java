@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * Permissions bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class Permissions implements org.apache.axis2.databinding.ADBBean
 {
     /*
@@ -219,16 +219,7 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
 
         // setting primitive attribute tracker to true
 
-        if (false)
-        {
-            localRunExperimentTracker = false;
-
-        }
-        else
-        {
-            localRunExperimentTracker = true;
-        }
-
+        localRunExperimentTracker = true;
         this.localRunExperiment = param;
 
     }
@@ -267,17 +258,8 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
 
         // setting primitive attribute tracker to true
 
-        if (false)
-        {
-            localObserveExperimentTracker = false;
-
-        }
-        else
-        {
-            localObserveExperimentTracker = true;
-        }
-
-        this.localObserveExperiment = param;
+       localObserveExperimentTracker = true;
+       this.localObserveExperiment = param;
 
     }
 
@@ -315,17 +297,8 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
 
         // setting primitive attribute tracker to true
 
-        if (false)
-        {
-            localModifyExperimentTracker = false;
-
-        }
-        else
-        {
-            localModifyExperimentTracker = true;
-        }
-
-        this.localModifyExperiment = param;
+       localModifyExperimentTracker = true;
+       this.localModifyExperiment = param;
 
     }
 
@@ -362,17 +335,7 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
     {
 
         // setting primitive attribute tracker to true
-
-        if (false)
-        {
-            localStoreExperimentResultsTracker = false;
-
-        }
-        else
-        {
-            localStoreExperimentResultsTracker = true;
-        }
-
+        localStoreExperimentResultsTracker = true;
         this.localStoreExperimentResults = param;
 
     }
@@ -410,17 +373,7 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
     {
 
         // setting primitive attribute tracker to true
-
-        if (false)
-        {
-            localAuthorizeUsersTracker = false;
-
-        }
-        else
-        {
-            localAuthorizeUsersTracker = true;
-        }
-
+        localAuthorizeUsersTracker = true;
         this.localAuthorizeUsers = param;
 
     }
@@ -716,21 +669,8 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
             {
                 xmlWriter.writeStartElement("runExperiment");
             }
-
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "runExperiment cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localRunExperiment));
-            }
-
+            
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localRunExperiment));
             xmlWriter.writeEndElement();
         }
         if (localObserveExperimentTracker)
@@ -761,21 +701,8 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
                 xmlWriter.writeStartElement("observeExperiment");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "observeExperiment cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localObserveExperiment));
-            }
-
-            xmlWriter.writeEndElement();
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localObserveExperiment));
+                        xmlWriter.writeEndElement();
         }
         if (localModifyExperimentTracker)
         {
@@ -805,20 +732,7 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
                 xmlWriter.writeStartElement("modifyExperiment");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "modifyExperiment cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localModifyExperiment));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localModifyExperiment));
             xmlWriter.writeEndElement();
         }
         if (localStoreExperimentResultsTracker)
@@ -850,20 +764,7 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
                 xmlWriter.writeStartElement("storeExperimentResults");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "storeExperimentResults cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localStoreExperimentResults));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localStoreExperimentResults));
             xmlWriter.writeEndElement();
         }
         if (localAuthorizeUsersTracker)
@@ -894,20 +795,7 @@ public class Permissions implements org.apache.axis2.databinding.ADBBean
                 xmlWriter.writeStartElement("authorizeUsers");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "authorizeUsers cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localAuthorizeUsers));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localAuthorizeUsers));
             xmlWriter.writeEndElement();
         }
         xmlWriter.writeEndElement();

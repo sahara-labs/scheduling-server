@@ -55,15 +55,15 @@ import org.apache.axis2.client.Stub;
 /*
  * LabConnectorServiceStub java implementation
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class LabConnectorStub extends Stub
 {
     protected org.apache.axis2.description.AxisOperation[] _operations;
 
     // hashmaps to keep the fault mapping
-    private final HashMap   faultExceptionNameMap      = new HashMap();
-    private final HashMap   faultExceptionClassNameMap = new HashMap();
-    private final HashMap   faultMessageMap            = new HashMap();
+    private final HashMap <Object, Object>   faultExceptionNameMap      = new HashMap<Object, Object>();
+    private final HashMap <Object, Object>   faultExceptionClassNameMap = new HashMap<Object, Object>();
+    private final HashMap <Object, Object>   faultMessageMap            = new HashMap<Object, Object>();
 
     private static int     counter                    = 0;
 
@@ -2069,22 +2069,14 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new java.lang.Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
@@ -2149,13 +2141,7 @@ public class LabConnectorStub extends Stub
      * @see au.edu.labshare.schedserver.labconnector.client.LabConnectorService#startgetMaintenanceTime
      * @param getMaintenanceTime10
      */
-    public void startgetMaintenanceTime(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTime getMaintenanceTime10,
-
-            final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
-
-    throws java.rmi.RemoteException
+    public void startgetMaintenanceTime(GetMaintenanceTime getMaintenanceTime10, final LabConnectorCallbackHandler callback) throws java.rmi.RemoteException
     {
 
         org.apache.axis2.client.OperationClient _operationClient = _serviceClient
@@ -2199,15 +2185,10 @@ public class LabConnectorStub extends Stub
                     {
                         try
                         {
-                            org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext
-                                    .getEnvelope();
+                            org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
 
-                            java.lang.Object object = fromOM(
-                                    resultEnv.getBody().getFirstElement(),
-                                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse.class,
-                                    getEnvelopeNamespaces(resultEnv));
-                            callback
-                                    .receiveResultgetMaintenanceTime((au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetMaintenanceTimeResponse) object);
+                            java.lang.Object object = fromOM(resultEnv.getBody().getFirstElement(), GetMaintenanceTimeResponse.class, getEnvelopeNamespaces(resultEnv));
+                            callback.receiveResultgetMaintenanceTime((GetMaintenanceTimeResponse) object);
 
                         }
                         catch (org.apache.axis2.AxisFault e)
@@ -2231,66 +2212,47 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorgetMaintenanceTime(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorgetMaintenanceTime(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetMaintenanceTime(f);
+                                        callback.receiveErrorgetMaintenanceTime(f);
                                     }
                                     catch (java.lang.ClassNotFoundException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetMaintenanceTime(f);
+                                        callback.receiveErrorgetMaintenanceTime(f);
                                     }
                                     catch (java.lang.NoSuchMethodException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetMaintenanceTime(f);
+                                        callback.receiveErrorgetMaintenanceTime(f);
                                     }
                                     catch (java.lang.reflect.InvocationTargetException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetMaintenanceTime(f);
+                                        callback.receiveErrorgetMaintenanceTime(f);
                                     }
                                     catch (java.lang.IllegalAccessException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetMaintenanceTime(f);
+                                        callback.receiveErrorgetMaintenanceTime(f);
                                     }
                                     catch (java.lang.InstantiationException e)
                                     {
@@ -2303,8 +2265,7 @@ public class LabConnectorStub extends Stub
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetMaintenanceTime(f);
+                                        callback.receiveErrorgetMaintenanceTime(f);
                                     }
                                 }
                                 else
@@ -2414,12 +2375,9 @@ public class LabConnectorStub extends Stub
             org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext
                     .getEnvelope();
 
-            java.lang.Object object = fromOM(
-                    _returnEnv.getBody().getFirstElement(),
-                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse.class,
-                    getEnvelopeNamespaces(_returnEnv));
+            Object object = fromOM(_returnEnv.getBody().getFirstElement(), DeleteSavedUserExperimentInputResponse.class, getEnvelopeNamespaces(_returnEnv));
 
-            return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInputResponse) object;
+            return (DeleteSavedUserExperimentInputResponse) object;
 
         }
         catch (org.apache.axis2.AxisFault f)
@@ -3256,31 +3214,17 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorgetSavedUserExperimentInput(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorscheduleBookingTime(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
@@ -3467,23 +3411,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt,messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -3547,13 +3483,7 @@ public class LabConnectorStub extends Stub
      * @see au.edu.labshare.schedserver.labconnector.client.LabConnectorService#startgetExperimentID
      * @param getExperimentID18
      */
-    public void startgetExperimentID(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentID getExperimentID18,
-
-            final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
-
-    throws java.rmi.RemoteException
+    public void startgetExperimentID(GetExperimentID getExperimentID18, final LabConnectorCallbackHandler callback) throws java.rmi.RemoteException
     {
 
         org.apache.axis2.client.OperationClient _operationClient = _serviceClient
@@ -3602,7 +3532,7 @@ public class LabConnectorStub extends Stub
 
                             java.lang.Object object = fromOM(
                                     resultEnv.getBody().getFirstElement(),
-                                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse.class,
+                                    GetExperimentIDResponse.class,
                                     getEnvelopeNamespaces(resultEnv));
                             callback
                                     .receiveResultgetExperimentID((au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentIDResponse) object);
@@ -3629,31 +3559,17 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorgetExperimentID(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorscheduleBookingTime(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
@@ -3756,12 +3672,7 @@ public class LabConnectorStub extends Stub
      * @param submitExperiment20
      */
 
-    public au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse submitExperiment(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment submitExperiment20)
-
-    throws java.rmi.RemoteException
-
+    public SubmitExperimentResponse submitExperiment(SubmitExperiment submitExperiment20) throws java.rmi.RemoteException
     {
         org.apache.axis2.context.MessageContext _messageContext = null;
         try
@@ -3810,12 +3721,9 @@ public class LabConnectorStub extends Stub
             org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext
                     .getEnvelope();
 
-            java.lang.Object object = fromOM(
-                    _returnEnv.getBody().getFirstElement(),
-                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse.class,
-                    getEnvelopeNamespaces(_returnEnv));
+            Object object = fromOM(_returnEnv.getBody().getFirstElement(), SubmitExperimentResponse.class, getEnvelopeNamespaces(_returnEnv));
 
-            return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse) object;
+            return (SubmitExperimentResponse) object;
 
         }
         catch (org.apache.axis2.AxisFault f)
@@ -3829,23 +3737,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -3909,13 +3809,7 @@ public class LabConnectorStub extends Stub
      * @see au.edu.labshare.schedserver.labconnector.client.LabConnectorService#startsubmitExperiment
      * @param submitExperiment20
      */
-    public void startsubmitExperiment(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperiment submitExperiment20,
-
-            final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
-
-    throws java.rmi.RemoteException
+    public void startsubmitExperiment(SubmitExperiment submitExperiment20, final LabConnectorCallbackHandler callback) throws java.rmi.RemoteException
     {
 
         org.apache.axis2.client.OperationClient _operationClient = _serviceClient
@@ -3962,12 +3856,8 @@ public class LabConnectorStub extends Stub
                             org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext
                                     .getEnvelope();
 
-                            java.lang.Object object = fromOM(
-                                    resultEnv.getBody().getFirstElement(),
-                                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse.class,
-                                    getEnvelopeNamespaces(resultEnv));
-                            callback
-                                    .receiveResultsubmitExperiment((au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse) object);
+                            Object object = fromOM(resultEnv.getBody().getFirstElement(), SubmitExperimentResponse.class, getEnvelopeNamespaces(resultEnv));
+                            callback.receiveResultsubmitExperiment((SubmitExperimentResponse) object);
 
                         }
                         catch (org.apache.axis2.AxisFault e)
@@ -3991,80 +3881,59 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorsubmitExperiment(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorsubmitExperiment(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorsubmitExperiment(f);
+                                        callback.receiveErrorsubmitExperiment(f);
                                     }
                                     catch (java.lang.ClassNotFoundException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorsubmitExperiment(f);
+                                        callback.receiveErrorsubmitExperiment(f);
                                     }
                                     catch (java.lang.NoSuchMethodException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorsubmitExperiment(f);
+                                        callback.receiveErrorsubmitExperiment(f);
                                     }
                                     catch (java.lang.reflect.InvocationTargetException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorsubmitExperiment(f);
+                                        callback.receiveErrorsubmitExperiment(f);
                                     }
                                     catch (java.lang.IllegalAccessException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorsubmitExperiment(f);
+                                        callback.receiveErrorsubmitExperiment(f);
                                     }
                                     catch (java.lang.InstantiationException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorsubmitExperiment(f);
+                                        callback.receiveErrorsubmitExperiment(f);
                                     }
                                     catch (org.apache.axis2.AxisFault e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorsubmitExperiment(f);
+                                        callback.receiveErrorsubmitExperiment(f);
                                     }
                                 }
                                 else
@@ -4086,8 +3955,7 @@ public class LabConnectorStub extends Stub
                     public void onFault(
                             org.apache.axis2.context.MessageContext faultContext)
                     {
-                        org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils
-                                .getInboundFaultFromMessageContext(faultContext);
+                        org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils.getInboundFaultFromMessageContext(faultContext);
                         onError(fault);
                     }
 
@@ -4095,8 +3963,7 @@ public class LabConnectorStub extends Stub
                     {
                         try
                         {
-                            _messageContext.getTransportOut().getSender()
-                                    .cleanup(_messageContext);
+                            _messageContext.getTransportOut().getSender().cleanup(_messageContext);
                         }
                         catch (org.apache.axis2.AxisFault axisFault)
                         {
@@ -4125,12 +3992,7 @@ public class LabConnectorStub extends Stub
      * @param scheduleBookingTime22
      */
 
-    public au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse scheduleBookingTime(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime scheduleBookingTime22)
-
-    throws java.rmi.RemoteException
-
+    public ScheduleBookingTimeResponse scheduleBookingTime(ScheduleBookingTime scheduleBookingTime22) throws java.rmi.RemoteException
     {
         org.apache.axis2.context.MessageContext _messageContext = null;
         try
@@ -4179,12 +4041,9 @@ public class LabConnectorStub extends Stub
             org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext
                     .getEnvelope();
 
-            java.lang.Object object = fromOM(
-                    _returnEnv.getBody().getFirstElement(),
-                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse.class,
-                    getEnvelopeNamespaces(_returnEnv));
+            Object object = fromOM(_returnEnv.getBody().getFirstElement(), ScheduleBookingTimeResponse.class, getEnvelopeNamespaces(_returnEnv));
 
-            return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse) object;
+            return (ScheduleBookingTimeResponse) object;
 
         }
         catch (org.apache.axis2.AxisFault f)
@@ -4198,23 +4057,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = java.lang.Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = java.lang.Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -4278,13 +4129,7 @@ public class LabConnectorStub extends Stub
      * @see au.edu.labshare.schedserver.labconnector.client.LabConnectorService#startscheduleBookingTime
      * @param scheduleBookingTime22
      */
-    public void startscheduleBookingTime(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTime scheduleBookingTime22,
-
-            final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
-
-    throws java.rmi.RemoteException
+    public void startscheduleBookingTime(ScheduleBookingTime scheduleBookingTime22, final LabConnectorCallbackHandler callback) throws java.rmi.RemoteException
     {
 
         org.apache.axis2.client.OperationClient _operationClient = _serviceClient
@@ -4320,23 +4165,17 @@ public class LabConnectorStub extends Stub
         // add the message context to the operation client
         _operationClient.addMessageContext(_messageContext);
 
-        _operationClient
-                .setCallback(new org.apache.axis2.client.async.AxisCallback()
+        _operationClient.setCallback(new org.apache.axis2.client.async.AxisCallback()
                 {
-                    public void onMessage(
-                            org.apache.axis2.context.MessageContext resultContext)
+                    public void onMessage(org.apache.axis2.context.MessageContext resultContext)
                     {
                         try
                         {
                             org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext
                                     .getEnvelope();
 
-                            java.lang.Object object = fromOM(
-                                    resultEnv.getBody().getFirstElement(),
-                                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse.class,
-                                    getEnvelopeNamespaces(resultEnv));
-                            callback
-                                    .receiveResultscheduleBookingTime((au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ScheduleBookingTimeResponse) object);
+                            Object object = fromOM(resultEnv.getBody().getFirstElement(), ScheduleBookingTimeResponse.class, getEnvelopeNamespaces(resultEnv));
+                            callback.receiveResultscheduleBookingTime((ScheduleBookingTimeResponse) object);
 
                         }
                         catch (org.apache.axis2.AxisFault e)
@@ -4360,80 +4199,59 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorscheduleBookingTime(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorscheduleBookingTime(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorscheduleBookingTime(f);
+                                        callback.receiveErrorscheduleBookingTime(f);
                                     }
                                     catch (java.lang.ClassNotFoundException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorscheduleBookingTime(f);
+                                        callback.receiveErrorscheduleBookingTime(f);
                                     }
                                     catch (java.lang.NoSuchMethodException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorscheduleBookingTime(f);
+                                        callback.receiveErrorscheduleBookingTime(f);
                                     }
                                     catch (java.lang.reflect.InvocationTargetException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorscheduleBookingTime(f);
+                                        callback.receiveErrorscheduleBookingTime(f);
                                     }
                                     catch (java.lang.IllegalAccessException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorscheduleBookingTime(f);
+                                        callback.receiveErrorscheduleBookingTime(f);
                                     }
                                     catch (java.lang.InstantiationException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorscheduleBookingTime(f);
+                                        callback.receiveErrorscheduleBookingTime(f);
                                     }
                                     catch (org.apache.axis2.AxisFault e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorscheduleBookingTime(f);
+                                        callback.receiveErrorscheduleBookingTime(f);
                                     }
                                 }
                                 else
@@ -4567,23 +4385,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -4729,31 +4539,17 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorsaveExperimentResults(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorscheduleBookingTime(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
@@ -4938,23 +4734,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -5098,31 +4886,17 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorgetToken(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorscheduleBookingTime(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
@@ -5298,24 +5072,16 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
-
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
+                      
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
                     catch (java.lang.ClassCastException e)
@@ -5429,12 +5195,8 @@ public class LabConnectorStub extends Stub
                             org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext
                                     .getEnvelope();
 
-                            java.lang.Object object = fromOM(
-                                    resultEnv.getBody().getFirstElement(),
-                                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse.class,
-                                    getEnvelopeNamespaces(resultEnv));
-                            callback
-                                    .receiveResultgetLabID((au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetLabIDResponse) object);
+                            Object object = fromOM(resultEnv.getBody().getFirstElement(), GetLabIDResponse.class, getEnvelopeNamespaces(resultEnv));
+                            callback.receiveResultgetLabID((GetLabIDResponse) object);
 
                         }
                         catch (org.apache.axis2.AxisFault e)
@@ -5458,31 +5220,17 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
-
-                                        callback
-                                                .receiveErrorgetLabID(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
+                                       
+                                        callback.receiveErrorgetLabID(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
@@ -5658,23 +5406,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -5738,11 +5478,7 @@ public class LabConnectorStub extends Stub
      * @see au.edu.labshare.schedserver.labconnector.client.LabConnectorService#startsetUserPermissions
      * @param setUserPermissions30
      */
-    public void startsetUserPermissions(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetUserPermissions setUserPermissions30,
-
-            final au.edu.labshare.schedserver.labconnector.client.LabConnectorCallbackHandler callback)
+    public void startsetUserPermissions(SetUserPermissions setUserPermissions30, final LabConnectorCallbackHandler callback)
 
     throws java.rmi.RemoteException
     {
@@ -6013,23 +5749,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -6175,31 +5903,17 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorgetExperimentType(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorgetExperimentType(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
@@ -6382,23 +6096,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -6544,80 +6250,60 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap
                                                 .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex,new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorreleaseExperiment(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorreleaseExperiment(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorreleaseExperiment(f);
+                                        callback.receiveErrorreleaseExperiment(f);
                                     }
                                     catch (java.lang.ClassNotFoundException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorreleaseExperiment(f);
+                                        callback.receiveErrorreleaseExperiment(f);
                                     }
                                     catch (java.lang.NoSuchMethodException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorreleaseExperiment(f);
+                                        callback.receiveErrorreleaseExperiment(f);
                                     }
                                     catch (java.lang.reflect.InvocationTargetException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorreleaseExperiment(f);
+                                        callback.receiveErrorreleaseExperiment(f);
                                     }
                                     catch (java.lang.IllegalAccessException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorreleaseExperiment(f);
+                                        callback.receiveErrorreleaseExperiment(f);
                                     }
                                     catch (java.lang.InstantiationException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorreleaseExperiment(f);
+                                        callback.receiveErrorreleaseExperiment(f);
                                     }
                                     catch (org.apache.axis2.AxisFault e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorreleaseExperiment(f);
+                                        callback.receiveErrorreleaseExperiment(f);
                                     }
                                 }
                                 else
@@ -6639,8 +6325,7 @@ public class LabConnectorStub extends Stub
                     public void onFault(
                             org.apache.axis2.context.MessageContext faultContext)
                     {
-                        org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils
-                                .getInboundFaultFromMessageContext(faultContext);
+                        org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils.getInboundFaultFromMessageContext(faultContext);
                         onError(fault);
                     }
 
@@ -6678,12 +6363,7 @@ public class LabConnectorStub extends Stub
      * @param getExperimentStatus36
      */
 
-    public au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse getExperimentStatus(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatus getExperimentStatus36)
-
-    throws java.rmi.RemoteException
-
+    public GetExperimentStatusResponse getExperimentStatus(GetExperimentStatus getExperimentStatus36) throws java.rmi.RemoteException
     {
         org.apache.axis2.context.MessageContext _messageContext = null;
         try
@@ -6708,9 +6388,7 @@ public class LabConnectorStub extends Stub
             // create SOAP envelope with that payload
             org.apache.axiom.soap.SOAPEnvelope env = null;
 
-            env = toEnvelope(
-                    getFactory(_operationClient.getOptions()
-                            .getSoapVersionURI()),
+            env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()),
                     getExperimentStatus36,
                     optimizeContent(new javax.xml.namespace.QName(
                             "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -6732,12 +6410,9 @@ public class LabConnectorStub extends Stub
             org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext
                     .getEnvelope();
 
-            java.lang.Object object = fromOM(
-                    _returnEnv.getBody().getFirstElement(),
-                    au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse.class,
-                    getEnvelopeNamespaces(_returnEnv));
+            Object object = fromOM(_returnEnv.getBody().getFirstElement(), GetExperimentStatusResponse.class, getEnvelopeNamespaces(_returnEnv));
 
-            return (au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetExperimentStatusResponse) object;
+            return (GetExperimentStatusResponse) object;
 
         }
         catch (org.apache.axis2.AxisFault f)
@@ -6751,22 +6426,14 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt,messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new java.lang.Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
@@ -6913,31 +6580,17 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
-                                        callback
-                                                .receiveErrorgetExperimentStatus(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        callback.receiveErrorgetExperimentStatus(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
@@ -7120,23 +6773,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -7282,27 +6927,15 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
                                         callback
                                                 .receiveErrorreleaseSlave(new java.rmi.RemoteException(
@@ -7482,23 +7115,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -7645,98 +7270,73 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
-
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(new java.rmi.RemoteException(
-                                                        ex.getMessage(), ex));
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
+                                        callback.receiveErrorgetInteractiveExperimentSession(new java.rmi.RemoteException(ex.getMessage(), ex));
                                     }
                                     catch (java.lang.ClassCastException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(f);
+                                        callback.receiveErrorgetInteractiveExperimentSession(f);
                                     }
                                     catch (java.lang.ClassNotFoundException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(f);
+                                        callback.receiveErrorgetInteractiveExperimentSession(f);
                                     }
                                     catch (java.lang.NoSuchMethodException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(f);
+                                        callback.receiveErrorgetInteractiveExperimentSession(f);
                                     }
                                     catch (java.lang.reflect.InvocationTargetException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(f);
+                                        callback.receiveErrorgetInteractiveExperimentSession(f);
                                     }
                                     catch (java.lang.IllegalAccessException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(f);
+                                        callback.receiveErrorgetInteractiveExperimentSession(f);
                                     }
                                     catch (java.lang.InstantiationException e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(f);
+                                        callback.receiveErrorgetInteractiveExperimentSession(f);
                                     }
                                     catch (org.apache.axis2.AxisFault e)
                                     {
                                         // we cannot intantiate the class -
                                         // throw the original Axis fault
-                                        callback
-                                                .receiveErrorgetInteractiveExperimentSession(f);
+                                        callback.receiveErrorgetInteractiveExperimentSession(f);
                                     }
                                 }
                                 else
                                 {
-                                    callback
-                                            .receiveErrorgetInteractiveExperimentSession(f);
+                                    callback.receiveErrorgetInteractiveExperimentSession(f);
                                 }
                             }
                             else
                             {
-                                callback
-                                        .receiveErrorgetInteractiveExperimentSession(f);
+                                callback.receiveErrorgetInteractiveExperimentSession(f);
                             }
                         }
                         else
                         {
-                            callback
-                                    .receiveErrorgetInteractiveExperimentSession(error);
+                            callback.receiveErrorgetInteractiveExperimentSession(error);
                         }
                     }
 
@@ -7757,8 +7357,7 @@ public class LabConnectorStub extends Stub
                         }
                         catch (org.apache.axis2.AxisFault axisFault)
                         {
-                            callback
-                                    .receiveErrorgetInteractiveExperimentSession(axisFault);
+                            callback.receiveErrorgetInteractiveExperimentSession(axisFault);
                         }
                     }
                 });
@@ -7783,12 +7382,7 @@ public class LabConnectorStub extends Stub
      * @param setMaintenanceTime42
      */
 
-    public au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTimeResponse setMaintenanceTime(
-
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SetMaintenanceTime setMaintenanceTime42)
-
-    throws java.rmi.RemoteException
-
+    public SetMaintenanceTimeResponse setMaintenanceTime(SetMaintenanceTime setMaintenanceTime42) throws java.rmi.RemoteException
     {
         org.apache.axis2.context.MessageContext _messageContext = null;
         try
@@ -7856,23 +7450,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -8018,27 +7604,15 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
                                         callback
                                                 .receiveErrorsetMaintenanceTime(new java.rmi.RemoteException(
@@ -8225,23 +7799,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -8387,27 +7953,15 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
                                         callback
                                                 .receiveErrorgetExperimentSpecs(new java.rmi.RemoteException(
@@ -8594,23 +8148,15 @@ public class LabConnectorStub extends Stub
                     // make the fault by reflection
                     try
                     {
-                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                .get(faultElt.getQName());
-                        java.lang.Class exceptionClass = java.lang.Class
-                                .forName(exceptionClassName);
-                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                .newInstance();
+                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
                         // message class
-                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                .get(faultElt.getQName());
-                        java.lang.Class messageClass = java.lang.Class
-                                .forName(messageClassName);
-                        java.lang.Object messageObject = fromOM(faultElt,
-                                messageClass, null);
-                        java.lang.reflect.Method m = exceptionClass.getMethod(
-                                "setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                        final Class <?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     }
@@ -8756,27 +8302,15 @@ public class LabConnectorStub extends Stub
                                     // make the fault by reflection
                                     try
                                     {
-                                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class exceptionClass = java.lang.Class
-                                                .forName(exceptionClassName);
-                                        java.lang.Exception ex = (java.lang.Exception) exceptionClass
-                                                .newInstance();
+                                        final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                                        final Class <?> exceptionClass = Class.forName(exceptionClassName);
+                                        final Exception ex = (Exception) exceptionClass.newInstance();
                                         // message class
-                                        java.lang.String messageClassName = (java.lang.String) faultMessageMap
-                                                .get(faultElt.getQName());
-                                        java.lang.Class messageClass = java.lang.Class
-                                                .forName(messageClassName);
-                                        java.lang.Object messageObject = fromOM(
-                                                faultElt, messageClass, null);
-                                        java.lang.reflect.Method m = exceptionClass
-                                                .getMethod(
-                                                        "setFaultMessage",
-                                                        new java.lang.Class[] { messageClass });
-                                        m
-                                                .invoke(
-                                                        ex,
-                                                        new java.lang.Object[] { messageObject });
+                                        final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                                        final Class <?> messageClass = Class.forName(messageClassName);
+                                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                        m.invoke(ex, new Object[] { messageObject });
 
                                         callback
                                                 .receiveErrorgetLabStatus(new java.rmi.RemoteException(
@@ -8883,7 +8417,7 @@ public class LabConnectorStub extends Stub
             org.apache.axiom.soap.SOAPEnvelope env)
     {
         java.util.Map<String, String> returnMap = new java.util.HashMap<String, String>();
-        java.util.Iterator namespaceIterator = env.getAllDeclaredNamespaces();
+        java.util.Iterator <?> namespaceIterator = env.getAllDeclaredNamespaces();
         while (namespaceIterator.hasNext())
         {
             org.apache.axiom.om.OMNamespace ns = (org.apache.axiom.om.OMNamespace) namespaceIterator
@@ -8916,6 +8450,10 @@ public class LabConnectorStub extends Stub
     public static class GetLabStatusResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+        /**
+         * Generated serialVersion UID
+         */
+        private static final long serialVersionUID = 7483977962475252626L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -9189,19 +8727,8 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("online");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "online cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localOnline));
-            }
+            
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localOnline));
 
             xmlWriter.writeEndElement();
 
@@ -9230,19 +8757,8 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("active");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "active cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localActive));
-            }
+            
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localActive));
 
             xmlWriter.writeEndElement();
             if (localStatusMessageTracker)
@@ -9317,7 +8833,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -9331,12 +8847,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -9368,13 +8884,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -9470,7 +8986,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -9509,7 +9025,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList <Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName("", "online"));
 
@@ -9565,10 +9081,10 @@ public class LabConnectorStub extends Stub
             {
                 GetLabStatusResponse object = new GetLabStatusResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -9614,7 +9130,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -9718,9 +9234,13 @@ public class LabConnectorStub extends Stub
 
     }
 
-    public static class GetLabIDResponse implements
-            org.apache.axis2.databinding.ADBBean
+    public static class GetLabIDResponse implements org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto Generated UID
+         */
+        private static final long serialVersionUID = -5773975905806950906L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -9981,7 +9501,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -9995,12 +9515,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -10032,13 +9552,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -10134,7 +9654,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -10173,7 +9693,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localLabIDTracker)
             {
@@ -10219,10 +9739,10 @@ public class LabConnectorStub extends Stub
             {
                 GetLabIDResponse object = new GetLabIDResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -10268,7 +9788,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -10327,6 +9847,11 @@ public class LabConnectorStub extends Stub
          * http://ilabs-test.eng.uts.edu.au:7070/LabConnector/ Namespace Prefix
          * = ns1
          */
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = -4597123989441565930L;
 
         private static java.lang.String generatePrefix(
                 java.lang.String namespace)
@@ -10663,7 +10188,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -10677,12 +10202,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -10714,13 +10239,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -10816,7 +10341,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -10910,10 +10435,10 @@ public class LabConnectorStub extends Stub
             {
                 CancelMaintenanceTimeChoice_type0 object = new CancelMaintenanceTimeChoice_type0();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -10923,7 +10448,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     if (reader.isStartElement()
                             && new javax.xml.namespace.QName("", "labID")
@@ -10973,6 +10498,11 @@ public class LabConnectorStub extends Stub
     public static class GetLabInfoResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7405058100589570086L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -11234,7 +10764,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -11248,12 +10778,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -11285,13 +10815,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -11387,7 +10917,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -11426,7 +10956,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localLabDataXMLTracker)
             {
@@ -11473,10 +11003,10 @@ public class LabConnectorStub extends Stub
             {
                 GetLabInfoResponse object = new GetLabInfoResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -11522,7 +11052,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -11854,19 +11384,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("scheduledMaintenance");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "scheduledMaintenance cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localScheduledMaintenance));
-            }
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localScheduledMaintenance));
 
             xmlWriter.writeEndElement();
             if (localMaintenanceTimeTracker)
@@ -11961,7 +11479,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -11975,12 +11493,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -12012,13 +11530,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -12114,7 +11632,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -12221,10 +11739,10 @@ public class LabConnectorStub extends Stub
             {
                 GetMaintenanceTimeResponse object = new GetMaintenanceTimeResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -12270,7 +11788,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -12639,19 +12157,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("success");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "success cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localSuccess));
-            }
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
 
             xmlWriter.writeEndElement();
             if (localSuccessMessageTracker)
@@ -12727,7 +12233,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -12741,12 +12247,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -12778,13 +12284,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -12880,7 +12386,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -12970,10 +12476,10 @@ public class LabConnectorStub extends Stub
             {
                 CancelMaintenanceTimeResponse object = new CancelMaintenanceTimeResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -13019,7 +12525,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -13398,7 +12904,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -13412,12 +12918,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -13449,13 +12955,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -13551,7 +13057,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -13646,10 +13152,10 @@ public class LabConnectorStub extends Stub
             {
                 CancelMaintenanceTime object = new CancelMaintenanceTime();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -13695,7 +13201,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -14278,7 +13784,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -14292,12 +13798,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -14329,13 +13835,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -14431,7 +13937,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -14561,10 +14067,10 @@ public class LabConnectorStub extends Stub
             {
                 SetMaintenanceTime object = new SetMaintenanceTime();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -14610,7 +14116,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -15198,7 +14704,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -15212,12 +14718,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -15249,13 +14755,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -15351,7 +14857,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -15390,7 +14896,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -15465,10 +14971,10 @@ public class LabConnectorStub extends Stub
             {
                 GetInteractiveExperimentSession object = new GetInteractiveExperimentSession();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -15514,7 +15020,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -15642,6 +15148,10 @@ public class LabConnectorStub extends Stub
             org.apache.axis2.databinding.ADBBean
     {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7144055135449859763L;
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                        "getExperimentIDResponse",
@@ -15882,7 +15392,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -15896,12 +15406,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -15933,13 +15443,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -16035,7 +15545,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -16074,7 +15584,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName("", "experimentID"));
 
@@ -16108,10 +15618,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentIDResponse object = new GetExperimentIDResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -16157,7 +15667,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -16214,6 +15724,11 @@ public class LabConnectorStub extends Stub
     public static class GetExperimentSpecs implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 6733302055040256452L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -16546,26 +16061,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
-                java.lang.String attName, java.lang.String attValue,
-                javax.xml.stream.XMLStreamWriter xmlWriter)
-                throws javax.xml.stream.XMLStreamException
-        {
-            if (namespace.equals(""))
-            {
-                xmlWriter.writeAttribute(attName, attValue);
-            }
-            else
-            {
-                registerPrefix(xmlWriter, namespace);
-                xmlWriter.writeAttribute(namespace, attName, attValue);
-            }
-        }
-
-        /**
-         * Util method to write an attribute without the ns prefix
-         */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java./*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -16597,13 +16093,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -16699,7 +16195,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -16738,7 +16234,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -16788,10 +16284,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentSpecs object = new GetExperimentSpecs();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -16837,7 +16333,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -16986,6 +16482,11 @@ public class LabConnectorStub extends Stub
     public static class BookingType implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -8867171311438471672L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -17221,7 +16722,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -17235,12 +16736,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -17272,13 +16773,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -17374,7 +16875,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -17491,11 +16992,11 @@ public class LabConnectorStub extends Stub
             {
                 BookingType object = null;
                 // initialize a hash map to keep values
-                java.util.Map attributeMap = new java.util.HashMap();
-                java.util.List extraAttributeList = new java.util.ArrayList();
+                //java.util.Map attributeMap = new java.util.HashMap();
+                //java.util.List extraAttributeList = new java.util.ArrayList();
 
-                int event;
-                java.lang.String nillableValue = null;
+                //int event;
+                //java.lang.String nillableValue = null;
                 java.lang.String prefix = "";
                 java.lang.String namespaceuri = "";
                 try
@@ -17507,7 +17008,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     while (!reader.isEndElement())
                     {
@@ -17558,6 +17059,11 @@ public class LabConnectorStub extends Stub
     public static class SaveExperimentResultsResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7520324839704416957L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -17804,20 +17310,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("storageResponse");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "storageResponse cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localStorageResponse));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localStorageResponse));
             xmlWriter.writeEndElement();
             if (localErrorMessageTracker)
             {
@@ -17891,7 +17384,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -17905,12 +17398,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -17942,13 +17435,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -18044,7 +17537,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -18083,7 +17576,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList
                     .add(new javax.xml.namespace.QName("", "storageResponse"));
@@ -18135,10 +17628,10 @@ public class LabConnectorStub extends Stub
             {
                 SaveExperimentResultsResponse object = new SaveExperimentResultsResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -18184,7 +17677,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -18264,6 +17757,11 @@ public class LabConnectorStub extends Stub
     public static class GetSavedUserExperimentInputResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -1613823578113312474L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -18493,7 +17991,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -18507,12 +18005,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -18544,13 +18042,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -18646,7 +18144,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -18685,7 +18183,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localExperimentSavedUserInputTracker)
             {
@@ -18727,10 +18225,10 @@ public class LabConnectorStub extends Stub
             {
                 GetSavedUserExperimentInputResponse object = new GetSavedUserExperimentInputResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -18777,7 +18275,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -18835,6 +18333,11 @@ public class LabConnectorStub extends Stub
          * http://ilabs-test.eng.uts.edu.au:7070/LabConnector/ Namespace Prefix
          * = ns1
          */
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1592497292718904312L;
 
         private static java.lang.String generatePrefix(
                 java.lang.String namespace)
@@ -19170,7 +18673,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -19184,12 +18687,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -19221,13 +18724,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -19323,7 +18826,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -19362,7 +18865,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -19425,10 +18928,10 @@ public class LabConnectorStub extends Stub
             {
                 GetTokenChoice_type0 object = new GetTokenChoice_type0();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -19438,7 +18941,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     if (reader.isStartElement()
                             && new javax.xml.namespace.QName("", "userID")
@@ -19488,6 +18991,11 @@ public class LabConnectorStub extends Stub
     public static class SetUserPermissions implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4598355600208569228L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -19806,7 +19314,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -19820,12 +19328,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -19857,13 +19365,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -19959,7 +19467,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -19998,7 +19506,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -20056,10 +19564,10 @@ public class LabConnectorStub extends Stub
             {
                 SetUserPermissions object = new SetUserPermissions();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -20105,7 +19613,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -20185,6 +19693,11 @@ public class LabConnectorStub extends Stub
          * http://ilabs-test.eng.uts.edu.au:7070/LabConnector/ Namespace Prefix
          * = ns1
          */
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 7489590032013244227L;
 
         private static java.lang.String generatePrefix(
                 java.lang.String namespace)
@@ -20616,7 +20129,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -20630,12 +20143,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -20667,13 +20180,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -20769,7 +20282,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*
 
         /**
          * Register a namespace prefix
@@ -20808,7 +20321,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localLabCapabilityTracker)
             {
@@ -20887,10 +20400,10 @@ public class LabConnectorStub extends Stub
             {
                 GetLabIDChoice_type0 object = new GetLabIDChoice_type0();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -20900,7 +20413,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     if (reader.isStartElement()
                             && new javax.xml.namespace.QName("",
@@ -20967,6 +20480,11 @@ public class LabConnectorStub extends Stub
     public static class SaveExperimentResults implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4362297666536076175L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -21321,7 +20839,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -21335,12 +20853,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -21372,13 +20890,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -21474,7 +20992,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -21513,7 +21031,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -21576,10 +21094,10 @@ public class LabConnectorStub extends Stub
             {
                 SaveExperimentResults object = new SaveExperimentResults();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -21625,7 +21143,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -21702,6 +21220,11 @@ public class LabConnectorStub extends Stub
     public static class DeleteSavedUserExperimentInput implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 8905131244300773414L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -22056,7 +21579,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -22070,12 +21593,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -22107,13 +21630,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -22209,7 +21732,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -22248,7 +21771,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -22311,10 +21834,10 @@ public class LabConnectorStub extends Stub
             {
                 DeleteSavedUserExperimentInput object = new DeleteSavedUserExperimentInput();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -22360,7 +21883,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -22436,6 +21959,11 @@ public class LabConnectorStub extends Stub
     public static class CancelBookingTime implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1992204744053070695L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -22768,7 +22296,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -22782,12 +22310,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -22819,13 +22347,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -22921,7 +22449,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -23010,10 +22538,10 @@ public class LabConnectorStub extends Stub
             {
                 CancelBookingTime object = new CancelBookingTime();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -23059,7 +22587,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -23471,7 +22999,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -23485,12 +23013,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -23522,13 +23050,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -23624,7 +23152,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -23663,7 +23191,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -23713,10 +23241,10 @@ public class LabConnectorStub extends Stub
             {
                 GetSavedUserExperimentInput object = new GetSavedUserExperimentInput();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -23762,7 +23290,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -24375,7 +23903,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -24389,12 +23917,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -24426,13 +23954,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -24528,7 +24056,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -24662,10 +24190,10 @@ public class LabConnectorStub extends Stub
             {
                 GetLabInfoChoice_type0 object = new GetLabInfoChoice_type0();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -24675,7 +24203,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     if (reader.isStartElement()
                             && new javax.xml.namespace.QName("",
@@ -25501,20 +25029,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("allowedExtension");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "allowedExtension cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localAllowedExtension));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localAllowedExtension));
             xmlWriter.writeEndElement();
 
             namespace = "";
@@ -25589,7 +25104,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -25603,12 +25118,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -25640,13 +25155,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -25742,7 +25257,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -25920,10 +25435,10 @@ public class LabConnectorStub extends Stub
             {
                 ExperimentStatus object = new ExperimentStatus();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -25969,7 +25484,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -26245,6 +25760,11 @@ public class LabConnectorStub extends Stub
             org.apache.axis2.databinding.ADBBean
     {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -6450905827353751760L;
+
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                        "getExperimentSpecsResponse",
@@ -26506,7 +26026,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -26520,12 +26040,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -26557,13 +26077,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -26659,7 +26179,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -26745,10 +26265,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentSpecsResponse object = new GetExperimentSpecsResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -26794,7 +26314,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -27108,7 +26628,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -27122,12 +26642,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -27159,13 +26679,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -27261,7 +26781,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -27346,10 +26866,10 @@ public class LabConnectorStub extends Stub
             {
                 GetMaintenanceTime object = new GetMaintenanceTime();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -27395,7 +26915,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -27449,6 +26969,10 @@ public class LabConnectorStub extends Stub
             org.apache.axis2.databinding.ADBBean
     {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -1293029039680860249L;
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                        "getLabInfo",
@@ -27652,7 +27176,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -27666,12 +27190,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -27703,13 +27227,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -27805,7 +27329,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -27844,7 +27368,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName(
                     "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -27884,10 +27408,10 @@ public class LabConnectorStub extends Stub
             {
                 GetLabInfo object = new GetLabInfo();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -27933,7 +27457,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -28328,7 +27852,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -28342,12 +27866,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -28379,13 +27903,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -28481,7 +28005,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -28582,10 +28106,10 @@ public class LabConnectorStub extends Stub
             {
                 ExperimentUserInput object = new ExperimentUserInput();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -28631,7 +28155,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -29048,7 +28572,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -29062,12 +28586,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -29099,13 +28623,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -29201,7 +28725,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -29295,10 +28819,10 @@ public class LabConnectorStub extends Stub
             {
                 GetUserPermissionsChoice_type0 object = new GetUserPermissionsChoice_type0();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -29308,7 +28832,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     if (reader.isStartElement()
                             && new javax.xml.namespace.QName("", "labID")
@@ -29715,7 +29239,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -29729,12 +29253,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -29766,13 +29290,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -29868,7 +29392,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -29970,10 +29494,10 @@ public class LabConnectorStub extends Stub
             {
                 GetInteractiveExperimentSessionResponse object = new GetInteractiveExperimentSessionResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -30020,7 +29544,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -30395,7 +29919,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -30409,12 +29933,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -30446,13 +29970,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -30548,7 +30072,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -30643,10 +30167,10 @@ public class LabConnectorStub extends Stub
             {
                 GetUserPermissions object = new GetUserPermissions();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -30692,7 +30216,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -30983,7 +30507,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -30997,12 +30521,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -31034,13 +30558,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -31077,9 +30601,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -31136,7 +30660,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -31216,10 +30740,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentStatusResponse object = new GetExperimentStatusResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -31265,7 +30789,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -31591,20 +31115,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("availability");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "availability cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localAvailability));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localAvailability));
             xmlWriter.writeEndElement();
 
             namespace = "";
@@ -31632,21 +31143,10 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("complete");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "complete cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localComplete));
-            }
-
+            
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localComplete));
             xmlWriter.writeEndElement();
+            
             if (localLabResultsXMLTracker)
             {
                 namespace = "";
@@ -31719,7 +31219,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -31733,12 +31233,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -31770,13 +31270,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -31872,7 +31372,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -31967,10 +31467,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentResultsResponse object = new GetExperimentResultsResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -32016,7 +31516,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -32569,7 +32069,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -32583,12 +32083,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -32620,13 +32120,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -32722,7 +32222,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -32833,10 +32333,10 @@ public class LabConnectorStub extends Stub
             {
                 ReleaseExperiment object = new ReleaseExperiment();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -32882,7 +32382,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -33229,21 +32729,9 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("success");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "success cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localSuccess));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
             xmlWriter.writeEndElement();
+            
             if (localSuccessMessageTracker)
             {
                 namespace = "";
@@ -33317,7 +32805,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -33331,12 +32819,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -33368,13 +32856,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -33470,7 +32958,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -33560,10 +33048,10 @@ public class LabConnectorStub extends Stub
             {
                 SaveUserExperimentInputResponse object = new SaveUserExperimentInputResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -33609,7 +33097,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -33915,20 +33403,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("success");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "success cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localSuccess));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
             xmlWriter.writeEndElement();
 
             namespace = "";
@@ -34000,7 +33475,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -34014,12 +33489,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -34051,13 +33526,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -34094,9 +33569,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -34153,7 +33628,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -34231,10 +33706,10 @@ public class LabConnectorStub extends Stub
             {
                 ScheduleBookingTimeResponse object = new ScheduleBookingTimeResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -34280,7 +33755,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -34562,24 +34037,8 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("releaseResponse");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "releaseResponse cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localReleaseResponse));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localReleaseResponse));
             xmlWriter.writeEndElement();
-
-            xmlWriter.writeEndElement();
-
         }
 
         /**
@@ -34605,7 +34064,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -34619,12 +34078,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -34656,13 +34115,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -34699,9 +34158,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -34758,7 +34217,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -34797,7 +34256,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList
                     .add(new javax.xml.namespace.QName("", "releaseResponse"));
@@ -34832,10 +34291,10 @@ public class LabConnectorStub extends Stub
             {
                 ReleaseExperimentResponse object = new ReleaseExperimentResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -34881,7 +34340,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -34938,6 +34397,11 @@ public class LabConnectorStub extends Stub
     public static class ExperimentType implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -5566708851943830259L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -35182,7 +34646,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -35196,12 +34660,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -35233,13 +34697,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -35335,7 +34799,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -35453,11 +34917,11 @@ public class LabConnectorStub extends Stub
             {
                 ExperimentType object = null;
                 // initialize a hash map to keep values
-                java.util.Map attributeMap = new java.util.HashMap();
-                java.util.List extraAttributeList = new java.util.ArrayList();
+                //java.util.Map attributeMap = new java.util.HashMap();
+                //java.util.List extraAttributeList = new java.util.ArrayList();
 
-                int event;
-                java.lang.String nillableValue = null;
+                //int event;
+                //java.lang.String nillableValue = null;
                 java.lang.String prefix = "";
                 java.lang.String namespaceuri = "";
                 try
@@ -35469,7 +34933,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     while (!reader.isEndElement())
                     {
@@ -35520,6 +34984,11 @@ public class LabConnectorStub extends Stub
     public static class GetExperimentStatus implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 8117406181098233437L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -35852,7 +35321,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -35866,12 +35335,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -35903,13 +35372,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -35946,9 +35415,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -36005,7 +35474,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -36044,7 +35513,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName("", "experimentID"));
 
@@ -36094,10 +35563,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentStatus object = new GetExperimentStatus();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -36143,7 +35612,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -36470,7 +35939,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -36484,12 +35953,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -36521,13 +35990,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -36564,9 +36033,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -36623,7 +36092,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -36741,11 +36210,11 @@ public class LabConnectorStub extends Stub
             {
                 InteractionType object = null;
                 // initialize a hash map to keep values
-                java.util.Map attributeMap = new java.util.HashMap();
-                java.util.List extraAttributeList = new java.util.ArrayList();
+                //java.util.Map attributeMap = new java.util.HashMap();
+                //java.util.List extraAttributeList = new java.util.ArrayList();
 
-                int event;
-                java.lang.String nillableValue = null;
+                //int event;
+                //java.lang.String nillableValue = null;
                 java.lang.String prefix = "";
                 java.lang.String namespaceuri = "";
                 try
@@ -36757,7 +36226,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     while (!reader.isEndElement())
                     {
@@ -36808,6 +36277,11 @@ public class LabConnectorStub extends Stub
     public static class SubmitExperiment implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -591513499221718599L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -37345,7 +36819,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -37359,12 +36833,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -37396,13 +36870,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -37439,9 +36913,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -37498,7 +36972,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -37624,10 +37098,10 @@ public class LabConnectorStub extends Stub
             {
                 SubmitExperiment object = new SubmitExperiment();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -37673,7 +37147,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -38001,7 +37475,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -38015,12 +37489,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -38052,13 +37526,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -38154,7 +37628,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -38232,10 +37706,10 @@ public class LabConnectorStub extends Stub
             {
                 GetLabID object = new GetLabID();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -38281,7 +37755,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -39043,7 +38517,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -39057,12 +38531,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -39094,13 +38568,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -39137,9 +38611,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -39196,7 +38670,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -39367,10 +38841,10 @@ public class LabConnectorStub extends Stub
             {
                 ScheduleBookingTime object = new ScheduleBookingTime();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -39416,7 +38890,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -39616,6 +39090,10 @@ public class LabConnectorStub extends Stub
             org.apache.axis2.databinding.ADBBean
     {
 
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 4276339714044735324L;
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                        "getExperimentTypeResponse",
@@ -39822,7 +39300,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -39836,12 +39314,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -39873,13 +39351,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -39975,7 +39453,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -40053,10 +39531,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentTypeResponse object = new GetExperimentTypeResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -40102,7 +39580,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -40157,6 +39635,11 @@ public class LabConnectorStub extends Stub
     public static class GetExperimentResults implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 5476448430608667352L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -40489,7 +39972,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -40503,12 +39986,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -40540,13 +40023,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -40583,9 +40066,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -40642,7 +40125,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -40681,7 +40164,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -40780,7 +40263,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -40860,6 +40343,11 @@ public class LabConnectorStub extends Stub
     public static class SubmitExperimentResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = -2762514483852906816L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -41192,7 +40680,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -41206,12 +40694,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -41243,13 +40731,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -41286,9 +40774,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -41345,7 +40833,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -41384,7 +40872,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName("", "experimentID"));
 
@@ -41484,7 +40972,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -41565,6 +41053,10 @@ public class LabConnectorStub extends Stub
             org.apache.axis2.databinding.ADBBean
     {
 
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 4713568432977789381L;
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                        "setMaintenanceTimeResponse",
@@ -41790,20 +41282,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("success");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "success cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localSuccess));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
             xmlWriter.writeEndElement();
 
             namespace = "";
@@ -41875,7 +41354,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -41889,12 +41368,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -41926,13 +41405,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -42028,7 +41507,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -42067,7 +41546,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName("", "success"));
 
@@ -42155,7 +41634,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -42480,7 +41959,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -42494,12 +41973,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -42531,13 +42010,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -42633,7 +42112,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -43038,7 +42517,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -43052,12 +42531,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -43089,13 +42568,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -43191,7 +42670,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -43230,7 +42709,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserPermissionsTracker)
             {
@@ -43272,10 +42751,10 @@ public class LabConnectorStub extends Stub
             {
                 GetUserPermissionsResponse object = new GetUserPermissionsResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -43371,6 +42850,11 @@ public class LabConnectorStub extends Stub
     public static class GetToken implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = -4581900705039133518L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -43665,7 +43149,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -43679,12 +43163,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -43716,13 +43200,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -43759,9 +43243,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -43818,7 +43302,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -43857,7 +43341,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localKeyTracker)
             {
@@ -43912,10 +43396,10 @@ public class LabConnectorStub extends Stub
             {
                 GetToken object = new GetToken();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -43961,7 +43445,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -44026,6 +43510,11 @@ public class LabConnectorStub extends Stub
     public static class SetUserPermissionsResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = -3322702793244880908L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -44270,21 +43759,10 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("success");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "success cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localSuccess));
-            }
-
+            
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
             xmlWriter.writeEndElement();
+            
             if (localErrorMessageTracker)
             {
                 namespace = "";
@@ -44357,7 +43835,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -44371,12 +43849,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -44408,13 +43886,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -44510,7 +43988,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -44988,7 +44466,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -45002,12 +44480,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -45039,13 +44517,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -45141,7 +44619,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -45180,7 +44658,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localLabIDTracker)
             {
@@ -45275,7 +44753,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -45328,6 +44806,11 @@ public class LabConnectorStub extends Stub
     public static class GetTokenResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 6645596334498868006L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -45588,7 +45071,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -45602,12 +45085,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -45639,13 +45122,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -45682,9 +45165,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -45741,7 +45224,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -45780,7 +45263,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localTokenTracker)
             {
@@ -45826,10 +45309,10 @@ public class LabConnectorStub extends Stub
             {
                 GetTokenResponse object = new GetTokenResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -45875,7 +45358,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -46649,7 +46132,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -46663,12 +46146,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -46700,13 +46183,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -46802,7 +46285,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -46841,7 +46324,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -46969,10 +46452,10 @@ public class LabConnectorStub extends Stub
             {
                 GetExperimentID object = new GetExperimentID();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -47018,7 +46501,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -47186,6 +46669,11 @@ public class LabConnectorStub extends Stub
     public static class ReleaseSlaveResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 5286966591356623643L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -47431,21 +46919,9 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("releaseResponse");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "releaseResponse cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localReleaseResponse));
-            }
-
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localReleaseResponse));
             xmlWriter.writeEndElement();
+            
             if (localErrorMessageTracker)
             {
                 namespace = "";
@@ -47518,7 +46994,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -47532,12 +47008,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -47569,13 +47045,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -47671,7 +47147,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -47811,7 +47287,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -47891,6 +47367,11 @@ public class LabConnectorStub extends Stub
     public static class SaveUserExperimentInput implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 8909473704933336590L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -48333,7 +47814,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -48347,12 +47828,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -48384,13 +47865,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -48427,9 +47908,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -48486,7 +47967,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -48525,7 +48006,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -48606,10 +48087,10 @@ public class LabConnectorStub extends Stub
             {
                 SaveUserExperimentInput object = new SaveUserExperimentInput();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -48655,7 +48136,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -48809,6 +48290,11 @@ public class LabConnectorStub extends Stub
          * = ns1
          */
 
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 2352437827491648986L;
+
         private static java.lang.String generatePrefix(
                 java.lang.String namespace)
         {
@@ -48940,8 +48426,7 @@ public class LabConnectorStub extends Stub
             // update the setting tracker
             localUserGroupTracker = true;
 
-            java.util.List<Serializable> list = org.apache.axis2.databinding.utils.ConverterUtil
-                    .toList(localUserGroup);
+            java.util.List<Serializable> list = org.apache.axis2.databinding.utils.ConverterUtil.toList(localUserGroup);
             list.add(param);
             this.localUserGroup = list
                     .toArray(new java.lang.String[list.size()]);
@@ -49010,17 +48495,7 @@ public class LabConnectorStub extends Stub
         {
 
             // setting primitive attribute tracker to true
-
-            if (false)
-            {
-                localRunExperimentTracker = false;
-
-            }
-            else
-            {
-                localRunExperimentTracker = true;
-            }
-
+            localRunExperimentTracker = true;
             this.localRunExperiment = param;
 
         }
@@ -49058,17 +48533,7 @@ public class LabConnectorStub extends Stub
         {
 
             // setting primitive attribute tracker to true
-
-            if (false)
-            {
-                localObserveExperimentTracker = false;
-
-            }
-            else
-            {
-                localObserveExperimentTracker = true;
-            }
-
+            localObserveExperimentTracker = true;
             this.localObserveExperiment = param;
 
         }
@@ -49106,17 +48571,7 @@ public class LabConnectorStub extends Stub
         {
 
             // setting primitive attribute tracker to true
-
-            if (false)
-            {
-                localModifyExperimentTracker = false;
-
-            }
-            else
-            {
-                localModifyExperimentTracker = true;
-            }
-
+            localModifyExperimentTracker = true;
             this.localModifyExperiment = param;
 
         }
@@ -49155,16 +48610,7 @@ public class LabConnectorStub extends Stub
 
             // setting primitive attribute tracker to true
 
-            if (false)
-            {
-                localStoreExperimentResultsTracker = false;
-
-            }
-            else
-            {
-                localStoreExperimentResultsTracker = true;
-            }
-
+            localStoreExperimentResultsTracker = true;
             this.localStoreExperimentResults = param;
 
         }
@@ -49200,21 +48646,9 @@ public class LabConnectorStub extends Stub
          */
         public void setAuthorizeUsers(boolean param)
         {
-
             // setting primitive attribute tracker to true
-
-            if (false)
-            {
-                localAuthorizeUsersTracker = false;
-
-            }
-            else
-            {
-                localAuthorizeUsersTracker = true;
-            }
-
+            localAuthorizeUsersTracker = true;
             this.localAuthorizeUsers = param;
-
         }
 
         /**
@@ -49518,19 +48952,8 @@ public class LabConnectorStub extends Stub
                     xmlWriter.writeStartElement("runExperiment");
                 }
 
-                if (false)
-                {
-
-                    throw new org.apache.axis2.databinding.ADBException(
-                            "runExperiment cannot be null!!");
-
-                }
-                else
-                {
-                    xmlWriter
-                            .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToString(localRunExperiment));
-                }
+                
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localRunExperiment));
 
                 xmlWriter.writeEndElement();
             }
@@ -49563,19 +48986,8 @@ public class LabConnectorStub extends Stub
                     xmlWriter.writeStartElement("observeExperiment");
                 }
 
-                if (false)
-                {
-
-                    throw new org.apache.axis2.databinding.ADBException(
-                            "observeExperiment cannot be null!!");
-
-                }
-                else
-                {
-                    xmlWriter
-                            .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToString(localObserveExperiment));
-                }
+             
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localObserveExperiment));
 
                 xmlWriter.writeEndElement();
             }
@@ -49608,19 +49020,7 @@ public class LabConnectorStub extends Stub
                     xmlWriter.writeStartElement("modifyExperiment");
                 }
 
-                if (false)
-                {
-
-                    throw new org.apache.axis2.databinding.ADBException(
-                            "modifyExperiment cannot be null!!");
-
-                }
-                else
-                {
-                    xmlWriter
-                            .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToString(localModifyExperiment));
-                }
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localModifyExperiment));
 
                 xmlWriter.writeEndElement();
             }
@@ -49652,20 +49052,8 @@ public class LabConnectorStub extends Stub
                 {
                     xmlWriter.writeStartElement("storeExperimentResults");
                 }
-
-                if (false)
-                {
-
-                    throw new org.apache.axis2.databinding.ADBException(
-                            "storeExperimentResults cannot be null!!");
-
-                }
-                else
-                {
-                    xmlWriter
-                            .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToString(localStoreExperimentResults));
-                }
+                
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localStoreExperimentResults));
 
                 xmlWriter.writeEndElement();
             }
@@ -49698,19 +49086,8 @@ public class LabConnectorStub extends Stub
                     xmlWriter.writeStartElement("authorizeUsers");
                 }
 
-                if (false)
-                {
-
-                    throw new org.apache.axis2.databinding.ADBException(
-                            "authorizeUsers cannot be null!!");
-
-                }
-                else
-                {
-                    xmlWriter
-                            .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToString(localAuthorizeUsers));
-                }
+                
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localAuthorizeUsers));
 
                 xmlWriter.writeEndElement();
             }
@@ -49741,7 +49118,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -49755,12 +49132,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -49792,13 +49169,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -49894,7 +49271,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -49933,7 +49310,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localUserIDTracker)
             {
@@ -50061,10 +49438,10 @@ public class LabConnectorStub extends Stub
             {
                 Permissions object = new Permissions();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -50110,7 +49487,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -50372,6 +49749,11 @@ public class LabConnectorStub extends Stub
             org.apache.axis2.databinding.ADBBean
     {
 
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = -5462838419848602463L;
+
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
                                                                        "deleteSavedUserExperimentInputResponse",
@@ -50619,19 +50001,8 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("success");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "success cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localSuccess));
-            }
+           
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
 
             xmlWriter.writeEndElement();
             if (localErrorMessageTracker)
@@ -50706,7 +50077,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -50720,12 +50091,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -50757,13 +50128,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -50859,7 +50230,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -50898,7 +50269,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName("", "success"));
 
@@ -50949,10 +50320,10 @@ public class LabConnectorStub extends Stub
             {
                 DeleteSavedUserExperimentInputResponse object = new DeleteSavedUserExperimentInputResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -50999,7 +50370,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -51079,6 +50450,11 @@ public class LabConnectorStub extends Stub
     public static class ReleaseSlave implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = 6815889136529440510L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -51501,7 +50877,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -51515,12 +50891,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -51552,13 +50928,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -51595,9 +50971,9 @@ public class LabConnectorStub extends Stub
                         .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qname));
             }
-        }
+        }*/
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
+        /*private void writeQNames(javax.xml.namespace.QName[] qnames,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -51654,7 +51030,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -51693,7 +51069,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             if (localRequestorIDTracker)
             {
@@ -51761,10 +51137,10 @@ public class LabConnectorStub extends Stub
             {
                 ReleaseSlave object = new ReleaseSlave();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -51810,7 +51186,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -51913,6 +51289,11 @@ public class LabConnectorStub extends Stub
     public static class CancelBookingTimeResponse implements
             org.apache.axis2.databinding.ADBBean
     {
+
+        /**
+         * Auto generated UID
+         */
+        private static final long serialVersionUID = -518887502190208615L;
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                        "http://ilabs-test.eng.uts.edu.au:7070/LabConnector/",
@@ -52157,19 +51538,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeStartElement("success");
             }
 
-            if (false)
-            {
-
-                throw new org.apache.axis2.databinding.ADBException(
-                        "success cannot be null!!");
-
-            }
-            else
-            {
-                xmlWriter
-                        .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(localSuccess));
-            }
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSuccess));
 
             xmlWriter.writeEndElement();
             if (localSuccessMessageTracker)
@@ -52245,7 +51614,7 @@ public class LabConnectorStub extends Stub
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeAttribute(java.lang.String namespace,
+        /*private void writeAttribute(java.lang.String namespace,
                 java.lang.String attName, java.lang.String attValue,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -52259,12 +51628,12 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attValue);
             }
-        }
+        }*/
 
         /**
          * Util method to write an attribute without the ns prefix
          */
-        private void writeQNameAttribute(java.lang.String namespace,
+        /*private void writeQNameAttribute(java.lang.String namespace,
                 java.lang.String attName, javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
@@ -52296,13 +51665,13 @@ public class LabConnectorStub extends Stub
                 registerPrefix(xmlWriter, namespace);
                 xmlWriter.writeAttribute(namespace, attName, attributeValue);
             }
-        }
+        }*/
 
         /**
          * method to handle Qnames
          */
 
-        private void writeQName(javax.xml.namespace.QName qname,
+        /*private void writeQName(javax.xml.namespace.QName qname,
                 javax.xml.stream.XMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException
         {
@@ -52398,7 +51767,7 @@ public class LabConnectorStub extends Stub
                 xmlWriter.writeCharacters(stringToWrite.toString());
             }
 
-        }
+        }*/
 
         /**
          * Register a namespace prefix
@@ -52437,7 +51806,7 @@ public class LabConnectorStub extends Stub
         {
 
             java.util.ArrayList<Serializable> elementList = new java.util.ArrayList<Serializable>();
-            java.util.ArrayList attribList = new java.util.ArrayList();
+            java.util.ArrayList<Serializable> attribList = new java.util.ArrayList<Serializable>();
 
             elementList.add(new javax.xml.namespace.QName("", "success"));
 
@@ -52488,10 +51857,10 @@ public class LabConnectorStub extends Stub
             {
                 CancelBookingTimeResponse object = new CancelBookingTimeResponse();
 
-                int event;
-                java.lang.String nillableValue = null;
-                java.lang.String prefix = "";
-                java.lang.String namespaceuri = "";
+                //int event;
+                //java.lang.String nillableValue = null;
+                //java.lang.String prefix = "";
+                //java.lang.String namespaceuri = "";
                 try
                 {
 
@@ -52537,7 +51906,7 @@ public class LabConnectorStub extends Stub
                     // Note all attributes that were handled. Used to differ
                     // normal attributes
                     // from anyAttributes.
-                    java.util.Vector handledAttributes = new java.util.Vector();
+                    //java.util.Vector handledAttributes = new java.util.Vector();
 
                     reader.next();
 
@@ -52614,7 +51983,7 @@ public class LabConnectorStub extends Stub
 
     }
 
-    private org.apache.axiom.om.OMElement toOM(
+    /*private org.apache.axiom.om.OMElement toOM(
             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetUserPermissions param,
             boolean optimizeContent) throws org.apache.axis2.AxisFault
     {
@@ -52854,7 +52223,7 @@ public class LabConnectorStub extends Stub
 
     }
 
-    private org.apache.axiom.om.OMElement toOM(
+    /*private org.apache.axiom.om.OMElement toOM(
             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.DeleteSavedUserExperimentInput param,
             boolean optimizeContent) throws org.apache.axis2.AxisFault
     {
@@ -52954,7 +52323,7 @@ public class LabConnectorStub extends Stub
 
     }
 
-    private org.apache.axiom.om.OMElement toOM(
+    /*private org.apache.axiom.om.OMElement toOM(
             au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.GetSavedUserExperimentInputResponse param,
             boolean optimizeContent) throws org.apache.axis2.AxisFault
     {
@@ -53374,9 +52743,7 @@ public class LabConnectorStub extends Stub
 
     }
 
-    private org.apache.axiom.om.OMElement toOM(
-            au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseSlave param,
-            boolean optimizeContent) throws org.apache.axis2.AxisFault
+    /*private org.apache.axiom.om.OMElement toOM(ReleaseSlave param, boolean optimizeContent) throws org.apache.axis2.AxisFault
     {
 
         try
@@ -53572,7 +52939,7 @@ public class LabConnectorStub extends Stub
             throw org.apache.axis2.AxisFault.makeFault(e);
         }
 
-    }
+    }*/
 
     private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
             org.apache.axiom.soap.SOAPFactory factory,
@@ -54273,11 +53640,11 @@ public class LabConnectorStub extends Stub
     /**
      * get the default envelope
      */
-    private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
+    /*private org.apache.axiom.soap.SOAPEnvelope toEnvelope(
             org.apache.axiom.soap.SOAPFactory factory)
     {
         return factory.getDefaultEnvelope();
-    }
+    }*/
 
     private java.lang.Object fromOM(org.apache.axiom.om.OMElement param,
             java.lang.Class type, java.util.Map<String, String> extraNamespaces)

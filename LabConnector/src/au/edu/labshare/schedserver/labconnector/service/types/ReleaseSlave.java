@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * ReleaseSlave bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class ReleaseSlave implements org.apache.axis2.databinding.ADBBean
 {
 

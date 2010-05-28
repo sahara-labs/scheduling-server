@@ -45,7 +45,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 /**
  * GetTokenChoice_type0 bean class
  */
-
+@SuppressWarnings({"unchecked", "unused", "serial"})
 public class GetTokenChoice_type0 implements
         org.apache.axis2.databinding.ADBBean
 {

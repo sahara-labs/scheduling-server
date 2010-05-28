@@ -48,6 +48,10 @@ package au.edu.labshare.schedserver.labconnector.service.types;
 
 public class BookingType implements org.apache.axis2.databinding.ADBBean
 {
+    /**
+     * Generated serialVesionUID
+     */
+    private static final long serialVersionUID = 6270913960733634464L;
 
     public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                                                                    "http://labshare.edu.au:8080/LabConnector/",
@@ -69,7 +73,7 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
 
     protected java.lang.String       localBookingType;
 
-    private static java.util.HashMap _table_ = new java.util.HashMap();
+    private static java.util.HashMap <Object, Object> _table_ = new java.util.HashMap<Object, Object>();
 
     // Constructor
 
@@ -276,7 +280,7 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
     /**
      * Util method to write an attribute without the ns prefix
      */
-    private void writeAttribute(java.lang.String namespace,
+    /*private void writeAttribute(java.lang.String namespace,
             java.lang.String attName, java.lang.String attValue,
             javax.xml.stream.XMLStreamWriter xmlWriter)
             throws javax.xml.stream.XMLStreamException
@@ -290,12 +294,12 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
             registerPrefix(xmlWriter, namespace);
             xmlWriter.writeAttribute(namespace, attName, attValue);
         }
-    }
+    }*/
 
     /**
      * Util method to write an attribute without the ns prefix
      */
-    private void writeQNameAttribute(java.lang.String namespace,
+    /*private void writeQNameAttribute(java.lang.String namespace,
             java.lang.String attName, javax.xml.namespace.QName qname,
             javax.xml.stream.XMLStreamWriter xmlWriter)
             throws javax.xml.stream.XMLStreamException
@@ -327,13 +331,13 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
             registerPrefix(xmlWriter, namespace);
             xmlWriter.writeAttribute(namespace, attName, attributeValue);
         }
-    }
+    }*/
 
     /**
      * method to handle Qnames
      */
 
-    private void writeQName(javax.xml.namespace.QName qname,
+    /*private void writeQName(javax.xml.namespace.QName qname,
             javax.xml.stream.XMLStreamWriter xmlWriter)
             throws javax.xml.stream.XMLStreamException
     {
@@ -370,9 +374,9 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
                     .writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
                             .convertToString(qname));
         }
-    }
+    }*/
 
-    private void writeQNames(javax.xml.namespace.QName[] qnames,
+    /*private void writeQNames(javax.xml.namespace.QName[] qnames,
             javax.xml.stream.XMLStreamWriter xmlWriter)
             throws javax.xml.stream.XMLStreamException
     {
@@ -429,7 +433,7 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
             xmlWriter.writeCharacters(stringToWrite.toString());
         }
 
-    }
+    }*/
 
     /**
      * Register a namespace prefix
@@ -545,11 +549,11 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
         {
             BookingType object = null;
             // initialize a hash map to keep values
-            java.util.Map attributeMap = new java.util.HashMap();
-            java.util.List extraAttributeList = new java.util.ArrayList();
+            //java.util.Map attributeMap = new java.util.HashMap();
+            //java.util.List extraAttributeList = new java.util.ArrayList();
 
-            int event;
-            java.lang.String nillableValue = null;
+            //int event;
+            //java.lang.String nillableValue = null;
             java.lang.String prefix = "";
             java.lang.String namespaceuri = "";
             try
@@ -561,7 +565,7 @@ public class BookingType implements org.apache.axis2.databinding.ADBBean
                 // Note all attributes that were handled. Used to differ normal
                 // attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
+                //java.util.Vector  handledAttributes = new java.util.Vector();
 
                 while (!reader.isEndElement())
                 {
