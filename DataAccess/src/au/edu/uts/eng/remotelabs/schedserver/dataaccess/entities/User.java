@@ -39,7 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 // Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
 
-import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.GenerationType.AUTO;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -124,7 +124,7 @@ public class User implements java.io.Serializable
     }
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = AUTO)
     @Column(name = "id", unique = true, nullable = false)
     public Long getId()
     {

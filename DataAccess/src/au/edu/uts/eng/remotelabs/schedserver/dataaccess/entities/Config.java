@@ -42,7 +42,7 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.GenerationType.AUTO;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -79,7 +79,7 @@ public class Config implements java.io.Serializable
     }
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = AUTO)
     @Column(name = "id", unique = true, nullable = false)
     public Integer getId()
     {
