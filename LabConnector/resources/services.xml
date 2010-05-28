@@ -6,104 +6,104 @@
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.labshare.schedserver.labconnector.service.LabConnectorMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.labshare.schedserver.labconnector.service.LabConnectorSkeleton</parameter>
+        <parameter name="ServiceClass">au.edu.labshare.schedserver.labconnector.service.LabConnector</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
-        <operation name="getExperimentResults" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getExperimentResults</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getExperimentResultsResponse</outputActionMapping>
+        <operation name="getExperimentResults" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentResults</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentResultsResponse</outputActionMapping>
         </operation>
-        <operation name="deleteSavedUserExperimentInput" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/deleteSavedUserExperimentInput</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/deleteSavedUserExperimentInputResponse</outputActionMapping>
+        <operation name="deleteSavedUserExperimentInput" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/deleteSavedUserExperimentInput</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/deleteSavedUserExperimentInputResponse</outputActionMapping>
         </operation>
-        <operation name="getSavedUserExperimentInput" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getSavedUserExperimentInput</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getSavedUserExperimentInputResponse</outputActionMapping>
+        <operation name="getSavedUserExperimentInput" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getSavedUserExperimentInput</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getSavedUserExperimentInputResponse</outputActionMapping>
         </operation>
-        <operation name="setUserPermissions" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/setUserPermissions</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/setUserPermissionsResponse</outputActionMapping>
+        <operation name="setUserPermissions" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/setUserPermissions</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/setUserPermissionsResponse</outputActionMapping>
         </operation>
-        <operation name="getLabStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getLabStatus</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getLabStatusResponse</outputActionMapping>
+        <operation name="getLabStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getLabStatus</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getLabStatusResponse</outputActionMapping>
         </operation>
-        <operation name="getExperimentID" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getExperimentID</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getExperimentIDResponse</outputActionMapping>
+        <operation name="getExperimentID" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentID</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentIDResponse</outputActionMapping>
         </operation>
-        <operation name="saveExperimentResults" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/saveExperimentResults</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/saveExperimentResultsResponse</outputActionMapping>
+        <operation name="saveExperimentResults" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/saveExperimentResults</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/saveExperimentResultsResponse</outputActionMapping>
         </operation>
-        <operation name="saveUserExperimentInput" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/saveUserExperimentInput</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/saveUserExperimentInputResponse</outputActionMapping>
+        <operation name="saveUserExperimentInput" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/saveUserExperimentInput</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/saveUserExperimentInputResponse</outputActionMapping>
         </operation>
-        <operation name="getExperimentSpecs" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getExperimentSpecs</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getExperimentSpecsResponse</outputActionMapping>
+        <operation name="getExperimentSpecs" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentSpecs</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentSpecsResponse</outputActionMapping>
         </operation>
-        <operation name="getInteractiveExperimentSession" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getInteractiveExperimentSession</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getInteractiveExperimentSessionResponse</outputActionMapping>
+        <operation name="getInteractiveExperimentSession" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getInteractiveExperimentSession</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getInteractiveExperimentSessionResponse</outputActionMapping>
         </operation>
-        <operation name="getMaintenanceTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getMaintenanceTime</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getMaintenanceTimeResponse</outputActionMapping>
+        <operation name="getMaintenanceTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getMaintenanceTime</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getMaintenanceTimeResponse</outputActionMapping>
         </operation>
-        <operation name="cancelBookingTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/cancelBookingTime</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/cancelBookingTimeResponse</outputActionMapping>
+        <operation name="cancelBookingTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/cancelBookingTime</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/cancelBookingTimeResponse</outputActionMapping>
         </operation>
-        <operation name="getLabInfo" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getLabInfo</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getLabInfoResponse</outputActionMapping>
+        <operation name="getLabInfo" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getLabInfo</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getLabInfoResponse</outputActionMapping>
         </operation>
-        <operation name="setMaintenanceTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/setMaintenanceTime</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/setMaintenanceTimeResponse</outputActionMapping>
+        <operation name="setMaintenanceTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/setMaintenanceTime</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/setMaintenanceTimeResponse</outputActionMapping>
         </operation>
-        <operation name="getLabID" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getLabID</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getLabIDResponse</outputActionMapping>
+        <operation name="getLabID" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getLabID</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getLabIDResponse</outputActionMapping>
         </operation>
-        <operation name="submitExperiment" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/submitExperiment</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/submitExperimentResponse</outputActionMapping>
+        <operation name="submitExperiment" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/submitExperiment</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/submitExperimentResponse</outputActionMapping>
         </operation>
-        <operation name="scheduleBookingTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/scheduleBookingTime</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/scheduleBookingTimeResponse</outputActionMapping>
+        <operation name="scheduleBookingTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/scheduleBookingTime</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/scheduleBookingTimeResponse</outputActionMapping>
         </operation>
-        <operation name="getToken" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getToken</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getTokenResponse</outputActionMapping>
+        <operation name="getToken" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getToken</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getTokenResponse</outputActionMapping>
         </operation>
-        <operation name="cancelMaintenanceTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/cancelMaintenanceTime</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/cancelMaintenanceTimeResponse</outputActionMapping>
+        <operation name="cancelMaintenanceTime" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/cancelMaintenanceTime</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/cancelMaintenanceTimeResponse</outputActionMapping>
         </operation>
-        <operation name="releaseSlave" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/releaseSlave</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/releaseSlaveResponse</outputActionMapping>
+        <operation name="releaseSlave" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/releaseSlave</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/releaseSlaveResponse</outputActionMapping>
         </operation>
-        <operation name="getExperimentType" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getExperimentType</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getExperimentTypeResponse</outputActionMapping>
+        <operation name="getExperimentType" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentType</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentTypeResponse</outputActionMapping>
         </operation>
-        <operation name="getExperimentStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getExperimentStatus</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getExperimentStatusResponse</outputActionMapping>
+        <operation name="getExperimentStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentStatus</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getExperimentStatusResponse</outputActionMapping>
         </operation>
-        <operation name="releaseExperiment" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/releaseExperiment</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/releaseExperimentResponse</outputActionMapping>
+        <operation name="releaseExperiment" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/releaseExperiment</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/releaseExperimentResponse</outputActionMapping>
         </operation>
-        <operation name="getUserPermissions" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/LabConnector/">
-            <actionMapping>http://labshare.edu.au:8080/LabConnector/getUserPermissions</actionMapping>
-            <outputActionMapping>http://labshare.edu.au:8080/LabConnector/LabConnector/getUserPermissionsResponse</outputActionMapping>
+        <operation name="getUserPermissions" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/labconnector">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getUserPermissions</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/labconnector/getUserPermissionsResponse</outputActionMapping>
         </operation>
     </service>
 </serviceGroup>
