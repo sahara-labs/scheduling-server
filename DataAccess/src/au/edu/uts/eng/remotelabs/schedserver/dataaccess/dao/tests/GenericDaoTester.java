@@ -37,34 +37,17 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.Properties;
 
 import junit.framework.TestCase;
 
 import org.hibernate.Session;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.After;
 import org.junit.Before;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
 
 /**
  * Tests the {@link GenericDao} class.
@@ -74,53 +57,11 @@ public class GenericDaoTester extends TestCase
     /** Object of class under test. */
     private GenericDao<Config> dao;
 
-    public GenericDaoTester(String name) throws Exception
-    {
-        super(name);
-        
-        /* Set up the logger. */
-        Field f = LoggerActivator.class.getDeclaredField("logger");
-        f.setAccessible(true);
-        f.set(null, new SystemErrLogger());
-        
-        /* Set up the SessionFactory. */
-        AnnotationConfiguration cfg = new AnnotationConfiguration();
-        Properties props = new Properties();
-        props.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        props.setProperty("hibernate.connection.url", "jdbc:mysql://127.0.0.1:3306/sahara");
-        props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect");
-        props.setProperty("hibernate.connection.username", "sahara");
-        props.setProperty("hibernate.connection.password", "saharapasswd");
-        props.setProperty("hibernate.show_sql", "true");
-        props.setProperty("hibernate.format_sql", "true");
-        props.setProperty("hibernate.use_sql_comments", "true");
-        props.setProperty("hibernate.generate_statistics", "true");
-        cfg.setProperties(props);
-        cfg.addAnnotatedClass(AcademicPermission.class);
-        cfg.addAnnotatedClass(Config.class);
-        cfg.addAnnotatedClass(MatchingCapabilities.class);
-        cfg.addAnnotatedClass(MatchingCapabilitiesId.class);
-        cfg.addAnnotatedClass(RequestCapabilities.class);
-        cfg.addAnnotatedClass(ResourcePermission.class);
-        cfg.addAnnotatedClass(Rig.class);
-        cfg.addAnnotatedClass(RigCapabilities.class);
-        cfg.addAnnotatedClass(RigType.class);
-        cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
-        cfg.addAnnotatedClass(User.class);
-        cfg.addAnnotatedClass(UserAssociation.class);
-        cfg.addAnnotatedClass(UserAssociationId.class);
-        cfg.addAnnotatedClass(UserClass.class);
-        cfg.addAnnotatedClass(UserLock.class);
-        
-        f = DataAccessActivator.class.getDeclaredField("sessionFactory");
-        f.setAccessible(true);
-        f.set(null, cfg.buildSessionFactory());
-    }
-
     @Before
     @Override
     protected void setUp() throws Exception
     {
+        DataAccessTestSetup.setup();
         this.dao = new GenericDao<Config>(Config.class);
         super.setUp();
     }

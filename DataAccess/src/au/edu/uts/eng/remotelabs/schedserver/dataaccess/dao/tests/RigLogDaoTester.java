@@ -32,83 +32,70 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 27th March 2010
+ * @date 31st May 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
-
-import java.util.Date;
-
 import junit.framework.TestCase;
 
-import org.hibernate.Session;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserLockDao;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
 
 /**
- * Tests the {@link UserLockDao} class.
+ * Tests the {@link RigDao} class.
  */
-public class UserLockDaoTester extends TestCase
+public class RigLogDaoTester extends TestCase
 {
     /** Object of class under test. */
-    private UserLockDao dao;
+    private RigLogDao dao;
 
     @Override
     @Before
     public void setUp() throws Exception
     {
         DataAccessTestSetup.setup();
-        this.dao = new UserLockDao();
+        this.dao = new RigLogDao();
     }
-    
-    @Override
-    @After
-    public void tearDown() throws Exception
-    {
-        this.dao.closeSession();
-    }
-    
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#findLogs(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig, java.util.Date, java.util.Date)}.
+     */
     @Test
-    public void testFindLock()
+    public void testFindLogsRigDateDate()
     {
-         Session ses = DataAccessActivator.getNewSession();
-         ses.beginTransaction();
-         User user = new User("locktest", "ns", "USER");
-         ses.persist(user);
-         UserClass userClass= new UserClass();
-         userClass.setName("uc");
-         ses.persist(userClass);
-         ResourcePermission perm = new ResourcePermission();         
-         perm.setStartTime(new Date());
-         perm.setExpiryTime(new Date());
-         perm.setUserClass(userClass);
-         perm.setType("RIG");
-         ses.persist(perm);
-         UserLock lock = new UserLock(user, perm, true, "abc123");
-         ses.persist(lock);
-         ses.getTransaction().commit();
-         
-         UserLock ld = this.dao.findLock(user, perm);
-         assertNotNull(ld);
-         assertEquals(lock.getId(), ld.getId());
-         assertEquals(lock.getLockKey(), ld.getLockKey());
-         assertEquals(lock.getUser().getName(), ld.getUser().getName());
-         assertEquals(lock.getResourcePermission().getId(), ld.getResourcePermission().getId());
-         
-         ses.beginTransaction();
-         ses.delete(lock);
-         ses.delete(perm);
-         ses.delete(userClass);
-         ses.delete(user);
-         ses.getTransaction().commit();
+        this.dao.flush();
+        fail("Not yet implemented");
     }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#findLogsOfState(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig, java.lang.String, java.util.Date, java.util.Date)}.
+     */
+    @Test
+    public void testFindLogsOfStateRigStringDateDate()
+    {
+        fail("Not yet implemented");
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#findLogs(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType, java.util.Date, java.util.Date)}.
+     */
+    @Test
+    public void testFindLogsRigTypeDateDate()
+    {
+        fail("Not yet implemented");
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#findLogsOfState(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType, java.lang.String, java.util.Date, java.util.Date)}.
+     */
+    @Test
+    public void testFindLogsOfStateRigTypeStringDateDate()
+    {
+        fail("Not yet implemented");
+    }
+
 }

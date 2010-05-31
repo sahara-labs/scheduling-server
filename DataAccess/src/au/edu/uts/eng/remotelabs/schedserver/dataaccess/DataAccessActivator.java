@@ -53,6 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabili
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
@@ -97,6 +98,7 @@ public class DataAccessActivator implements BundleActivator
         cfg.addAnnotatedClass(ResourcePermission.class);
         cfg.addAnnotatedClass(Rig.class);
         cfg.addAnnotatedClass(RigCapabilities.class);
+        cfg.addAnnotatedClass(RigLog.class);
         cfg.addAnnotatedClass(RigType.class);
         cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
         cfg.addAnnotatedClass(User.class);
