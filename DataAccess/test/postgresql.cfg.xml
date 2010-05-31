@@ -16,6 +16,7 @@
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User" />

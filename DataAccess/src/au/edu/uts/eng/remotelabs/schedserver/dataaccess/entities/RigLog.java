@@ -107,7 +107,7 @@ public class RigLog implements Serializable
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rig", nullable = false)
+    @JoinColumn(name = "rig_id", nullable = false)
     public Rig getRig()
     {
         return this.rig;
