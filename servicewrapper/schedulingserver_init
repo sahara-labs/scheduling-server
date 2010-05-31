@@ -145,8 +145,12 @@ stop)
 status)
 	status
 	;;
+restart)
+	stop
+	start
+	;;
 *)
-	echo $"Usage: $0 {start|stop|status}"
+	echo $"Usage: $0 {start|restart|stop|status}"
 	exit 1
 esac
 
