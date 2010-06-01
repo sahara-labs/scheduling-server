@@ -61,7 +61,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission;

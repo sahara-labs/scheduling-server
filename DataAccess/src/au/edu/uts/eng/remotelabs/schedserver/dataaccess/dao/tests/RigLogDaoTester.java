@@ -43,7 +43,7 @@ import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 
 /**
  * Tests the {@link RigDao} class.

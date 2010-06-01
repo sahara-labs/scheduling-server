@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 31st May 2009
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup;
 
 import java.lang.reflect.Field;
 import java.util.Properties;

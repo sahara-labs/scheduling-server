@@ -58,7 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueInfo;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.InnerQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;

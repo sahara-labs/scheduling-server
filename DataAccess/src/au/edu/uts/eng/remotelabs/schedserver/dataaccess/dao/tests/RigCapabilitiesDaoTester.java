@@ -54,7 +54,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabil
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 
 /**
  * Tests the {@link RigCapabilitiesDao} class.

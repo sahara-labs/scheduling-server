@@ -53,7 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 
 /**
  * Tests the {@link SessionDao} class.

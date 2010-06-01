@@ -47,7 +47,7 @@ import org.junit.Before;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 
 /**
  * Tests the {@link GenericDao} class.

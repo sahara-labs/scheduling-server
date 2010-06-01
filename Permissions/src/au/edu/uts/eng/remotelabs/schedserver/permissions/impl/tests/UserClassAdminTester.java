@@ -46,7 +46,7 @@ import org.junit.Test;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.tests.DataAccessTestSetup;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.impl.UserClassAdmin;
 
 /**

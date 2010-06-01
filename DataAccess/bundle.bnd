@@ -2,7 +2,8 @@ Export-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess, \
 au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities, \
 au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao, \
 org.hibernate, org.hibernate.criterion 
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl, \
+au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup
 Include-Resource: lib/=lib/;-donotcopy=.svn
 Import-Package: !bitronix.tm, !com.ibm.ejs.jts.jta, !com.ibm.websphere.jtaextensions, !com.ibm.ws.Transaction, \
 !com.opensymphony.oscache.base, !com.opensymphony.oscache.general, !com.sun.*, !javax.swing.*, \
