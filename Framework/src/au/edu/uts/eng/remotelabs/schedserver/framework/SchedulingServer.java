@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.jar.JarFile;
 
@@ -67,25 +68,9 @@ public class SchedulingServer
     /** OSGi framework instance. */
     private static Framework framework;
 
-    /**
-     * Ordered list of bundles symbolic names which must be started in the specified
-     * order.
-     */
+    /** Ordered list of bundles symbolic names which must be started in the
+     *  specified order. */
     private final static List<String> SS_Bundles = new ArrayList<String>();
-
-    static
-    {
-        SchedulingServer.SS_Bundles.add("SchedulingServer-Configuration");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-Logger");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-TaskScheduler");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-DataAccess");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-LocalRigProvider");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-RigClientProxy");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-Queuer");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-Session");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-Permissions");
-        SchedulingServer.SS_Bundles.add("SchedulingServer-Server");
-    }
 
     /**
      * Runs the scheduling server until the static <code>stop</code> method
@@ -96,6 +81,24 @@ public class SchedulingServer
         System.out.println("Classpath:" + System.getProperty("java.class.path"));
         try
         {
+            /* Load the bundle manifest information. */
+            final InputStream mf = SchedulingServer.class.getResourceAsStream("META-INF/BundleManifest.xml");
+            if (mf == null)
+            {
+                System.out.println("Unable to start Scheduling Server because the mandatory bundle manifest has not " +
+                		"been found. This should packaged within the Scheduling Server main library in " +
+                		"'META-INF/BundleManifest.xml");
+                return;
+            }
+            Properties manifest = new Properties();
+            manifest.loadFromXML(mf);
+            
+            int n = 1;
+            while (manifest.contains("B" + n))
+            {
+                SchedulingServer.SS_Bundles.add(manifest.getProperty("B" + n));
+            }
+            
             /* Load and start framework. */
             final FrameworkFactory frmFactory = this.getFrameworkFactory();
             SchedulingServer.framework = frmFactory.newFramework(new FrameworkProperties().getProperties());
