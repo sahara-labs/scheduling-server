@@ -53,6 +53,7 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.OperationClient;
+import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.client.Stub;
 import org.apache.axis2.context.ConfigurationContext;
@@ -122,8 +123,10 @@ public class RigClientServiceImpl extends Stub
 
         this._serviceClient = new ServiceClient(configurationContext, this._service);
         configurationContext = this._serviceClient.getServiceContext().getConfigurationContext();
-        this._serviceClient.getOptions().setTo(new EndpointReference(targetEndpoint));
-        this._serviceClient.getOptions().setUseSeparateListener(useSeparateListener);
+        
+        Options opts = this._serviceClient.getOptions();
+        opts.setTo(new EndpointReference(targetEndpoint));
+        opts.setUseSeparateListener(useSeparateListener);
     }
 
     public RigClientServiceImpl(final ConfigurationContext configurationContext) throws AxisFault
@@ -139,6 +142,19 @@ public class RigClientServiceImpl extends Stub
     public RigClientServiceImpl(final String targetEndpoint) throws AxisFault
     {
         this(null, targetEndpoint);
+    }
+    
+    public RigClientServiceImpl(final String targetEndpoint, int tm) throws AxisFault
+    {
+        this.populateAxisService();
+
+        this._serviceClient = new ServiceClient(null, this._service);
+        this._serviceClient.getServiceContext().getConfigurationContext();
+        
+        Options opts = this._serviceClient.getOptions();
+        opts.setTo(new EndpointReference(targetEndpoint));
+        opts.setUseSeparateListener(false);
+        opts.setTimeOutInMilliSeconds(tm );
     }
 
     private static synchronized String getUniqueSuffix()
