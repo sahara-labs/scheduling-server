@@ -70,7 +70,7 @@ public class SchedulingServer
 
     /** Ordered list of bundles symbolic names which must be started in the
      *  specified order. */
-    private final static List<String> SS_Bundles = new ArrayList<String>();
+    private final static List<String> bundles = new ArrayList<String>();
 
     /**
      * Runs the scheduling server until the static <code>stop</code> method
@@ -81,31 +81,43 @@ public class SchedulingServer
         System.out.println("Classpath:" + System.getProperty("java.class.path"));
         try
         {
-            /* Load the bundle manifest information. */
-            final InputStream mf = SchedulingServer.class.getResourceAsStream("META-INF/BundleManifest.xml");
+            /* ----------------------------------------------------------------
+             * ---- 1) Load the list of mandatory bundles. The bundles are ----
+             * ----    loaded in the order they need to be started in.     ----  
+             * -------------------------------------------------------------- */
+            final InputStream mf = SchedulingServer.class.getResourceAsStream("/META-INF/BundleManifest.xml");
             if (mf == null)
             {
                 System.out.println("Unable to start Scheduling Server because the mandatory bundle manifest has not " +
                 		"been found. This should packaged within the Scheduling Server main library in " +
-                		"'META-INF/BundleManifest.xml");
+                		"'/META-INF/BundleManifest.xml");
                 return;
             }
-            Properties manifest = new Properties();
+            
+            final Properties manifest = new Properties();
             manifest.loadFromXML(mf);
             
             int n = 1;
-            while (manifest.contains("B" + n))
+            String sym = null;
+            while ((sym = manifest.getProperty("B" + n)) != null)
             {
-                SchedulingServer.SS_Bundles.add(manifest.getProperty("B" + n));
+                SchedulingServer.bundles.add(sym);
+                System.out.println("Mandatory bundle " + n + ": " + sym);
+                ++n;
             }
             
-            /* Load and start framework. */
+            /* ----------------------------------------------------------------
+             * ---- 2) Load the OSGI framework and start it up.            ----
+             * -------------------------------------------------------------- */
             final FrameworkFactory frmFactory = this.getFrameworkFactory();
             SchedulingServer.framework = frmFactory.newFramework(new FrameworkProperties().getProperties());
             SchedulingServer.framework.init();
             SchedulingServer.framework.start();
 
-            /* Add a shutdown hook to shutdown the framework cleanly. */
+            /* ----------------------------------------------------------------
+             * ---- 3) Add a shutdown hook to shutdown the OSGI framework  ----
+             * ----    and its installed bundles.                          ----
+             * -------------------------------------------------------------- */
             Runtime.getRuntime().addShutdownHook(new Thread()
             {
                 @Override
@@ -129,9 +141,9 @@ public class SchedulingServer
 
             /* Install mandatory scheduling server bundles in order. */
             /* First pass installs the bundle. */
-            for (int i = 0; i < SchedulingServer.SS_Bundles.size(); i++)
+            for (int i = 0; i < SchedulingServer.bundles.size(); i++)
             {
-                final String symName = SchedulingServer.SS_Bundles.get(i);
+                final String symName = SchedulingServer.bundles.get(i);
                 final File bundleJar = jars.remove(symName);
                 if (bundleJar == null)
                 {
@@ -389,7 +401,7 @@ public class SchedulingServer
              * Server bundle list in no particular order. */
             for (Entry<String, Bundle> e : runningBundles.entrySet())
             {
-                if (!SchedulingServer.SS_Bundles.contains(e.getKey()) && e.getValue().getBundleId() != 0)
+                if (!SchedulingServer.bundles.contains(e.getKey()) && e.getValue().getBundleId() != 0)
                 {
                     try
                     {
@@ -412,10 +424,10 @@ public class SchedulingServer
             }
             
             /* Stops the Scheduling Server bundles in the opposite order they are started. */
-            int sz = SchedulingServer.SS_Bundles.size();
+            int sz = SchedulingServer.bundles.size();
             for (int i = 1; i < sz; i++)
             {
-                String key = SchedulingServer.SS_Bundles.get(sz - i);
+                String key = SchedulingServer.bundles.get(sz - i);
                 if (runningBundles.containsKey(key))
                 {
                     try

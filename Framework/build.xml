@@ -69,7 +69,7 @@ Date: 28th December 2009
 				<exclude name="about.html" />
 			</zipfileset>
 		    <fileset dir="${build.classes.dir}"/>
-			<fileset dir="META-INF" />
+			<zipfileset dir="META-INF" prefix="META-INF" />
 		</jar>
 	</target>
 	
