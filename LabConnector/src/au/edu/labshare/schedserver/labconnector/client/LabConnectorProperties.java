@@ -36,8 +36,8 @@
 package au.edu.labshare.schedserver.labconnector.client;
 
 // Packages needed for reading properties file (without reinventing the wheel)
-import au.edu.uts.eng.remotelabs.rigclient.util.IConfig;
-import au.edu.uts.eng.remotelabs.rigclient.util.PropertiesConfig;
+//import org.osgi.util.tracker.ServiceTracker;
+//import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 
 public class LabConnectorProperties
 {
@@ -48,7 +48,7 @@ public class LabConnectorProperties
     public static String LABCONNECTOR_PATH            = "labconnector_wspath";
 
     /** LabConnector configuration. */
-    private IConfig      labConnectorConfig;
+    //private IConfig      labConnectorConfig;
     private String       labConnectorURL              = null;
 
     public LabConnectorProperties()
@@ -64,12 +64,12 @@ public class LabConnectorProperties
         try
         {
             // Read values from the configuration file
-            this.labConnectorConfig = new PropertiesConfig( LABCONNECTOR_PROPERTIES_PATH);
-            portNum = Integer.parseInt(this.labConnectorConfig.getProperty(LABCONNECTOR_PORTNUM));
-            hostname = this.labConnectorConfig.getProperty(LABCONNECTOR_HOSTNAME);
-            wsPath = this.labConnectorConfig.getProperty(LABCONNECTOR_PATH);
+            //this.labConnectorConfig = new PropertiesConfig( LABCONNECTOR_PROPERTIES_PATH);
+            //portNum = Integer.parseInt(this.labConnectorConfig.getProperty(LABCONNECTOR_PORTNUM));
+            //hostname = this.labConnectorConfig.getProperty(LABCONNECTOR_HOSTNAME);
+            //wsPath = this.labConnectorConfig.getProperty(LABCONNECTOR_PATH);
 
-            this.labConnectorURL = "http://" + hostname + ":" + Integer.toString(portNum) + wsPath;
+            //this.labConnectorURL = "http://" + hostname + ":" + Integer.toString(portNum) + wsPath;
         }
         catch (Exception e)
         {

@@ -51,9 +51,10 @@
 	<classpathentry kind="lib" path="lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.0.1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Server"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Logger"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/RigClient"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Configuration"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/SchedServer-Framework/lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

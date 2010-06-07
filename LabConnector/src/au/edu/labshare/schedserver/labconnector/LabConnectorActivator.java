@@ -36,16 +36,18 @@
 package au.edu.labshare.schedserver.labconnector;
 
 import org.apache.axis2.transport.http.AxisServlet;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 //import org.osgi.framework.Constants;
 //import org.osgi.framework.ServiceEvent;
 //import org.osgi.framework.ServiceReference;
-//import org.osgi.util.tracker.ServiceTracker;
 
 //Needed for Sahara
-
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
@@ -53,25 +55,61 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 public class LabConnectorActivator implements BundleActivator 
 {
-	/** Servlet container service registration. */
+    /** Servlet container service registration. */
     private ServiceRegistration serverReg;
-    private Logger				logger;
+    private Logger		logger;
+    
+    /** Configuration confService tracker. */
+    private ServiceTracker confService;
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
-    @Override
+        @Override
 	public void start(BundleContext context) throws Exception 
 	{
-		/* Used to debug whether servlet service is started or not */
+		/* Used to debug whether Servlet service is started or not */
 		this.logger = LoggerActivator.getLogger();
-	    this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
+	        this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
 		
-		/* Service to host the labconnector interface. */
-        ServletContainerService service = new ServletContainerService();
-        service.addServlet(new ServletContainer(new AxisServlet(), true));
-        this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
+	        /*Get the Configuration for the Properties*/
+	        ServiceReference ref = context.getServiceReference(Config.class.getName());
+	        
+	        if (ref == null)
+	        {
+	            /* Configuration confService not running, so attempt to start it. */
+	            Bundle[] bundles = context.getBundles();
+	            for (Bundle b : bundles)
+	            {
+	                if (b.getSymbolicName().equals("SchedulingServer-Configuration") && b.getState() == Bundle.INSTALLED
+	                        || b.getState() == Bundle.RESOLVED) 
+	                {
+	                    b.start();
+	                }
+	            }
+	            ref = context.getServiceReference(Config.class.getName());
+	        }
+	        
+	        if (ref != null)
+	        {
+	            /* Load all configuration properties. */
+	            this.confService = new ServiceTracker(context, ref, null);
+	            this.confService.open();
+	            Config conf = (Config)this.confService.getService();
+	            
+	            /* Common configuration. */
+	            conf.getProperty("Syslog_Local_Facility_Num", "1");
+	        }
+	        else
+	        {
+	            System.err.println("Unable to load LabConnector configuration, so using defaults.");
+	        }
+	        
+		/* Service to host the LabConnector interface. */
+	        ServletContainerService service = new ServletContainerService();
+	        service.addServlet(new ServletContainer(new AxisServlet(), true));
+	        this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
 	}
 
 	/*
