@@ -36,46 +36,131 @@
 package au.edu.labshare.schedserver.labconnector.client;
 
 // Packages needed for reading properties file (without reinventing the wheel)
-//import org.osgi.util.tracker.ServiceTracker;
-//import au.edu.uts.eng.remotelabs.schedserver.config.Config;
+import java.util.Properties;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 public class LabConnectorProperties
 {
     /** LabConnector properties configuration file location. */
-    public static String LABCONNECTOR_PROPERTIES_PATH = "resources/labconnector.properties";
+    //public static String LABCONNECTOR_PROPERTIES_PATH = "resources/labconnector.properties";
     public static String LABCONNECTOR_PORTNUM         = "labconnector_port";
     public static String LABCONNECTOR_HOSTNAME        = "labconnector_remotehost";
     public static String LABCONNECTOR_PATH            = "labconnector_wspath";
 
     /** LabConnector configuration. */
-    //private IConfig      labConnectorConfig;
-    private String       labConnectorURL              = null;
+    private Config       labConnectorConfig;
+    private Logger       logger;
+    private final Properties   labConnectorProperties;
+    
+    /** Used to store the configuration value*/
+    public static String LABCONNECTOR_CONNECTION_STR  = null;
+
+    public LabConnectorProperties(BundleContext context)
+    {        
+        /* 
+         * Load the default properties
+         */
+        this();
+        
+        /*
+         * Log anything that goes wrong        
+         */
+        this.logger = LoggerActivator.getLogger();
+        
+        ServiceReference ref = context.getServiceReference(Config.class.getName());
+        this.labConnectorConfig = (Config)context.getService(ref);
+        
+        /*
+         * Get the properties from either SchedServer/trunk/conf/schedulingserver.properties file
+         * or from default values
+         */
+        loadConfiguration();
+    }
+    
 
     public LabConnectorProperties()
     {
+        this.labConnectorProperties = new Properties();
+        populateDefaults();
     }
+
 
     public String getProperties()
     {
-        final int portNum;
-        final String hostname;
-        final String wsPath;
-
-        try
+        if(LABCONNECTOR_CONNECTION_STR == null)
         {
-            // Read values from the configuration file
-            //this.labConnectorConfig = new PropertiesConfig( LABCONNECTOR_PROPERTIES_PATH);
-            //portNum = Integer.parseInt(this.labConnectorConfig.getProperty(LABCONNECTOR_PORTNUM));
-            //hostname = this.labConnectorConfig.getProperty(LABCONNECTOR_HOSTNAME);
-            //wsPath = this.labConnectorConfig.getProperty(LABCONNECTOR_PATH);
-
-            //this.labConnectorURL = "http://" + hostname + ":" + Integer.toString(portNum) + wsPath;
+            return "http://" + 
+                    this.labConnectorProperties.getProperty(LabConnectorProperties.LABCONNECTOR_HOSTNAME) + ":" + 
+                    this.labConnectorProperties.getProperty(LabConnectorProperties.LABCONNECTOR_PORTNUM) + 
+                    this.labConnectorProperties.getProperty(LabConnectorProperties.LABCONNECTOR_PATH);
         }
-        catch (Exception e)
+        else
+            return LABCONNECTOR_CONNECTION_STR;
+    }
+    
+    /**
+     * Loads the configuration properties. The following list contains
+     * the configuration keys and expected data types:
+     * <ul>
+     *  <li>labconnector_remotehost - String - The LabConnector URL on the remote end.</li>
+     *  <li>labconnector_port - PortNumber.</li>
+     *  <li>labconnector_wspath - String - WebService path to the LabConnector hosted service.</li>
+     * </ul>
+     */
+    private void loadConfiguration()
+    {
+        
+        String remotehostProperty = this.labConnectorConfig.getProperty(LabConnectorProperties.LABCONNECTOR_HOSTNAME);
+        if (remotehostProperty == null)
         {
-            e.printStackTrace();
+            this.logger.warn("LabConnector Remote Host configuration property (labconnector_remotehost) not found," +
+                    " using the default (" + this.labConnectorProperties.getProperty(LabConnectorProperties.LABCONNECTOR_HOSTNAME) + ").");
         }
-
-        return this.labConnectorURL;
+        else
+        {
+            this.logger.info("LabConnector Remote Host name as " + remotehostProperty + ".");
+            //this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_HOSTNAME, remotehostProperty);
+            LABCONNECTOR_CONNECTION_STR = "http://" + remotehostProperty + ":"; 
+        }
+        
+        String portNumProperty = this.labConnectorConfig.getProperty(LabConnectorProperties.LABCONNECTOR_PORTNUM);
+        if (portNumProperty == null)
+        {
+            this.logger.warn("LabConnector Remote Port Number configuration property (labconnector_port) not found," +
+                    " using the default (" + this.labConnectorProperties.getProperty(LabConnectorProperties.LABCONNECTOR_PORTNUM) + ").");
+        }
+        else
+        {
+            this.logger.info("LabConnector Remote Port Number as " + portNumProperty + ".");
+            //this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_PORTNUM, portNumProperty);
+            LABCONNECTOR_CONNECTION_STR = LABCONNECTOR_CONNECTION_STR + portNumProperty; 
+        }
+        
+        String wsPathProperty = this.labConnectorConfig.getProperty(LabConnectorProperties.LABCONNECTOR_PATH);
+        if (wsPathProperty == null)
+        {
+            this.logger.warn("LabConnector Web Services Path configuration property (labconnector_wspath) not found," +
+                    " using the default (" + this.labConnectorProperties.getProperty(LabConnectorProperties.LABCONNECTOR_PATH) + ").");
+        }
+        else
+        {
+            this.logger.info("LabConnector Web Services Path configuration property as " + wsPathProperty + ".");
+            //this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_PATH, wsPathProperty);
+            LABCONNECTOR_CONNECTION_STR = LABCONNECTOR_CONNECTION_STR + wsPathProperty; 
+        }
+    }
+    
+    private void populateDefaults()
+    {        
+        /* LabConnector specific defaults. */
+        this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_HOSTNAME, "ilabs-test.eng.uts.edu.au");
+        this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_PORTNUM, "7070");
+        this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_PATH, "/LabConenctor/LabConnector.asmx");
     }
 }
