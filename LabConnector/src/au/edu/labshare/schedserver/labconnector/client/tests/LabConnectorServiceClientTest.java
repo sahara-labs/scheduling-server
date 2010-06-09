@@ -7,6 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import au.edu.labshare.schedserver.labconnector.client.LabConnectorServiceClient;
+import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse;
 
 public class LabConnectorServiceClientTest
 {
@@ -34,16 +35,17 @@ public class LabConnectorServiceClientTest
     @Test
     public void testSubmitCall()
     {
-        int experimentID = 0;
+        //int experimentID = 0;
 
         // Test the submit call
         LabConnectorServiceClient labConnectorServiceClient;
         labConnectorServiceClient = new LabConnectorServiceClient();
 
-        experimentID = labConnectorServiceClient.submitBatchExperiment(
+        SubmitExperimentResponse  submitResp = labConnectorServiceClient.submitBatchExperiment(
                 experimentSpecs, labID, priority, userID);
 
-        assertTrue(experimentID > 0);
+        assertNotNull(submitResp);
+        //assertTrue(experimentID > 0);
         // fail("Not yet implemented");
     }
 

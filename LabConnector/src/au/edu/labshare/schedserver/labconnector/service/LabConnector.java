@@ -1,5 +1,7 @@
 package au.edu.labshare.schedserver.labconnector.service;
 
+import static org.junit.Assert.assertTrue;
+import au.edu.labshare.schedserver.labconnector.client.LabConnectorServiceClient;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelBookingTime;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelBookingTimeResponse;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelMaintenanceTime;
@@ -216,8 +218,26 @@ public class LabConnector implements LabConnectorSkeletonInterface
     @Override
     public SubmitExperimentResponse submitExperiment(SubmitExperiment submitExperiment)
     {
-        // TODO Auto-generated method stub
-        return null;
+        //Invoke the LabConnector Proxy client to call the .NET LabConnector Proxy to iLabs
+        au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse submitExptResponse;
+        
+        LabConnectorServiceClient labConnectorServiceClient;
+        labConnectorServiceClient = new LabConnectorServiceClient();
+        
+        submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
+                                    submitExperiment.getExperimentSpecs(), submitExperiment.getLabID(), 
+                                    submitExperiment.getPriority(), submitExperiment.getUserID());
+
+        //Convert the type from the reponse parameters that are expected
+        //SubmitExperimentResponse response = new SubmitExperimentResponse();
+        //au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse providerResp = new  au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse();
+        //response.setRegisterRigResponse(providerResp);
+        
+        //submitExptResponse = this.labConnectorService.submitExperiment(this.submitExpt);
+        SubmitExperimentResponse submitExptRespType = new SubmitExperimentResponse();
+        //submitExptRespType. = sub
+        
+        return submitExptRespType;
     }
 
 }

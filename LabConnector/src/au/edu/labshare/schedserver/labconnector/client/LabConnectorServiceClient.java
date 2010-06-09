@@ -38,6 +38,7 @@ package au.edu.labshare.schedserver.labconnector.client;
 
 import java.rmi.RemoteException;
 import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub;
+import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse;
 
 public class LabConnectorServiceClient
 {
@@ -68,7 +69,7 @@ public class LabConnectorServiceClient
      * @param args
      * @throws RemoteException
      */
-    public int submitBatchExperiment(String experimentSpecs, String labID,
+    public SubmitExperimentResponse submitBatchExperiment(String experimentSpecs, String labID,
             int priority, String userID)
     {
         try
@@ -90,19 +91,15 @@ public class LabConnectorServiceClient
             submitExpt.setPriority(priority);
             submitExpt.setUserID(userID);
 
-            return labconnectorstub.submitExperiment(submitExpt)
-                    .getExperimentID();
+            return labconnectorstub.submitExperiment(submitExpt);
+            //return labconnectorstub.submitExperiment(submitExpt).getExperimentID();
 
-            // Setup the WSDL response
-            // LabConnectorStub.SubmitExperimentResponse submissionResp = new
-            // LabConnectorStub.SubmitExperimentResponse();
-            // return submissionResp.getExperimentID();
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        return -1;
+        return null;
     }
 }
