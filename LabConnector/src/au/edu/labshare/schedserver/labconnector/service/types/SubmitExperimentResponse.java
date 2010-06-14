@@ -46,8 +46,7 @@ package au.edu.labshare.schedserver.labconnector.service.types;
  * SubmitExperimentResponse bean class
  */
 @SuppressWarnings({"unchecked", "unused", "serial"})
-public class SubmitExperimentResponse implements
-        org.apache.axis2.databinding.ADBBean
+public class SubmitExperimentResponse implements org.apache.axis2.databinding.ADBBean
 {
 
     public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(

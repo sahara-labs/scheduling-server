@@ -41,8 +41,7 @@ public class LabConnectorServiceClientTest
         LabConnectorServiceClient labConnectorServiceClient;
         labConnectorServiceClient = new LabConnectorServiceClient();
 
-        SubmitExperimentResponse  submitResp = labConnectorServiceClient.submitBatchExperiment(
-                experimentSpecs, labID, priority, userID);
+        SubmitExperimentResponse  submitResp = labConnectorServiceClient.submitBatchExperiment(experimentSpecs, labID, priority, userID);
 
         assertNotNull(submitResp);
         //assertTrue(experimentID > 0);
