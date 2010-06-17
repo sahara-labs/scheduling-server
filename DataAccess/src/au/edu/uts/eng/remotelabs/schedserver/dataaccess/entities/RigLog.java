@@ -118,7 +118,7 @@ public class RigLog implements Serializable
         this.rig = rig;
     }
 
-    @Column(name = "old_state", nullable = false)
+    @Column(name = "old_state", nullable = false, length = 20)
     public String getOldState()
     {
         return this.oldState;
@@ -129,7 +129,7 @@ public class RigLog implements Serializable
         this.oldState = oldState;
     }
 
-    @Column(name = "new_state", nullable = false)
+    @Column(name = "new_state", nullable = false, length = 20)
     public String getNewState()
     {
         return this.newState;
@@ -140,7 +140,7 @@ public class RigLog implements Serializable
         this.newState = newState;
     }
 
-    @Column(name = "reason", nullable = false)
+    @Column(name = "reason", nullable = false, length = 1024)
     public String getReason()
     {
         return this.reason;

@@ -301,7 +301,7 @@ public class Session implements java.io.Serializable
         this.requestedResourceId = requestedResourceId;
     }
 
-    @Column(name = "requested_resource_name", nullable = false, length = 65535)
+    @Column(name = "requested_resource_name", nullable = false, length = 1024)
     public String getRequestedResourceName()
     {
         return this.requestedResourceName;
@@ -335,7 +335,7 @@ public class Session implements java.io.Serializable
         this.activityLastUpdated = activityLastUpdated;
     }
 
-    @Column(name = "assigned_rig_name", nullable = true, length = 65535)
+    @Column(name = "assigned_rig_name", nullable = true, length = 50)
     public String getAssignedRigName()
     {
         return this.assignedRigName;
@@ -403,7 +403,7 @@ public class Session implements java.io.Serializable
         this.removalTime = removalTime;
     }
 
-    @Column(name = "removal_reason", nullable = true, length = 65535)
+    @Column(name = "removal_reason", nullable = true, length = 1024)
     public String getRemovalReason()
     {
         return this.removalReason;
@@ -414,7 +414,7 @@ public class Session implements java.io.Serializable
         this.removalReason = removalReason;
     }
 
-    @Column(name = "code_reference", nullable = true, length = 65535)
+    @Column(name = "code_reference", nullable = true, length = 1024)
     public String getCodeReference()
     {
         return this.codeReference;

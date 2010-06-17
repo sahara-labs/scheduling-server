@@ -102,7 +102,7 @@ public class Config implements java.io.Serializable
         this.key = key;
     }
 
-    @Column(name = "value", nullable = false, length = 65535)
+    @Column(name = "value", nullable = false, length = 1024)
     public String getValue()
     {
         return this.value;
