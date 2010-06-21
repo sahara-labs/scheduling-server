@@ -161,6 +161,6 @@ public class LabConnectorProperties
         /* LabConnector specific defaults. */
         this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_HOSTNAME, "ilabs-test.eng.uts.edu.au");
         this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_PORTNUM, "7070");
-        this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_PATH, "/LabConenctor/LabConnector.asmx");
+        this.labConnectorProperties.setProperty(LabConnectorProperties.LABCONNECTOR_PATH, "/LabConnector/LabConnector.asmx");
     }
 }

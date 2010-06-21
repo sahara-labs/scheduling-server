@@ -241,7 +241,8 @@ public class LabConnector implements LabConnectorSkeletonInterface
             submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
                                         submitExperiment.getExperimentSpecs(), submitExperiment.getLabID(), 
                                         submitExperiment.getPriority(), submitExperiment.getUserID());
-                        
+            
+            submitExptRespType.setErrorMessage(submitExptResponse.getErrorMessage());            
             submitExptRespType.setExperimentID(submitExptResponse.getExperimentID());
         }
         catch(Exception e)
