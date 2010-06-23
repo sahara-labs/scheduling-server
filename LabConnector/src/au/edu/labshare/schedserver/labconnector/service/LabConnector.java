@@ -1,6 +1,6 @@
 package au.edu.labshare.schedserver.labconnector.service;
 
-import au.edu.labshare.schedserver.labconnector.client.LabConnectorProperties;
+import au.edu.labshare.schedserver.labconnector.client.LabConnectorServiceClient;
 import au.edu.labshare.schedserver.labconnector.service.LabConnectorExperimentStorage;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelBookingTime;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelBookingTimeResponse;
