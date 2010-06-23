@@ -1,6 +1,7 @@
 package au.edu.labshare.schedserver.labconnector.service;
 
-import au.edu.labshare.schedserver.labconnector.client.LabConnectorServiceClient;
+import au.edu.labshare.schedserver.labconnector.client.LabConnectorProperties;
+import au.edu.labshare.schedserver.labconnector.service.LabConnectorExperimentStorage;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelBookingTime;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelBookingTimeResponse;
 import au.edu.labshare.schedserver.labconnector.service.types.CancelMaintenanceTime;
@@ -56,10 +57,13 @@ public class LabConnector implements LabConnectorSkeletonInterface
 {
     /** Logger. */
     private Logger logger;
+
+	LabConnectorExperimentStorage labconnectorExptStorage;
     
     public LabConnector()
     {
         this.logger = LoggerActivator.getLogger();
+		labconnectorExptStorage = new LabConnectorExperimentStorage();
     }
 
     @Override
@@ -93,7 +97,14 @@ public class LabConnector implements LabConnectorSkeletonInterface
     @Override
     public GetExperimentResultsResponse getExperimentResults(GetExperimentResults getExperimentResults)
     {
-        // TODO Auto-generated method stub
+        //Technically, this is what the notify() call should call once it has completed experiment submission
+        /*GetExperimentResultsResponse experimentResultsResponse = new GetExperimentResultsResponse();
+        
+        //Get the userID and the experimentResults to write to disk
+        experimentResultsResponse.setLabResultsXML(null);
+        experimentResultsResponse.setComplete(true);
+        experimentResultsResponse.setAvailability(true);*/
+        
         return null;
     }
 
@@ -191,8 +202,26 @@ public class LabConnector implements LabConnectorSkeletonInterface
     @Override
     public SaveExperimentResultsResponse saveExperimentResults(SaveExperimentResults saveExperimentResults)
     {
-        // TODO Auto-generated method stub
-        return null;
+        //Establish a response 
+        SaveExperimentResultsResponse saveExperimentResultsResponse = new SaveExperimentResultsResponse();
+        
+        //Get the userID and the experimentResults to write to disk
+        String userID = saveExperimentResults.getUserID();
+        String exptResultsXML = saveExperimentResults.getExperimentResultsXML();
+        
+        //Write results to disk so that it can accessed by the user - by default it should be /home/userID
+        if(this.labconnectorExptStorage.writeExperimentResults(userID, exptResultsXML))
+        {
+            saveExperimentResultsResponse.setStorageResponse(true);
+            saveExperimentResultsResponse.setErrorMessage("None");
+        }
+        else
+        {
+            saveExperimentResultsResponse.setStorageResponse(false);
+            saveExperimentResultsResponse.setErrorMessage("Experiment Storage could not be accessed");
+        }
+            
+        return new SaveExperimentResultsResponse();
     }
 
     @Override
