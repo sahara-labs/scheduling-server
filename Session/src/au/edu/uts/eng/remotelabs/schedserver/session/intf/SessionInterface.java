@@ -183,7 +183,7 @@ public class SessionInterface implements SessionSkeletonInterface
                                     (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
                                      Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
                             info.setWarningMessage(rmTime > 0 ?
-                                    "If you do not use the rig before " + rmTime + " seconds you will be removed from the rig." :
+                                    "If you do not use the rig within " + rmTime + " seconds you will be removed from the rig." :
                                     "You are being removed from the rig.");
                         }
                         else
