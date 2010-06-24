@@ -51,6 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 //Used internally to initialise the properties
 import au.edu.labshare.schedserver.labconnector.client.LabConnectorProperties;
+import au.edu.labshare.schedserver.labconnector.service.LabConnectorExperimentStorage;
 
 public class LabConnectorActivator implements BundleActivator 
 {
@@ -68,6 +69,7 @@ public class LabConnectorActivator implements BundleActivator
          /*Initialise the properties for the configuration*/
          this.logger = LoggerActivator.getLogger();
          new LabConnectorProperties(context); 
+         new LabConnectorExperimentStorage(context);
         
          /* Service to host the LabConnector interface. */
 	 ServletContainerService service = new ServletContainerService();

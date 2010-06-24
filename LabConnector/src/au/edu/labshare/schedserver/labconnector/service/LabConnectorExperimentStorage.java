@@ -27,7 +27,7 @@ public class LabConnectorExperimentStorage
     private final Properties   labConnectorStorageProperties;
     
     /** Used to store the configuration value*/
-    public static String LABCONNECTOR_STORELOC_STR  = null;
+    public static String LABCONNECTOR_STORELOC_STR  = "labconnector_storeloc";
 
     public LabConnectorExperimentStorage(BundleContext context)
     {        
