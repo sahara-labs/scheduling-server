@@ -40,7 +40,7 @@
 Name: SchedulingServer
 Summary: Schedules and assigns remote laboratory rigs.
 Version: 2.0
-Release: 2
+Release: 3
 License: BSD
 Group: Sahara
 
