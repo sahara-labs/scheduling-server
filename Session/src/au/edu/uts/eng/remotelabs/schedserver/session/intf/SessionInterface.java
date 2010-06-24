@@ -166,8 +166,8 @@ public class SessionInterface implements SessionSkeletonInterface
             if (ses.isInGrace())
             {
                 info.setWarningMessage(remainingTime > 0 ? 
-                        "You will be removed from the rig in " + remainingTime + " seconds." :
-                        "You are being removed from the rig.");
+                        "Your session will expire in " + remainingTime + " seconds." :
+                        "Your session is being terminated.");
             }
             else
             {
@@ -183,8 +183,8 @@ public class SessionInterface implements SessionSkeletonInterface
                                     (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
                                      Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
                             info.setWarningMessage(rmTime > 0 ?
-                                    "If you do not use the rig within " + rmTime + " seconds you will be removed from the rig." :
-                                    "You are being removed from the rig.");
+                                    "Your session will be terminated if you do not use this rig within " + rmTime + " seconds." :
+                                    "Your session is being terminated.");
                         }
                         else
                         {
