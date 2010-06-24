@@ -137,8 +137,8 @@ public class SessionExpiryChecker implements Runnable
                     db.getTransaction().commit();
                     
                     /* Notification warning. */
-                    if (this.notTest) new RigNotifier().notify("Your session will end in " + remaining + " seconds. " +
-                    		"After this you be removed, so please logoff.", ses, db);
+                    if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
+                    		"Please finish and exit.", ses, db);
                 }
                 else if (QueueInfo.isQueued(ses.getRig(), db))
                 {
