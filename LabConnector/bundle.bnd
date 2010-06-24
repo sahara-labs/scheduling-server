@@ -8,7 +8,7 @@ Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
 !org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
 !org.jdom.*, !javax.*, !sun.*, !nu.xom, \
 au.edu.uts.eng.remotelabs.schedserver.server, *
-Private-Package: au.edu.labshare.schedserver.labconnector.client
+Private-Package: au.edu.labshare.schedserver.labconnector.client, au.edu.labshare.schedserver.labconnector.service, au.edu.labshare.schedserver.labconnector.service.types
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
 Export-Package: au.edu.labshare.schedserver.labconnector
