@@ -46,7 +46,7 @@ Date: 28th December 2009
 	
 	<!-- Generate the database schema in DDL from the mapping entity 
          annotations. -->
-	<target name="schema" depends="schema-mysql,schema-postgresql,schema-doc" />
+	<target name="schema" depends="schema-mysql,schema-postgresql,schema-mssql,schema-doc" />
 	
 	<target name="schema-mysql" depends="build">
 		<taskdef name="hibernatetool" classpathref="classpath.all" 
