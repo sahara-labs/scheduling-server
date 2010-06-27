@@ -100,12 +100,14 @@ public class AddUserAssociation implements ADBBean
         return new OMSourcedElementImpl(AddUserAssociation.MY_QNAME, factory, dataSource);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
@@ -116,6 +118,7 @@ public class AddUserAssociation implements ADBBean
         this.addUserAssociation.serialize(AddUserAssociation.MY_QNAME, factory, xmlWriter);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.addUserAssociation.getPullParser(AddUserAssociation.MY_QNAME);

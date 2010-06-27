@@ -178,7 +178,7 @@ public class SessionMessageReceiverInOut extends AbstractInOutMessageReceiver
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
     {
         final Map<String, String> returnMap = new HashMap<String, String>();

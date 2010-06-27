@@ -101,12 +101,14 @@ public class UnlockUserLockResponse implements ADBBean
 
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
@@ -117,6 +119,7 @@ public class UnlockUserLockResponse implements ADBBean
         this.localUnlockUserLockResponse.serialize(UnlockUserLockResponse.MY_QNAME, factory, xmlWriter);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.localUnlockUserLockResponse.getPullParser(UnlockUserLockResponse.MY_QNAME);

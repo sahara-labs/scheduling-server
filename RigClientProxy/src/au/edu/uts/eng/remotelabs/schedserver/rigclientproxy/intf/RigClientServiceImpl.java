@@ -97,14 +97,13 @@ import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.SlaveRele
 /**
  * RigClient service implementation.
  */
-@SuppressWarnings("unchecked")
 public class RigClientServiceImpl extends Stub
 {
     protected AxisOperation[] _operations;
 
-    private final HashMap faultExceptionNameMap = new HashMap();
-    private final HashMap faultExceptionClassNameMap = new HashMap();
-    private final HashMap faultMessageMap = new HashMap();
+    private final HashMap<?, ?> faultExceptionNameMap = new HashMap<Object, Object>();
+    private final HashMap<?, ?> faultExceptionClassNameMap = new HashMap<Object, Object>();
+    private final HashMap<?, ?> faultMessageMap = new HashMap<Object, Object>();
 
     private static int counter = 0;
     
@@ -292,10 +291,10 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
 
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
@@ -387,11 +386,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                  
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
@@ -481,10 +480,10 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
@@ -575,11 +574,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -671,11 +670,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -768,11 +767,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -863,11 +862,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -959,11 +958,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -1056,11 +1055,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -1152,11 +1151,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -1247,11 +1246,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -1343,11 +1342,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -1438,11 +1437,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -1535,11 +1534,11 @@ public class RigClientServiceImpl extends Stub
                     {
                         final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
                                 .getQName());
-                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
                         final Exception ex = (Exception) exceptionClass.newInstance();
 
                         final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
-                        final Class messageClass = Class.forName(messageClassName);
+                        final Class<?> messageClass = Class.forName(messageClassName);
                         final Object messageObject = this.fromOM(faultElt, messageClass, null);
                         final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
                         m.invoke(ex, new Object[] { messageObject });
@@ -1591,7 +1590,7 @@ public class RigClientServiceImpl extends Stub
     private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
     {
         final Map<String, String> returnMap = new HashMap<String, String>();
-        final Iterator namespaceIterator = env.getAllDeclaredNamespaces();
+        final Iterator<?> namespaceIterator = env.getAllDeclaredNamespaces();
         while (namespaceIterator.hasNext())
         {
             final OMNamespace ns = (OMNamespace) namespaceIterator.next();
@@ -1830,7 +1829,7 @@ public class RigClientServiceImpl extends Stub
         }
     }
 
-    private Object fromOM(final OMElement param, final Class type, final Map<String, String> extraNamespaces)
+    private Object fromOM(final OMElement param, final Class<?> type, final Map<String, String> extraNamespaces)
             throws AxisFault
     {
         try

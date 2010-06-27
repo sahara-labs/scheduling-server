@@ -99,12 +99,14 @@ public class GetUserClassesForUser implements ADBBean
         return new OMSourcedElementImpl(GetUserClassesForUser.MY_QNAME, factory, dataSource);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
@@ -115,6 +117,7 @@ public class GetUserClassesForUser implements ADBBean
         this.getUserClassesForUser.serialize(GetUserClassesForUser.MY_QNAME, factory, xmlWriter);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.getUserClassesForUser.getPullParser(GetUserClassesForUser.MY_QNAME);

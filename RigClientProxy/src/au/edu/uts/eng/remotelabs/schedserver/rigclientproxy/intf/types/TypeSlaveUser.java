@@ -124,6 +124,7 @@ public class TypeSlaveUser implements ADBBean
         return new OMSourcedElementImpl(TypeSlaveUser.MY_QNAME, factory, dataSource);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
 
@@ -147,12 +148,14 @@ public class TypeSlaveUser implements ADBBean
         return prefix;
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {

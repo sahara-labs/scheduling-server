@@ -100,12 +100,14 @@ public class GetSessionInformation implements ADBBean
         return new OMSourcedElementImpl(GetSessionInformation.MY_QNAME, factory, dataSource);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
@@ -116,6 +118,7 @@ public class GetSessionInformation implements ADBBean
         this.getSessionInformation.serialize(GetSessionInformation.MY_QNAME, factory, xmlWriter);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.getSessionInformation.getPullParser(GetSessionInformation.MY_QNAME);

@@ -104,6 +104,7 @@ public class AllocateResponse implements ADBBean
 
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
 
@@ -128,6 +129,7 @@ public class AllocateResponse implements ADBBean
         return prefix;
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory,
             final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
@@ -135,6 +137,7 @@ public class AllocateResponse implements ADBBean
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter, 
             final boolean serializeType) throws XMLStreamException, ADBException
     {

@@ -101,12 +101,14 @@ public class AddPermissionResponse implements ADBBean
         return new OMSourcedElementImpl(AddPermissionResponse.MY_QNAME, factory, dataSource);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
@@ -117,6 +119,7 @@ public class AddPermissionResponse implements ADBBean
         this.addPermissionResponse.serialize(AddPermissionResponse.MY_QNAME, factory, xmlWriter);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.addPermissionResponse.getPullParser(AddPermissionResponse.MY_QNAME);

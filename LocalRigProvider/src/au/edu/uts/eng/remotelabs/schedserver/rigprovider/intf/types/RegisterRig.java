@@ -107,6 +107,7 @@ public class RegisterRig implements ADBBean
                 dataSource);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory,
             final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
@@ -114,6 +115,7 @@ public class RegisterRig implements ADBBean
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory,
             final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException,
@@ -126,6 +128,7 @@ public class RegisterRig implements ADBBean
         this.registerRig.serialize(RegisterRig.MY_QNAME, factory, xmlWriter);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.registerRig.getPullParser(RegisterRig.MY_QNAME);

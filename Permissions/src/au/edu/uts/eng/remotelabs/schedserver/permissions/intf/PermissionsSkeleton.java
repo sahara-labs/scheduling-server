@@ -101,36 +101,43 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLo
  */
 public class PermissionsSkeleton implements PermissionsSkeletonInterface
 {
+    @Override
     public AddUserLockResponse addUserLock(final AddUserLock request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUserLock");
     }
 
+    @Override
     public AddPermissionResponse addPermission(final AddPermission request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addPermission");
     }
 
+    @Override
     public AddUserResponse addUser(final AddUser request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUser");
     }
 
+    @Override
     public DeleteUserResponse deleteUser(final DeleteUser request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUser");
     }
+    @Override
     public GetUserClassesForUserResponse getUserClassesForUser(final GetUserClassesForUser request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUserClassesForUser");
     }
 
+    @Override
     public DeleteAcademicPermissionResponse deleteAcademicPermission(
             final DeleteAcademicPermission request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteAcademicPermission");
     }
 
+    @Override
     public GetAcademicPermissionsForAcademicResponse getAcademicPermissionsForAcademic(
             final GetAcademicPermissionsForAcademic request)
     {
@@ -138,98 +145,117 @@ public class PermissionsSkeleton implements PermissionsSkeletonInterface
                 + "#getAcademicPermissionsForAcademic");
     }
 
+    @Override
     public DeleteUserAssociationResponse deleteUserAssociation(final DeleteUserAssociation request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUserAssociation");
     }
 
+    @Override
     public GetPermissionsForUserClassResponse getPermissionsForUserClass(
             final GetPermissionsForUserClass request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getPermissionsForUserClass");
     }
 
+    @Override
     public EditPermissionResponse editPermission(final EditPermission request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editPermission");
     }
 
+    @Override
     public EditUserClassResponse editUserClass(final EditUserClass request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editUserClass");
     }
 
+    @Override
     public DeleteUserLockResponse deleteUserLock(final DeleteUserLock request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUserLock");
     }
 
+    @Override
     public EditAcademicPermissionResponse editAcademicPermission(final EditAcademicPermission request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editAcademicPermission");
     }
 
+    @Override
     public DeleteUserClassResponse deleteUserClass(final DeleteUserClass request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deleteUserClass");
     }
 
+    @Override
     public AddUserClassResponse addUserClass(final AddUserClass request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUserClass");
     }
 
+    @Override
     public DeletePermissionResponse deletePermission(final DeletePermission request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#deletePermission");
     }
 
+    @Override
     public GetPermissionsForUserResponse getPermissionsForUser(final GetPermissionsForUser request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getPermissionsForUser");
     }
 
 
+    @Override
     public GetUsersInUserClassResponse getUsersInUserClass(final GetUsersInUserClass request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUsersInUserClass");
     }
 
+    @Override
     public AddUserAssociationResponse addUserAssociation(final AddUserAssociation request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addUserAssociation");
     }
 
+    @Override
     public GetUserResponse getUser(final GetUser request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUser");
     }
 
+    @Override
     public GetAcademicPermissionResponse getAcademicPermission(final GetAcademicPermission request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getAcademicPermission");
     }
 
+    @Override
     public AddAcademicPermissionResponse addAcademicPermission(final AddAcademicPermission request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#addAcademicPermission");
     }
 
+    @Override
     public UnlockUserLockResponse unlockUserLock(final UnlockUserLock request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#unlockUserLock");
     }
 
+    @Override
     public GetUserClassesResponse getUserClasses(final GetUserClasses request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUserClasses");
     }
 
+    @Override
     public BulkAddUserClassUsersResponse bulkAddUserClassUsers(final BulkAddUserClassUsers request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#bulkAddUserClassUsers");
     }
 
+    @Override
     public GetAcademicPermissionsForUserClassResponse getAcademicPermissionsForUserClass(
             final GetAcademicPermissionsForUserClass request)
     {
@@ -237,16 +263,19 @@ public class PermissionsSkeleton implements PermissionsSkeletonInterface
                 + "#getAcademicPermissionsForUserClass");
     }
 
+    @Override
     public GetPermissionResponse getPermission(final GetPermission getPermission52)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getPermission");
     }
 
+    @Override
     public GetUserClassResponse getUserClass(final GetUserClass request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#getUserClass");
     }
 
+    @Override
     public EditUserResponse editUser(final EditUser request)
     {
         throw new UnsupportedOperationException("Called " + this.getClass().getName() + "#editUser");

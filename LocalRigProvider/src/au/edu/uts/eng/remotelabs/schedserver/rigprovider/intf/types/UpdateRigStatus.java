@@ -99,12 +99,14 @@ public class UpdateRigStatus implements ADBBean
         return new OMSourcedElementImpl(UpdateRigStatus.MY_QNAME, factory, dataSource);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
@@ -115,6 +117,7 @@ public class UpdateRigStatus implements ADBBean
         this.updateRigStatus.serialize(UpdateRigStatus.MY_QNAME, factory, xmlWriter);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.updateRigStatus.getPullParser(UpdateRigStatus.MY_QNAME);

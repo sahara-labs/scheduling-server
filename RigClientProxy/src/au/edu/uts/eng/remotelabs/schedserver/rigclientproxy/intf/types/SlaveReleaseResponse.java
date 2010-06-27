@@ -91,6 +91,7 @@ public class SlaveReleaseResponse implements ADBBean
         return new OMSourcedElementImpl(SlaveReleaseResponse.MY_QNAME, factory, dataSource);
     }
 
+    @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         return this.slaveReleaseResponse.getPullParser(SlaveReleaseResponse.MY_QNAME);
@@ -101,12 +102,14 @@ public class SlaveReleaseResponse implements ADBBean
         return this.slaveReleaseResponse;
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
