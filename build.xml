@@ -106,12 +106,16 @@ Date: 28th December 2009
 		</subant>
 	</target>
 	
+	<!-- Linux Service Wrapper. -->
+	<target name="lin-servicewrapper" if="isUNIX">
+		<exec executable="make" dir="servicewrapper" failonerror="true" />
+	</target>
+	
 	<!-- Package generates all packages. -->
 	<target name="package" depends="tar-package,win-package,rpm-package" />
 	
 	<!-- System agnostic tar package. -->
-	<target name="tar-package" depends="build,schema">
-		<exec executable="make" dir="servicewrapper" failonerror="true" />
+	<target name="tar-package" depends="build,schema,lin-servicewrapper">
 		<tstamp>
 			<format property="package.time" pattern="MM-dd-yyyy_hh.mm"/>
 		</tstamp>
@@ -164,8 +168,7 @@ Date: 28th December 2009
 	</target>
 	
 	<!-- Redhat installer. -->
-	<target name="rpm-package" depends="build,schema" if="isUNIX">
-		<exec executable="make" dir="servicewrapper" failonerror="true" />
+	<target name="rpm-package" depends="build,schema,lin-servicewrapper" if="isUNIX">
 		<mkdir dir="rpmtmp" />
 		<mkdir dir="rpmtmp/BUILD" />
 		<mkdir dir="rpmtmp/BUILDROOT" />
@@ -185,7 +188,7 @@ Date: 28th December 2009
 	</target>
 	
 	<!-- Clean all. -->
-	<target name="clean">
+	<target name="clean" depends="cleanlinux">
 		<iterate target="clean" />
 		<delete dir="${bundles.dir}" />
 		<delete dir="${bin.dir}" />
@@ -193,9 +196,11 @@ Date: 28th December 2009
 		<delete dir="${package.dir}" />
 		<delete file="SaharaSchedulingServer.exe" />
 		<delete dir="_axis2" />
+	</target>
+	
+	<target name="cleanlinux" if="isUNIX">
 		<exec executable="make" dir="servicewrapper" failonerror="true">
 			<arg value="clean" />
 		</exec>
 	</target>
-	
 </project>
