@@ -155,6 +155,7 @@ public class UpdateLocalRigStatus
         {
             /* Nothing interesting happened, just update the heart beat. */
             rig.setLastUpdateTimestamp(new Date());
+            rig.setOfflineReason(offlineReason);
             this.rigDao.flush();
         }
         
