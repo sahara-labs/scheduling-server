@@ -188,8 +188,16 @@ public class LabConnector implements LabConnectorSkeletonInterface
     @Override
     public ReleaseExperimentResponse releaseExperiment(ReleaseExperiment releaseExperiment)
     {
-        // TODO Auto-generated method stub
-        return null;
+        au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse releaseExperimentResponse;
+        ReleaseExperimentResponse labconnectorReleaseExptResponse = new ReleaseExperimentResponse();
+        
+        //Call the iLabs Service Broker Cancel() call
+        LabConnectorServiceClient labConnectorServiceClient;
+        labConnectorServiceClient = new LabConnectorServiceClient();
+        releaseExperimentResponse = labConnectorServiceClient.releaseExperiment(releaseExperiment.getUserID(), releaseExperiment.getExperimentname(), releaseExperiment.getExperimentID());
+        
+        labconnectorReleaseExptResponse.setReleaseResponse(releaseExperimentResponse.getReleaseResponse());
+        return labconnectorReleaseExptResponse; 
     }
 
     @Override
@@ -209,7 +217,11 @@ public class LabConnector implements LabConnectorSkeletonInterface
         String userID = saveExperimentResults.getUserID();
         String exptResultsXML = saveExperimentResults.getExperimentResultsXML();
         
-        //Write results to disk so that it can accessed by the user - by default it should be /home/userID
+        //Write results to disk so that it can accessed by the user - by default it should be /home/saharausers/userID
+        //TODO: START Another bit of hardcoding to get it working - it is mapped to one user ONLY iLabs:userID 17 matched with Sahara:username UTS_dlowe 
+        if(userID.equals("17"))
+          userID = new String("UTS_dlowe"); //TODO: END TO REPLACE
+        
         if(this.labconnectorExptStorage.writeExperimentResults(userID, exptResultsXML))
         {
             saveExperimentResultsResponse.setStorageResponse(true);
@@ -267,11 +279,54 @@ public class LabConnector implements LabConnectorSkeletonInterface
          */
         try
         {
-            submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
-                                        submitExperiment.getExperimentSpecs(), submitExperiment.getLabID(), 
-                                        submitExperiment.getPriority(), submitExperiment.getUserID());
+            /*
+             * 1. We should technically use a parameters file to:
+             *    a) map the userID to one expected by iLabs
+             *    (Limitation is that on ServiceBroker ilab_ISB::User DB table - UserID field is an integer type
+             *    whereas UserID on Sahara2 is recognized as a string (e.g. heyeung))
+             * 
+             *    b) map the LabIDs (GUIDS) expected by iLabs (e.g. 54xsdfersdsfdfsdf) to 
+             *    the Resource_Permissions::DisplayName which is used by Sahara2 to uniquely identify experiments
+             *    
+             * 2. Need to change how LabConnector.asmx - GetLabServer() reads from Web.config. Fortunately, the SbToLsPasskey is the same
+             *    for this instance, but will become problematic. Need to be able to identify this. This is a limitation at the moment on iLab part.
+             *    Appears almost 1:1. However, the ServiceBroker does a DB lookup from iLabs to determine this. Maybe best path!?!  
+             */
             
-            submitExptRespType.setErrorMessage(submitExptResponse.getErrorMessage());            
+            //TODO: START Only for testing purposes - we are hardcoding userID to be 17 and just doing an if statement to determine LabServer GUID
+            String labIDVal = submitExperiment.getLabID();
+            if(labIDVal.equals("Time Of Day - Batch"))
+            {
+                submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
+                        submitExperiment.getExperimentSpecs(), "54FE7B0C423D41C1B06D8F189DFBED76", //Hardcoded AgentGUID of Labserver
+                        submitExperiment.getPriority(), "17"); //User 17 is tstUser on iLabs_SB
+            }
+            else if(labIDVal.equals("UQ Radioactivity Expt1"))
+            {
+                submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
+                        submitExperiment.getExperimentSpecs(), "9164ebd6edfd46f2b09dd7175af45ad8", //Hardcoded AgentGUID of Labserver
+                        submitExperiment.getPriority(), "17"); //User 17 is tstUser on iLabs_SB
+            }
+            else //We default to UQ's Radioactivity Expt.
+            {
+                submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
+                        submitExperiment.getExperimentSpecs(), "9164ebd6edfd46f2b09dd7175af45ad8", //Hardcoded AgentGUID of Labserver
+                        submitExperiment.getPriority(), "17"); //User 17 is tstUser on iLabs_SB
+                //submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
+                //        submitExperiment.getExperimentSpecs(), "54FE7B0C423D41C1B06D8F189DFBED76", //Hardcoded AgentGUID of Labserver
+                //        submitExperiment.getPriority(), "17"); //User 17 is tstUser on iLabs_SB
+            }//TODO: END TO REPLACE
+
+            
+            //submitExptResponse =  labConnectorServiceClient.submitBatchExperiment(
+            //                            submitExperiment.getExperimentSpecs(), submitExperiment.getLabID(), 
+            //                            submitExperiment.getPriority(), submitExperiment.getUserID());
+            
+            if(submitExptResponse.getErrorMessage() != null)
+                submitExptRespType.setErrorMessage(submitExptResponse.getErrorMessage());
+            else
+                submitExptRespType.setErrorMessage("Invalid Experiment Credentials");
+            
             submitExptRespType.setExperimentID(submitExptResponse.getExperimentID());
         }
         catch(Exception e)

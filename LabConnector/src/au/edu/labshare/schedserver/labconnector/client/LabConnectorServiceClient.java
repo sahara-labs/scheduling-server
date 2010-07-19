@@ -39,6 +39,7 @@ package au.edu.labshare.schedserver.labconnector.client;
 import java.rmi.RemoteException;
 import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub;
 import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.SubmitExperimentResponse;
+import au.edu.labshare.schedserver.labconnector.client.LabConnectorStub.ReleaseExperimentResponse;
 
 public class LabConnectorServiceClient
 {
@@ -100,6 +101,33 @@ public class LabConnectorServiceClient
             e.printStackTrace();
         }
 
+        return null;
+    }
+    
+    public ReleaseExperimentResponse releaseExperiment(String userID, String experimentName, int experimentID)
+    {
+        try
+        {
+            labconnectorstub._getServiceClient().getOptions().setProperty(
+                    org.apache.axis2.transport.http.HTTPConstants.CHUNKED,
+                    Boolean.FALSE);
+            
+            // Setup the WSDL calling method
+            LabConnectorStub.ReleaseExperiment releaseExpt = new LabConnectorStub.ReleaseExperiment();
+            
+            // Set the parameters for Cancel() call
+            releaseExpt.setExperimentID(experimentID);
+            releaseExpt.setExperimentname(experimentName);
+            releaseExpt.setUserID(userID);
+            
+            return labconnectorstub.releaseExperiment(releaseExpt);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        
         return null;
     }
 }

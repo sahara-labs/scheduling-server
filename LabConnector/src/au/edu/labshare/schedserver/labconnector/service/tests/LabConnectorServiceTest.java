@@ -29,7 +29,7 @@ public class LabConnectorServiceTest
 		this.experimentSpecs = "<experimentSpecification><setupId id=\"LocalClock\">LocalClock</setupId><formatName>12-Hour</formatName></experimentSpecification>"; 
 		this.userID = "17";
 		this.labID = "54FE7B0C423D41C1B06D8F189DFBED76";
-		this.exptResultsXML = "<exptResults></exptResults>";
+		this.exptResultsXML = "<experimentResults><test>result</test></experimentResults>";
 		
 		//Test the labConnector Service
 		this.labConnectorService = new LabConnector();
@@ -59,7 +59,7 @@ public class LabConnectorServiceTest
 	    
 	    //SubmitExperiment submitExperiment = new SubmitExperiment();
 	    submitExptResponse = this.labConnectorService.submitExperiment(this.submitExpt);
-	    assertTrue(submitExptResponse.getExperimentID() > 0);
+	    assertTrue(submitExptResponse.getExperimentID() >= 0);
 	}
 	
 	@Test
@@ -69,6 +69,7 @@ public class LabConnectorServiceTest
             
             //SubmitExperiment submitExperiment = new SubmitExperiment();
             saveExptResponse = this.labConnectorService.saveExperimentResults(this.savedExptResults);
+            assertNotNull(saveExptResponse);
             assertTrue(saveExptResponse.getStorageResponse());
 	}
 }
