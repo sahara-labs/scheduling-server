@@ -98,7 +98,12 @@ public class PropertiesConfig implements Config
     @Override
     public String getProperty(final String key)
     {
-        return this.prop.getProperty(key);
+        final String val = this.prop.getProperty(key);
+        if (val == null)
+        {
+            return val;
+        }
+        return val.trim();
     }
 
     @Override
@@ -109,7 +114,7 @@ public class PropertiesConfig implements Config
         {
             return defaultValue;
         }
-        return val;
+        return val.trim();
     }
 
     @Override
