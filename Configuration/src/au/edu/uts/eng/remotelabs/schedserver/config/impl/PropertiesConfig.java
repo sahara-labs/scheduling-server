@@ -140,6 +140,7 @@ public class PropertiesConfig implements Config
         this.prop.setProperty(key, value);
     }
 
+    @Override
     public void removeProperty(final String key)
     {
         this.prop.remove(key);
