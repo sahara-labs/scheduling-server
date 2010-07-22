@@ -67,6 +67,7 @@ import org.apache.axis2.util.CallbackReceiver;
 import org.apache.axis2.util.Utils;
 
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncServiceCallbackHandler;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientProxyActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.AbortBatchControl;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.AbortBatchControlResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Allocate;
@@ -134,6 +135,7 @@ public class RigClientAsyncServiceImpl extends Stub
         configurationContext = this._serviceClient.getServiceContext().getConfigurationContext();
         this._serviceClient.getOptions().setTo(new EndpointReference(targetEndpoint));
         this._serviceClient.getOptions().setUseSeparateListener(useSeparateListener);
+        this._serviceClient.getOptions().setTimeOutInMilliSeconds(RigClientProxyActivator.getAsyncTimeout() * 1000);
     }
 
     public RigClientAsyncServiceImpl(final String targetEndpoint) throws AxisFault
