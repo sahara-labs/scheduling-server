@@ -54,7 +54,7 @@ Name "Sahara Scheduling Server"
 !define REGKEY "SOFTWARE\$(^Name)"
 
 ; Sahara Rig Client Version
-!define Version "2.0-3"
+!define Version "2.0-4"
 
 !define JREVersion "1.6"
 
