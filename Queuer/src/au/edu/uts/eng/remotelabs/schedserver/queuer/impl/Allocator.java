@@ -135,20 +135,28 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
         {
             ErrorType err = op.getError();
             this.logger.error("Received allocate response for " + this.session.getUserNamespace() + ':' + 
-                    this.session.getUserName() + ", allocation not successful. Error reason is " + err.getReason() + '.');
+                    this.session.getUserName() + ", allocation not successful. Error reason is '" + err.getReason() + "'.");
             
-            /* Allocation failed so end the session and take the rig offline. */
+            /* Allocation failed so end the session and take the rig off line depending on error. */
             this.session.setActive(false);
             this.session.setReady(false);
-            this.session.setRemovalReason("Allocation failure with reason " + err.getReason() + '.');
+            this.session.setRemovalReason("Allocation failure with reason '" + err.getReason() + "'.");
             this.session.setRemovalTime(new Date());
             dao.flush();
             
-            Rig rig = this.session.getRig();
-            rig.setInSession(false);
-            rig.setOnline(false);
-            rig.setOfflineReason("Allocation failured with reason " + err.getReason() + '.');
-            dao.flush();
+            if (err.getCode() == 4) // Error code 4 is an existing session exists
+            {
+                this.logger.error("Allocation failure reason was caused by an existing session, so not putting rig offline " +
+                        "because a session already has it.");
+            }
+            else
+            {
+                Rig rig = this.session.getRig();
+                rig.setInSession(false);
+                rig.setOnline(false);
+                rig.setOfflineReason("Allocation failured with reason '" + err.getReason() + "'.");
+                dao.flush();
+            }
         }
         
         dao.closeSession();
@@ -163,18 +171,18 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
         
         this.logger.error("Received error response from allocation of " + this.session.getUserNamespace() + ':' + 
                 this.session.getUserName() + " to rig " + rig.getName() + " at " + rig.getContactUrl() + ". Error message" +
-                " is " + e.getMessage() + '.');
+                " is '" + e.getMessage() + "'.");
         
         /* Allocation failed so end the session and take the rig offline. */
         this.session.setActive(false);
         this.session.setReady(false);
-        this.session.setRemovalReason("Allocation failure, SOAP error " + e.getMessage() + '.');
+        this.session.setRemovalReason("Allocation failure with SOAP error '" + e.getMessage() + "'.");
         this.session.setRemovalTime(new Date());
         dao.flush();
         
         rig.setInSession(false);
         rig.setOnline(false);
-        rig.setOfflineReason("Allocation failed with reason " + e.getMessage() + '.');
+        rig.setOfflineReason("Allocation failed with SOAP error '" + e.getMessage() + "'.");
         dao.flush();
         
         dao.closeSession();
