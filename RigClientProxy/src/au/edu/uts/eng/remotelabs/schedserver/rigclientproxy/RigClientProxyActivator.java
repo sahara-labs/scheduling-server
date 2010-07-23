@@ -74,18 +74,8 @@ public class RigClientProxyActivator implements BundleActivator
         
         RigClientProxyActivator.idenTokTracker = new ServiceTracker(context, IdentityToken.class.getName(), null);
         RigClientProxyActivator.idenTokTracker.open();        
-	}
-
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Rig client proxy bundle shutting down...");
-	    if (RigClientProxyActivator.idenTokTracker != null)
-	    {
-	        RigClientProxyActivator.idenTokTracker.close();
-	    }
-	    
-	    /* Load the service timeout. */
+        
+        /* Load the service timeout. */
 	    ServiceReference confRef = context.getServiceReference(Config.class.getName());
 	    if (confRef == null)
 	    {
@@ -115,6 +105,16 @@ public class RigClientProxyActivator implements BundleActivator
 	        RigClientProxyActivator.timeout = RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT;
 	        this.logger.info("Using default rig client proxy async operation timeout of " + 
 	                RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT + " seconds");
+	    }
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception 
+	{
+	    this.logger.info("Rig client proxy bundle shutting down...");
+	    if (RigClientProxyActivator.idenTokTracker != null)
+	    {
+	        RigClientProxyActivator.idenTokTracker.close();
 	    }
 	}
 
