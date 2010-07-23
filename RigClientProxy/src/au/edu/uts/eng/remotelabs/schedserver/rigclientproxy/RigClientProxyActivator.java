@@ -39,8 +39,10 @@ package au.edu.uts.eng.remotelabs.schedserver.rigclientproxy;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
@@ -51,8 +53,15 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
  */
 public class RigClientProxyActivator implements BundleActivator 
 {
+    /** The default async operation timeout in seconds. */
+    public static final int DEFAULT_ASYNC_TIMEOUT = 60;
+    
     /** Identity token register. */
     private static ServiceTracker idenTokTracker;
+    
+    /** The timeout in seconds for the response to be recieved from a SOAP
+     *  operation. */
+    private static int timeout;
     
     /** Logger. */
     private Logger logger;
@@ -75,6 +84,38 @@ public class RigClientProxyActivator implements BundleActivator
 	    {
 	        RigClientProxyActivator.idenTokTracker.close();
 	    }
+	    
+	    /* Load the service timeout. */
+	    ServiceReference confRef = context.getServiceReference(Config.class.getName());
+	    if (confRef == null)
+	    {
+	        RigClientProxyActivator.timeout = RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT;
+	        this.logger.info("Configuration service not loaded, using default async operation timeout of " +
+	                RigClientProxyActivator.timeout + " seconds.");
+	        return;
+	    }
+	    
+	    Config conf = (Config) context.getService(confRef);
+	    if (conf == null)
+	    {
+	        RigClientProxyActivator.timeout = RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT;
+	        this.logger.info("Configuration service not loaded, using default async operation timeout of " +
+	                RigClientProxyActivator.timeout + " seconds.");
+	        return;
+	    }
+	    
+	    try
+	    {
+	        RigClientProxyActivator.timeout = Integer.parseInt(conf.getProperty("Rig_Client_Async_Timeout"));
+	        this.logger.info("Rig client proxy async operation timeout is " + RigClientProxyActivator.timeout + 
+	                " seconds.");
+	    }
+	    catch (NumberFormatException ex)
+	    {
+	        RigClientProxyActivator.timeout = RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT;
+	        this.logger.info("Using default rig client proxy async operation timeout of " + 
+	                RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT + " seconds");
+	    }
 	}
 
 	/**
@@ -87,5 +128,15 @@ public class RigClientProxyActivator implements BundleActivator
 	public static IdentityToken getIdentityTokenRegister()
 	{
 	    return (IdentityToken) RigClientProxyActivator.idenTokTracker.getService();
+	}
+	
+	/**
+	 * Returns the timeout in seconds for async SOAP operations.
+	 * 
+	 * @return timeout in seconds
+	 */
+	public static int getAsyncTimeout()
+	{
+	    return RigClientProxyActivator.timeout;
 	}
 }

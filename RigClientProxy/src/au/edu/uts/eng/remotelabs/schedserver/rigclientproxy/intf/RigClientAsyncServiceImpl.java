@@ -67,6 +67,7 @@ import org.apache.axis2.util.CallbackReceiver;
 import org.apache.axis2.util.Utils;
 
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncServiceCallbackHandler;
+import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientProxyActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.AbortBatchControl;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.AbortBatchControlResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.Allocate;
@@ -99,15 +100,13 @@ import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.SlaveRele
 /**
  * RigClient client service implementation (asyncronous style).
  */
-@SuppressWarnings("unchecked")
 public class RigClientAsyncServiceImpl extends Stub
 {
     protected AxisOperation[] _operations;
 
-    //hashmaps to keep the fault mapping
-    private final HashMap faultExceptionNameMap = new HashMap();
-    private final HashMap faultExceptionClassNameMap = new HashMap();
-    private final HashMap faultMessageMap = new HashMap();
+    private final HashMap<?, ?> faultExceptionNameMap = new HashMap<Object, Object>();
+    private final HashMap<?, ?> faultExceptionClassNameMap = new HashMap<Object, Object>();
+    private final HashMap<?, ?> faultMessageMap = new HashMap<Object, Object>();
 
     private static int counter = 0;
     
@@ -136,6 +135,7 @@ public class RigClientAsyncServiceImpl extends Stub
         configurationContext = this._serviceClient.getServiceContext().getConfigurationContext();
         this._serviceClient.getOptions().setTo(new EndpointReference(targetEndpoint));
         this._serviceClient.getOptions().setUseSeparateListener(useSeparateListener);
+        this._serviceClient.getOptions().setTimeOutInMilliSeconds(RigClientProxyActivator.getAsyncTimeout() * 1000);
     }
 
     public RigClientAsyncServiceImpl(final String targetEndpoint) throws AxisFault
@@ -251,6 +251,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -266,6 +267,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -280,12 +282,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -339,12 +341,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -389,6 +393,7 @@ public class RigClientAsyncServiceImpl extends Stub
         
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -405,6 +410,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -419,12 +425,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -477,12 +483,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -525,6 +533,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -542,6 +551,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -556,12 +566,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -615,12 +625,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -663,6 +675,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -679,6 +692,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -693,11 +707,11 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -758,12 +772,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -809,6 +825,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -826,6 +843,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -840,12 +858,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -899,12 +917,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -949,6 +969,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -966,6 +987,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -980,12 +1002,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -1039,12 +1061,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -1087,6 +1111,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -1103,6 +1128,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -1117,12 +1143,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -1176,12 +1202,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -1224,6 +1252,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -1241,6 +1270,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -1256,12 +1286,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -1315,12 +1345,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -1364,6 +1396,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -1381,6 +1414,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -1395,12 +1429,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -1454,12 +1488,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -1507,6 +1543,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -1524,6 +1561,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -1538,12 +1576,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -1597,12 +1635,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -1649,6 +1689,7 @@ public class RigClientAsyncServiceImpl extends Stub
         
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -1666,6 +1707,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -1680,12 +1722,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -1739,12 +1781,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -1790,6 +1834,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -1806,6 +1851,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -1820,12 +1866,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -1879,12 +1925,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -1931,6 +1979,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -1946,6 +1995,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -1960,12 +2010,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -2019,12 +2069,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -2071,6 +2123,7 @@ public class RigClientAsyncServiceImpl extends Stub
 
         _operationClient.setCallback(new AxisCallback()
         {
+            @Override
             public void onMessage(final MessageContext resultContext)
             {
                 try
@@ -2089,6 +2142,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onError(final Exception error)
             {
                 if (error instanceof AxisFault)
@@ -2103,12 +2157,12 @@ public class RigClientAsyncServiceImpl extends Stub
                             {
                                 final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
                                         .get(faultElt.getQName());
-                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
                                 final Exception ex = (Exception) exceptionClass.newInstance();
                                 
                                 final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
                                         .get(faultElt.getQName());
-                                final Class messageClass = Class.forName(messageClassName);
+                                final Class<?> messageClass = Class.forName(messageClassName);
                                 final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
                                         null);
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
@@ -2162,12 +2216,14 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
             }
 
+            @Override
             public void onFault(final MessageContext faultContext)
             {
                 final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
                 this.onError(fault);
             }
 
+            @Override
             public void onComplete()
             {
                 try
@@ -2197,7 +2253,7 @@ public class RigClientAsyncServiceImpl extends Stub
     private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
     {
         final Map<String, String> returnMap = new HashMap<String, String>();
-        final Iterator namespaceIterator = env.getAllDeclaredNamespaces();
+        final Iterator<?> namespaceIterator = env.getAllDeclaredNamespaces();
         while (namespaceIterator.hasNext())
         {
             final OMNamespace ns = (OMNamespace) namespaceIterator.next();
@@ -2437,7 +2493,7 @@ public class RigClientAsyncServiceImpl extends Stub
         }
     }
 
-    private Object fromOM(final OMElement param, final Class type, final Map<String, String> extraNamespaces)
+    private Object fromOM(final OMElement param, final Class<?> type, final Map<String, String> extraNamespaces)
             throws AxisFault
     {
         try
