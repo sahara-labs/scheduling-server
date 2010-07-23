@@ -130,10 +130,14 @@ rm -f  /etc/Sahara/SchedulingServer
 %files
 /etc/init.d/schedulingserver
 /etc/Sahara
+%{installdir}
+%{installdir}/bin
 %{installdir}/bin/SchedulingServer.jar
+%{installdir}/bundles
 %{installdir}/bundles/*.jar
+%{installdir}/conf
 %{installdir}/conf/schedulingserver.properties
 %{installdir}/conf/scheduling_service.ini
 %{installdir}/schedulingservice
 %{installdir}/LICENSE
-%{installdir}/schemas/*.sql
+%{installdir}/schemas
