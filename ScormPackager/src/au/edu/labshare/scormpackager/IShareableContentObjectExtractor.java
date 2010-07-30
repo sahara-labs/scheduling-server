@@ -1,0 +1,27 @@
+package au.edu.labshare.scormpackager;
+import java.io.*;
+
+public interface IShareableContentObjectExtractor 
+{
+
+	/*
+	 * Extract the zip/PIF (Package Interchange File) file
+	 */
+	public boolean ValidatePIF(File SCOFile);
+	
+	/*
+	 * Retrieve contents from file 
+	 */
+	public File getManifestFile();
+	
+	/*
+	 * Retrieve HTML Lab description file
+	 */
+	public File getHTMLFile();
+	
+	/*
+	 * Retrieve 
+	 */
+	
+	
+}
