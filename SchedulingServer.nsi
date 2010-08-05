@@ -256,11 +256,11 @@ Function checkJREVersion
     Pop $0
 FunctionEnd
 
-; Check if RigClient service is running
+; Check if SchedulingServer service is running
 Function checkIfServiceInstalled
 	;ReadEnvStr $R0 COMSPEC
 
-	; Check if the RigClient service is already installed. (probably need a better way to do this)
+	; Check if the SchedulingServer service is already installed. (probably need a better way to do this)
 	; If the service is installed, the output of 'sc query RigClient' will be like:
 	;		SERVICE_NAME: RigClient
         ;		TYPE               : 10  WIN32_OWN_PROCESS
@@ -296,6 +296,55 @@ Function checkIfServiceInstalled
 	Found:
 FunctionEnd
 
+; Check if SchedulingServer service is running
+!macro checkIfServiceRunning
+    ; Check if the SchedulingServer service is running. (probably need a better way to do this)
+    ; If the service is running, the output of 'sc query "Scheduling Server"' will be like:
+    ;   SERVICE_NAME: Scheduling Server
+    ;           TYPE               : 10  WIN32_OWN_PROCESS
+    ;           STATE              : 4  RUNNING
+        ;                               (STOPPABLE,NOT_PAUSABLE,ACCEPTS_SHUTDOWN)
+    ;           WIN32_EXIT_CODE    : 0  (0x0)
+    ;           SERVICE_EXIT_CODE  : 0  (0x0)
+    ;           CHECKPOINT         : 0x0
+    ;           WAIT_HINT          : 0x0
+    ;
+    ; If the service is installed but not running, the STATE would be 
+    ;       SERVICE_NAME: Scheduling Server
+        ;       TYPE               : 10  WIN32_OWN_PROCESS
+        ;       STATE              : 1  STOPPED
+        ;                             (NOT_STOPPABLE,NOT_PAUSABLE,IGNORES_SHUTDOWN)
+        ;       WIN32_EXIT_CODE    : 1077       (0x435)
+        ;       SERVICE_EXIT_CODE  : 0  (0x0)
+        ;       CHECKPOINT         : 0x0
+        ;       WAIT_HINT          : 0x0
+        ;
+        ; If the service is not installed, the STATE would be 
+    ;       [SC] EnumQueryServicesStatus:OpenService FAILED 1060:
+    ;       The specified service does not exist as an installed service.
+    ;
+    ; Check for the word 'RUNNING' in the output of the above command. If not found, 
+    ;
+    ; - If function "WordReplace" is successful (the word "RUNNING" is found in the result), the service is running
+    ; - If the function "WordReplace" is not successful and the errorlevel (value of $R0) is 1 (the word "RUNNING" not found), the service is stopped or not installed
+    ; - If the function "WordReplace" is not successful and the errorlevel (value of $R0) is anything other than 1 then some error has occured in
+    ;   executing function "WordReplace"
+    
+    nsExec::ExecToStack /OEM '"sc" query "${Sahara_SSWindows_Service}"'
+    Pop $0  ; $0 contains return value/error/timeout
+    Pop $1  ; $1 contains printed text, up to ${NSIS_MAX_STRLEN}
+
+    ClearErrors
+    ${WordReplace} '$1' 'RUNNING' 'RUNNING' 'E+1' $R0
+    IfErrors Errors 0
+    MessageBox MB_OK|MB_ICONSTOP "Please stop the '${Sahara_SSWindows_Service}' service before continuing."
+    Abort
+    Errors:
+    StrCmp $R0 '1' NotRunning 0
+    MessageBox MB_OK|MB_ICONSTOP "Error is detecting if '${Sahara_SSWindows_Service}' service is running"
+    Abort
+    NotRunning:
+!macroend
 
 ; Disable the section so that user will not be able to select it
 ; This macro is used mainly for uninstallation. 
@@ -347,9 +396,10 @@ Section "Sahara Scheduling Server" SchedServer
 	!insertmacro checkAdminUser "installation"
 
 	call checkJREVersion	
-	call checkIfServiceInstalled 
+
 
     ${If} $SSAlreadyInstalled S== "NotInstalled" 
+        call checkIfServiceInstalled 
         SetOutPath $INSTDIR\conf 
         File /oname=schedulingserver.properties conf\schedulingserver.properties.win
         File conf\scheduling_service.ini
@@ -359,6 +409,7 @@ Section "Sahara Scheduling Server" SchedServer
         ; Copy the component files/directories
         File LICENSE
     ${Else}
+        !insertmacro checkIfServiceRunning
         ; If modifying the installed component, check for the file SchedulingServer-Version.jar
         ; and delete if it is present. This file is removed from this and future releases
         ${If} ${FileExists} $INSTDIR\bundles\SchedulingServer-Version.jar
@@ -366,8 +417,7 @@ Section "Sahara Scheduling Server" SchedServer
         ${EndIF}        
         SetOutPath $INSTDIR
     ${EndIF}
-    
-    File servicewrapper\WindowsServiceWrapper\Release\schedulingservice.exe
+
     File doc\db\schema\*.sql
     
     SetOutPath $INSTDIR\bundles
@@ -375,15 +425,17 @@ Section "Sahara Scheduling Server" SchedServer
     SetOutPath $INSTDIR\bin
 	File /r /x *.svn bin\*.*
 
-	
-    SetOutPath $INSTDIR
-    ; Add the RigClient service to the windows services
-    ExecWait '"$INSTDIR\schedulingservice" install'
-    ifErrors 0 WinServiceNoError
-    MessageBox MB_OK "Error in executing schedulingservice.exe"
-    ; TODO  Revert back the installed SS in case of error?
-    Abort
-    WinServiceNoError:
+	${If} $SSAlreadyInstalled S== "NotInstalled" 
+        SetOutPath $INSTDIR
+        File servicewrapper\WindowsServiceWrapper\Release\schedulingservice.exe
+        ; Add the RigClient service to the windows services
+        ExecWait '"$INSTDIR\schedulingservice" install'
+        ifErrors 0 WinServiceNoError
+        MessageBox MB_OK "Error in executing schedulingservice.exe"
+        ; TODO  Revert back the installed SS in case of error?
+        Abort
+        WinServiceNoError:
+    ${EndIF}
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     WriteRegStr HKLM "${REGKEY}" CurrentVersion  ${Version}
 
@@ -428,6 +480,7 @@ SectionEnd
 ; Uninstall Scheduling Server
 Section "un.Sahara Scheduling Server" un.SchedulingServer
 	!insertmacro checkAdminUser "uninstallation"
+    !insertmacro checkIfServiceRunning
 	Push $R1
 	ReadRegStr $R1 HKLM "${REGKEY}" "Path"
 	ClearErrors
