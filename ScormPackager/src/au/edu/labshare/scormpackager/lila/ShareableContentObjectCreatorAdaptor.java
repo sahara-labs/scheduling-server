@@ -8,15 +8,19 @@ import au.edu.labshare.scormpackager.IShareableContentObjectCreator;
 
 public abstract class ShareableContentObjectCreatorAdaptor implements IShareableContentObjectCreator
 {	
+	@Override
+	public ZipFile createPIF(Collection <File> content)
+	{
+		return createSCO(null, content, null);
+	}
 	
-
-	@Override 
-	public ZipFile createPIF(File manifest, Collection <?> content) 
+	
+	public ZipFile createPIF(String manifest, Collection <File> content) 
 	{
 		//Will use the default LMS value
 		return createSCO(manifest, content, null); 
 	}
-	
+
 	/*
 	 * Validate dtd file which is an xml file verifying correctness of Application.xml
 	 */

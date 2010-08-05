@@ -10,7 +10,7 @@ public class ShareableContentObjectCreator extends ShareableContentObjectCreator
 {
 	
 	@Override
-	public ZipFile createSCO(File manifest, Collection <?> resources, String LMSName) 
+	public ZipFile createSCO(String manifest, Collection <File> assets, String LMSName) 
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -66,7 +66,7 @@ public class ShareableContentObjectCreator extends ShareableContentObjectCreator
 	}
 
 	@Override
-	public ZipFile createPIF(File manifest, Collection<?> content) 
+	public ZipFile createPIF(String manifest, Collection<File> content) 
 	{
 		// TODO Auto-generated method stub
 		return null;

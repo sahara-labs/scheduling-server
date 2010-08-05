@@ -2,14 +2,39 @@ package au.edu.labshare.scormpackager.lila.tests;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.util.Collection;
+
+import org.junit.Before;
 import org.junit.Test;
 
-public class ShareableContentObjectCreatorTests {
+import au.edu.labshare.scormpackager.lila.ShareableContentObjectCreator;
 
+public class ShareableContentObjectCreatorTests 
+{
+	/* Variables used for testing */
+	String manifest;
+	Collection<File> content;
+	
+	/* These variables are pertaining to the file list of */
+	String fileName = "imsmanifest.xml"; 
+	String contentFiles;
+	
+	@Before
+	public void Setup()
+	{
+		manifest = fileName;
+		content = new Collection<File>();
+	}
+	
 	@Test
 	public void testCreatePIF() 
 	{
-		fail("Not yet implemented");
+		//Invoke the creation of the PIF 
+		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
+		shrContentObj.createPIF(manifest, content);
+		
+		//fail("Not yet implemented");
 	}
 
 	@Test

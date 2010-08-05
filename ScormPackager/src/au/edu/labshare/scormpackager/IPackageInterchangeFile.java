@@ -6,12 +6,13 @@ import java.util.zip.ZipFile;
 
 public interface IPackageInterchangeFile 
 {	
-	/*
-	 * A generic form of a SCO or Asset is known as a Package Interchange File (PIF)
+	/**
+	 * A generic form of a SCO or Asset is known as a Package Interchange File (PIF).
+	 * This assumes manifest file is: "imsmanifest.xml"
 	 */
-	public ZipFile createPIF(File manifest, Collection <?> content);
+	public ZipFile createPIF(Collection <File> content);
 	
-	/*
+	/**
 	 * Validates the manifest file as according the SCORM: 
 	 * 1. Manifest file is titled imsmanifest.xml
 	 * 2. Needs to be at root of the content package (SCO)
@@ -23,27 +24,27 @@ public interface IPackageInterchangeFile
 	 */
 	public boolean validateManifest(ZipFile PIF);
 	
-	/*
+	/**
 	 * Validates that there is one content component in the PIF
 	 */
 	public boolean validateContent(ZipFile PIF);
 	
-	/*
+	/**
 	 * Validates the application.xml/profile file that describes the experiment of the lab
 	 */
 	public boolean validateApplicationProfile(ZipFile PIF);
 		
-	/*
+	/**
 	 * Validates the <sequencing> and <sequencingCollection> tags
 	 */
 	public boolean validateSequencing(ZipFile PIF);
 	
-	/*
+	/**
 	 * Validates the <presentation> and <navigationInterface> tags
 	 */
 	public boolean validatePresentationNavigationInfo(ZipFile PIF);
 	
-	/*
+	/**
 	 * Validates all the metadata fields under the <lom> tag. Note that all Meta-data is optional. 
 	 * As specified in section 4.3 of Sharable Content Object Reference Model
 	 */
