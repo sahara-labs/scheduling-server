@@ -120,27 +120,90 @@ Var SSAlreadyInstalled ;0=Not installed, 1=Installed but different version, 2=in
 
 Function DirectoryPagePre
 	; If there is already an installation of Sahara, use the same folder for this installation. Else let the user select the installation folder
- 	${If} $SSAlreadyInstalled S== "0"
-		StrCpy $DirHeaderText "Choose Install Location"
-		StrCpy $DirHeaderSubText "Choose the folder in which to install $(^Name)"
-	${ElseIf} $SSAlreadyInstalled S== "2" 
-		StrCpy $DirHeaderText "Using existing $(^Name) installation folder"
-		StrCpy $DirHeaderSubText "One or more components of $(^Name) are already installed on this machine. Installer will use same destination folder"
-		ReadRegStr $R0 HKLM "${REGKEY}" "Path"
-		StrCpy $INSTDIR $R0
-	${EndIf}
+ 	Push $0
+    Push $1
+    ${If} $SSAlreadyInstalled S== "NotInstalled"
+        ${OrIf} $SSAlreadyInstalled S== "NeedUninstall"
+        StrCpy $0 "Choose Install Location"
+        StrCpy $1 "Choose the folder in which to install $(^Name)"
+    ${ElseIf} $SSAlreadyInstalled S== "SameVersion"
+         StrCpy $0 "Using existing $(^Name) installation folder"
+         StrCpy $1 "$(^Name) is already installed on this machine. Installer will overwrite the existing installation"
+         ReadRegStr $R0 HKLM "${REGKEY}" "Path"
+         StrCpy $INSTDIR $R0
+    ${ElseIf} $SSAlreadyInstalled S== "Upgrade"
+         StrCpy $0 "Using existing $(^Name) installation folder"
+         StrCpy $1 "$(^Name) is already installed on this machine. Installer will upgrade the existing installation"
+         ReadRegStr $R0 HKLM "${REGKEY}" "Path"
+         StrCpy $INSTDIR $R0
+    ${ElseIf} $SSAlreadyInstalled S== "Downgrade"
+         StrCpy $0 "Using existing $(^Name) installation folder"
+         StrCpy $1 "$(^Name) is already installed on this machine. Installer will downgrade the existing installation"
+        ReadRegStr $R0 HKLM "${REGKEY}" "Path"
+        StrCpy $INSTDIR $R0
+    ${EndIf}
+    
+    StrCpy $DirHeaderText $0
+    StrCpy $DirHeaderSubText $1
+    
+    Pop $0
+    Pop $1
 
 FunctionEnd
 
 Function CheckSaharaVersion
-	ReadRegStr $R0 HKLM "${REGKEY}" "CurrentVersion"
-	${If} $R0 S== ""
-		StrCpy $SSAlreadyInstalled "0"
-	${ElseIf} $R0 S!=  ${Version} 
-		StrCpy $SSAlreadyInstalled "1"
-	${Else}
-		StrCpy $SSAlreadyInstalled "2"
-	${EndIf}
+    Push $R0
+    Push $0
+    Push $1
+    Push $2
+    Push $3
+    ReadRegStr $R0 HKLM "${REGKEY}" "CurrentVersion"
+    ${If} $R0 S== ""
+        StrCpy $SSAlreadyInstalled "NotInstalled"
+    ${Else}
+        ; Get the existing <Major version>.<Minor Version>
+        ; TODO This code assumes the major and minor version are one digit each. 
+        StrCpy $0 $R0 3
+        StrCpy $1 $R0 "" -1
+        ${If} $1 S== ""
+            StrCpy $1 "0"
+        ${EndIf}
+        
+        ; $0 - Installed version
+        ; $1 - Installed build number
+        ; $2 - This version
+        ; $3 - This build number
+        
+        ; Get the <Major version>.<Minor Version> for this product
+        StrCpy $2 ${Version} 3
+        StrCpy $3 ${Version} "" -1
+        ${If} $3 S== ""
+            StrCpy $3 "0"
+        ${EndIf}
+    
+        ${If} $0 S== $2 
+            ${If} $1 = $3 ; Installling same version and same build
+                StrCpy $SSAlreadyInstalled "SameVersion"
+            ${ElseIf} $1 > $3  ; Installing same version and older build 
+                StrCpy $SSAlreadyInstalled "Downgrade"
+            ${Else} ; Installing same version and newer build
+                StrCpy $SSAlreadyInstalled "Upgrade"
+            ${EndIf}
+        ${ElseIf} $0 S== "1.0"
+            ; This is an exception. This is the first version delivered
+            ; and the user should be able to upgrade to the new version
+            ; from version 1.0 without uninstallation
+            StrCpy $SSAlreadyInstalled "Upgrade"
+        ${ElseIf} $0 S!= $2 ; ; Installing different version   
+            StrCpy $SSAlreadyInstalled "NeedUninstall"
+        ${EndIf}
+    ${EndIf}
+
+Pop $R0
+Pop $0
+Pop $1
+Pop $2
+Pop $3
 FunctionEnd
 
 
@@ -149,7 +212,9 @@ Function DirectoryPageShow
 	; If there is already an installation of Sahara, disable the destination folder selection and use the same folder for this installation. 
 	; Else let the user select the installation folder
     
-    ${If} $SSAlreadyInstalled S== "2"
+    ${If} $SSAlreadyInstalled S== "SameVersion"
+        ${OrIf} $SSAlreadyInstalled S== "Upgrade"
+         ${OrIf} $SSAlreadyInstalled S== "Downgrade"
 		; Disable the page
 		FindWindow $R0 "#32770" "" $HWNDPARENT
 		GetDlgItem $R1 $R0 1019
@@ -162,7 +227,7 @@ FunctionEnd
 
 
 Function SetInstallDir
-	${If} $SSAlreadyInstalled S== "0"
+	${If} $SSAlreadyInstalled S== "NotInstalled"
 		StrCpy $INSTDIR "$INSTDIR\SchedulingServer"
 	${EndIf}
 FunctionEnd
@@ -181,12 +246,14 @@ Function .onInit
 FunctionEnd
 
 Function checkJREVersion
+    Push $0
 	; Check the JRE version to be 1.6 or higher
 	ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" CurrentVersion 
 	${If} $0 S< ${JREVersion} 
 		MessageBox MB_OK "$(^Name) needs JRE version ${JREVersion} or higher. It is currently $0. Aborting the installation."
 		Abort ; causes installer to quit.
 	${EndIf}
+    Pop $0
 FunctionEnd
 
 ; Check if RigClient service is running
@@ -221,7 +288,7 @@ Function checkIfServiceInstalled
 	${WordReplace} '$1' 'FAILED' 'FAILED' 'E+1' $R0
 	IfErrors 0 Found
 	StrCmp $R0 '1' 0 Error
-	MessageBox MB_OK "'${Sahara_SSWindows_Service}' service is already installed.  please stop the '${Sahara_SSWindows_Service}' service if it is running (Windows Control Panel->Administrative Tools->Services) $\n$\nUse schedulingservice.exe to uninstall the previous version (schedulingservice.exe uninstall)"
+	MessageBox MB_OK "'${Sahara_SSWindows_Service}' service is already installed.  Please stop the '${Sahara_SSWindows_Service}' service if it is running (Windows Control Panel->Administrative Tools->Services) $\n$\nUse schedulingservice.exe to uninstall the previous version (schedulingservice.exe uninstall)"
 	Abort
 	Error:
 	MessageBox MB_OK "Error is detecting if '${Sahara_SSWindows_Service}' service is installed"
@@ -253,16 +320,53 @@ FunctionEnd
 ;--------------------------------
 ; Install Scheduling Server
 Section "Sahara Scheduling Server" SchedServer
+
+    ${If} $SSAlreadyInstalled S== "NeedUninstall"
+        MessageBox MB_OK|MB_ICONSTOP "A different version of $(^Name) is already installed on this machine. $\nPlease uninstall the existing $(^Name) software before continuing the installation"
+        Abort 
+    ${EndIf}
+    ${If} $SSAlreadyInstalled S== "Upgrade"
+        MessageBox MB_YESNO "$(^Name) will be upgraded to version ${Version}. Do you want to continue?" IDYES ContinueInstall
+        MessageBox MB_OK "Installation will be aborted"
+        Abort
+    ${EndIf}
+
+    ${If} $SSAlreadyInstalled S== "Downgrade"
+        MessageBox MB_YESNO "$(^Name) will be downgraded to version ${Version}. Downgrading is not recommended. $\nDo you want to continue?" IDYES ContinueInstall
+        MessageBox MB_OK "Installation will be aborted"
+        Abort
+    ${EndIf}
+
+    ${If} $SSAlreadyInstalled S== "SameVersion"
+        MessageBox MB_ICONQUESTION|MB_YESNO "Same version of $(^Name) is already installed. $\nDo you want to repair/overwrite the installed version?" IDYES ContinueInstall
+        MessageBox MB_OK "Installation will be aborted"
+        Abort
+    ${EndIf}
+    ContinueInstall:
+
 	!insertmacro checkAdminUser "installation"
 
 	call checkJREVersion	
 	call checkIfServiceInstalled 
 
-    ; Set output path to the installation directory.
-    SetOutPath $INSTDIR
+    ${If} $SSAlreadyInstalled S== "NotInstalled" 
+        SetOutPath $INSTDIR\conf 
+        File /oname=schedulingserver.properties conf\schedulingserver.properties.win
+        File conf\scheduling_service.ini
+        ; Set output path to the installation directory.
+        SetOutPath $INSTDIR
     
-    ; Copy the component files/directories
-    File LICENSE
+        ; Copy the component files/directories
+        File LICENSE
+    ${Else}
+        ; If modifying the installed component, check for the file SchedulingServer-Version.jar
+        ; and delete if it is present. This file is removed from this and future releases
+        ${If} ${FileExists} $INSTDIR\bundles\SchedulingServer-Version.jar
+            Delete $INSTDIR\bundles\SchedulingServer-Version.jar
+        ${EndIF}        
+        SetOutPath $INSTDIR
+    ${EndIF}
+    
     File servicewrapper\WindowsServiceWrapper\Release\schedulingservice.exe
     File doc\db\schema\*.sql
     
@@ -270,9 +374,7 @@ Section "Sahara Scheduling Server" SchedServer
 	File /r /x *.svn bundles\*.*
     SetOutPath $INSTDIR\bin
 	File /r /x *.svn bin\*.*
-    SetOutPath $INSTDIR\conf 
-    File /oname=schedulingserver.properties conf\schedulingserver.properties.win
-	File conf\scheduling_service.ini
+
 	
     SetOutPath $INSTDIR
     ; Add the RigClient service to the windows services
@@ -311,11 +413,13 @@ FunctionEnd
 ; Create uninstaller
 Section -createUninstaller
 	ClearErrors
-	EnumRegKey $1 HKLM  "${REGKEY}" 0
-	ifErrors 0 createUninstaller
-	MessageBox MB_OK|MB_ICONSTOP  "No component selected for installation. Aborting the installation"
-	ABort
-	createUninstaller:
+	/*EnumRegKey $1 HKLM  "${REGKEY}" 0
+	ifErrors 0 createUninstaller*/
+    ${IfNot} ${SectionIsSelected} SchedServer
+	   MessageBox MB_OK|MB_ICONSTOP  "No component selected for installation. Aborting the installation"
+	   ABort
+    ${EndIf}
+	
 	SetOutPath $INSTDIR
 	WriteUninstaller $INSTDIR\uninstallSchedulingServer.exe
 SectionEnd
@@ -384,7 +488,7 @@ Function un.CheckSlectedComponents
 
 	${If} $NoSectionSelectedUninstall S== "false"
 		StrCpy $DisplayText "Following sections are selected for uninstallation. Do you want to continue?$DisplayText" 
-		MessageBox MB_YESNO "$DisplayText" IDYES selectionEnd
+		MessageBox MB_ICONEXCLAMATION|MB_YESNO "$DisplayText" IDYES selectionEnd
 		Abort
 	${Else}
 		MessageBox MB_OK "No compoennts selected"
