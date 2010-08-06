@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://labshare.edu.au:8080/ScormPackager/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ScormPackager" targetNamespace="http://labshare.edu.au:8080/ScormPackager/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://labshare.edu.au:8080/ScormPackager/">
+      <xsd:element name="createPIF">
+      	<xsd:complexType>
+      		<xsd:sequence>
+                        <xsd:element name="content" type="xsd:hexBinary"
+                        	maxOccurs="unbounded" minOccurs="1">
+                        </xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createPIFResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="PIF" type="xsd:hexBinary"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deletePIF">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="pathPIFName" type="xsd:anyURI"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deletePIFResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="deleteResponse" type="xsd:boolean"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createSCO">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="typeLMS" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      			<xsd:element name="content" type="xsd:hexBinary"
+      				maxOccurs="unbounded" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createSCOResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="SCO" type="xsd:hexBinary"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteSCO">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="pathSCO" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteSCOResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="deleteResponse" type="xsd:boolean"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="validateManifest">
+      	<xsd:complexType>
+      		<xsd:choice>
+      			<xsd:element name="pathManifest" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="manifestFile" type="xsd:hexBinary" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:choice>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="validateManifestResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="valid" type="xsd:boolean"></xsd:element>
+                    </xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="validateSCO">
+      	<xsd:complexType>
+      		<xsd:choice>
+      			<xsd:element name="pathSCO" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="SCOFile" type="xsd:hexBinary" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:choice>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="validateSCOResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="valid" type="xsd:boolean"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="validatePIF">
+      	<xsd:complexType>
+      		<xsd:choice>
+                        <xsd:element name="pathPIF" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
+                        <xsd:element name="PIFfile" type="xsd:hexBinary" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:choice>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="validatePIFResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="valid" type="xsd:boolean"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+    
+      <xsd:group name="NewGroupDefinition">
+      	<xsd:sequence></xsd:sequence>
+      </xsd:group>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="createPIFRequest">
+  	<wsdl:part name="parameters" element="tns:createPIF"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createPIFResponse">
+  	<wsdl:part name="parameters" element="tns:createPIFResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deletePIFRequest">
+  	<wsdl:part name="parameters" element="tns:deletePIF"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deletePIFResponse">
+  	<wsdl:part name="parameters" element="tns:deletePIFResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createSCORequest">
+  	<wsdl:part name="parameters" element="tns:createSCO"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createSCOResponse">
+  	<wsdl:part name="parameters" element="tns:createSCOResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteSCORequest">
+  	<wsdl:part name="parameters" element="tns:deleteSCO"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteSCOResponse">
+  	<wsdl:part name="parameters" element="tns:deleteSCOResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateManifestRequest">
+  	<wsdl:part name="parameters" element="tns:validateManifest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateManifestResponse">
+  	<wsdl:part name="parameters" element="tns:validateManifestResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateSCORequest">
+  	<wsdl:part name="parameters" element="tns:validateSCO"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateSCOResponse">
+  	<wsdl:part name="parameters" element="tns:validateSCOResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validatePIFRequest">
+  	<wsdl:part name="parameters" element="tns:validatePIF"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validatePIFResponse">
+  	<wsdl:part name="parameters" element="tns:validatePIFResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ScormPackager">
+    <wsdl:operation name="createPIF">
+    	<wsdl:input message="tns:createPIFRequest"></wsdl:input>
+    	<wsdl:output message="tns:createPIFResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePIF">
+    	<wsdl:input message="tns:deletePIFRequest"></wsdl:input>
+    	<wsdl:output message="tns:deletePIFResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createSCO">
+    	<wsdl:input message="tns:createSCORequest"></wsdl:input>
+    	<wsdl:output message="tns:createSCOResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteSCO">
+    	<wsdl:input message="tns:deleteSCORequest"></wsdl:input>
+    	<wsdl:output message="tns:deleteSCOResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="validateManifest">
+    	<wsdl:input message="tns:validateManifestRequest"></wsdl:input>
+    	<wsdl:output message="tns:validateManifestResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="validateSCO">
+    	<wsdl:input message="tns:validateSCORequest"></wsdl:input>
+    	<wsdl:output message="tns:validateSCOResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="validatePIF">
+    	<wsdl:input message="tns:validatePIFRequest"></wsdl:input>
+    	<wsdl:output message="tns:validatePIFResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ScormPackagerSOAP" type="tns:ScormPackager">
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="createPIF">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/ScormPackager/createPIF" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deletePIF">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/ScormPackager/deletePIF" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="createSCO">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/ScormPackager/createSCO" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteSCO">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/ScormPackager/deleteSCO" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="validateManifest">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/ScormPackager/validateManifest" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="validateSCO">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/ScormPackager/validateSCO" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="validatePIF">
+  		<soap:operation
+  			soapAction="http://labshare.edu.au:8080/ScormPackager/validatePIF" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ScormPackager">
+    <wsdl:port binding="tns:ScormPackagerSOAP" name="ScormPackagerSOAP">
+      <soap:address location="http://labshare.edu.au:8080/ScormPackager"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
