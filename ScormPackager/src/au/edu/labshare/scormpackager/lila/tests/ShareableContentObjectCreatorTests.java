@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,7 @@ public class ShareableContentObjectCreatorTests
 	String manifest;
 	Collection<File> content;
 	
+	
 	/* These variables are pertaining to the file list of */
 	String fileName = "imsmanifest.xml"; 
 	String contentFiles;
@@ -24,7 +26,7 @@ public class ShareableContentObjectCreatorTests
 	public void Setup()
 	{
 		manifest = fileName;
-		content = new Collection<File>();
+		content = new LinkedList<File>();
 	}
 	
 	@Test

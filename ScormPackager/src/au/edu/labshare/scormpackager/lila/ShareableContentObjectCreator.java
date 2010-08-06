@@ -52,13 +52,6 @@ public class ShareableContentObjectCreator extends ShareableContentObjectCreator
 	}
 	
 	@Override
-	public boolean validateDTDFile(ZipFile DTDFile)
-	{
-		// TODO Depending on the structure of the 
-		return false;
-	}
-	
-	@Override
 	public boolean validateLMSConnection(ZipFile jsLMSFile)
 	{
 		// TODO Depending on the structure of the 

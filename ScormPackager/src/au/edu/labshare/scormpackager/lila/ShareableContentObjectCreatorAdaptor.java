@@ -20,15 +20,6 @@ public abstract class ShareableContentObjectCreatorAdaptor implements IShareable
 		//Will use the default LMS value
 		return createSCO(manifest, content, null); 
 	}
-
-	/*
-	 * Validate dtd file which is an xml file verifying correctness of Application.xml
-	 */
-	public boolean validateDTDFile(ZipFile DTDFile)
-	{
-		//Default is to return true; 
-		return true;
-	}
 	
 	/*
 	 * Validate the Javascript file associated with LMS
