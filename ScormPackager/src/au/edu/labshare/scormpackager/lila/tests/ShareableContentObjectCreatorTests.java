@@ -19,7 +19,7 @@ public class ShareableContentObjectCreatorTests
 	
 	
 	/* These variables are pertaining to the file list of */
-	String fileName = "imsmanifest.xml"; 
+	String fileName = "../../../../../../imsmanifest.xml"; 
 	String contentFiles;
 	
 	@Before
@@ -29,12 +29,20 @@ public class ShareableContentObjectCreatorTests
 		content = new LinkedList<File>();
 	}
 	
+	
 	@Test
-	public void testCreatePIF() 
+	public void testCreatePIFWithManifest() 
 	{
 		//Invoke the creation of the PIF 
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
-		shrContentObj.createPIF(manifest, content);
+		assertNotNull((shrContentObj.createPIF(manifest, content)));
+	}
+	@Test
+	public void testCreatePIFEmptyManifest() 
+	{
+		//Invoke the creation of the PIF 
+		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
+		assertNotNull((shrContentObj.createPIF(null, content)));
 		
 		//fail("Not yet implemented");
 	}
