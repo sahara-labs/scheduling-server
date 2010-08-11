@@ -5,9 +5,10 @@
       <xsd:element name="createPIF">
       	<xsd:complexType>
       		<xsd:sequence>
-                        <xsd:element name="content" type="xsd:hexBinary"
-                        	maxOccurs="unbounded" minOccurs="1">
-                        </xsd:element>
+      			<xsd:element name="content" type="xsd:hexBinary"
+      				maxOccurs="unbounded" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="title" type="xsd:string"></xsd:element>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
@@ -35,8 +36,11 @@
       <xsd:element name="createSCO">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="typeLMS" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      			<xsd:element name="content" type="xsd:hexBinary"
+                        <xsd:element name="title" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+                        <xsd:element name="typeLMS" type="xsd:string"
+      				maxOccurs="1" minOccurs="0">
+      			</xsd:element>
+                        <xsd:element name="content" type="xsd:hexBinary"
       				maxOccurs="unbounded" minOccurs="1">
       			</xsd:element>
       		</xsd:sequence>
