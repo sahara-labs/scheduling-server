@@ -34,6 +34,10 @@
 # @author Michael Diponio (mdiponio)
 # @date 5th January 2009
 #
+# @author Herbert Yeung 
+# @date 10th August 2010
+#
+# Changelog: Added parameters/properties for LabConnector and ScormPackager
 ###############################################################################
 #                                                                             #
 # Scheduling Server core configuration file. Format of each item is:          #
@@ -287,3 +291,34 @@ Default_Rig_Type_Is_Code_Assignable false
 # Rig_Client_Async_Timeout <int>
 # Rig_Client_Async_Timeout 60 seconds
 Rig_Client_Async_Timeout 60
+
+###############################################################################
+## LabConnector Remote Host identification                                   ##
+###############################################################################
+# LabConnector Hostname - the LabConnector on the remote end
+# labconnector_remotehost <String>
+labconnector_remotehost ilabs-test.eng.uts.edu.au
+
+# LabConnector PortNum - the LabConnector port number on the remote end
+# labconnector_port <Integer>
+labconnector_port 7070
+
+# LabConnector Web Service Link - the LabConnector web service path
+# labconnector_wspath <String>
+labconnector_wspath /LabConnector/LabConnector.asmx
+
+# LabConnector Experiment Storage Location - the expt storage location path
+# labconnector_storeloc <String>
+labconnector_storeloc /Users
+
+###############################################################################
+## ScormPackager SCO Properties/Identifiers                                  ##
+###############################################################################
+
+# SCO File Path - SCOs storage location
+# scormpackager_scopath <String>
+scormpackager_scopath /SCOs
+
+# SCO Lesson/Experiment Title  - The title used by the manifest 
+# scormpackager_scotitle <String>
+scormpackager_scotitle "Generic Title"
