@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.zip.*;
 
-import au.edu.labshare.schedserver.scormpackager.IShareableContentObjectCreator;
+import au.edu.labshare.schedserver.scormpackager.ShareableContentObjectCreator;
 
-public abstract class ShareableContentObjectCreatorAdaptor implements IShareableContentObjectCreator
+public abstract class ShareableContentObjectCreatorAdaptor extends ShareableContentObjectCreator
 {	
 	@Override
 	public String createPIF(String title, Collection <File> content)

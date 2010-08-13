@@ -6,8 +6,14 @@ import java.io.File;
 import java.util.Collection;
 import java.util.zip.ZipFile;
 
-public interface IShareableContentObjectCreator extends IPackageInterchangeFile
+public abstract class ShareableContentObjectCreator implements IPackageInterchangeFile
 {
+	/** 
+	 * A PIF file needs to contain the following information
+	 */
+	private IManifest manifest;
+	private File content[];
+	
 	/**
 	 * Creates the Shareable Content Object (SCO) in zip format. 
 	 * All files are zipped, not just the directory.
@@ -18,11 +24,30 @@ public interface IShareableContentObjectCreator extends IPackageInterchangeFile
 	 * @param lmsName 	Accessible Learning Management System (e.g. Blackboard, Moodle, Sakai )
 	 * 					If null is supplied a default LMS value is used.
 	 */
-	public String createSCO(String mainfest, Collection <File> assets, String lmsName);
+	public abstract String createSCO(String mainfest, Collection <File> assets, String lmsName);
 	
 	/**
 	 * Validate that the LMS (URL) is handled 
 	 */
-	public boolean validateLMSConnection(ZipFile SCO); 
-	
+	public abstract boolean validateLMSConnection(ZipFile SCO);
+
+	public void setManifest(IManifest manifest) 
+	{
+		this.manifest = manifest;
+	}
+
+	public IManifest getManifest() 
+	{
+		return manifest;
+	}
+
+	public void setContent(File content[]) 
+	{
+		this.content = content;
+	}
+
+	public File[] getContent() 
+	{
+		return content;
+	} 
 }

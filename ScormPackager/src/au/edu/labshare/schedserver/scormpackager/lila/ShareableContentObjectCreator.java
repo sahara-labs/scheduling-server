@@ -12,9 +12,7 @@ import java.util.zip.Deflater;
 import java.util.Collection;
 import java.util.Iterator;
 
-import au.edu.labshare.schedserver.scormpackager.lila.ShareableContentObjectCreatorAdaptor;
-
-public class ShareableContentObjectCreator extends ShareableContentObjectCreatorAdaptor  
+public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.scormpackager.ShareableContentObjectCreator 
 {
 	private ManifestXMLDecorator manifestXMLDecorator;
 	

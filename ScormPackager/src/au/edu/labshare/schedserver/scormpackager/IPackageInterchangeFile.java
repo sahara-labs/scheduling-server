@@ -6,6 +6,7 @@ import java.util.zip.ZipFile;
 
 public interface IPackageInterchangeFile 
 {	
+
 	/**
 	 * A generic form of a SCO or Asset is known as a Package Interchange File (PIF).
 	 * This assumes manifest file is: "imsmanifest.xml"
@@ -50,5 +51,4 @@ public interface IPackageInterchangeFile
 	 * As specified in section 4.3 of Sharable Content Object Reference Model
 	 */
 	public boolean validateMetaData(ZipFile SCO);
-
 }

@@ -1,9 +1,8 @@
 package au.edu.labshare.schedserver.scormpackager;
-import java.io.*;
+import java.io.File;
 
 public interface IShareableContentObjectExtractor 
 {
-
 	/*
 	 * Extract the zip/PIF (Package Interchange File) file
 	 */
@@ -20,8 +19,7 @@ public interface IShareableContentObjectExtractor
 	public File getHTMLFile();
 	
 	/*
-	 * Retrieve 
+	 * Retrieve assets 
 	 */
-	
-	
+	public File[] getContent();	
 }
