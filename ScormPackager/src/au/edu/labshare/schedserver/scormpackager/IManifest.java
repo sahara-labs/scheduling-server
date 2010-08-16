@@ -1,5 +1,7 @@
 package au.edu.labshare.schedserver.scormpackager;
 
+import java.util.Collection;
+
 import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
@@ -12,8 +14,8 @@ public interface IManifest
 	public Resource[]     getResources();
 	public IManifest[]    getSubManifests();
 	
-	public void setMetaData();
-	public void setOrganizations();
-	public void setResources();
-	public void setSubManifests();	
+	public void setMetaData(MetaData metadata);
+	public void setOrganizations(Collection<Organization> organization);
+	public void setResources(Collection<Resource> resource);
+	public void setSubManifests(Collection<IManifest> subManifest);	
 }
