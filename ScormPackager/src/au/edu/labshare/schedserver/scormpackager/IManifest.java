@@ -7,13 +7,13 @@ import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 public interface IManifest 
 {
 	//Getter and Setters for the data that is necessary in immanifest.xml	
-	public MetaData getMetaData();
+	public MetaData       getMetaData();
 	public Organization[] getOrganizations();
-	public Resource[] getResources();
-	public IManifest  getManifest();
+	public Resource[]     getResources();
+	public IManifest[]    getSubManifests();
 	
 	public void setMetaData();
 	public void setOrganizations();
 	public void setResources();
-	public void setManifest();	
+	public void setSubManifests();	
 }
