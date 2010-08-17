@@ -1,5 +1,6 @@
 package au.edu.labshare.schedserver.scormpackager.lila;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import au.edu.labshare.schedserver.scormpackager.IManifest;
@@ -9,56 +10,82 @@ import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 
 public class Manifest implements IManifest
 {
+	MetaData metadata;
+	ArrayList<Organization> organizations;
+	ArrayList<Resource> resources;
+	ArrayList<IManifest> submanifests;
+	
+	public Manifest()
+	{
+		metadata = new MetaData();
+		organizations = new ArrayList<Organization>();
+		resources = new ArrayList<Resource>();
+		submanifests = new ArrayList<IManifest>();
+	}
 
 	@Override
 	public MetaData getMetaData() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return metadata;
 	}
 
 	@Override
-	public Organization[] getOrganizations() 
+	public Collection<Organization> getOrganizations() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return organizations;
 	}
 
 	@Override
-	public Resource[] getResources() 
+	public Collection<Resource> getResources() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return resources;
 	}
 
 	@Override
-	public IManifest[] getSubManifests() 
+	public Collection<IManifest> getSubManifests() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return submanifests;
 	}
 
 	@Override
 	public void setMetaData(MetaData metadata) 
 	{
-		// TODO Auto-generated method stub
+		this.metadata = metadata; 
 	}
 
 	@Override
-	public void setOrganizations(Collection<Organization> organization) 
+	public void setOrganizations(Collection<Organization> organizations) 
 	{
-		// TODO Auto-generated method stub
+		this.organizations = (ArrayList<Organization>) organizations;
 	}
 
 	@Override
-	public void setResources(Collection<Resource> resource) 
+	public void setResources(Collection<Resource> resources) 
 	{
-		// TODO Auto-generated method stub		
+		this.resources = (ArrayList<Resource>) resources;
 	}
 
 	@Override
-	public void setSubManifests(Collection<IManifest> subManifest) 
+	public void setSubManifests(Collection<IManifest> submanifests) 
 	{
-		// TODO Auto-generated method stub	
+		this.submanifests = (ArrayList<IManifest>) submanifests;
+	}
+
+	@Override
+	public void addOrganization(Organization organization) 
+	{
+		this.organizations.add(organization);
+	}
+
+	@Override
+	public void addResource(Resource resource) 
+	{
+		this.resources.add(resource);
+	}
+
+	@Override
+	public void addSubManifest(IManifest submanifest) 
+	{
+		this.submanifests.add(submanifest);
 	}
 }
