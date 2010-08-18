@@ -203,8 +203,6 @@ public class SessionExpiryChecker implements Runnable
                     if (this.notTest) new SessionIdleKicker().kickIfIdle(ses, db);
                 }
             }
-            
-            db.close();
         }
         catch (HibernateException hex)
         {
