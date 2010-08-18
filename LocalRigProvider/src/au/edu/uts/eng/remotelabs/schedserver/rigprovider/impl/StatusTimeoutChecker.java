@@ -36,8 +36,6 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -170,15 +168,9 @@ public class StatusTimeoutChecker implements Runnable
             }
         }
         catch (Throwable thr)
-        {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            PrintStream pstr = new PrintStream(out);
-            thr.printStackTrace(pstr);
-            pstr.flush();
-            
-            this.logger.fatal("BUG: Uncaught exception in StatusTimeoutChecker of bundle " +
-            		"SchedulingServer-LocalRigProvider. Exception type: " + thr.getClass().getName() +
-            		", message: " + thr.getMessage() + ". Stack trace: " + out.toString() + '.');
+        {   
+            this.logger.error("Failed to query database to check rig status. Exception: " + 
+                    thr.getClass().getName() + ", Message:" + thr.getMessage());
         }
         finally
         {
