@@ -80,6 +80,9 @@ public class LoggerActivator implements BundleActivator
     
     /** Logger confService registration. */
     private ServiceRegistration reg;
+    
+    /** Config object */
+    private static Config conf;
 
     /* Sets the configuration defaults. */
     static
@@ -124,7 +127,7 @@ public class LoggerActivator implements BundleActivator
             /* Load all configuration properties. */
             this.confService = new ServiceTracker(context, ref, null);
             this.confService.open();
-            Config conf = (Config)this.confService.getService();
+            conf = (Config)this.confService.getService();
             
             /* Common configuration. */
             LoggerActivator.loggerProperties.put("Logger_Type", conf.getProperty("Logger_Type", "File"));
@@ -273,22 +276,33 @@ public class LoggerActivator implements BundleActivator
     {
         final Map<Integer, String> frmStrings = new HashMap<Integer, String>();
         final String def = LoggerActivator.loggerProperties.get("Default_Log_Format");
-        String frm = LoggerActivator.loggerProperties.get("FATAL_Log_Format");
+        String frm;
+        if ( conf == null )
+        {
+            frmStrings.put(Logger.FATAL, def);
+            frmStrings.put(Logger.PRIORITY, def);
+            frmStrings.put(Logger.ERROR, def);
+            frmStrings.put(Logger.WARN, def);
+            frmStrings.put(Logger.INFO, def);
+            frmStrings.put(Logger.DEBUG, def);
+            return frmStrings;
+        }
+        frm = conf.getProperty("FATAL_Log_Format");
         frmStrings.put(Logger.FATAL, frm == null ? def : frm);
 
-        frm = LoggerActivator.loggerProperties.get("PRIORITY_Log_Format");
+        frm = conf.getProperty("PRIORITY_Log_Format");
         frmStrings.put(Logger.PRIORITY, frm == null ? def : frm);
 
-        frm = LoggerActivator.loggerProperties.get("ERROR_Log_Format");
+        frm = conf.getProperty("ERROR_Log_Format");
         frmStrings.put(Logger.ERROR, frm == null ? def : frm);
 
-        frm = LoggerActivator.loggerProperties.get("WARN_Log_Format");
+        frm = conf.getProperty("WARN_Log_Format");
         frmStrings.put(Logger.WARN, frm == null ? def : frm);
 
-        frm = LoggerActivator.loggerProperties.get("INFO_Log_Format");
+        frm = conf.getProperty("INFO_Log_Format");
         frmStrings.put(Logger.INFO, frm == null ? def : frm);
 
-        frm = LoggerActivator.loggerProperties.get("DEBUG_Log_Format");
+        frm = conf.getProperty("DEBUG_Log_Format");
         frmStrings.put(Logger.DEBUG, frm == null ? def : frm);
 
         return frmStrings;
