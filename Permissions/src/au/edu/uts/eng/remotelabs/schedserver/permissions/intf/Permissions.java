@@ -886,7 +886,7 @@ public class Permissions implements PermissionsSkeletonInterface
                 {
                     this.logger.warn("Incorrect configuration of a resource permission with id " + resPerm.getId() + 
                             ". It has an unknown resource type " + resPerm.getType() + ". It should be one of " +
-                            "'RIG', 'TYPE' or 'CAPS'.");
+                            "'RIG', 'TYPE' or 'CAPABILITY'.");
                 }
 
                 /* Add information about permission. */
