@@ -217,7 +217,7 @@ public class SessionExpiryChecker implements Runnable
                 }
                 catch (HibernateException ex)
                 {
-                    this.logger.error("Exception rolling back up session expiry transaction (Exception: " + 
+                    this.logger.error("Exception rolling back session expiry transaction (Exception: " + 
                             ex.getClass().getName() + "," + " Message: " + ex.getMessage() + ").");
                 }
             }
