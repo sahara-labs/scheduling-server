@@ -76,16 +76,19 @@ public class ManifestTests
 		expectedValue = new ArrayList<Organization>();
 		expectedOrganization = new Organization();
 		expectedOrganization.setID("UTS");
-		expectedOrganization.setItem("item1", "applet");
+		expectedOrganization.addItem("item1", "applet");
 		expectedValue.add(expectedOrganization);
-		expectedOrganization.setItem("item2", "applet2");
+		expectedOrganization.addItem("item2", "applet2");
 		expectedValue.add(expectedOrganization);
-		expectedOrganization.setItem("item3", "applet3");
+		expectedOrganization.addItem("item3", "applet3");
 		expectedValue.add(expectedOrganization);
 
 		actualValue = manifest.generateOrganisations(institutionNames, null, testItems); 
-		
-		assertSame(expectedValue, actualValue);
+
+		assertSame(expectedValue.get(0).getID(), ((ArrayList<Organization>)actualValue).get(0).getID());
+		assertTrue(expectedValue.get(0).getItem(0).getReference().equals(((ArrayList<Organization>)actualValue).get(0).getItem(0).getReference()));
+		assertTrue(expectedValue.get(0).getItem(1).getID().equals(((ArrayList<Organization>)actualValue).get(0).getItem(1).getID()));
+		assertNull(((ArrayList<Organization>)actualValue).get(0).getItem(2).getTitle());
 	}
 	
 	@Test 
