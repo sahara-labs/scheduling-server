@@ -12,6 +12,15 @@ import java.util.zip.Deflater;
 import java.util.Collection;
 import java.util.Iterator;
 
+//Needed for Manifest creation
+import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
+import au.edu.labshare.schedserver.scormpackager.manifest.Dependency;
+import au.edu.labshare.schedserver.scormpackager.manifest.Item;
+import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
+import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
+import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
+import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
+
 public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.scormpackager.ShareableContentObjectCreator 
 {
 	private ManifestXMLDecorator manifestXMLDecorator;
@@ -32,12 +41,17 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		FileOutputStream fileOutStream = null;
 		ZipOutputStream zipFileOutStream = null;
 		byte[] buffer = new byte[BUFFER_SIZE];
+		Manifest imsmanifest = null;
 		
 		//If no title was provided use generic name placeholder.
 		if(title == null)
 			title = GENERIC_TITLE;
 		
 
+		//Create the manifest
+		imsmanifest = createManifest(title, assets);
+		
+		//Decorate the manifest with relevant XML information
 		manifestXMLDecorator = new ManifestXMLDecorator();
 		filePathManifest = manifestXMLDecorator.decorateManifest(title, assets); 
 		
@@ -107,6 +121,17 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			return null;
 	}
 
+	private Manifest createManifest(String title, Collection<File> assets) 
+	{
+		Manifest manifest = null;
+
+		//Grab the 
+		
+		
+		return null;
+		
+	}
+
 	@Override
 	public boolean validateApplicationProfile(ZipFile SCO) 
 	{
@@ -152,8 +177,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	@Override
 	public String createPIF(String title, Collection<File> content) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return createSCO(title, content, null);
 	}
 
 	@Override

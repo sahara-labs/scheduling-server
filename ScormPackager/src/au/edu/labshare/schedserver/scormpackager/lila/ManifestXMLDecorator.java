@@ -18,8 +18,25 @@ import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+//Needed for constructing the Manifest in object format
+import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
+import au.edu.labshare.schedserver.scormpackager.manifest.Dependency;
+import au.edu.labshare.schedserver.scormpackager.manifest.Item;
+import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
+import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
+import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
+import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
+
 public class ManifestXMLDecorator 
 {
+	private Manifest     imsmanifest;
+	private Dependency   depedency;
+	private Item         item;
+	private MetaData     metadata;
+	private Organization organization;
+	private Resource     resource;
+	private ResourceFile resourceFile;
+	
 	//TODO Should place in properties file
 	private static final String SCO_INSTITUTION = "UTS";
 	
@@ -46,6 +63,16 @@ public class ManifestXMLDecorator
 	public static final String MANIFEST_SCORMTYPE_SCO = "sco";
 	public static final String MANIFEST_SCORMTYPE_ASSET = "asset";
 
+	public ManifestXMLDecorator()
+	{
+		imsmanifest = new Manifest();
+	}
+	
+	public ManifestXMLDecorator(Manifest imsmanifest)
+	{
+		this.imsmanifest = imsmanifest;
+	}
+	
 	/**
 	 * Generates the lmsmanifest.xml file. This is not going to be public
 	 * 
@@ -59,7 +86,6 @@ public class ManifestXMLDecorator
 		XMLEventWriter  eventWriter  = null;
 		XMLEvent        end          = null;
 		String 			zipFileName  = null;
-		
 		
 		// TODO Need to process the title and replace the name with underscores
 		zipFileName  = removeWhiteSpace(title);
