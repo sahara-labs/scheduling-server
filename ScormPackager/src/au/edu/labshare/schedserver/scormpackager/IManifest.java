@@ -1,5 +1,6 @@
 package au.edu.labshare.schedserver.scormpackager;
 
+import java.io.File;
 import java.util.Collection;
 
 import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
@@ -23,4 +24,9 @@ public interface IManifest
 	public void addOrganization(Organization organization);
 	public void addResource(Resource resource);
 	public void addSubManifest(IManifest submanifest);
+	
+	//Utility methods to help with creating the structure of the manifest
+	public Collection<Organization> generateOrganisations(String[] institutions, String[] titles, File[] items);
+	public Collection<Resource>     generateResources(File[] files);
+	public Collection<IManifest>    generateSubManifests();
 }

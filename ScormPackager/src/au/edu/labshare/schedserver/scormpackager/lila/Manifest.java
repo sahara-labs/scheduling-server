@@ -126,7 +126,7 @@ public class Manifest implements IManifest
 				//Assign the filename without extension to the identifierref=attribute and itemX to identifier=attribute
 				if(filenameExt.equals(HTML_EXT)) 
 				{
-					organization.addItem(ITEM_NAME + Integer.toString(j+1), filenameWithoutExtension);
+					organization.addItem(titles[j], ITEM_NAME + Integer.toString(j+1), filenameWithoutExtension);
 					organizations.add(organization);
 				}
 			}
@@ -139,8 +139,20 @@ public class Manifest implements IManifest
 	@Override
 	public Collection<Resource> generateResources(File[] files) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		//TODO Need to complete
+		
+		//Initialise variables
+		Resource resource = null;
+		String filePath   = null;
+		
+
+		//Place values into respective sections
+		for(int i = 0; i < files.length; i++)
+		{
+			filePath = files[i].getPath(); //Assumes that the path is a relative path e.g. lib/random.jar
+		}
+		
+		return resources;
 	}
 
 	@Override

@@ -100,7 +100,7 @@ public class Resource
 		return fileList.get(index);
 	}
 	
-	public void setPath(ResourceFile file)
+	public void addPath(ResourceFile file)
 	{
 		fileList.add(file);
 	}
@@ -110,7 +110,7 @@ public class Resource
 		return dependencyList.get(index);
 	}
 	
-	public void setDependency(Dependency dependency)
+	public void addDependency(Dependency dependency)
 	{
 		dependencyList.add(dependency);
 	}

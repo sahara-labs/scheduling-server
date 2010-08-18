@@ -49,11 +49,12 @@ public class Organization
 		return itemList.get(index);
 	}
 	
-	public void setItem(String identifier, String identifierRef)
+	public void addItem(String title, String identifier, String identifierRef)
 	{
 		item = new Item();
 		item.setID(identifier);
-		item.setReference(identifierRef);	
+		item.setReference(identifierRef);
+		item.setTitle(title);
 		itemList.add(item);
 	}
 	

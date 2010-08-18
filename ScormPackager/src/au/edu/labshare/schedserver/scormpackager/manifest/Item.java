@@ -78,7 +78,7 @@ public class Item
 		return item.get(index);
 	}
 	
-	public void setSubItem(Item item)
+	public void addSubItem(Item item)
 	{
 		if(item != null)
 			this.item.add(item);
