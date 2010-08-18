@@ -29,7 +29,6 @@ public class ShareableContentObjectCreatorTests
 		content = new LinkedList<File>();
 	}
 	
-	
 	@Test
 	public void testCreatePIFWithManifest() 
 	{
@@ -37,16 +36,21 @@ public class ShareableContentObjectCreatorTests
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
 		assertNotNull((shrContentObj.createPIF(manifest, content)));
 	}
+	
 	@Test
 	public void testCreatePIFEmptyManifest() 
 	{
 		//Invoke the creation of the PIF 
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
 		assertNotNull((shrContentObj.createPIF(null, content)));
-		
-		//fail("Not yet implemented");
 	}
 
+	@Test
+	public void testCreateManifest()
+	{
+		fail("Not yet implemented");
+	}
+	
 	@Test
 	public void testValidateDTDFile() 
 	{
