@@ -13,6 +13,11 @@ xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p
 <item identifier = "item1" identifierref="labshare">
 <title>Clock Experiment</title>
 </item>
+<item identifier = "item2" identifierref="applet2">
+<title>Another Clock Experiment</title>
+</item>
+<item identifier = "item3" identifierref="applet3">
+<title>Not a Clock Experiment</title>
 </organization>
 </organizations>
 <resources>
@@ -21,6 +26,17 @@ adlcp:scormtype="sco" href="applet.html">
 <file href="applet.html"/>
 <dependency identifierref="stub"/>
 </resource>
+
+<resource identifier="applet2" type="webcontent" adlcp:scormtype="sco" href="applet2.html">
+<file href="applet2.html"/>
+<dependency identifierref="stub"/>
+</resource>
+
+<resource identifier="applet3" type="webcontent" adlcp:scormtype="sco" href="applet3.html">
+<file href="applet3.html"/>
+<dependency identifierref="stub"/>
+</resource>
+
 <resource identifier="stub" type="webcontent" adlcp:scormtype="asset">
 <file href="lmsstub.js"/>
 </resource>
