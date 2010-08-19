@@ -208,6 +208,7 @@ public class Manifest implements IManifest
 		return null;
 	}
 	
+	//TODO Might need to place this method in a Utility Class
 	private String getFileNameWithoutExtension(String filename)
 	{
 		if(filename.lastIndexOf(".") != -1)
@@ -216,7 +217,7 @@ public class Manifest implements IManifest
 			return filename.substring(0, filename.length());
 	}
 	
-	
+	//TODO Might need to place this method in a Utility Class	
 	private String getFileExtension(String filename)
 	{
 		if(filename.lastIndexOf(".") != -1)
