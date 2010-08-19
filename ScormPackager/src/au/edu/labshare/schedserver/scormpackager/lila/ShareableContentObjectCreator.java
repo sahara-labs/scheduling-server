@@ -134,8 +134,10 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		institutions[0] = ShareableContentObjectCreator.DEFAULT_INSTITUTION;
 
 		manifest = new Manifest();
-		organizations = manifest.generateOrganisations(institutions, titles, (File[])assets.toArray());
-		resources = manifest.generateResources((File[])assets.toArray());
+		File[] files;
+		files = (File[])assets.toArray(new File[assets.size()]);
+		organizations = manifest.generateOrganisations(institutions, titles, files);
+		resources = manifest.generateResources(files);
 
 		//Do a quick check to see if the resources and organizations are not empty
 		if(organizations != null && resources !=null)
