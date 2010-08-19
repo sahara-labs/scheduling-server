@@ -174,6 +174,7 @@ public class ManifestTests
 	@Test
 	public void testGenerateSubManifests()
 	{
+		//TODO We want to fail this until we need to use it. At the moment not used. 
 		fail("Not implemented yet");
 	}
 }
