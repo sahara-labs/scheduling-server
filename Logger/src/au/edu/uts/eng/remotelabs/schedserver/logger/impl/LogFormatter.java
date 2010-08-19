@@ -119,6 +119,28 @@ public class LogFormatter
         final String elements[] = fmt.split("__");
         final StringBuffer buf = new StringBuffer(fmt.length());
         
+        /* As the stack level is inconsistent accross platforms and deployment mechanisms,
+         * we parse the StackTrace to set the pointer to the appropriate stack frame in order  
+         * to get the details of the caller method (filename, line number etc.)
+         * The stack is parsed from the position 'stackPos' that is passed as an argument, 
+         * till the end of the stack. The pointer is set to the first frame starting from the   
+         * 'stackPos' frame whose filename is anything other than *Logger.java.
+         */
+        int newStackPos = stackPos;
+        String fileName;
+        while (thrStack.length > newStackPos)
+        {
+            fileName = thrStack[newStackPos].getFileName();
+            if ( fileName == null || fileName.endsWith("Logger.java") )
+            {
+                newStackPos++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        
         for (String e : elements)
         {
             if (this.macros.containsKey(e))
@@ -163,27 +185,27 @@ public class LogFormatter
                         break;
                         
                     case CLASS:
-                        if (thrStack.length > stackPos)
+                        if (thrStack.length > newStackPos)
                         {
-                            buf.append(thrStack[stackPos].getClassName());
+                            buf.append(thrStack[newStackPos].getClassName());
                         }
                         break;
                     case METHOD:
-                        if (thrStack.length > stackPos)
+                        if (thrStack.length > newStackPos)
                         {
-                            buf.append(thrStack[stackPos].getMethodName());
+                            buf.append(thrStack[newStackPos].getMethodName());
                         }
                         break;
                     case SOURCE:
-                        if (thrStack.length > stackPos)
+                        if (thrStack.length > newStackPos)
                         {
-                            buf.append(thrStack[stackPos].getFileName());
+                            buf.append(thrStack[newStackPos].getFileName());
                         }
                         break;
                     case LINE_NUM:
-                        if (thrStack.length > stackPos)
+                        if (thrStack.length > newStackPos)
                         {
-                            buf.append(thrStack[stackPos].getLineNumber());
+                            buf.append(thrStack[newStackPos].getLineNumber());
                         }
                         break;
                     case TID:
