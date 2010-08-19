@@ -26,11 +26,6 @@ public class Resource
 	MetaData metadata;
 	ArrayList<ResourceFile> fileList;
 	ArrayList<Dependency> dependencyList;
-
-	public Resource()
-	{
-		new Resource("GenericSCO");
-	}
 	
 	public Resource(String identifier)
 	{

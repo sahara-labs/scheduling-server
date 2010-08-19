@@ -105,17 +105,19 @@ public class ManifestTests
 		
 		//Create the expected resources
 		expectedValues = new ArrayList<Resource>();
-		expectedResource = new Resource();
+		expectedResource = new Resource("No Name.");
 		expectedDependency = new Dependency();
 		expectedDependency.setIdentifierRef(STUB_IDENTIFIERREF);
 		expectedResource.addDependency(expectedDependency);
-		expectedResource.setIdentifier("UTS");
+		expectedResource.setIdentifier("applet"); 
 		expectedResource.setHRef(testItem.getName());
 		expectedResource.setScormType(Resource.SCORMTYPE_SCO);
 		expectedResource.setType(Resource.LILA_TYPE);
 		expectedValues.add(expectedResource);
+		expectedResource.setIdentifier("applet2");
 		expectedResource.setHRef(testItem2.getName());
 		expectedValues.add(expectedResource);
+		expectedResource.setIdentifier("applet3");
 		expectedResource.setHRef(testItem3.getName());
 		expectedValues.add(expectedResource);
 		

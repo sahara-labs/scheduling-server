@@ -6,6 +6,11 @@ public class Dependency
 	
 	String identifierref;
 	
+	public Dependency()
+	{
+		identifierref = new String();
+	}
+	
 	public String getIdentiferRef()
 	{
 		return identifierref;
