@@ -28,6 +28,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	//TODO - this is to be replaced by reading from Properties file. 
 	private static final String SCO_FILENAME = null;
 	private static final String GENERIC_TITLE = "Generic Title";
+	private static final String DEFAULT_INSTITUTION = "LabShare";
 	private static final String SCO_FILEPATH = "/SCOs";
 	private static final int BUFFER_SIZE = 18024;
 	
@@ -49,7 +50,9 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		
 
 		//Create the manifest
-		imsmanifest = createManifest(title, assets);
+		String[] titles = new String[1];   //TODO Need to extract the title from the *.html files (assets).
+		titles[0] = title;                 //TODO WARNING: This is just temporary. Extracting Title should be done before hand!!!
+		imsmanifest = createManifest(titles, assets);
 		
 		//Decorate the manifest with relevant XML information
 		manifestXMLDecorator = new ManifestXMLDecorator();
@@ -121,15 +124,24 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			return null;
 	}
 
-	private Manifest createManifest(String title, Collection<File> assets) 
+	private Manifest createManifest(String[] titles, Collection<File> assets) 
 	{
 		Manifest manifest = null;
+		Collection<Resource> resources;
+		Collection<Organization> organizations;
+		String[] institutions = new String[1];
+		
+		institutions[0] = ShareableContentObjectCreator.DEFAULT_INSTITUTION;
 
-		//Grab the 
-		
-		
-		return null;
-		
+		manifest = new Manifest();
+		organizations = manifest.generateOrganisations(institutions, titles, (File[])assets.toArray());
+		resources = manifest.generateResources((File[])assets.toArray());
+
+		//Do a quick check to see if the resources and organizations are not empty
+		if(organizations != null && resources !=null)
+			return manifest;
+		else
+			return null;
 	}
 
 	@Override
