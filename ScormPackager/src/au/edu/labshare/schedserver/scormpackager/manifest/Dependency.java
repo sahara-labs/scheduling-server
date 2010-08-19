@@ -3,6 +3,7 @@ package au.edu.labshare.schedserver.scormpackager.manifest;
 public class Dependency 
 {
 	public static final int STRING_MAX_LENGTH = 2000;
+	public static final String LILA_SCO_IDENTIFIERREF = "stub";
 	
 	String identifierref;
 	

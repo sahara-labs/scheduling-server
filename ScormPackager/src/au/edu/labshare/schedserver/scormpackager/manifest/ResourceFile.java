@@ -3,6 +3,7 @@ package au.edu.labshare.schedserver.scormpackager.manifest;
 public class ResourceFile 
 {
 	public static final int STRING_HREF_MAX_LENGTH = 2000;
+	public static final String LILA_ASSET_IDENTIFIERREF = "lmsstub.js";
 	
 	MetaData metadata;
 	String   href;

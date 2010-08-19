@@ -105,20 +105,28 @@ public class ManifestTests
 		
 		//Create the expected resources
 		expectedValues = new ArrayList<Resource>();
-		expectedResource = new Resource("No Name.");
+		expectedResource = new Resource("applet");
 		expectedDependency = new Dependency();
+		
 		expectedDependency.setIdentifierRef(STUB_IDENTIFIERREF);
 		expectedResource.addDependency(expectedDependency);
-		expectedResource.setIdentifier("applet"); 
 		expectedResource.setHRef(testItem.getName());
 		expectedResource.setScormType(Resource.SCORMTYPE_SCO);
 		expectedResource.setType(Resource.LILA_TYPE);
 		expectedValues.add(expectedResource);
-		expectedResource.setIdentifier("applet2");
+		
+		expectedResource = new Resource("applet2");
+		expectedResource.addDependency(expectedDependency);
 		expectedResource.setHRef(testItem2.getName());
+		expectedResource.setScormType(Resource.SCORMTYPE_SCO);
+		expectedResource.setType(Resource.LILA_TYPE);
 		expectedValues.add(expectedResource);
-		expectedResource.setIdentifier("applet3");
+		
+		expectedResource = new Resource("applet3");
+		expectedResource.addDependency(expectedDependency);
 		expectedResource.setHRef(testItem3.getName());
+		expectedResource.setScormType(Resource.SCORMTYPE_SCO);
+		expectedResource.setType(Resource.LILA_TYPE);
 		expectedValues.add(expectedResource);
 		
 		//Create the Files that are needed for this
@@ -137,10 +145,17 @@ public class ManifestTests
 		File assetFile2 = new File(ATTACHMENT_NAME); //the jpeg file in lib directory
 		testItems[3] = assetFile1;
 		testItems[4] = assetFile2;
+		
+		expectedResource = new Resource("stub");
 		expectedResource.setHRef(testItems[3].getName());
 		expectedResource.setScormType(Resource.SCORMTYPE_ASSET);
+		expectedResource.setType(Resource.LILA_TYPE);
 		expectedValues.add(expectedResource);
+		
+		expectedResource = new Resource("uts_tower");
 		expectedResource.setHRef(testItems[4].getName());
+		expectedResource.setScormType(Resource.SCORMTYPE_ASSET);
+		expectedResource.setType(Resource.LILA_TYPE);
 		expectedValues.add(expectedResource);
 		
 		

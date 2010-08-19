@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import au.edu.labshare.schedserver.scormpackager.IManifest;
+import au.edu.labshare.schedserver.scormpackager.manifest.Dependency;
 import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
+import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
 
 public class Manifest implements IManifest
 {
@@ -112,16 +114,8 @@ public class Manifest implements IManifest
 				//Extrapolate the name from the items and pull out the *.html. Check that it is a html file first
 				String filename = items[j].getName(); 
 				
-				if(filename.lastIndexOf(".") != -1)
-				{
-					filenameExt = filename.substring(filename.lastIndexOf(".") + 1,filename.length());
-					filenameWithoutExtension  = filename.substring(0, filename.lastIndexOf("."));
-				}
-				else
-				{
-					filenameExt = "";
-					filenameWithoutExtension = filename.substring(0, filename.length());
-				}
+				filenameWithoutExtension = getFileNameWithoutExtension(filename);
+                filenameExt = getFileExtension(filename);
 				
 				//Assign the filename without extension to the identifierref=attribute and itemX to identifier=attribute
 				if(filenameExt.equals(HTML_EXT)) 
@@ -139,17 +133,69 @@ public class Manifest implements IManifest
 	@Override
 	public Collection<Resource> generateResources(File[] files) 
 	{
-		//TODO Need to complete
-		
 		//Initialise variables
 		Resource resource = null;
-		String filePath   = null;
+		ResourceFile resourceFile = null;
+		Dependency  dependency = null;
+		String filepath   = null;
+		String filename   = null;
+		String filenameExt = null;
+		String filenameWithoutExtension = null;
 		
-
 		//Place values into respective sections
 		for(int i = 0; i < files.length; i++)
-		{
-			filePath = files[i].getPath(); //Assumes that the path is a relative path e.g. lib/random.jar
+		{	
+			filepath = files[i].getPath(); //Assumes that the path is a relative path e.g. lib/random.jar
+			filename = files[i].getName();
+			
+			filenameExt = getFileExtension(filename);
+			filenameWithoutExtension = getFileNameWithoutExtension(filename);
+			
+			//Try to decipher the values to fill in <resource> tag/element.
+			resource = new Resource(filename); //use the filename to place as the identifier
+			resourceFile = new ResourceFile();
+			
+			//If we see a file that is *.html we treat as a SCO
+			if(filenameExt.equals(HTML_EXT))
+			{
+				//1. adlscp:scormtype="sco"
+				resource.setScormType(Resource.SCORMTYPE_SCO);
+				
+				//2. ResourceFile href="XXX.html" 
+				resourceFile.setFileReference(filepath);
+				
+				//3. Dependency identifierref="stub"
+				dependency = new Dependency();
+				dependency.setIdentifierRef(Dependency.LILA_SCO_IDENTIFIERREF);
+				resource.addDependency(dependency);
+			}
+			else //Treat as Asset
+			{
+				//1. adlcp:scomtype="asset"  
+				resource.setScormType(Resource.SCORMTYPE_ASSET);
+				
+				//2. ResourceFile href="lmsstub.js"
+				resourceFile.setFileReference(ResourceFile.LILA_ASSET_IDENTIFIERREF);
+				
+				//3. No Dependencies - Do nothing because resource is new object. 
+			}		
+			
+			//Certain attributes are common to both - add these in:
+			//1. type="webcontent"
+			resource.setType(Resource.LILA_TYPE);
+			
+			//2. href=filename
+			resource.setHRef(filename);
+			
+			//3. ResourceFile href=filename
+			resourceFile.setFileReference(filepath);
+			resource.addPath(resourceFile);
+			
+			//4. identifer=filenameWithoutExtension
+			resource.setIdentifier(filenameWithoutExtension);
+			
+			//Add the resources to the collection
+			resources.add(resource);
 		}
 		
 		return resources;
@@ -162,4 +208,20 @@ public class Manifest implements IManifest
 		return null;
 	}
 	
+	private String getFileNameWithoutExtension(String filename)
+	{
+		if(filename.lastIndexOf(".") != -1)
+			return filename.substring(0, filename.lastIndexOf("."));
+		else
+			return filename.substring(0, filename.length());
+	}
+	
+	
+	private String getFileExtension(String filename)
+	{
+		if(filename.lastIndexOf(".") != -1)
+			return filename.substring(filename.lastIndexOf(".") + 1,filename.length());
+		else
+			return "";
+	}
 }
