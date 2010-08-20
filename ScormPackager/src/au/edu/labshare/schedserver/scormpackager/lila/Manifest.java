@@ -10,6 +10,7 @@ import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
+import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 public class Manifest implements IManifest
 {
@@ -114,8 +115,8 @@ public class Manifest implements IManifest
 				//Extrapolate the name from the items and pull out the *.html. Check that it is a html file first
 				String filename = items[j].getName(); 
 				
-				filenameWithoutExtension = getFileNameWithoutExtension(filename);
-                filenameExt = getFileExtension(filename);
+				filenameWithoutExtension = ScormUtilities.getFileNameWithoutExtension(filename);
+                filenameExt = ScormUtilities.getFileExtension(filename);
 				
 				//Assign the filename without extension to the identifierref=attribute and itemX to identifier=attribute
 				if(filenameExt.equals(HTML_EXT)) 
@@ -148,8 +149,8 @@ public class Manifest implements IManifest
 			filepath = files[i].getPath(); //Assumes that the path is a relative path e.g. lib/random.jar
 			filename = files[i].getName();
 			
-			filenameExt = getFileExtension(filename);
-			filenameWithoutExtension = getFileNameWithoutExtension(filename);
+			filenameExt = ScormUtilities.getFileExtension(filename);
+			filenameWithoutExtension = ScormUtilities.getFileNameWithoutExtension(filename);
 			
 			//Try to decipher the values to fill in <resource> tag/element.
 			resource = new Resource(filename); //use the filename to place as the identifier
@@ -206,23 +207,5 @@ public class Manifest implements IManifest
 	{
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	//TODO Might need to place this method in a Utility Class
-	private String getFileNameWithoutExtension(String filename)
-	{
-		if(filename.lastIndexOf(".") != -1)
-			return filename.substring(0, filename.lastIndexOf("."));
-		else
-			return filename.substring(0, filename.length());
-	}
-	
-	//TODO Might need to place this method in a Utility Class	
-	private String getFileExtension(String filename)
-	{
-		if(filename.lastIndexOf(".") != -1)
-			return filename.substring(filename.lastIndexOf(".") + 1,filename.length());
-		else
-			return "";
 	}
 }

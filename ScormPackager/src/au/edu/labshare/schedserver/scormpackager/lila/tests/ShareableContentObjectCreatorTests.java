@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.labshare.schedserver.scormpackager.lila.ShareableContentObjectCreator;
+import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
+import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
 
 public class ShareableContentObjectCreatorTests 
 {
@@ -19,14 +21,47 @@ public class ShareableContentObjectCreatorTests
 	
 	
 	/* These variables are pertaining to the file list of */
-	String fileName = "../../../../../../imsmanifest.xml"; 
-	String contentFiles;
+	String fileNameManifest = "../../../../../../imsmanifest.xml"; 
+	String title = "LabShare";
+	//String resourcesPath = "../../../../../../../../test/resources";
+	String resourcesPath = "test/resources";
+	String contentLilaPath = resourcesPath + "/lila/";
+	String contentNonCompliantPath = resourcesPath + "/noncompliant/";
 	
 	@Before
 	public void Setup()
 	{
-		manifest = fileName;
 		content = new LinkedList<File>();
+		
+		File LilaDirectory = new File(contentLilaPath);
+		File LilaLibDirectory = new File(contentLilaPath+"/lib");
+		
+		File[] listOfLilaSCOFiles = LilaDirectory.listFiles();
+		File[] listofLilaAssetFiles = LilaLibDirectory.listFiles();
+		
+		//Add all html files as SCOs
+		for(int i = 0; i < listOfLilaSCOFiles.length; i++) 
+		{
+			//Check that the file has an extension with *.html and add it to the content as it is a sco
+			if (listOfLilaSCOFiles[i].isFile() 
+			&& ScormUtilities.getFileExtension(listOfLilaSCOFiles[i].getName()).equals(Manifest.HTML_EXT)) 
+			{
+				content.add(listOfLilaSCOFiles[i]); //Assume in test that *.html are scormtype:sco
+			} 
+		}
+		 
+		//Add the assets in lib directory.
+		for(int i = 0; i < listofLilaAssetFiles.length; i++)
+		{
+			//If file add it as it is an asset. 
+			if (listofLilaAssetFiles[i].isFile()) 
+			{
+				content.add(listofLilaAssetFiles[i]); //Assume in test that all files are scormtype:asset
+			} 
+		}
+		
+		 //Add the lmsstub.js
+		 content.add(new File(contentLilaPath + "/lmsstub.js")); 
 	}
 	
 	@Test
@@ -34,7 +69,7 @@ public class ShareableContentObjectCreatorTests
 	{
 		//Invoke the creation of the PIF 
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
-		assertNotNull((shrContentObj.createPIF(manifest, content)));
+		assertNotNull((shrContentObj.createPIF(title, content)));
 	}
 	
 	@Test
