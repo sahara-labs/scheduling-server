@@ -22,7 +22,7 @@ public class ShareableContentObjectCreatorTests
 	
 	/* These variables are pertaining to the file list of */
 	String fileNameManifest = "../../../../../../imsmanifest.xml"; 
-	String title = "LabShare";
+	String title = "LabShare Experiment";
 	//String resourcesPath = "../../../../../../../../test/resources";
 	String resourcesPath = "test/resources";
 	String contentLilaPath = resourcesPath + "/lila/";

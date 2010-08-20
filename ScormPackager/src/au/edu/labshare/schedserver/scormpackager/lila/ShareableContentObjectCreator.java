@@ -20,6 +20,7 @@ import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
+import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.scormpackager.ShareableContentObjectCreator 
 {
@@ -50,8 +51,20 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		
 
 		//Create the manifest
-		String[] titles = new String[1];   //TODO Need to extract the title from the *.html files (assets).
-		titles[0] = title;                 //TODO WARNING: This is just temporary. Extracting Title should be done before hand!!!
+		//Extract the names from the *.html files
+		int iTitleIter = 0;
+		String[] titles = new String[assets.size()];   
+		
+		for(Iterator<File> iter = assets.iterator(); iter.hasNext();)
+		{
+			String str = iter.next().getName();
+			
+			if(ScormUtilities.getFileExtension(str).equals(Manifest.HTML_EXT))
+				titles[iTitleIter] = ScormUtilities.getFileNameWithoutExtension(str);
+			
+			iTitleIter++;
+		}
+
 		imsmanifest = createManifest(titles, assets);
 		
 		//Decorate the manifest with relevant XML information

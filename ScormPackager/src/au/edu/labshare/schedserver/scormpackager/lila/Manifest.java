@@ -120,11 +120,10 @@ public class Manifest implements IManifest
 				
 				//Assign the filename without extension to the identifierref=attribute and itemX to identifier=attribute
 				if(filenameExt.equals(HTML_EXT)) 
-				{
 					organization.addItem(titles[j], ITEM_NAME + Integer.toString(j+1), filenameWithoutExtension);
-					organizations.add(organization);
-				}
 			}
+			
+			organizations.add(organization);
 		}
 		
 	
