@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 //Needed for XML generation
 import javax.xml.stream.XMLEventFactory;
@@ -26,6 +27,7 @@ import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
+import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 public class ManifestXMLDecorator 
 {
@@ -77,41 +79,44 @@ public class ManifestXMLDecorator
 	 * Generates the lmsmanifest.xml file. This is not going to be public
 	 * 
 	 * Based on: http://www.vogella.de/articles/JavaXML/article.html
-	 * @param title
-	 * @param assets. Assumption 1st collection element is the *.html file to be rendered 
+	 * @param Manifest. This param is compulsory in order to decorate the Manifest Object. 
 	 */
-	public String decorateManifest(String title, Collection<File> assets)
+	public String decorateManifest(Manifest manifest)
 	{
 		XMLEventFactory eventFactory = null;
 		XMLEventWriter  eventWriter  = null;
 		XMLEvent        end          = null;
 		String 			zipFileName  = null;
 		
-		// TODO Need to process the title and replace the name with underscores
-		zipFileName  = removeWhiteSpace(title);
+		if(manifest.getMetaData().getIdentifer() != null)
+			zipFileName  = ScormUtilities.replaceWhiteSpace(manifest.getMetaData().getIdentifer(), null);
+		else
+			zipFileName  = Manifest.GENERIC_IDENTIFER;
 		
 		//Generate the manifest file imsmanifest.xml
 		try
 		{
 			// Create a XMLOutputFactory
 			XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+			
 			// Create XMLEventWriter
 			eventWriter = outputFactory.createXMLEventWriter(new FileOutputStream(MANFEST_NAME));
+			
 			// Create a EventFactory
 			eventFactory = XMLEventFactory.newInstance();
 			end = eventFactory.createDTD("\n");
+			
 			// Create and write Start Tag
 			StartDocument startDocument = eventFactory.createStartDocument();
 			eventWriter.add(startDocument);
-			//return null;
-
+			
 			//Invoke the following to generate the imsmanifest.xml file:
 			//1. decorateManifestHeader()
 			//2. decorateOrganizations()
 			//3. decoreateResources()
-			decorateManifestHeader(title, eventFactory, eventWriter, end);
-			decorateOrganizations(title, assets, eventFactory, eventWriter, end);
-			decorateResources(title, assets, eventWriter);
+			decorateManifestHeader(manifest, eventFactory, eventWriter, end);
+			decorateOrganizations(manifest, eventFactory, eventWriter, end);
+			decorateResources(manifest, eventFactory, eventWriter, end);
 			
 			//Close off the XML Manifest node
 			eventWriter.add(eventFactory.createEndElement("", "", MANIFEST_NODE_NAME));
@@ -131,13 +136,13 @@ public class ManifestXMLDecorator
 		return null; //TODO Need to actually return the path of the file in question. 
 	}
 	
-	private void decorateManifestHeader(String title, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
+	private void decorateManifestHeader(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
 	{
 		ArrayList<Attribute> attributeList = null;
 		
 		// Create manifest node name open tag with relevant attributes	
 		attributeList = new ArrayList<Attribute>();
-		attributeList.add(eventFactory.createAttribute("identifier", title));
+		attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getIdentifer()));
 		attributeList.add(eventFactory.createAttribute("version", MANIFEST_NODE_VERSION));
 		attributeList.add(eventFactory.createAttribute("xmlns", MANIFEST_XMLNS_IMSCP));
 		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", MANIFEST_XSI_ADLCP_SCHEMALOC));
@@ -157,17 +162,19 @@ public class ManifestXMLDecorator
 		}
 	}
 	
-	private void decorateOrganizations(String title, Collection<File> assets, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
+	private void decorateOrganizations(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
 	{
+		int i = 0;
 		ArrayList<Attribute> attributeList = null;
-		File htmlFile = (File)assets.toArray()[0];
 		
 		// Create Organization Manifest component information
+		// Create the attribute default="" for organizations node
 		attributeList = new ArrayList<Attribute>();
 		attributeList.add(eventFactory.createAttribute("default", SCO_INSTITUTION));
 		StartElement organizationsStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_NODE_NAME, attributeList.iterator(), attributeList.iterator());
 	    try 
 	    {
+	    	// Write the organizations start node to file
 			eventWriter.add(organizationsStartElem);
 			eventWriter.add(end);
 		} 
@@ -175,59 +182,87 @@ public class ManifestXMLDecorator
 	    {
 			e.printStackTrace(); // TODO Replace with SchedServer Logger 
 		}
-		
-		// Create the organization element node
-		attributeList = new ArrayList<Attribute>();
-		attributeList.add(eventFactory.createAttribute("identifier", SCO_INSTITUTION));
-		StartElement organizationStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
-	    try 
-	    {
-			eventWriter.add(organizationStartElem);
-			eventWriter.add(end);
-		} 
-	    catch (XMLStreamException e) 
-	    {
-			e.printStackTrace(); // TODO Replace with SchedServer Logger 
-		}
-		createNode(eventWriter, MANIFEST_TITLE, title);
 
-		//TODO Not sure if more than one 'item' is handled by the LILA SCORM engine
-		attributeList = new ArrayList<Attribute>();
-		attributeList.add(eventFactory.createAttribute("identifier", "item1"));
-		attributeList.add(eventFactory.createAttribute("identifierref", htmlFile.getName())); //TODO remove the .html suffix from getName()
-		StartElement itemStartElem = eventFactory.createStartElement("", "",  MANIFEST_ITEM, attributeList.iterator(), attributeList.iterator());
-	    try 
-	    {
-			eventWriter.add(itemStartElem);
-			eventWriter.add(end);
-		} 
-	    catch (XMLStreamException e) 
-	    {
-			e.printStackTrace(); // TODO Replace with SchedServer Logger 
-		}
-		createNode(eventWriter, MANIFEST_TITLE, title);  
-		EndElement itemEndElem = eventFactory.createEndElement("", "",  MANIFEST_ITEM);
-	    try 
-	    {
-			eventWriter.add(itemEndElem);
-			eventWriter.add(end);
-		} 
-	    catch (XMLStreamException e) 
+		//TODO Add each organization
+		for(Iterator<Organization> iterOrg = manifest.getOrganizations().iterator(); iterOrg.hasNext();)
 		{
-			e.printStackTrace(); 
-		}
+			// Create the organization element node
+			attributeList = new ArrayList<Attribute>();
+			attributeList.add(eventFactory.createAttribute("identifier", SCO_INSTITUTION));
+			StartElement organizationStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+		    try 
+		    {
+				eventWriter.add(organizationStartElem);
+				eventWriter.add(end);
+			} 
+		    catch (XMLStreamException e) 
+		    {
+				e.printStackTrace(); // TODO Replace with SchedServer Logger 
+			}
+		    
+			//Get the actual organization object to obtain information
+			Organization organization = iterOrg.next();
 		
-		
-		// Close the organization element node
-		EndElement organizationEndElem = eventFactory.createEndElement("", "", MANIFEST_ORG_ELEM_NAME);
-		try 
-		{
-			eventWriter.add(organizationEndElem);
-			eventWriter.add(end);
-		} 
-		catch (XMLStreamException e) 
-		{
-			e.printStackTrace(); // TODO Replace with SchedServer Logger
+			//Decorate the <title></title> nodes
+			createNode(eventWriter, MANIFEST_TITLE, organization.getTitle());
+			EndElement itemEndElem = eventFactory.createEndElement("", "",  MANIFEST_TITLE);
+			
+			try 
+		    {
+				eventWriter.add(itemEndElem);
+				eventWriter.add(end);
+			} 
+		    catch (XMLStreamException e) 
+			{
+				e.printStackTrace(); 
+			}
+			
+			//TODO Need to extract the title from the <item identifierref> atttribute.
+		    for(Iterator<Item> iterItem = organization.getItemList().iterator(); iterItem.hasNext();)
+		    {
+		    	Item orgItem = iterItem.next();
+		    	attributeList = new ArrayList<Attribute>();
+				attributeList.add(eventFactory.createAttribute("identifier", "item" + Integer.toString(i)));
+				attributeList.add(eventFactory.createAttribute("identifierref", orgItem.getReference())); 
+				StartElement itemStartElem = eventFactory.createStartElement("", "",  MANIFEST_ITEM, attributeList.iterator(), attributeList.iterator());
+				try 
+			    {
+					eventWriter.add(itemStartElem);
+					eventWriter.add(end);
+				} 
+			    catch (XMLStreamException e) 
+			    {
+					e.printStackTrace(); // TODO Replace with SchedServer Logger 
+				}
+			    
+			    //TODO Need to extract the title from the <item identifierref> attribute. 
+				createNode(eventWriter, MANIFEST_TITLE, orgItem.getTitle());  
+				itemEndElem = eventFactory.createEndElement("", "",  MANIFEST_ITEM);
+				
+				try 
+			    {
+					eventWriter.add(itemEndElem);
+					eventWriter.add(end);
+				} 
+			    catch (XMLStreamException e) 
+				{
+					e.printStackTrace(); 
+				}
+
+				i++;
+		    }
+		    
+		    // Close the organization element node
+			EndElement organizationEndElem = eventFactory.createEndElement("", "", MANIFEST_ORG_ELEM_NAME);
+			try 
+			{
+				eventWriter.add(organizationEndElem);
+				eventWriter.add(end);
+			} 
+			catch (XMLStreamException e) 
+			{
+				e.printStackTrace(); // TODO Replace with SchedServer Logger
+			}
 		}
 		
 		EndElement organizationsEndElem = eventFactory.createEndElement("", "",  MANIFEST_ORG_NODE_NAME);
@@ -242,13 +277,174 @@ public class ManifestXMLDecorator
 		}
 	}
 
-	private void decorateResources(String title, Collection<File> assets, XMLEventWriter eventWriter)
+	private void decorateResources(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
 	{
-		//TODO Create Resources section - File References
-		for(int i = 0; i < assets.size(); i++)
+		ArrayList<Attribute> attributeList = null;
+		
+		//Create the resources node
+		attributeList = new ArrayList<Attribute>();
+		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME, attributeList.iterator(), attributeList.iterator());
+		
+		try 
+	    {
+	    	// Write the resources start node to file
+			eventWriter.add(resourcesStartElem);
+			eventWriter.add(end);
+		} 
+	    catch (XMLStreamException e) 
+	    {
+			e.printStackTrace(); // TODO Replace with SchedServer Logger 
+		}
+		
+		
+		//TODO Create each separate resource section
+		for(Iterator<Resource> iterResource = manifest.getResources().iterator(); manifest.getResources().iterator().hasNext();)
 		{
-			File assetFile = (File)assets.toArray()[i];
-			createNode(eventWriter, "File", assetFile.getPath());
+			Resource resourceManifest = iterResource.next();
+			
+			//Decorate the attributes: identifier=; type=; adlcp:scormtype=; href=;
+			attributeList = new ArrayList<Attribute>();
+			attributeList.add(eventFactory.createAttribute("identifier", resourceManifest.getIdentifier()));
+			attributeList.add(eventFactory.createAttribute("type", resourceManifest.getType()));
+			attributeList.add(eventFactory.createAttribute("adlcp:scormtype", resourceManifest.getScormType()));
+			attributeList.add(eventFactory.createAttribute("href", resourceManifest.getHRef()));
+			StartElement resourceStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+
+			try 
+		    {
+				eventWriter.add(resourceStartElem);
+				eventWriter.add(end);
+			} 
+		    catch (XMLStreamException e) 
+		    {
+				e.printStackTrace(); // TODO Replace with SchedServer Logger 
+			}
+			
+			//Add File node and HREF attribute
+		    attributeList = new ArrayList<Attribute>();
+		    attributeList.add(eventFactory.createAttribute("href", resourceManifest.getHRef()));
+		    StartElement fileStartElem = eventFactory.createStartElement("", "",  MANIFEST_FILE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+			
+		    try 
+		    {
+				eventWriter.add(fileStartElem);
+				eventWriter.add(end);
+			} 
+		    catch (XMLStreamException e) 
+		    {
+				e.printStackTrace(); // TODO Replace with SchedServer Logger 
+			}
+		    
+		    // Close the file element node
+			EndElement fileEndElem = eventFactory.createEndElement("", "", MANIFEST_FILE_ELEM_NAME);
+			try 
+			{
+				eventWriter.add(fileEndElem);
+				eventWriter.add(end);
+			} 
+			catch (XMLStreamException e) 
+			{
+				e.printStackTrace(); // TODO Replace with SchedServer Logger
+			}
+		    
+			//TODO Create a Dependency node if it is a SCO
+			if(resourceManifest.getScormType().equals(resourceManifest.SCORMTYPE_SCO))
+			{
+				attributeList = new ArrayList<Attribute>();
+				attributeList.add(eventFactory.createAttribute("identifierref", "stub"));
+				StartElement dependencyStartElem = eventFactory.createStartElement("", "",  MANIFEST_DEPENDENCY_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+				 
+				try 
+				{
+					eventWriter.add(fileStartElem);
+					eventWriter.add(end);
+				} 
+				catch (XMLStreamException e) 
+				{
+					e.printStackTrace(); // TODO Replace with SchedServer Logger 
+				}
+				
+				
+				 // Close the Dependency element node
+				EndElement dependencyEndElem = eventFactory.createEndElement("", "", MANIFEST_DEPENDENCY_ELEM_NAME);
+				try 
+				{
+					eventWriter.add(dependencyEndElem);
+					eventWriter.add(end);
+				} 
+				catch (XMLStreamException e) 
+				{
+					e.printStackTrace(); // TODO Replace with SchedServer Logger
+				}
+			}
+		}
+		
+		//TODO Add lmsstub.js at the end before closing off resources node!!!
+		attributeList = new ArrayList<Attribute>();
+		attributeList.add(eventFactory.createAttribute("identifier", "stub"));
+		attributeList.add(eventFactory.createAttribute("type", Resource.LILA_TYPE));
+		attributeList.add(eventFactory.createAttribute("adlcp:scormtype", Resource.SCORMTYPE_ASSET));
+		StartElement lmsstubStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+
+		try 
+	    {
+			eventWriter.add(lmsstubStartElem);
+			eventWriter.add(end);
+		} 
+	    catch (XMLStreamException e) 
+	    {
+			e.printStackTrace(); // TODO Replace with SchedServer Logger 
+		}
+		
+	    //Add File node and HREF attribute
+	    attributeList = new ArrayList<Attribute>();
+	    attributeList.add(eventFactory.createAttribute("href", "lmsstub.js"));
+	    StartElement fileStartElem = eventFactory.createStartElement("", "",  MANIFEST_FILE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+		
+	    try 
+	    {
+			eventWriter.add(fileStartElem);
+			eventWriter.add(end);
+		} 
+	    catch (XMLStreamException e) 
+	    {
+			e.printStackTrace(); // TODO Replace with SchedServer Logger 
+		}
+	    
+	    // Close the file element node
+		EndElement fileEndElem = eventFactory.createEndElement("", "", MANIFEST_FILE_ELEM_NAME);
+		try 
+		{
+			eventWriter.add(fileEndElem);
+			eventWriter.add(end);
+		} 
+		catch (XMLStreamException e) 
+		{
+			e.printStackTrace(); // TODO Replace with SchedServer Logger
+		}
+	    
+	    //Close the resource node for lmsstub.js
+	    EndElement lmsstubEndElem = eventFactory.createEndElement("", "", MANIFEST_RESOURCE_ELEM_NAME);
+		try 
+		{
+			eventWriter.add(lmsstubEndElem);
+			eventWriter.add(end);
+		} 
+		catch (XMLStreamException e) 
+		{
+			e.printStackTrace(); // TODO Replace with SchedServer Logger
+		}
+	    
+		//Close the resources node
+		EndElement resourcesEndElem = eventFactory.createEndElement("", "", MANIFEST_RESOURCES_NODE_NAME);
+		try 
+		{
+			eventWriter.add(resourcesEndElem);
+			eventWriter.add(end);
+		} 
+		catch (XMLStreamException e) 
+		{
+			e.printStackTrace(); // TODO Replace with SchedServer Logger
 		}
 	}
 	
@@ -285,17 +481,6 @@ public class ManifestXMLDecorator
 		{
 			e.printStackTrace(); //TODO replace with Sahara Logger as part of refactoring.
 		}
-	}
-	
-	/**
-	 * Takes the value of a name to produce an underscore version of the name.
-	 * This is to allow naming consistency.
-	 * @param name
-	 */
-	private String removeWhiteSpace(String name) 
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -9,8 +9,8 @@ import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 public class Resource 
 {
 	/* Unique to the adlscp xsd schema types that are defined by . Can be extended.*/
-	public static final String SCORMTYPE_SCO = "SCO";
-	public static final String SCORMTYPE_ASSET = "ASSET";
+	public static final String SCORMTYPE_SCO = "sco";
+	public static final String SCORMTYPE_ASSET = "asset";
 	
 	/* Technically can be any path, but we are going to have a unique default path specific 
 	 * to LiLa but will allow for different paths */

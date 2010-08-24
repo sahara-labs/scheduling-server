@@ -14,12 +14,8 @@ import java.util.Iterator;
 
 //Needed for Manifest creation
 import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
-import au.edu.labshare.schedserver.scormpackager.manifest.Dependency;
-import au.edu.labshare.schedserver.scormpackager.manifest.Item;
-import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
-import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
 import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.scormpackager.ShareableContentObjectCreator 
@@ -69,7 +65,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		
 		//Decorate the manifest with relevant XML information
 		manifestXMLDecorator = new ManifestXMLDecorator();
-		filePathManifest = manifestXMLDecorator.decorateManifest(title, assets); 
+		filePathManifest = manifestXMLDecorator.decorateManifest(imsmanifest); 
 		
 		//Zip the contents into a file
 		try 

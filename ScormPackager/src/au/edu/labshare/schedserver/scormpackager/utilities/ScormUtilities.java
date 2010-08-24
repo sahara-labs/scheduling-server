@@ -17,4 +17,19 @@ public class ScormUtilities
 		else
 			return "";
 	}
+	
+	
+	/**
+	 * Takes the value of a name to produce an underscore version of the name.
+	 * This is to allow naming consistency.
+	 * @param name
+	 * @param replacementStr
+	 */
+	public static String replaceWhiteSpace(String name, String replacementStr) 
+	{
+		if(replacementStr == null)
+			replacementStr = "_"; 
+				
+		return name.replaceAll("\\W", replacementStr);
+	}
 }

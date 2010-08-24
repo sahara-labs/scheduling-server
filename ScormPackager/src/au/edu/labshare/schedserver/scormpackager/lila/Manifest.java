@@ -14,6 +14,7 @@ import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 public class Manifest implements IManifest
 {
+	public static final String GENERIC_IDENTIFER = "ExperimentSCO";
 	public static final String ITEM_NAME = "item";
 	public static final String HTML_EXT = "html";
 	

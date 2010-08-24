@@ -58,6 +58,11 @@ public class Organization
 		itemList.add(item);
 	}
 	
+	public ArrayList<Item> getItemList()
+	{
+		return itemList;
+	}
+	
 	public MetaData getMetaData()
 	{
 		return metadata;
