@@ -15,8 +15,11 @@ import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 public class Manifest implements IManifest
 {
 	public static final String GENERIC_IDENTIFER = "ExperimentSCO";
+	public static final String SCHEMA_VERSION = "1.0";
+	
 	public static final String ITEM_NAME = "item";
 	public static final String HTML_EXT = "html";
+	public static final String NAMESPACE = "http://labshare.edu.au";
 	
 	MetaData metadata;
 	ArrayList<Organization> organizations;
@@ -110,6 +113,7 @@ public class Manifest implements IManifest
 		{
 			organization = new Organization();
 			organization.setID(institutions[i]);
+			organization.setTitle(Manifest.GENERIC_IDENTIFER);
 			
 			for(int j = 0; j < items.length; j++)
 			{

@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 //Needed for Manifest creation
 import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
+import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
@@ -136,6 +137,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	private Manifest createManifest(String[] titles, Collection<File> assets) 
 	{
 		Manifest manifest = null;
+		MetaData metadata = null;
 		Collection<Resource> resources;
 		Collection<Organization> organizations;
 		String[] institutions = new String[1];
@@ -148,6 +150,13 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		organizations = manifest.generateOrganisations(institutions, titles, files);
 		resources = manifest.generateResources(files);
 
+		//Generate the MetaData associated with Manifest
+		metadata = new MetaData();
+		metadata.setIdentifer(Manifest.GENERIC_IDENTIFER); //TODO Grab the experiment id from <title/> 
+		metadata.setSchemaVersion(Manifest.SCHEMA_VERSION);
+		manifest.setMetaData(metadata);
+		
+		
 		//Do a quick check to see if the resources and organizations are not empty
 		if(organizations != null && resources !=null)
 			return manifest;

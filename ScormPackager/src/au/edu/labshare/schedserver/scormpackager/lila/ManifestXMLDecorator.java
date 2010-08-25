@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -46,14 +47,7 @@ public class ManifestXMLDecorator
 	public static final String MANFEST_NAME = "imsmanfest.xml";
 	
 	//Properties that are associated with the imsmanifest file
-	public static final String MANIFEST_NODE_NAME = "manifest";
-	public static final String MANIFEST_NODE_VERSION = "1.0";
-	public static final String MANIFEST_XMLNS_IMSCP = "http://www.imsproject.org/xsd/imscp_rootv1p1p2";
-	public static final String MANIFEST_XMLNS_ADLCP = "http://www.adlnet.org/xsd/adlcp_rootv1p2";
-	public static final String MANIFEST_XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
-	public static final String MANIFEST_XSI_IMSCP_SCHEMALOC = "http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd";
-	public static final String MANIFEST_XSI_IMSMD_SCHEMALOC = "http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd";
-	public static final String MANIFEST_XSI_ADLCP_SCHEMALOC = "http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd";
+	public static final String MANIFEST_NODE_NAME = "manifest";	
 	public static final String MANIFEST_ORG_NODE_NAME = "organizations";
 	public static final String MANIFEST_ORG_ELEM_NAME = "organization";
 	public static final String MANIFEST_TITLE = "title";
@@ -139,22 +133,22 @@ public class ManifestXMLDecorator
 	private void decorateManifestHeader(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
 	{
 		ArrayList<Attribute> attributeList = null;
+		ArrayList<Namespace> namespaceList = null;
 		
 		// Create manifest node name open tag with relevant attributes	
 		attributeList = new ArrayList<Attribute>();
-		attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getIdentifer()));
-		attributeList.add(eventFactory.createAttribute("version", MANIFEST_NODE_VERSION));
-		attributeList.add(eventFactory.createAttribute("xmlns", MANIFEST_XMLNS_IMSCP));
-		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", MANIFEST_XSI_ADLCP_SCHEMALOC));
-		attributeList.add(eventFactory.createAttribute("xmlns:xsi",MANIFEST_XMLNS_XSI));
-		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", MANIFEST_XSI_IMSCP_SCHEMALOC 
-														+ "        " + MANIFEST_XSI_IMSMD_SCHEMALOC  
-														+ "        " + MANIFEST_XSI_ADLCP_SCHEMALOC));
-	    StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME, attributeList.iterator(), attributeList.iterator());
+		namespaceList = new ArrayList<Namespace>();
+		attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
+		attributeList.add(eventFactory.createAttribute("version", manifest.getMetaData().getSchemaValue("version")));
+		attributeList.add(eventFactory.createAttribute("xmlns", manifest.getMetaData().getSchemaValue("xmlns")));
+		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", manifest.getMetaData().getSchemaValue("xmlns:adlcp")));
+		attributeList.add(eventFactory.createAttribute("xmlns:xsi",manifest.getMetaData().getSchemaValue("xmlns:xsi")));
+		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", manifest.getMetaData().getSchemaValue("xsi:schemalocation")));
+		namespaceList.add(eventFactory.createNamespace(manifest.NAMESPACE));
+	    StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
 			eventWriter.add(manifestStartElem);
-			eventWriter.add(end);
 		} 
 	    catch (XMLStreamException e) 
 	    {
@@ -166,17 +160,18 @@ public class ManifestXMLDecorator
 	{
 		int i = 0;
 		ArrayList<Attribute> attributeList = null;
+		ArrayList<Namespace> namespaceList = null;
 		
 		// Create Organization Manifest component information
 		// Create the attribute default="" for organizations node
 		attributeList = new ArrayList<Attribute>();
+		namespaceList = new ArrayList<Namespace>();
 		attributeList.add(eventFactory.createAttribute("default", SCO_INSTITUTION));
-		StartElement organizationsStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_NODE_NAME, attributeList.iterator(), attributeList.iterator());
+		namespaceList.add(eventFactory.createNamespace(manifest.NAMESPACE));
+		StartElement organizationsStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
-	    	// Write the organizations start node to file
-			eventWriter.add(organizationsStartElem);
-			eventWriter.add(end);
+			eventWriter.add(organizationsStartElem); // Write the organizations start node to file
 		} 
 	    catch (XMLStreamException e) 
 	    {
@@ -189,11 +184,10 @@ public class ManifestXMLDecorator
 			// Create the organization element node
 			attributeList = new ArrayList<Attribute>();
 			attributeList.add(eventFactory.createAttribute("identifier", SCO_INSTITUTION));
-			StartElement organizationStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+			StartElement organizationStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_ELEM_NAME, attributeList.iterator(), namespaceList.iterator());
 		    try 
 		    {
-				eventWriter.add(organizationStartElem);
-				eventWriter.add(end);
+				eventWriter.add(organizationStartElem); // Write the <organization> start elem to file
 			} 
 		    catch (XMLStreamException e) 
 		    {
@@ -224,11 +218,10 @@ public class ManifestXMLDecorator
 		    	attributeList = new ArrayList<Attribute>();
 				attributeList.add(eventFactory.createAttribute("identifier", "item" + Integer.toString(i)));
 				attributeList.add(eventFactory.createAttribute("identifierref", orgItem.getReference())); 
-				StartElement itemStartElem = eventFactory.createStartElement("", "",  MANIFEST_ITEM, attributeList.iterator(), attributeList.iterator());
+				StartElement itemStartElem = eventFactory.createStartElement("", "",  MANIFEST_ITEM, attributeList.iterator(), namespaceList.iterator());
 				try 
 			    {
 					eventWriter.add(itemStartElem);
-					eventWriter.add(end);
 				} 
 			    catch (XMLStreamException e) 
 			    {
@@ -280,10 +273,13 @@ public class ManifestXMLDecorator
 	private void decorateResources(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
 	{
 		ArrayList<Attribute> attributeList = null;
+		ArrayList<Namespace> namespaceList = null;
 		
 		//Create the resources node
-		attributeList = new ArrayList<Attribute>();
-		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME, attributeList.iterator(), attributeList.iterator());
+		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME);
+		
+		namespaceList = new ArrayList<Namespace>();
+		namespaceList.add(eventFactory.createNamespace(manifest.NAMESPACE));
 		
 		try 
 	    {
@@ -308,7 +304,8 @@ public class ManifestXMLDecorator
 			attributeList.add(eventFactory.createAttribute("type", resourceManifest.getType()));
 			attributeList.add(eventFactory.createAttribute("adlcp:scormtype", resourceManifest.getScormType()));
 			attributeList.add(eventFactory.createAttribute("href", resourceManifest.getHRef()));
-			StartElement resourceStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+				
+			StartElement resourceStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCE_ELEM_NAME, attributeList.iterator(), namespaceList.iterator());
 
 			try 
 		    {
@@ -323,7 +320,7 @@ public class ManifestXMLDecorator
 			//Add File node and HREF attribute
 		    attributeList = new ArrayList<Attribute>();
 		    attributeList.add(eventFactory.createAttribute("href", resourceManifest.getHRef()));
-		    StartElement fileStartElem = eventFactory.createStartElement("", "",  MANIFEST_FILE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+		    StartElement fileStartElem = eventFactory.createStartElement("", "",  MANIFEST_FILE_ELEM_NAME, attributeList.iterator(), namespaceList.iterator());
 			
 		    try 
 		    {
@@ -352,7 +349,7 @@ public class ManifestXMLDecorator
 			{
 				attributeList = new ArrayList<Attribute>();
 				attributeList.add(eventFactory.createAttribute("identifierref", "stub"));
-				StartElement dependencyStartElem = eventFactory.createStartElement("", "",  MANIFEST_DEPENDENCY_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+				StartElement dependencyStartElem = eventFactory.createStartElement("", "",  MANIFEST_DEPENDENCY_ELEM_NAME, attributeList.iterator(), namespaceList.iterator());
 				 
 				try 
 				{
@@ -384,7 +381,7 @@ public class ManifestXMLDecorator
 		attributeList.add(eventFactory.createAttribute("identifier", "stub"));
 		attributeList.add(eventFactory.createAttribute("type", Resource.LILA_TYPE));
 		attributeList.add(eventFactory.createAttribute("adlcp:scormtype", Resource.SCORMTYPE_ASSET));
-		StartElement lmsstubStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+		StartElement lmsstubStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCE_ELEM_NAME, attributeList.iterator(), namespaceList.iterator());
 
 		try 
 	    {
@@ -399,7 +396,7 @@ public class ManifestXMLDecorator
 	    //Add File node and HREF attribute
 	    attributeList = new ArrayList<Attribute>();
 	    attributeList.add(eventFactory.createAttribute("href", "lmsstub.js"));
-	    StartElement fileStartElem = eventFactory.createStartElement("", "",  MANIFEST_FILE_ELEM_NAME, attributeList.iterator(), attributeList.iterator());
+	    StartElement fileStartElem = eventFactory.createStartElement("", "",  MANIFEST_FILE_ELEM_NAME, attributeList.iterator(), namespaceList.iterator());
 		
 	    try 
 	    {
