@@ -1,10 +1,8 @@
 package au.edu.labshare.schedserver.scormpackager.lila;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 
 //Needed for XML generation
@@ -18,28 +16,15 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 
 //Needed for constructing the Manifest in object format
 import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
-import au.edu.labshare.schedserver.scormpackager.manifest.Dependency;
 import au.edu.labshare.schedserver.scormpackager.manifest.Item;
-import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
-import au.edu.labshare.schedserver.scormpackager.manifest.ResourceFile;
-import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 public class ManifestXMLDecorator 
-{
-	private Manifest     imsmanifest;
-	private Dependency   depedency;
-	private Item         item;
-	private MetaData     metadata;
-	private Organization organization;
-	private Resource     resource;
-	private ResourceFile resourceFile;
-	
+{	
 	//TODO Should place in properties file
 	private static final String SCO_INSTITUTION = "UTS";
 	
@@ -58,16 +43,6 @@ public class ManifestXMLDecorator
 	public static final String MANIFEST_DEPENDENCY_ELEM_NAME = "dependency";
 	public static final String MANIFEST_SCORMTYPE_SCO = "sco";
 	public static final String MANIFEST_SCORMTYPE_ASSET = "asset";
-
-	public ManifestXMLDecorator()
-	{
-		imsmanifest = new Manifest();
-	}
-	
-	public ManifestXMLDecorator(Manifest imsmanifest)
-	{
-		this.imsmanifest = imsmanifest;
-	}
 	
 	/**
 	 * Generates the lmsmanifest.xml file. This is not going to be public
@@ -75,18 +50,11 @@ public class ManifestXMLDecorator
 	 * Based on: http://www.vogella.de/articles/JavaXML/article.html
 	 * @param Manifest. This param is compulsory in order to decorate the Manifest Object. 
 	 */
-	public String decorateManifest(Manifest manifest)
+	public String decorateManifest(Manifest manifest, String outputFilePath)
 	{
 		XMLEventFactory eventFactory = null;
 		XMLEventWriter  eventWriter  = null;
-		XMLEvent        end          = null;
-		String 			zipFileName  = null;
-		
-		if(manifest.getMetaData().getIdentifer() != null)
-			zipFileName  = ScormUtilities.replaceWhiteSpace(manifest.getMetaData().getIdentifer(), null);
-		else
-			zipFileName  = Manifest.GENERIC_IDENTIFER;
-		
+			
 		//Generate the manifest file imsmanifest.xml
 		try
 		{
@@ -94,11 +62,10 @@ public class ManifestXMLDecorator
 			XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 			
 			// Create XMLEventWriter
-			eventWriter = outputFactory.createXMLEventWriter(new FileOutputStream(MANFEST_NAME));
+			eventWriter = outputFactory.createXMLEventWriter(new FileOutputStream(outputFilePath + MANFEST_NAME));
 			
 			// Create a EventFactory
 			eventFactory = XMLEventFactory.newInstance();
-			end = eventFactory.createDTD("\n");
 			
 			// Create and write Start Tag
 			StartDocument startDocument = eventFactory.createStartDocument();
@@ -144,7 +111,7 @@ public class ManifestXMLDecorator
 		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", manifest.getMetaData().getSchemaValue("xmlns:adlcp")));
 		attributeList.add(eventFactory.createAttribute("xmlns:xsi",manifest.getMetaData().getSchemaValue("xmlns:xsi")));
 		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", manifest.getMetaData().getSchemaValue("xsi:schemalocation")));
-		namespaceList.add(eventFactory.createNamespace(manifest.NAMESPACE));
+		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
 	    StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
@@ -168,7 +135,7 @@ public class ManifestXMLDecorator
 		attributeList = new ArrayList<Attribute>();
 		namespaceList = new ArrayList<Namespace>();
 		attributeList.add(eventFactory.createAttribute("default", SCO_INSTITUTION));
-		namespaceList.add(eventFactory.createNamespace(manifest.NAMESPACE));
+		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
 		StartElement organizationsStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
@@ -272,7 +239,7 @@ public class ManifestXMLDecorator
 		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME);
 		
 		namespaceList = new ArrayList<Namespace>();
-		namespaceList.add(eventFactory.createNamespace(manifest.NAMESPACE));
+		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
 		
 		try 
 	    {
@@ -338,7 +305,7 @@ public class ManifestXMLDecorator
 			}
 		    
 			//Create a Dependency node if it is a SCO
-			if(resourceManifest.getScormType().equals(resourceManifest.SCORMTYPE_SCO))
+			if(resourceManifest.getScormType().equals(Resource.SCORMTYPE_SCO))
 			{
 				attributeList = new ArrayList<Attribute>();
 				attributeList.add(eventFactory.createAttribute("identifierref", "stub"));
@@ -465,19 +432,19 @@ public class ManifestXMLDecorator
 		try
 		{
 			XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-			XMLEvent end = eventFactory.createDTD("\n");
-			//XMLEvent tab = eventFactory.createDTD("\t");
+
 			// Create Start node
 			StartElement sElement = eventFactory.createStartElement("", "", name);
-			//eventWriter.add(tab);
 			eventWriter.add(sElement);
+
 			// Create Content
 			Characters characters = eventFactory.createCharacters(value);
 			eventWriter.add(characters);
+
 			// Create End node
 			EndElement eElement = eventFactory.createEndElement("", "", name);
 			eventWriter.add(eElement);
-			//eventWriter.add(end);
+			
 			eventWriter.flush();
 		}
 		catch(XMLStreamException e)

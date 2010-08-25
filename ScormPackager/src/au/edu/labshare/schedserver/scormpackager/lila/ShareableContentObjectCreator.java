@@ -31,7 +31,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	private static final int BUFFER_SIZE = 18024;
 	
 	@Override
-	public String createSCO(String title, Collection <File> assets, String LMSName) 
+	public String createSCO(String title, Collection <File> assets, String outputPath) 
 	{
 		String zipFileName = null;
 		String filePathSCO = null;
@@ -66,7 +66,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		
 		//Decorate the manifest with relevant XML information
 		manifestXMLDecorator = new ManifestXMLDecorator();
-		filePathManifest = manifestXMLDecorator.decorateManifest(imsmanifest); 
+		filePathManifest = manifestXMLDecorator.decorateManifest(imsmanifest, outputPath); 
 		
 		//Zip the contents into a file
 		try 
@@ -207,9 +207,9 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	}
 
 	@Override
-	public String createPIF(String title, Collection<File> content) 
+	public String createPIF(String title, Collection<File> content, String outputPath) 
 	{
-		return createSCO(title, content, null);
+		return createSCO(title, content, outputPath);
 	}
 
 	@Override

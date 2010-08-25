@@ -12,7 +12,7 @@ public interface IPackageInterchangeFile
 	 * This assumes manifest file is: "imsmanifest.xml"
 	 * @return Path of the generated PIF file.
 	 */
-	public String createPIF(String experimentName, Collection <File> content);
+	public String createPIF(String experimentName, Collection <File> content, String outputPath);
 	
 	/**
 	 * Validates the manifest file as according the SCORM: 

@@ -21,10 +21,9 @@ public abstract class ShareableContentObjectCreator implements IPackageInterchan
 	 * @param manifest	Filename for the SCO in place of imsmanifest.xml. 
 	 * 					If null is supplied imsmanifest.xml is used.   
 	 * @param assets  	LearningResource e.g. WebPage, AudioFile, GIF imgae etc. [1..*]
-	 * @param lmsName 	Accessible Learning Management System (e.g. Blackboard, Moodle, Sakai )
-	 * 					If null is supplied a default LMS value is used.
+	 * @param ouputPath The output location of the SCO.
 	 */
-	public abstract String createSCO(String mainfest, Collection <File> assets, String lmsName);
+	public abstract String createSCO(String mainfest, Collection <File> assets, String outputPath);
 	
 	/**
 	 * Validate that the LMS (URL) is handled 

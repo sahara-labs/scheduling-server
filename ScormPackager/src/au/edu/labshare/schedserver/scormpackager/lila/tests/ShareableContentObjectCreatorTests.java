@@ -27,6 +27,7 @@ public class ShareableContentObjectCreatorTests
 	String resourcesPath = "test/resources";
 	String contentLilaPath = resourcesPath + "/lila/";
 	String contentNonCompliantPath = resourcesPath + "/noncompliant/";
+	String fileOutputPath = "/tmp/";
 	
 	@Before
 	public void Setup()
@@ -69,15 +70,16 @@ public class ShareableContentObjectCreatorTests
 	{
 		//Invoke the creation of the PIF 
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
-		assertNotNull((shrContentObj.createPIF(title, content)));
+		assertNotNull((shrContentObj.createPIF(title, content, fileOutputPath)));
 	}
 	
 	@Test
 	public void testCreatePIFEmptyManifest() 
 	{
 		//Invoke the creation of the PIF 
-		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
-		assertNotNull((shrContentObj.createPIF(null, content)));
+		fail("Not yet accounted for");
+		//ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator();
+		//assertNotNull((shrContentObj.createPIF(null, content, fileOutputPath)));
 	}
 
 	@Test
