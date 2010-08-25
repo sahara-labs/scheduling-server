@@ -24,7 +24,6 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	private ManifestXMLDecorator manifestXMLDecorator;
 	
 	//TODO - this is to be replaced by reading from Properties file. 
-	private static final String SCO_FILENAME = null;
 	private static final String GENERIC_TITLE = "Generic Title";
 	private static final String DEFAULT_INSTITUTION = "LabShare";
 	private static final String SCO_FILEPATH = "/SCOs";
@@ -46,6 +45,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		if(title == null)
 			title = GENERIC_TITLE;
 		
+		filePathSCO = outputPath + ScormUtilities.replaceWhiteSpace(title, null) + ".zip";
 
 		//Create the manifest
 		//Extract the names from the *.html files
@@ -71,7 +71,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		//Zip the contents into a file
 		try 
 		{
-			fileOutStream = new FileOutputStream(SCO_FILENAME);
+			fileOutStream = new FileOutputStream(filePathSCO);
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -88,9 +88,10 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 				Iterator <File> iter = assets.iterator();
 				while(iter.hasNext())
 				{
-					fileInStream = new FileInputStream(iter.next());
-					//TODO The below string conversion does not handle the lib/ direcctory structure
-					zipFileOutStream.putNextEntry(new ZipEntry(iter.next().getName()));
+					File assetFile = iter.next();
+					fileInStream = new FileInputStream(assetFile);
+					//TODO The below string conversion does not handle the lib/ directory structure
+					zipFileOutStream.putNextEntry(new ZipEntry(assetFile.getName()));
 					int len;
 				    while ((len = fileInStream.read(buffer)) > 0)
 				    {
@@ -112,9 +113,8 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			    zipFileOutStream.closeEntry();
 			    fileInStream.close();
 			    
-			    
-			    filePathSCO = SCO_FILEPATH + "/" + zipFileName + ".zip";
 				zipFileOutStream.close();
+				fileOutStream.close();
 				
 				//TODO Need to associate the ZipFile object type to the zipFileOutStream/ZipEntries.
 				return filePathSCO;

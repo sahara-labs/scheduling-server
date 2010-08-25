@@ -94,7 +94,7 @@ public class ManifestXMLDecorator
 			e.printStackTrace(); //TODO replace with SchedServer Logger.
 		}
 		
-		return null; //TODO Need to actually return the path of the file in question. 
+		return outputFilePath + MANFEST_NAME;
 	}
 	
 	private void decorateManifestHeader(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter)
