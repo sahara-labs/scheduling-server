@@ -108,13 +108,13 @@ public class ManifestXMLDecorator
 			//1. decorateManifestHeader()
 			//2. decorateOrganizations()
 			//3. decoreateResources()
-			decorateManifestHeader(manifest, eventFactory, eventWriter, end);
-			decorateOrganizations(manifest, eventFactory, eventWriter, end);
-			decorateResources(manifest, eventFactory, eventWriter, end);
+			decorateManifestHeader(manifest, eventFactory, eventWriter);
+			decorateOrganizations(manifest, eventFactory, eventWriter);
+			decorateResources(manifest, eventFactory, eventWriter);
 			
 			//Close off the XML Manifest node
 			eventWriter.add(eventFactory.createEndElement("", "", MANIFEST_NODE_NAME));
-			eventWriter.add(end);
+			eventWriter.flush();
 			eventWriter.add(eventFactory.createEndDocument());
 			eventWriter.close();		
 		}
@@ -130,7 +130,7 @@ public class ManifestXMLDecorator
 		return null; //TODO Need to actually return the path of the file in question. 
 	}
 	
-	private void decorateManifestHeader(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
+	private void decorateManifestHeader(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter)
 	{
 		ArrayList<Attribute> attributeList = null;
 		ArrayList<Namespace> namespaceList = null;
@@ -149,6 +149,7 @@ public class ManifestXMLDecorator
 	    try 
 	    {
 			eventWriter.add(manifestStartElem);
+			eventWriter.flush();
 		} 
 	    catch (XMLStreamException e) 
 	    {
@@ -156,12 +157,12 @@ public class ManifestXMLDecorator
 		}
 	}
 	
-	private void decorateOrganizations(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
+	private void decorateOrganizations(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter)
 	{
 		int i = 0;
 		ArrayList<Attribute> attributeList = null;
 		ArrayList<Namespace> namespaceList = null;
-		
+				
 		// Create Organization Manifest component information
 		// Create the attribute default="" for organizations node
 		attributeList = new ArrayList<Attribute>();
@@ -172,6 +173,7 @@ public class ManifestXMLDecorator
 	    try 
 	    {
 			eventWriter.add(organizationsStartElem); // Write the organizations start node to file
+			eventWriter.flush();
 		} 
 	    catch (XMLStreamException e) 
 	    {
@@ -188,6 +190,7 @@ public class ManifestXMLDecorator
 		    try 
 		    {
 				eventWriter.add(organizationStartElem); // Write the <organization> start elem to file
+				eventWriter.flush();
 			} 
 		    catch (XMLStreamException e) 
 		    {
@@ -199,17 +202,6 @@ public class ManifestXMLDecorator
 		
 			//Decorate the <title></title> nodes
 			createNode(eventWriter, MANIFEST_TITLE, organization.getTitle());
-			EndElement itemEndElem = eventFactory.createEndElement("", "",  MANIFEST_TITLE);
-			
-			try 
-		    {
-				eventWriter.add(itemEndElem);
-				eventWriter.add(end);
-			} 
-		    catch (XMLStreamException e) 
-			{
-				e.printStackTrace(); 
-			}
 			
 			//TODO Need to extract the title from the <item identifierref> atttribute.
 		    for(Iterator<Item> iterItem = organization.getItemList().iterator(); iterItem.hasNext();)
@@ -222,6 +214,7 @@ public class ManifestXMLDecorator
 				try 
 			    {
 					eventWriter.add(itemStartElem);
+					eventWriter.flush();
 				} 
 			    catch (XMLStreamException e) 
 			    {
@@ -230,12 +223,12 @@ public class ManifestXMLDecorator
 			    
 			    //TODO Need to extract the title from the <item identifierref> attribute. 
 				createNode(eventWriter, MANIFEST_TITLE, orgItem.getTitle());  
-				itemEndElem = eventFactory.createEndElement("", "",  MANIFEST_ITEM);
+				EndElement itemEndElem = eventFactory.createEndElement("", "",  MANIFEST_ITEM);
 				
 				try 
 			    {
 					eventWriter.add(itemEndElem);
-					eventWriter.add(end);
+					eventWriter.flush();
 				} 
 			    catch (XMLStreamException e) 
 				{
@@ -250,7 +243,7 @@ public class ManifestXMLDecorator
 			try 
 			{
 				eventWriter.add(organizationEndElem);
-				eventWriter.add(end);
+				eventWriter.flush();
 			} 
 			catch (XMLStreamException e) 
 			{
@@ -262,7 +255,7 @@ public class ManifestXMLDecorator
 		try 
 		{
 			eventWriter.add(organizationsEndElem);
-			eventWriter.add(end);
+			eventWriter.flush();
 		} 
 		catch (XMLStreamException e) 
 		{
@@ -270,11 +263,11 @@ public class ManifestXMLDecorator
 		}
 	}
 
-	private void decorateResources(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter, XMLEvent end)
+	private void decorateResources(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter)
 	{
 		ArrayList<Attribute> attributeList = null;
 		ArrayList<Namespace> namespaceList = null;
-		
+				
 		//Create the resources node
 		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME);
 		
@@ -285,7 +278,7 @@ public class ManifestXMLDecorator
 	    {
 	    	// Write the resources start node to file
 			eventWriter.add(resourcesStartElem);
-			eventWriter.add(end);
+			eventWriter.flush();
 		} 
 	    catch (XMLStreamException e) 
 	    {
@@ -293,8 +286,8 @@ public class ManifestXMLDecorator
 		}
 		
 		
-		//TODO Create each separate resource section
-		for(Iterator<Resource> iterResource = manifest.getResources().iterator(); manifest.getResources().iterator().hasNext();)
+		//Create each separate resource section
+		for(Iterator<Resource> iterResource = manifest.getResources().iterator(); iterResource.hasNext();)
 		{
 			Resource resourceManifest = iterResource.next();
 			
@@ -310,7 +303,7 @@ public class ManifestXMLDecorator
 			try 
 		    {
 				eventWriter.add(resourceStartElem);
-				eventWriter.add(end);
+				eventWriter.flush();
 			} 
 		    catch (XMLStreamException e) 
 		    {
@@ -325,7 +318,7 @@ public class ManifestXMLDecorator
 		    try 
 		    {
 				eventWriter.add(fileStartElem);
-				eventWriter.add(end);
+				eventWriter.flush();
 			} 
 		    catch (XMLStreamException e) 
 		    {
@@ -337,14 +330,14 @@ public class ManifestXMLDecorator
 			try 
 			{
 				eventWriter.add(fileEndElem);
-				eventWriter.add(end);
+				eventWriter.flush();
 			} 
 			catch (XMLStreamException e) 
 			{
 				e.printStackTrace(); // TODO Replace with SchedServer Logger
 			}
 		    
-			//TODO Create a Dependency node if it is a SCO
+			//Create a Dependency node if it is a SCO
 			if(resourceManifest.getScormType().equals(resourceManifest.SCORMTYPE_SCO))
 			{
 				attributeList = new ArrayList<Attribute>();
@@ -353,30 +346,42 @@ public class ManifestXMLDecorator
 				 
 				try 
 				{
-					eventWriter.add(fileStartElem);
-					eventWriter.add(end);
+					eventWriter.add(dependencyStartElem);
+					eventWriter.flush();
 				} 
 				catch (XMLStreamException e) 
 				{
 					e.printStackTrace(); // TODO Replace with SchedServer Logger 
 				}
-				
+							
 				
 				 // Close the Dependency element node
 				EndElement dependencyEndElem = eventFactory.createEndElement("", "", MANIFEST_DEPENDENCY_ELEM_NAME);
 				try 
 				{
 					eventWriter.add(dependencyEndElem);
-					eventWriter.add(end);
+					eventWriter.flush();
 				} 
 				catch (XMLStreamException e) 
 				{
 					e.printStackTrace(); // TODO Replace with SchedServer Logger
 				}
 			}
+			
+		    //Close the resource element tag
+		    EndElement resourceEndElem = eventFactory.createEndElement("", "", MANIFEST_RESOURCE_ELEM_NAME);
+			try 
+			{
+				eventWriter.add(resourceEndElem);
+				eventWriter.flush();
+			} 
+			catch (XMLStreamException e) 
+			{
+				e.printStackTrace(); // TODO Replace with SchedServer Logger
+			}
 		}
 		
-		//TODO Add lmsstub.js at the end before closing off resources node!!!
+		//Add lmsstub.js at the end before closing off resources node!!!
 		attributeList = new ArrayList<Attribute>();
 		attributeList.add(eventFactory.createAttribute("identifier", "stub"));
 		attributeList.add(eventFactory.createAttribute("type", Resource.LILA_TYPE));
@@ -386,7 +391,7 @@ public class ManifestXMLDecorator
 		try 
 	    {
 			eventWriter.add(lmsstubStartElem);
-			eventWriter.add(end);
+			eventWriter.flush();
 		} 
 	    catch (XMLStreamException e) 
 	    {
@@ -401,7 +406,7 @@ public class ManifestXMLDecorator
 	    try 
 	    {
 			eventWriter.add(fileStartElem);
-			eventWriter.add(end);
+			eventWriter.flush();
 		} 
 	    catch (XMLStreamException e) 
 	    {
@@ -413,7 +418,7 @@ public class ManifestXMLDecorator
 		try 
 		{
 			eventWriter.add(fileEndElem);
-			eventWriter.add(end);
+			eventWriter.flush();
 		} 
 		catch (XMLStreamException e) 
 		{
@@ -425,7 +430,7 @@ public class ManifestXMLDecorator
 		try 
 		{
 			eventWriter.add(lmsstubEndElem);
-			eventWriter.add(end);
+			eventWriter.flush();
 		} 
 		catch (XMLStreamException e) 
 		{
@@ -437,7 +442,7 @@ public class ManifestXMLDecorator
 		try 
 		{
 			eventWriter.add(resourcesEndElem);
-			eventWriter.add(end);
+			eventWriter.flush();
 		} 
 		catch (XMLStreamException e) 
 		{
@@ -461,10 +466,10 @@ public class ManifestXMLDecorator
 		{
 			XMLEventFactory eventFactory = XMLEventFactory.newInstance();
 			XMLEvent end = eventFactory.createDTD("\n");
-			XMLEvent tab = eventFactory.createDTD("\t");
+			//XMLEvent tab = eventFactory.createDTD("\t");
 			// Create Start node
 			StartElement sElement = eventFactory.createStartElement("", "", name);
-			eventWriter.add(tab);
+			//eventWriter.add(tab);
 			eventWriter.add(sElement);
 			// Create Content
 			Characters characters = eventFactory.createCharacters(value);
@@ -472,7 +477,8 @@ public class ManifestXMLDecorator
 			// Create End node
 			EndElement eElement = eventFactory.createEndElement("", "", name);
 			eventWriter.add(eElement);
-			eventWriter.add(end);
+			//eventWriter.add(end);
+			eventWriter.flush();
 		}
 		catch(XMLStreamException e)
 		{
