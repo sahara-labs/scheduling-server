@@ -18,7 +18,6 @@ public class ScormUtilities
 			return "";
 	}
 	
-	
 	/**
 	 * Takes the value of a name to produce an underscore version of the name.
 	 * This is to allow naming consistency.
@@ -32,4 +31,13 @@ public class ScormUtilities
 				
 		return name.replaceAll("\\W", replacementStr);
 	}
+
+	
+	 public static String getFilenameFromPath(String path, String pathSeparator) 
+	 { 
+		 // gets filename without extension
+		 int sep = path.lastIndexOf(pathSeparator);
+		 return path.substring(sep + 1, path.length());
+	}
+
 }

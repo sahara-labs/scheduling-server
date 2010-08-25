@@ -75,9 +75,9 @@ public class ManifestXMLDecorator
 			//1. decorateManifestHeader()
 			//2. decorateOrganizations()
 			//3. decoreateResources()
-			decorateManifestHeader(manifest, eventFactory, eventWriter);
-			decorateOrganizations(manifest, eventFactory, eventWriter);
-			decorateResources(manifest, eventFactory, eventWriter);
+			decorateManifestHeader(manifest, eventWriter);
+			decorateOrganizations(manifest, eventWriter);
+			decorateResources(manifest, eventWriter);
 			
 			//Close off the XML Manifest node
 			eventWriter.add(eventFactory.createEndElement("", "", MANIFEST_NODE_NAME));
@@ -97,11 +97,14 @@ public class ManifestXMLDecorator
 		return outputFilePath + MANFEST_NAME;
 	}
 	
-	private void decorateManifestHeader(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter)
+	private void decorateManifestHeader(Manifest manifest, XMLEventWriter eventWriter)
 	{
 		ArrayList<Attribute> attributeList = null;
 		ArrayList<Namespace> namespaceList = null;
-		
+		XMLEventFactory eventFactory = null;
+				
+		eventFactory = XMLEventFactory.newInstance();
+
 		// Create manifest node name open tag with relevant attributes	
 		attributeList = new ArrayList<Attribute>();
 		namespaceList = new ArrayList<Namespace>();
@@ -124,12 +127,15 @@ public class ManifestXMLDecorator
 		}
 	}
 	
-	private void decorateOrganizations(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter)
+	private void decorateOrganizations(Manifest manifest, XMLEventWriter eventWriter)
 	{
 		int i = 0;
 		ArrayList<Attribute> attributeList = null;
 		ArrayList<Namespace> namespaceList = null;
+		XMLEventFactory eventFactory = null;
 				
+		eventFactory = XMLEventFactory.newInstance();
+		
 		// Create Organization Manifest component information
 		// Create the attribute default="" for organizations node
 		attributeList = new ArrayList<Attribute>();
@@ -230,10 +236,13 @@ public class ManifestXMLDecorator
 		}
 	}
 
-	private void decorateResources(Manifest manifest, XMLEventFactory eventFactory, XMLEventWriter eventWriter)
+	private void decorateResources(Manifest manifest, XMLEventWriter eventWriter)
 	{
 		ArrayList<Attribute> attributeList = null;
 		ArrayList<Namespace> namespaceList = null;
+		XMLEventFactory eventFactory = null;
+		
+		eventFactory = XMLEventFactory.newInstance();
 				
 		//Create the resources node
 		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME);

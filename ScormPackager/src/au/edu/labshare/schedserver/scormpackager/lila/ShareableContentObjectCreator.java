@@ -104,7 +104,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 				
 				//Add the imsmanifest.xml file to SCO
 				fileInStream = new FileInputStream(filePathManifest);
-				zipFileOutStream.putNextEntry(new ZipEntry(filePathManifest));
+				zipFileOutStream.putNextEntry(new ZipEntry(ScormUtilities.getFilenameFromPath(filePathManifest, "/")));
 				int len;
 			    while ((len = fileInStream.read(buffer)) > 0)
 			    {
