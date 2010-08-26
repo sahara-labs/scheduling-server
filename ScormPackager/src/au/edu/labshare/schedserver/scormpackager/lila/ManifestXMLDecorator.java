@@ -1,5 +1,6 @@
 package au.edu.labshare.schedserver.scormpackager.lila;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
 import au.edu.labshare.schedserver.scormpackager.manifest.Item;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
+import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 public class ManifestXMLDecorator 
 {	
@@ -29,7 +31,7 @@ public class ManifestXMLDecorator
 	private static final String SCO_INSTITUTION = "UTS";
 	
 	//The name of the manifest. This should never change
-	public static final String MANFEST_NAME = "imsmanfest.xml";
+	public static final String MANFEST_NAME = "imsmanifest.xml";
 	
 	//Properties that are associated with the imsmanifest file
 	public static final String MANIFEST_NODE_NAME = "manifest";	
@@ -43,6 +45,8 @@ public class ManifestXMLDecorator
 	public static final String MANIFEST_DEPENDENCY_ELEM_NAME = "dependency";
 	public static final String MANIFEST_SCORMTYPE_SCO = "sco";
 	public static final String MANIFEST_SCORMTYPE_ASSET = "asset";
+	public static final String SCHEMA_EXT = "xsd";
+	public static final String RESOURCES_PATH = "resources";
 	
 	/**
 	 * Generates the lmsmanifest.xml file. This is not going to be public
@@ -460,6 +464,29 @@ public class ManifestXMLDecorator
 		{
 			e.printStackTrace(); //TODO replace with Sahara Logger as part of refactoring.
 		}
+	}
+	
+	//XML Schema adding for each SCO as defined by SCORM 1.2
+	public static ArrayList<File> addXMLSchemas()
+	{
+		ArrayList<File> fileList = null;
+		
+		fileList = new ArrayList<File>();
+		File resourcesDirectory = new File(ManifestXMLDecorator.RESOURCES_PATH);
+		File[] listOfSchemaFiles = resourcesDirectory.listFiles();
+		
+		//Add the schemas *.xsd to SCOs
+		for(int i = 0; i < listOfSchemaFiles.length; i++) 
+		{
+			//Check that the file has an extension with *.xsd and add it
+			if (listOfSchemaFiles[i].isFile() 
+			&& ScormUtilities.getFileExtension(listOfSchemaFiles[i].getName()).equals(ManifestXMLDecorator.SCHEMA_EXT)) 
+			{
+				fileList.add(listOfSchemaFiles[i]);
+			} 
+		}
+				
+		return fileList;
 	}
 
 }

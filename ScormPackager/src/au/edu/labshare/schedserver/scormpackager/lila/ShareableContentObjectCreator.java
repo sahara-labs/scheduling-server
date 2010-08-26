@@ -9,6 +9,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.Deflater;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -26,13 +27,11 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	//TODO - this is to be replaced by reading from Properties file. 
 	private static final String GENERIC_TITLE = "Generic Title";
 	private static final String DEFAULT_INSTITUTION = "LabShare";
-	private static final String SCO_FILEPATH = "/SCOs";
 	private static final int BUFFER_SIZE = 18024;
 	
 	@Override
 	public String createSCO(String title, Collection <File> assets, String outputPath) 
 	{
-		String zipFileName = null;
 		String filePathSCO = null;
 		String filePathManifest = null;
 		FileInputStream fileInStream = null;
@@ -78,6 +77,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			e.printStackTrace(); //TODO Replace with Sahara Logger as part of refactoring.
 		}
 
+		//TODO This needs to be refactored as there is alot of zipping which should occur in separate methods
 		if(fileOutStream != null)
 		{
 			try
@@ -112,12 +112,28 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			    }
 			    zipFileOutStream.closeEntry();
 			    fileInStream.close();
-			    
+				
+				//TODO Add the SCORM XML schemas to the SCO 
+				ArrayList<File> xmlSchemaList = ManifestXMLDecorator.addXMLSchemas(); 
+				Iterator <File> iterXMLSchemas = xmlSchemaList.iterator();
+				while(iterXMLSchemas.hasNext())
+				{
+					File xmlSchemaFile = iterXMLSchemas.next();
+					fileInStream = new FileInputStream(xmlSchemaFile);
+					//TODO The below string conversion does not handle the lib/ directory structure
+					zipFileOutStream.putNextEntry(new ZipEntry(xmlSchemaFile.getName()));
+					int lenSchemaFile;
+				    while ((lenSchemaFile = fileInStream.read(buffer)) > 0)
+				    {
+				    	zipFileOutStream.write(buffer, 0, lenSchemaFile);
+				    }
+				    				    	
+				    zipFileOutStream.closeEntry();
+				    fileInStream.close();
+				}
+				
 				zipFileOutStream.close();
 				fileOutStream.close();
-				
-				//TODO Need to associate the ZipFile object type to the zipFileOutStream/ZipEntries.
-				return filePathSCO;
 			}
 			catch(IOException e)
 			{
@@ -128,7 +144,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 				e.printStackTrace(); //TODO replace with Sahara Logger as part of refactoring.
 			}
 			
-			return null;
+			return filePathSCO;
 		}
 		else
 			return null;
@@ -163,7 +179,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		else
 			return null;
 	}
-
+	
 	@Override
 	public boolean validateApplicationProfile(ZipFile SCO) 
 	{
