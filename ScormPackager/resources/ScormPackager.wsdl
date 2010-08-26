@@ -5,24 +5,24 @@
       <xsd:element name="createPIF">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="content" type="xsd:hexBinary"
-      				maxOccurs="unbounded" minOccurs="1">
+      			<xsd:element name="content" type="xsd:string"
+      				maxOccurs="unbounded" minOccurs="0">
       			</xsd:element>
-      			<xsd:element name="title" type="xsd:string"></xsd:element>
+      			<xsd:element name="experimentName" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="createPIFResponse">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="PIF" type="xsd:hexBinary"></xsd:element>
+      			<xsd:element name="pathPIF" type="xsd:string"></xsd:element>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="deletePIF">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="pathPIFName" type="xsd:anyURI"></xsd:element>
+      			<xsd:element name="pathPIF" type="xsd:string"></xsd:element>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
@@ -36,27 +36,26 @@
       <xsd:element name="createSCO">
       	<xsd:complexType>
       		<xsd:sequence>
-                        <xsd:element name="title" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
-                        <xsd:element name="typeLMS" type="xsd:string"
-      				maxOccurs="1" minOccurs="0">
+      			<xsd:element name="experimentName" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
       			</xsd:element>
-                        <xsd:element name="content" type="xsd:hexBinary"
-      				maxOccurs="unbounded" minOccurs="1">
+      			<xsd:element name="content" type="xsd:string"
+      				maxOccurs="unbounded" minOccurs="0">
       			</xsd:element>
-      		</xsd:sequence>
+                    </xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="createSCOResponse">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="SCO" type="xsd:hexBinary"></xsd:element>
+      			<xsd:element name="pathSCO" type="xsd:string"></xsd:element>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="deleteSCO">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="pathSCO" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="pathSCO" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
@@ -69,10 +68,9 @@
       </xsd:element>
       <xsd:element name="validateManifest">
       	<xsd:complexType>
-      		<xsd:choice>
-      			<xsd:element name="pathManifest" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
-      			<xsd:element name="manifestFile" type="xsd:hexBinary" maxOccurs="1" minOccurs="1"></xsd:element>
-      		</xsd:choice>
+      		<xsd:sequence>
+      			<xsd:element name="pathManifest" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="validateManifestResponse">
@@ -84,10 +82,9 @@
       </xsd:element>
       <xsd:element name="validateSCO">
       	<xsd:complexType>
-      		<xsd:choice>
-      			<xsd:element name="pathSCO" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
-      			<xsd:element name="SCOFile" type="xsd:hexBinary" maxOccurs="1" minOccurs="1"></xsd:element>
-      		</xsd:choice>
+      		<xsd:sequence>
+      			<xsd:element name="pathSCO" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="validateSCOResponse">
@@ -99,10 +96,9 @@
       </xsd:element>
       <xsd:element name="validatePIF">
       	<xsd:complexType>
-      		<xsd:choice>
-                        <xsd:element name="pathPIF" type="xsd:anyURI" maxOccurs="1" minOccurs="1"></xsd:element>
-                        <xsd:element name="PIFfile" type="xsd:hexBinary" maxOccurs="1" minOccurs="1"></xsd:element>
-      		</xsd:choice>
+      		<xsd:sequence>
+      			<xsd:element name="pathPIF" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="validatePIFResponse">
