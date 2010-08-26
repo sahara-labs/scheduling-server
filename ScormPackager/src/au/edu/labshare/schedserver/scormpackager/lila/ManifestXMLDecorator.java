@@ -110,11 +110,10 @@ public class ManifestXMLDecorator
 		namespaceList = new ArrayList<Namespace>();
 		attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
 		attributeList.add(eventFactory.createAttribute("version", manifest.getMetaData().getSchemaValue("version")));
-		attributeList.add(eventFactory.createAttribute("xmlns", manifest.getMetaData().getSchemaValue("xmlns")));
 		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", manifest.getMetaData().getSchemaValue("xmlns:adlcp")));
 		attributeList.add(eventFactory.createAttribute("xmlns:xsi",manifest.getMetaData().getSchemaValue("xmlns:xsi")));
 		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", manifest.getMetaData().getSchemaValue("xsi:schemalocation")));
-		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
+		namespaceList.add(eventFactory.createNamespace( manifest.getMetaData().getSchemaValue("xmlns")));
 	    StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
@@ -141,7 +140,7 @@ public class ManifestXMLDecorator
 		attributeList = new ArrayList<Attribute>();
 		namespaceList = new ArrayList<Namespace>();
 		attributeList.add(eventFactory.createAttribute("default", SCO_INSTITUTION));
-		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
+		//namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
 		StartElement organizationsStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
@@ -247,8 +246,8 @@ public class ManifestXMLDecorator
 		//Create the resources node
 		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME);
 		
-		namespaceList = new ArrayList<Namespace>();
-		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
+		//namespaceList = new ArrayList<Namespace>();
+		//namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
 		
 		try 
 	    {
@@ -269,6 +268,7 @@ public class ManifestXMLDecorator
 			
 			//Decorate the attributes: identifier=; type=; adlcp:scormtype=; href=;
 			attributeList = new ArrayList<Attribute>();
+			namespaceList = new ArrayList<Namespace>();
 			attributeList.add(eventFactory.createAttribute("identifier", resourceManifest.getIdentifier()));
 			attributeList.add(eventFactory.createAttribute("type", resourceManifest.getType()));
 			attributeList.add(eventFactory.createAttribute("adlcp:scormtype", resourceManifest.getScormType()));
