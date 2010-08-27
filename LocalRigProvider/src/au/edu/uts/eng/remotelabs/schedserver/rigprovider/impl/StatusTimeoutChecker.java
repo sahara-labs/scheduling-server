@@ -36,12 +36,11 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
@@ -124,11 +123,11 @@ public class StatusTimeoutChecker implements Runnable
     @SuppressWarnings("unchecked")
     public void run()
     {
-        Session session = null;
+        Session db = null;
         try
         {
-            session = DataAccessActivator.getNewSession();
-            if (session == null)
+            db = DataAccessActivator.getNewSession();
+            if (db == null)
             {
                 this.logger.error("Unable to obtain a database session for the rig status time out checker. " +
                         "Ensure the Scheduling Server data access bundle is started (ACTIVE state).");
@@ -137,7 +136,7 @@ public class StatusTimeoutChecker implements Runnable
             
             
             /* Get all the rigs that have timed out. */
-            List<Rig> timedOut = session.createCriteria(Rig.class)
+            List<Rig> timedOut = db.createCriteria(Rig.class)
                 .add(Restrictions.eq("managed", true))    // Unmanaged rigs need not provide a status update
                 .add(Restrictions.eq("active", true))
                 .add(Restrictions.eq("inSession", false)) // In session rigs need not provide a status update
@@ -158,31 +157,46 @@ public class StatusTimeoutChecker implements Runnable
                 rig.setOnline(false);
                 rig.setOfflineReason("Timed out");
                 
-                session.beginTransaction();
-                session.flush();
-                session.getTransaction().commit();
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
                 
                 /* Fire a notification the rig has gone offline. */
                 for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
                 {
-                    list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, session);
+                    list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, db);
                 }
             }
         }
-        catch (Throwable thr)
-        {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            PrintStream pstr = new PrintStream(out);
-            thr.printStackTrace(pstr);
-            pstr.flush();
+        catch (HibernateException hex)
+        {   
+            this.logger.error("Failed to query database to check rig status. Exception: " + 
+                    hex.getClass().getName() + ", Message:" + hex.getMessage());
             
-            this.logger.fatal("BUG: Uncaught exception in StatusTimeoutChecker of bundle " +
-            		"SchedulingServer-LocalRigProvider. Exception type: " + thr.getClass().getName() +
-            		", message: " + thr.getMessage() + ". Stack trace: " + out.toString() + '.');
+            if (db != null && db.getTransaction() != null)
+            {
+                try
+                {
+                    db.getTransaction().rollback();
+                }
+                catch (HibernateException ex)
+                {
+                    this.logger.error("Exception rolling back up status timeout transaction (Exception: " + 
+                            ex.getClass().getName() + "," + " Message: " + ex.getMessage() + ").");
+                }
+            }
         }
         finally
         {
-            if (session != null) session.close();
+            try
+            {
+                if (db != null) db.close();
+            }
+            catch (HibernateException ex)
+            {
+                this.logger.error("Exception cleaning up database session (Exception: " + ex.getClass().getName() + "," +
+                        " Message: " + ex.getMessage() + ").");
+            } 
         }
     } 
 }
