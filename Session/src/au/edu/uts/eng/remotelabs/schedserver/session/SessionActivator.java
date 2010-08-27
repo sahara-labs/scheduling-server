@@ -46,8 +46,10 @@ import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import au.edu.uts.eng.remotelabs.schedserver.session.impl.RigShutdownSessonStopper;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionExpiryChecker;
 
 /**
@@ -60,6 +62,9 @@ public class SessionActivator implements BundleActivator
     
     /** Session expiry checked runnable task service. */
     private ServiceRegistration sessionCheckerReg;
+    
+    /** Shutdown event notifier session terminator service. */
+    private ServiceRegistration terminatorService;
     
     /** Logger. */
     private Logger logger;
@@ -77,6 +82,10 @@ public class SessionActivator implements BundleActivator
         task.run(); // Expire any old sessions
         this.sessionCheckerReg = context.registerService(Runnable.class.getName(), task, props);
         
+        /* Register the rig event notifier. */
+        this.terminatorService = context.registerService(RigEventListener.class.getName(), 
+                new RigShutdownSessonStopper(), null);
+        
         /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
@@ -89,6 +98,7 @@ public class SessionActivator implements BundleActivator
 	{
 	    this.logger.info("Stopping the Session bundle...");
 	    this.soapReg.unregister();
+	    this.terminatorService.unregister();
 	    this.sessionCheckerReg.unregister();
 	}
 
