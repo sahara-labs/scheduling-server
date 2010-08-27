@@ -36,7 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.session.impl;
 
+import java.util.Date;
+
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -62,25 +65,44 @@ public class RigShutdownSessonStopper implements RigEventListener
     @Override
     public void eventOccurred(RigStateChangeEvent event, Rig rig, org.hibernate.Session db)
     {
-        if (event == RigStateChangeEvent.REMOVED)
+        try
         {
-            /* Rig has shutdown, so will need to terminate its assigned
-             * session, if it has one. */
-            Criteria qu = db.createCriteria(Session.class);
-            qu.add(Restrictions.eq("rig", rig))
-              .add(Restrictions.eq("active", true));
-            
-            /* Whilst the above criteria are not enforced by a underlying 
-             * schema, concecptually there should only be one session
-             * 
-             */
-            Session ses = (Session)qu.uniqueResult();
-            if (ses == null)
+            if (event == RigStateChangeEvent.REMOVED)
             {
-                this.logger.debug("A session is not active for rig " + rig.getName() + " so there is no need to " +
-                		"terminate a session.");
-                return;
+                /* Rig has shutdown, so will need to terminate its assigned
+                 * session, if it has one. */
+                Criteria qu = db.createCriteria(Session.class);
+                qu.add(Restrictions.eq("rig", rig))
+                  .add(Restrictions.eq("active", true));
+                
+                /* Whilst the above criteria are not enforced by a underlying 
+                 * schema, concecptually there should only ever the one session
+                 * the rig is assigned to. */
+                Session ses = (Session)qu.uniqueResult();
+                if (ses == null)
+                {
+                    this.logger.debug("A session is not active for rig " + rig.getName() + " so there is no need to " +
+                    		"terminate a session.");
+                    return;
+                }
+                
+                this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
+                        "rig " + ses.getAssignedRigName() + " is being terminated because the rig has shutdown.");
+                
+                /* Session exists so terminate it. */
+                ses.setActive(false);
+                ses.setRemovalTime(new Date());
+                ses.setRemovalReason("Rig " + rig.getName() + " has shutdown.");
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
             }
+        }
+        catch (HibernateException ex)
+        {
+            db.getTransaction().rollback();
+            this.logger.error("Failed to commit change to terminate session of rig " + rig.getName() + ", messsage: " + 
+                    ex.getMessage() + '.');
         }
     }
 
