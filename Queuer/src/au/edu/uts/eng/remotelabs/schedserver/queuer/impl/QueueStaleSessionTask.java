@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -71,36 +72,68 @@ public class QueueStaleSessionTask implements Runnable
     @Override
     public void run()
     {   
-        org.hibernate.Session db = DataAccessActivator.getNewSession();
-        Date now = new Date();
-        
-        Criteria query = db.createCriteria(Session.class);
-        query.add(Restrictions.eq("active", Boolean.TRUE)) // Session must be active.
-             .add(Restrictions.isNull("assignmentTime"))   // Only sessions in the queue
-             .add(Restrictions.isNull("codeReference"));   // Only interactive sessions
-        List<Session> sessions = query.list();
-        
-        /* For each of the sessions, if any of the sessions are stale, remove
-         * them from queue. */
-        for (Session s : sessions)
+        org.hibernate.Session db = null;
+        try
         {
-            if ((System.currentTimeMillis() - s.getActivityLastUpdated().getTime()) / 1000 > 
-                    s.getResourcePermission().getQueueActivityTimeout())
+            db = DataAccessActivator.getNewSession();
+            Date now = new Date();
+            
+            Criteria query = db.createCriteria(Session.class);
+            query.add(Restrictions.eq("active", Boolean.TRUE)) // Session must be active.
+                 .add(Restrictions.isNull("assignmentTime"))   // Only sessions in the queue
+                 .add(Restrictions.isNull("codeReference"));   // Only interactive sessions
+            List<Session> sessions = query.list();
+            
+            /* For each of the sessions, if any of the sessions are stale, remove
+             * them from queue. */
+            for (Session s : sessions)
             {
-                this.logger.warn("Removing stale queue session with id=" + s.getId() + ". Last activity at" +
-                        s.getActivityLastUpdated().toString() + ", current time is " + now.toString() + ".");
-                
-                Queue.getInstance().removeEntry(s, db);
-                s.setActive(false);
-                s.setRemovalReason("Queue activity timeout.");
-                s.setRemovalTime(now);
-                db.beginTransaction();
-                db.flush();
-                db.getTransaction().commit();
+                if ((System.currentTimeMillis() - s.getActivityLastUpdated().getTime()) / 1000 > 
+                        s.getResourcePermission().getQueueActivityTimeout())
+                {
+                    this.logger.warn("Removing stale queue session with id=" + s.getId() + ". Last activity at" +
+                            s.getActivityLastUpdated().toString() + ", current time is " + now.toString() + ".");
+                    
+                    Queue.getInstance().removeEntry(s, db);
+                    s.setActive(false);
+                    s.setRemovalReason("Queue activity timeout.");
+                    s.setRemovalTime(now);
+                    db.beginTransaction();
+                    db.flush();
+                    db.getTransaction().commit();
+                }
             }
         }
-        
-        db.close();
+        catch (HibernateException hex)
+        {
+            this.logger.error("Failed to query database to check stale sessions (Exception: " + 
+                    hex.getClass().getName() + ", Message:" + hex.getMessage() + ").");
+            
+            if (db != null && db.getTransaction() != null)
+            {
+                try
+                {
+                    db.getTransaction().rollback();
+                }
+                catch (HibernateException ex)
+                {
+                    this.logger.error("Exception rolling back up stale session transaction (Exception: " + 
+                            ex.getClass().getName() + "," + " Message: " + ex.getMessage() + ").");
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if (db != null) db.close();
+            }
+            catch (HibernateException ex)
+            {
+                this.logger.error("Exception cleaning up database session (Exception: " + ex.getClass().getName() + "," +
+                		" Message: " + ex.getMessage() + ").");
+            }
+        }
     }
 
 }
