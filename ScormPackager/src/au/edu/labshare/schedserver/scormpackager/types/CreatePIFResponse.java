@@ -6,279 +6,254 @@
  * by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:25:17 EDT)
  */
             
-                package au.edu.labshare.schedserver.scormpackager.types;
+package au.edu.labshare.schedserver.scormpackager.types;
             
 
-            /**
-            *  CreatePIFResponse bean class
-            */
+	/**
+	 *  CreatePIFResponse bean class
+	 */
         
-        public  class CreatePIFResponse
-        implements org.apache.axis2.databinding.ADBBean{
-        
-                /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-				public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://labshare.edu.au:8080/ScormPackager/",
-                "createPIFResponse",
-                "ns1");
+public class CreatePIFResponse implements org.apache.axis2.databinding.ADBBean
+{      
+	private static final long serialVersionUID = 1L;
+	public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName("http://labshare.edu.au:8080/ScormPackager/","createPIFResponse", "ns1");
 
-            
-
-        private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://labshare.edu.au:8080/ScormPackager/")){
-                return "ns1";
-            }
-            return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-        }
-
-        
-
-                        /**
-                        * field for PIF
-                        */
-
+	private static java.lang.String generatePrefix(java.lang.String namespace) 
+	{
+		if(namespace.equals("http://labshare.edu.au:8080/ScormPackager/"))
+		{
+			return "ns1";	
+		}
+		
+		return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+	}
                         
-                                    protected org.apache.axis2.databinding.types.HexBinary localPIF ;
-                                
+	/**
+	 * field for PathPIF
+	 */
+	protected java.lang.String localPathPIF ;
 
-                           /**
-                           * Auto generated getter method
-                           * @return org.apache.axis2.databinding.types.HexBinary
-                           */
-                           public  org.apache.axis2.databinding.types.HexBinary getPIF(){
-                               return localPIF;
-                           }
+	/**
+	 * Auto generated getter method
+	 * @return java.lang.String
+	 */
+	public java.lang.String getPathPIF()
+	{
+		return localPathPIF;
+	}
 
-                           
-                        
-                            /**
-                               * Auto generated setter method
-                               * @param param PIF
-                               */
-                               public void setPIF(org.apache.axis2.databinding.types.HexBinary param){
-                            
-                                            this.localPIF=param;
-                                    
-
-                               }
-                            
-
-     /**
+	/**
+	 * Auto generated setter method
+	 * @param param PathPIF
+	 */
+	public void setPathPIF(java.lang.String param)
+	{                        
+		this.localPathPIF=param;
+	}
+    
+	/**
      * isReaderMTOMAware
      * @return true if the reader supports MTOM
      */
-   public static boolean isReaderMTOMAware(javax.xml.stream.XMLStreamReader reader) {
-        boolean isReaderMTOMAware = false;
+	public static boolean isReaderMTOMAware(javax.xml.stream.XMLStreamReader reader) 
+	{
+		boolean isReaderMTOMAware = false;
         
-        try{
-          isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-        }catch(java.lang.IllegalArgumentException e){
+		try
+		{
+			isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+        }
+		catch(java.lang.IllegalArgumentException e)
+        {
           isReaderMTOMAware = false;
         }
+		
         return isReaderMTOMAware;
    }
      
-     
-        /**
-        *
-        * @param parentQName
-        * @param factory
-        * @return org.apache.axiom.om.OMElement
-        */
-       public org.apache.axiom.om.OMElement getOMElement (
-               final javax.xml.namespace.QName parentQName,
-               final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException{
+	/**
+	 *
+	 * @param parentQName
+	 * @param factory
+	 * @return org.apache.axiom.om.OMElement
+	 */
+	public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+	{
+		org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,MY_QNAME)
+		{
+			public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException 
+			{
+				CreatePIFResponse.this.serialize(MY_QNAME,factory,xmlWriter);
+			}
+		};
+		
+		return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(MY_QNAME,factory,dataSource);
+	}
 
+	public void serialize(final javax.xml.namespace.QName parentQName,
+						  final org.apache.axiom.om.OMFactory factory,
+						  org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
+						  throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    {
+		serialize(parentQName,factory,xmlWriter,false);
+    }
 
-        
-                org.apache.axiom.om.OMDataSource dataSource =
-                       new org.apache.axis2.databinding.ADBDataSource(this,MY_QNAME){
+	public void serialize(final javax.xml.namespace.QName parentQName,
+						  final org.apache.axiom.om.OMFactory factory,
+						  org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter, boolean serializeType)
+						  throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    {
+		java.lang.String prefix = null;
+		java.lang.String namespace = null;
 
-                 public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-                       CreatePIFResponse.this.serialize(MY_QNAME,factory,xmlWriter);
-                 }
-               };
-               return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(
-               MY_QNAME,factory,dataSource);
-            
-       }
+		prefix = parentQName.getPrefix();
+		namespace = parentQName.getNamespaceURI();
 
-         public void serialize(final javax.xml.namespace.QName parentQName,
-                                       final org.apache.axiom.om.OMFactory factory,
-                                       org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                                throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-                           serialize(parentQName,factory,xmlWriter,false);
-         }
+		if((namespace != null) && (namespace.trim().length() > 0)) 
+		{
+			java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
+                        
+			if (writerPrefix != null) 
+			{
+				xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
+			} 
+			else 
+			{
+				if(prefix == null) 
+				{
+					prefix = generatePrefix(namespace);
+				}
 
-         public void serialize(final javax.xml.namespace.QName parentQName,
-                               final org.apache.axiom.om.OMFactory factory,
-                               org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-                               boolean serializeType)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-            
+                xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+			}
+		} 
+		else 
+		{
+			xmlWriter.writeStartElement(parentQName.getLocalPart());
+		}
                 
+		if(serializeType)
+		{
+			java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://labshare.edu.au:8080/ScormPackager/");
+                   
+			if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
+			{
+				writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type", namespacePrefix+":createPIFResponse", xmlWriter);
+			}
+			else
+			{
+				writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type", "createPIFResponse", xmlWriter);
+			}
+		}
+		
+		namespace = "";
 
+		if(!namespace.equals("")) 
+		{
+			prefix = xmlWriter.getPrefix(namespace);
 
-                java.lang.String prefix = null;
-                java.lang.String namespace = null;
-                
+			if(prefix == null) 
+			{
+				prefix = generatePrefix(namespace);
 
-                    prefix = parentQName.getPrefix();
-                    namespace = parentQName.getNamespaceURI();
+				xmlWriter.writeStartElement(prefix,"pathPIF", namespace);
+				xmlWriter.writeNamespace(prefix, namespace);
+				xmlWriter.setPrefix(prefix, namespace);
+			} 
+			else 
+			{
+				xmlWriter.writeStartElement(namespace,"pathPIF");
+			}
+		} 
+		else 
+		{
+			xmlWriter.writeStartElement("pathPIF");
+		}
 
-                    if ((namespace != null) && (namespace.trim().length() > 0)) {
-                        java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
-                        if (writerPrefix != null) {
-                            xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
-                        } else {
-                            if (prefix == null) {
-                                prefix = generatePrefix(namespace);
-                            }
+		if(localPathPIF == null)
+		{
+			// write the nil attribute
+			throw new org.apache.axis2.databinding.ADBException("pathPIF cannot be null!!");                                      
+		}
+		else
+		{
+			xmlWriter.writeCharacters(localPathPIF);                                
+		}
+                                  
+		xmlWriter.writeEndElement();                     
+		xmlWriter.writeEndElement();
+    }
 
-                            xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
-                            xmlWriter.writeNamespace(prefix, namespace);
-                            xmlWriter.setPrefix(prefix, namespace);
-                        }
-                    } else {
-                        xmlWriter.writeStartElement(parentQName.getLocalPart());
-                    }
-                
-                  if (serializeType){
-               
+	/**
+	 * Util method to write an attribute with the ns prefix
+	 */
+	private void writeAttribute(java.lang.String prefix,java.lang.String namespace,java.lang.String attName,
+								java.lang.String attValue,javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    {
+		if(xmlWriter.getPrefix(namespace) == null) 
+		{
+			xmlWriter.writeNamespace(prefix, namespace);
+			xmlWriter.setPrefix(prefix, namespace);
+		}
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://labshare.edu.au:8080/ScormPackager/");
-                   if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
-                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                           namespacePrefix+":createPIFResponse",
-                           xmlWriter);
-                   } else {
-                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                           "createPIFResponse",
-                           xmlWriter);
-                   }
+		xmlWriter.writeAttribute(namespace,attName,attValue);
 
-               
-                   }
-               
-                                    namespace = "";
-                                    if (! namespace.equals("")) {
-                                        prefix = xmlWriter.getPrefix(namespace);
+    }
 
-                                        if (prefix == null) {
-                                            prefix = generatePrefix(namespace);
+	/**
+	 * Register a namespace prefix
+	 */
+	private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace) throws javax.xml.stream.XMLStreamException 
+	{
+		java.lang.String prefix = xmlWriter.getPrefix(namespace);
 
-                                            xmlWriter.writeStartElement(prefix,"PIF", namespace);
-                                            xmlWriter.writeNamespace(prefix, namespace);
-                                            xmlWriter.setPrefix(prefix, namespace);
+		if(prefix == null) 
+		{
+			prefix = generatePrefix(namespace);
 
-                                        } else {
-                                            xmlWriter.writeStartElement(namespace,"PIF");
-                                        }
+			while(xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null) 
+			{
+				prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+			}
 
-                                    } else {
-                                        xmlWriter.writeStartElement("PIF");
-                                    }
-                                
+			xmlWriter.writeNamespace(prefix, namespace);
+			xmlWriter.setPrefix(prefix, namespace);
+		}
 
-                                          if (localPIF==null){
-                                              // write the nil attribute
-                                              
-                                                     throw new org.apache.axis2.databinding.ADBException("PIF cannot be null!!");
-                                                  
-                                          }else{
-
-                                        
-                                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPIF));
-                                            
-                                          }
-                                    
-                                   xmlWriter.writeEndElement();
-                             
-                    xmlWriter.writeEndElement();
-               
-
-        }
-
-         /**
-          * Util method to write an attribute with the ns prefix
-          */
-          private void writeAttribute(java.lang.String prefix,java.lang.String namespace,java.lang.String attName,
-                                      java.lang.String attValue,javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException{
-              if (xmlWriter.getPrefix(namespace) == null) {
-                       xmlWriter.writeNamespace(prefix, namespace);
-                       xmlWriter.setPrefix(prefix, namespace);
-
-              }
-
-              xmlWriter.writeAttribute(namespace,attName,attValue);
-
-         }
-
-        /**
-         * Register a namespace prefix
-         */
-         private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace) throws javax.xml.stream.XMLStreamException {
-                java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
-                if (prefix == null) {
-                    prefix = generatePrefix(namespace);
-
-                    while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null) {
-                        prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-                    }
-
-                    xmlWriter.writeNamespace(prefix, namespace);
-                    xmlWriter.setPrefix(prefix, namespace);
-                }
-
-                return prefix;
-            }
-
-
+		return prefix;
+	}
   
-        /**
-        * databinding method to get an XML representation of this object
-        *
-        */
-        @SuppressWarnings("unchecked")
-		public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
-                    throws org.apache.axis2.databinding.ADBException{
-
-
-        
-                 java.util.ArrayList elementList = new java.util.ArrayList();
-                 java.util.ArrayList attribList = new java.util.ArrayList();
-
-                
-                                      elementList.add(new javax.xml.namespace.QName("",
-                                                                      "PIF"));
+	/**
+	 * databinding method to get an XML representation of this object
+	 *
+	 */
+	@SuppressWarnings("unchecked")
+	public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName) throws org.apache.axis2.databinding.ADBException
+	{
+		java.util.ArrayList elementList = new java.util.ArrayList();
+		java.util.ArrayList attribList = new java.util.ArrayList();
+            
+		elementList.add(new javax.xml.namespace.QName("", "pathPIF"));
                                  
-                                        if (localPIF != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPIF));
-                                        } else {
-                                           throw new org.apache.axis2.databinding.ADBException("PIF cannot be null!!");
-                                        }
-                                    
+		if(localPathPIF != null)
+		{
+			elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPathPIF));
+		} 
+		else 
+		{
+			throw new org.apache.axis2.databinding.ADBException("pathPIF cannot be null!!");
+		}
+		
+		return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
+	}
 
-                return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
-            
-            
-
-        }
-
-  
-
-     /**
-      *  Factory class that keeps the parse method
-      */
-    public static class Factory{
-
-        
-        
-
+	/**
+	 *  Factory class that keeps the parse method
+	 */
+	public static class Factory
+	{
         /**
         * static method to create the object
         * Precondition:  If this object is an element, the current or next start element starts this object and any intervening reader events are ignorable
@@ -286,95 +261,76 @@
         * Postcondition: If this object is an element, the reader is positioned at its end element
         *                If this object is a complex type, the reader is positioned at the end element of its outer element
         */
-        @SuppressWarnings("unchecked")
-		public static CreatePIFResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
-            CreatePIFResponse object =
-                new CreatePIFResponse();
+        public static CreatePIFResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception
+        {
+            CreatePIFResponse object = new CreatePIFResponse();
 
-            try {
-                
+            try 
+            {    
                 while (!reader.isStartElement() && !reader.isEndElement())
                     reader.next();
-
                 
-                if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","type")!=null){
-                  java.lang.String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                        "type");
-                  if (fullTypeName!=null){
-                    java.lang.String nsPrefix = null;
-                    if (fullTypeName.indexOf(":") > -1){
-                        nsPrefix = fullTypeName.substring(0,fullTypeName.indexOf(":"));
-                    }
-                    nsPrefix = nsPrefix==null?"":nsPrefix;
+                if(reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","type")!=null)
+                {
+                	java.lang.String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
+                  if(fullTypeName != null)
+                  {
+                	  java.lang.String nsPrefix = null;
 
-                    java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":")+1);
+                	  if(fullTypeName.indexOf(":") > -1)
+                	  {
+                		  nsPrefix = fullTypeName.substring(0,fullTypeName.indexOf(":"));
+                	  }
                     
-                            if (!"createPIFResponse".equals(type)){
-                                //find namespace for the prefix
-                                java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (CreatePIFResponse)au.edu.labshare.schedserver.scormpackager.types.ExtensionMapper.getTypeObject(
-                                     nsUri,type,reader);
-                              }
-                        
-
+                	  nsPrefix = nsPrefix == null ? "" : nsPrefix;
+                	
+                	  java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":")+1);
+                    
+                	  if(!"createPIFResponse".equals(type))
+                	  {
+                		  //find namespace for the prefix
+                		  java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+                		  return (CreatePIFResponse)au.edu.labshare.schedserver.scormpackager.types.ExtensionMapper.getTypeObject(nsUri,type,reader);
+                	  }
                   }
-                
-
                 }
-
-                
-
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                @SuppressWarnings("unused")
-				java.util.Vector handledAttributes = new java.util.Vector();
+                reader.next();
                 
-
-                 
-                    
-                    reader.next();
-                
-                                    
-                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                while(!reader.isStartElement() && !reader.isEndElement()) 
+                	reader.next();
                                 
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","PIF").equals(reader.getName())){
-                                
-                                    java.lang.String content = reader.getElementText();
-                                    
-                                              object.setPIF(
-                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToHexBinary(content));
-                                              
-                                        reader.next();
-                                    
-                              }  // End of if for expected property start element
-                                
-                                else{
-                                    // A start element we are not expecting indicates an invalid parameter was passed
-                                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
-                                }
+                if(reader.isStartElement() && new javax.xml.namespace.QName("","pathPIF").equals(reader.getName()))
+                {                
+                	java.lang.String content = reader.getElementText();
+                                 
+                	object.setPathPIF(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+                	reader.next();
+                }// End of if for expected property start element               
+                else
+                {
+                	// A start element we are not expecting indicates an invalid parameter was passed
+                	throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
+                }
                               
-                            while (!reader.isStartElement() && !reader.isEndElement())
-                                reader.next();
+                while(!reader.isStartElement() && !reader.isEndElement())
+                	reader.next();
                             
-                                if (reader.isStartElement())
-                                // A start element we are not expecting indicates a trailing invalid property
-                                throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
-                            
-
-
-
-            } catch (javax.xml.stream.XMLStreamException e) {
+                if(reader.isStartElement())
+                	// A start element we are not expecting indicates a trailing invalid property
+                	throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
+            } 
+            catch(javax.xml.stream.XMLStreamException e) 
+            {
                 throw new java.lang.Exception(e);
             }
 
             return object;
         }
 
-        }//end of factory class
-
-        
-
-        }
+	}//end of factory class
+}
            
           

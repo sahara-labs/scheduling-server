@@ -5,34 +5,25 @@
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:25:17 EDT)
  */
-            
-                package au.edu.labshare.schedserver.scormpackager.types;
-            
-
-            /**
-            *  ValidateSCOResponse bean class
-            */
-        
-        public  class ValidateSCOResponse
-        implements org.apache.axis2.databinding.ADBBean{
-        
-                /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-				public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://labshare.edu.au:8080/ScormPackager/",
-                "validateSCOResponse",
-                "ns1");
-
+package au.edu.labshare.schedserver.scormpackager.types;
             
 
-        private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://labshare.edu.au:8080/ScormPackager/")){
-                return "ns1";
-            }
-            return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-        }
+/**
+ *  ValidateSCOResponse bean class
+ */
+public class ValidateSCOResponse implements org.apache.axis2.databinding.ADBBean
+{
+	private static final long serialVersionUID = 1L;
+	public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName("http://labshare.edu.au:8080/ScormPackager/","validateSCOResponse", "ns1");
+
+	private static java.lang.String generatePrefix(java.lang.String namespace) 
+	{
+		if(namespace.equals("http://labshare.edu.au:8080/ScormPackager/"))
+		{
+			return "ns1";
+		}
+		return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+	}
 
         
 
@@ -181,10 +172,11 @@
                                     } else {
                                         xmlWriter.writeStartElement("valid");
                                     }
-                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localValid));
+                                
+                                    
+                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localValid)); 
                                    xmlWriter.writeEndElement();
-                             
-                    xmlWriter.writeEndElement();
+                                   xmlWriter.writeEndElement();
                
 
         }
@@ -270,8 +262,7 @@
         * Postcondition: If this object is an element, the reader is positioned at its end element
         *                If this object is a complex type, the reader is positioned at the end element of its outer element
         */
-        @SuppressWarnings("unchecked")
-		public static ValidateSCOResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
+        public static ValidateSCOResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ValidateSCOResponse object =
                 new ValidateSCOResponse();
 
@@ -311,13 +302,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                @SuppressWarnings("unused")
-				java.util.Vector handledAttributes = new java.util.Vector();
-                
-
-                 
-                    
-                    reader.next();
+                reader.next();
                 
                                     
                                     while (!reader.isStartElement() && !reader.isEndElement()) reader.next();

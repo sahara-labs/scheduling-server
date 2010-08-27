@@ -14,13 +14,25 @@ import au.edu.labshare.schedserver.scormpackager.types.ValidatePIF;
 import au.edu.labshare.schedserver.scormpackager.types.ValidatePIFResponse;
 import au.edu.labshare.schedserver.scormpackager.types.ValidateSCO;
 import au.edu.labshare.schedserver.scormpackager.types.ValidateSCOResponse;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 public class ScormPackager implements ScormPackagerSkeletonInterface
 {
+	 /** Logger. */
+    private Logger logger;
+
+    public ScormPackager()
+    {
+        this.logger = LoggerActivator.getLogger();
+    }
 
 	@Override
 	public CreatePIFResponse createPIF(CreatePIF createPIF) 
 	{
+		createPIF.getContent();
+		createPIF.getExperimentName();
+		
 		// TODO Auto-generated method stub
 		return null;
 	}

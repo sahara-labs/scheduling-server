@@ -5,155 +5,67 @@
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:25:17 EDT)
  */
+package au.edu.labshare.schedserver.scormpackager.types;
             
-                package au.edu.labshare.schedserver.scormpackager.types;
-            
+/**
+ *  ValidateSCO bean class
+ */
+public class ValidateSCO implements org.apache.axis2.databinding.ADBBean
+{
+	private static final long serialVersionUID = 1L;
+	public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName("http://labshare.edu.au:8080/ScormPackager/","validateSCO", "ns1");
 
-            /**
-            *  ValidateSCO bean class
-            */
-        
-        public  class ValidateSCO
-        implements org.apache.axis2.databinding.ADBBean{
-        
-                /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
+	private static java.lang.String generatePrefix(java.lang.String namespace) 
+	{
+		if(namespace.equals("http://labshare.edu.au:8080/ScormPackager/"))
+		{
+			return "ns1";
+		}
 
-				public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://labshare.edu.au:8080/ScormPackager/",
-                "validateSCO",
-                "ns1");
+		return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+	}
 
-            
-
-        private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://labshare.edu.au:8080/ScormPackager/")){
-                return "ns1";
-            }
-            return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-        }
-
-        
-            /** Whenever a new property is set ensure all others are unset
-             *  There can be only one choice and the last one wins
-             */
-            private void clearAllSettingTrackers() {
-            
-                   localPathSCOTracker = false;
-                
-                   localSCOFileTracker = false;
-                
-            }
-        
-
-                        /**
-                        * field for PathSCO
-                        */
-
-                        
-                                    protected org.apache.axis2.databinding.types.URI localPathSCO ;
-                                
-                           /*  This tracker boolean wil be used to detect whether the user called the set method
-                          *   for this attribute. It will be used to determine whether to include this field
-                           *   in the serialized XML
-                           */
-                           protected boolean localPathSCOTracker = false ;
-                           
-
-                           /**
-                           * Auto generated getter method
-                           * @return org.apache.axis2.databinding.types.URI
-                           */
-                           public  org.apache.axis2.databinding.types.URI getPathSCO(){
-                               return localPathSCO;
-                           }
-
-                           
-                        
-                            /**
-                               * Auto generated setter method
-                               * @param param PathSCO
-                               */
-                               public void setPathSCO(org.apache.axis2.databinding.types.URI param){
-                            
-                                clearAllSettingTrackers();
-                            
-                                       if (param != null){
-                                          //update the setting tracker
-                                          localPathSCOTracker = true;
-                                       } else {
-                                          localPathSCOTracker = false;
-                                              
-                                       }
-                                   
-                                            this.localPathSCO=param;
-                                    
-
-                               }
-                            
-
-                        /**
-                        * field for SCOFile
-                        */
-
-                        
-                                    protected org.apache.axis2.databinding.types.HexBinary localSCOFile ;
-                                
-                           /*  This tracker boolean wil be used to detect whether the user called the set method
-                          *   for this attribute. It will be used to determine whether to include this field
-                           *   in the serialized XML
-                           */
-                           protected boolean localSCOFileTracker = false ;
-                           
-
-                           /**
-                           * Auto generated getter method
-                           * @return org.apache.axis2.databinding.types.HexBinary
-                           */
-                           public  org.apache.axis2.databinding.types.HexBinary getSCOFile(){
-                               return localSCOFile;
-                           }
-
-                           
-                        
-                            /**
-                               * Auto generated setter method
-                               * @param param SCOFile
-                               */
-                               public void setSCOFile(org.apache.axis2.databinding.types.HexBinary param){
-                            
-                                clearAllSettingTrackers();
-                            
-                                       if (param != null){
-                                          //update the setting tracker
-                                          localSCOFileTracker = true;
-                                       } else {
-                                          localSCOFileTracker = false;
-                                              
-                                       }
-                                   
-                                            this.localSCOFile=param;
-                                    
-
-                               }
-                            
+	/**
+	 * field for PathSCO
+	 */
+	protected java.lang.String localPathSCO ;
+    
+	/**
+	 * Auto generated getter method
+	 * @return java.lang.String
+	 */
+     public java.lang.String getPathSCO()
+     {
+    	 return localPathSCO;
+     }
 
      /**
-     * isReaderMTOMAware
-     * @return true if the reader supports MTOM
-     */
-   public static boolean isReaderMTOMAware(javax.xml.stream.XMLStreamReader reader) {
-        boolean isReaderMTOMAware = false;
+      * Auto generated setter method
+      * @param param PathSCO
+      */
+     public void setPathSCO(java.lang.String param)
+     {
+    	 this.localPathSCO=param;
+     }
+                            
+     /**
+      * isReaderMTOMAware
+      * @return true if the reader supports MTOM
+      */
+     public static boolean isReaderMTOMAware(javax.xml.stream.XMLStreamReader reader) 
+     {
+    	 boolean isReaderMTOMAware = false;
         
-        try{
-          isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-        }catch(java.lang.IllegalArgumentException e){
-          isReaderMTOMAware = false;
-        }
-        return isReaderMTOMAware;
-   }
+    	 try
+    	 {
+    		 isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+    	 }
+    	 catch(java.lang.IllegalArgumentException e)
+    	 {
+    		 isReaderMTOMAware = false;
+    	 }
+    	 return isReaderMTOMAware;
+     }
      
      
         /**
@@ -236,7 +148,7 @@
 
                
                    }
-                if (localPathSCOTracker){
+               
                                     namespace = "";
                                     if (! namespace.equals("")) {
                                         prefix = xmlWriter.getPrefix(namespace);
@@ -265,46 +177,12 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPathSCO));
+                                                   xmlWriter.writeCharacters(localPathSCO);
                                             
                                           }
                                     
                                    xmlWriter.writeEndElement();
-                             } if (localSCOFileTracker){
-                                    namespace = "";
-                                    if (! namespace.equals("")) {
-                                        prefix = xmlWriter.getPrefix(namespace);
-
-                                        if (prefix == null) {
-                                            prefix = generatePrefix(namespace);
-
-                                            xmlWriter.writeStartElement(prefix,"SCOFile", namespace);
-                                            xmlWriter.writeNamespace(prefix, namespace);
-                                            xmlWriter.setPrefix(prefix, namespace);
-
-                                        } else {
-                                            xmlWriter.writeStartElement(namespace,"SCOFile");
-                                        }
-
-                                    } else {
-                                        xmlWriter.writeStartElement("SCOFile");
-                                    }
-                                
-
-                                          if (localSCOFile==null){
-                                              // write the nil attribute
-                                              
-                                                     throw new org.apache.axis2.databinding.ADBException("SCOFile cannot be null!!");
-                                                  
-                                          }else{
-
-                                        
-                                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSCOFile));
-                                            
-                                          }
-                                    
-                                   xmlWriter.writeEndElement();
-                             }
+                             
                     xmlWriter.writeEndElement();
                
 
@@ -360,7 +238,7 @@
                  java.util.ArrayList elementList = new java.util.ArrayList();
                  java.util.ArrayList attribList = new java.util.ArrayList();
 
-                 if (localPathSCOTracker){
+                
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "pathSCO"));
                                  
@@ -369,16 +247,7 @@
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("pathSCO cannot be null!!");
                                         }
-                                    } if (localSCOFileTracker){
-                                      elementList.add(new javax.xml.namespace.QName("",
-                                                                      "SCOFile"));
-                                 
-                                        if (localSCOFile != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSCOFile));
-                                        } else {
-                                           throw new org.apache.axis2.databinding.ADBException("SCOFile cannot be null!!");
-                                        }
-                                    }
+                                    
 
                 return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
             
@@ -403,8 +272,7 @@
         * Postcondition: If this object is an element, the reader is positioned at its end element
         *                If this object is a complex type, the reader is positioned at the end element of its outer element
         */
-        @SuppressWarnings("unchecked")
-		public static ValidateSCO parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
+        public static ValidateSCO parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ValidateSCO object =
                 new ValidateSCO();
 
@@ -444,46 +312,34 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                @SuppressWarnings("unused")
-				java.util.Vector handledAttributes = new java.util.Vector();
+                reader.next();
                 
-
-                 
-                    
-                    reader.next();
-                   
-                while(!reader.isEndElement()) {
-                    if (reader.isStartElement() ){
-                
+                                    
+                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                                
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","pathSCO").equals(reader.getName())){
                                 
                                     java.lang.String content = reader.getElementText();
                                     
                                               object.setPathSCO(
-                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToAnyURI(content));
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                               
                                         reader.next();
                                     
                               }  // End of if for expected property start element
                                 
-                                        else
-                                    
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","SCOFile").equals(reader.getName())){
-                                
-                                    java.lang.String content = reader.getElementText();
-                                    
-                                              object.setSCOFile(
-                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToHexBinary(content));
-                                              
-                                        reader.next();
-                                    
-                              }  // End of if for expected property start element
-                                
-                             } else {
+                                else{
+                                    // A start element we are not expecting indicates an invalid parameter was passed
+                                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
+                                }
+                              
+                            while (!reader.isStartElement() && !reader.isEndElement())
                                 reader.next();
-                             }  
-                           }  // end of while loop
-                        
+                            
+                                if (reader.isStartElement())
+                                // A start element we are not expecting indicates a trailing invalid property
+                                throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
+                            
 
 
 
