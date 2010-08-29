@@ -95,7 +95,7 @@ public class LocalRigProvider implements LocalRigProviderSkeletonInterface
             if (updater.updateStatus(registeredRig.getName(), status.getIsOnline(), status.getOfflineReason()))
             {
                 providerResp.setSuccessful(true);
-                providerResp.setIdentityToken(IdentityTokenRegister.getInstance().generateIdentityToken(
+                providerResp.setIdentityToken(IdentityTokenRegister.getInstance().getIdentityToken(
                         registeredRig.getName()));
             }
             else

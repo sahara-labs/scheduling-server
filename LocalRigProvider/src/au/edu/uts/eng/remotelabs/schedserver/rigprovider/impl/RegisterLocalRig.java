@@ -50,6 +50,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 
 /**
  * Adds a rig to the Scheduling Server.
@@ -152,6 +153,10 @@ public class RegisterLocalRig
             this.rig = this.rigDao.persist(this.rig);
         }
         this.rigDao.flush();
+        
+        /* Generate an identity token, before firing events in case subsequent 
+         * authenticated calls need to be made. */
+        IdentityTokenRegister.getInstance().generateIdentityToken(this.rig.getName());
         
         /* Provide notification a new rig is registered. */
         for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
