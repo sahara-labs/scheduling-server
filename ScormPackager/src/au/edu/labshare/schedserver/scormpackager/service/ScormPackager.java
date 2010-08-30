@@ -1,5 +1,8 @@
 package au.edu.labshare.schedserver.scormpackager.service;
 
+import java.io.File;
+import java.util.LinkedList;
+
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIF;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIFResponse;
 import au.edu.labshare.schedserver.scormpackager.types.CreateSCO;
@@ -14,8 +17,15 @@ import au.edu.labshare.schedserver.scormpackager.types.ValidatePIF;
 import au.edu.labshare.schedserver.scormpackager.types.ValidatePIFResponse;
 import au.edu.labshare.schedserver.scormpackager.types.ValidateSCO;
 import au.edu.labshare.schedserver.scormpackager.types.ValidateSCOResponse;
+import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
+import au.edu.labshare.schedserver.scormpackager.lila.ManifestXMLDecorator;
+import au.edu.labshare.schedserver.scormpackager.lila.ShareableContentObjectCreator;
+
+
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+
+
 
 public class ScormPackager implements ScormPackagerSkeletonInterface
 {
@@ -30,18 +40,39 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 	@Override
 	public CreatePIFResponse createPIF(CreatePIF createPIF) 
 	{
-		createPIF.getContent();
-		createPIF.getExperimentName();
+		au.edu.labshare.schedserver.scormpackager.types.CreateSCO SCOInfo = new au.edu.labshare.schedserver.scormpackager.types.CreateSCO();
+		SCOInfo.setContent(createPIF.getContent());
+		SCOInfo.setExperimentName(createPIF.getExperimentName());
+		CreateSCOResponse SCOResponse = createSCO(SCOInfo);
 		
-		// TODO Auto-generated method stub
-		return null;
+		//Setup the response with the data to return back to the user
+		CreatePIFResponse createPIFResponse = new CreatePIFResponse();
+		createPIFResponse.setPathPIF(SCOResponse.getPathSCO());
+		
+		return createPIFResponse;
 	}
 
 	@Override
 	public CreateSCOResponse createSCO(CreateSCO createSCO) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		String pathOfSCO = null;
+		
+		LinkedList<File> content = new LinkedList<File>();
+		
+		content = ScormUtilities.getFilesFromPath(createSCO.getContent());
+	
+		//Add the lmsstub.js
+		content.add(new File(ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js"));
+		
+		//Create the PIF to be sent out
+		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator(logger);
+		pathOfSCO = shrContentObj.createSCO(createSCO.getExperimentName(), content, ShareableContentObjectCreator.OUTPUT_PATH);
+		
+		//Setup the response with the data to return back to the user
+		CreateSCOResponse createPIFResponse = new CreateSCOResponse();
+		createPIFResponse.setPathSCO(pathOfSCO);
+		
+		return createPIFResponse;
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import au.edu.labshare.schedserver.scormpackager.manifest.Item;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 
 public class ManifestXMLDecorator 
 {	
@@ -47,6 +48,19 @@ public class ManifestXMLDecorator
 	public static final String MANIFEST_SCORMTYPE_ASSET = "asset";
 	public static final String SCHEMA_EXT = "xsd";
 	public static final String RESOURCES_PATH = "resources";
+	
+	//Log any error
+	private Logger saharaLogger;
+	
+	public ManifestXMLDecorator(Logger logger)
+	{
+		saharaLogger = logger;
+	}
+	
+	public ManifestXMLDecorator()
+	{
+		saharaLogger = au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator.getLogger();
+	}
 	
 	/**
 	 * Generates the lmsmanifest.xml file. This is not going to be public
@@ -91,11 +105,13 @@ public class ManifestXMLDecorator
 		}
 		catch(XMLStreamException e)
 		{
-			e.printStackTrace(); //TODO replace with SchedServer Logger.
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		} 
 		catch (FileNotFoundException e) 
 		{
-			e.printStackTrace(); //TODO replace with SchedServer Logger.
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 		
 		return outputFilePath + MANFEST_NAME;
@@ -126,7 +142,8 @@ public class ManifestXMLDecorator
 		} 
 	    catch (XMLStreamException e) 
 	    {
-			e.printStackTrace();	// TODO Replace with SchedServer Logger 
+	    	//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 	}
 	
@@ -153,10 +170,11 @@ public class ManifestXMLDecorator
 		} 
 	    catch (XMLStreamException e) 
 	    {
-			e.printStackTrace(); // TODO Replace with SchedServer Logger 
+	    	//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 
-		//TODO Add each organization
+		//Add each organization
 		for(Iterator<Organization> iterOrg = manifest.getOrganizations().iterator(); iterOrg.hasNext();)
 		{
 			// Create the organization element node
@@ -170,7 +188,8 @@ public class ManifestXMLDecorator
 			} 
 		    catch (XMLStreamException e) 
 		    {
-				e.printStackTrace(); // TODO Replace with SchedServer Logger 
+		    	//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 			}
 		    
 			//Get the actual organization object to obtain information
@@ -179,7 +198,7 @@ public class ManifestXMLDecorator
 			//Decorate the <title></title> nodes
 			createNode(eventWriter, MANIFEST_TITLE, organization.getTitle());
 			
-			//TODO Need to extract the title from the <item identifierref> atttribute.
+			//Extract the title from the <item identifierref> atttribute.
 		    for(Iterator<Item> iterItem = organization.getItemList().iterator(); iterItem.hasNext();)
 		    {
 		    	Item orgItem = iterItem.next();
@@ -194,10 +213,11 @@ public class ManifestXMLDecorator
 				} 
 			    catch (XMLStreamException e) 
 			    {
-					e.printStackTrace(); // TODO Replace with SchedServer Logger 
+			    	//Log any exception output
+		            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString()); 
 				}
 			    
-			    //TODO Need to extract the title from the <item identifierref> attribute. 
+			    //Extract the title from the <item identifierref> attribute. 
 				createNode(eventWriter, MANIFEST_TITLE, orgItem.getTitle());  
 				EndElement itemEndElem = eventFactory.createEndElement("", "",  MANIFEST_ITEM);
 				
@@ -208,13 +228,14 @@ public class ManifestXMLDecorator
 				} 
 			    catch (XMLStreamException e) 
 				{
-					e.printStackTrace(); 
+			    	//Log any exception output
+		            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 				}
 
 				i++;
 		    }
 		    
-		    // Close the organization element node
+		    //Close the organization element node
 			EndElement organizationEndElem = eventFactory.createEndElement("", "", MANIFEST_ORG_ELEM_NAME);
 			try 
 			{
@@ -223,7 +244,8 @@ public class ManifestXMLDecorator
 			} 
 			catch (XMLStreamException e) 
 			{
-				e.printStackTrace(); // TODO Replace with SchedServer Logger
+				//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 			}
 		}
 		
@@ -235,7 +257,8 @@ public class ManifestXMLDecorator
 		} 
 		catch (XMLStreamException e) 
 		{
-			e.printStackTrace(); // TODO Replace with SchedServer Logger
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 	}
 
@@ -261,7 +284,8 @@ public class ManifestXMLDecorator
 		} 
 	    catch (XMLStreamException e) 
 	    {
-			e.printStackTrace(); // TODO Replace with SchedServer Logger 
+	    	//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 		
 		
@@ -287,7 +311,8 @@ public class ManifestXMLDecorator
 			} 
 		    catch (XMLStreamException e) 
 		    {
-				e.printStackTrace(); // TODO Replace with SchedServer Logger 
+		    	//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString()); 
 			}
 			
 			//Add File node and HREF attribute
@@ -302,7 +327,8 @@ public class ManifestXMLDecorator
 			} 
 		    catch (XMLStreamException e) 
 		    {
-				e.printStackTrace(); // TODO Replace with SchedServer Logger 
+		    	//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 			}
 		    
 		    // Close the file element node
@@ -314,7 +340,8 @@ public class ManifestXMLDecorator
 			} 
 			catch (XMLStreamException e) 
 			{
-				e.printStackTrace(); // TODO Replace with SchedServer Logger
+				//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 			}
 		    
 			//Create a Dependency node if it is a SCO
@@ -331,7 +358,8 @@ public class ManifestXMLDecorator
 				} 
 				catch (XMLStreamException e) 
 				{
-					e.printStackTrace(); // TODO Replace with SchedServer Logger 
+					//Log any exception output
+		            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 				}
 							
 				
@@ -344,7 +372,8 @@ public class ManifestXMLDecorator
 				} 
 				catch (XMLStreamException e) 
 				{
-					e.printStackTrace(); // TODO Replace with SchedServer Logger
+					//Log any exception output
+		            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 				}
 			}
 			
@@ -357,7 +386,8 @@ public class ManifestXMLDecorator
 			} 
 			catch (XMLStreamException e) 
 			{
-				e.printStackTrace(); // TODO Replace with SchedServer Logger
+				//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 			}
 		}
 		
@@ -375,7 +405,8 @@ public class ManifestXMLDecorator
 		} 
 	    catch (XMLStreamException e) 
 	    {
-			e.printStackTrace(); // TODO Replace with SchedServer Logger 
+	    	//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 		
 	    //Add File node and HREF attribute
@@ -390,7 +421,8 @@ public class ManifestXMLDecorator
 		} 
 	    catch (XMLStreamException e) 
 	    {
-			e.printStackTrace(); // TODO Replace with SchedServer Logger 
+	    	//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 	    
 	    // Close the file element node
@@ -402,7 +434,8 @@ public class ManifestXMLDecorator
 		} 
 		catch (XMLStreamException e) 
 		{
-			e.printStackTrace(); // TODO Replace with SchedServer Logger
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 	    
 	    //Close the resource node for lmsstub.js
@@ -414,7 +447,8 @@ public class ManifestXMLDecorator
 		} 
 		catch (XMLStreamException e) 
 		{
-			e.printStackTrace(); // TODO Replace with SchedServer Logger
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 	    
 		//Close the resources node
@@ -426,7 +460,8 @@ public class ManifestXMLDecorator
 		} 
 		catch (XMLStreamException e) 
 		{
-			e.printStackTrace(); // TODO Replace with SchedServer Logger
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 	}
 	
@@ -462,7 +497,8 @@ public class ManifestXMLDecorator
 		}
 		catch(XMLStreamException e)
 		{
-			e.printStackTrace(); //TODO replace with Sahara Logger as part of refactoring.
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 	}
 	

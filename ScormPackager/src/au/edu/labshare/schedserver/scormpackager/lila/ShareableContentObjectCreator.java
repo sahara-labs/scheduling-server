@@ -19,15 +19,29 @@ import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
 import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 
 public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.scormpackager.ShareableContentObjectCreator 
 {
 	private ManifestXMLDecorator manifestXMLDecorator;
+	private Logger saharaLogger;
 	
 	//TODO - this is to be replaced by reading from Properties file. 
+	public static final String OUTPUT_PATH = "/tmp";
+	
 	private static final String GENERIC_TITLE = "Generic Title";
 	private static final String DEFAULT_INSTITUTION = "LabShare";
 	private static final int BUFFER_SIZE = 18024;
+	
+	public ShareableContentObjectCreator(Logger logger)
+	{
+		saharaLogger = logger;
+	}
+	
+	public ShareableContentObjectCreator()
+	{
+		saharaLogger = au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator.getLogger();
+	}
 	
 	@Override
 	public String createSCO(String title, Collection <File> assets, String outputPath) 
@@ -64,7 +78,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		imsmanifest = createManifest(titles, assets);
 		
 		//Decorate the manifest with relevant XML information
-		manifestXMLDecorator = new ManifestXMLDecorator();
+		manifestXMLDecorator = new ManifestXMLDecorator(saharaLogger);
 		filePathManifest = manifestXMLDecorator.decorateManifest(imsmanifest, outputPath); 
 		
 		//Zip the contents into a file
@@ -74,7 +88,8 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 		} 
 		catch (FileNotFoundException e) 
 		{
-			e.printStackTrace(); //TODO Replace with Sahara Logger as part of refactoring.
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
 
 		//TODO This needs to be refactored as there is alot of zipping which should occur in separate methods
@@ -137,11 +152,13 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			}
 			catch(IOException e)
 			{
-				e.printStackTrace(); //TODO replace with Sahara Logger as part of refactoring.
+				//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 			}
 			catch(NullPointerException e)
 			{
-				e.printStackTrace(); //TODO replace with Sahara Logger as part of refactoring.
+				//Log any exception output
+	            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 			}
 			
 			return filePathSCO;
