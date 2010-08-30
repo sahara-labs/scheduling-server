@@ -47,6 +47,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 
 /**
  * Removes a local rig by setting it to inactive. The provided removal reason
@@ -104,6 +105,9 @@ public class RemoveLocalRig
         rig.setLastUpdateTimestamp(new Date());
         
         this.rigDao.flush();
+        
+        /* Remove the stored identity token. */
+        IdentityTokenRegister.getInstance().removeIdentityToken(rig.getName());
         
         /* Provide notification a rig has been removed. */
         for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
