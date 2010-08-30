@@ -166,6 +166,57 @@ public class RigCapabilitiesDaoTester extends TestCase
         this.dao.delete(caps);
     }
     
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao#addCapabilities(java.lang.String)}.
+     */
+    @Test
+    public void testAddOneCapabilities()
+    {
+        /* Add the request capabilities. */
+        RequestCapabilities req = new RequestCapabilities("b");
+        GenericDao<RequestCapabilities> reqDao = new GenericDao<RequestCapabilities>(this.dao.getSession(), 
+                RequestCapabilities.class);
+        reqDao.persist(req);
+
+        String capsStr = "a,b";
+        RigCapabilities caps = this.dao.addCapabilities(capsStr);
+        assertNotNull(caps);
+        assertEquals("a,b", caps.getCapabilities());
+
+        Set<MatchingCapabilities> matches = caps.getMatchingCapabilitieses();
+        assertEquals(1, matches.size());
+        MatchingCapabilities mc = matches.iterator().next();
+        assertNotNull(mc);
+        assertEquals(mc.getId().getRequestCapabilities(), req.getId().longValue());
+        assertEquals(mc.getId().getRigCapabilities(), caps.getId().longValue());
+        
+        Session ses = this.dao.getSession();
+        ses.beginTransaction();
+        for (MatchingCapabilities m : matches)
+        {
+            ses.delete(m);
+        }
+        ses.getTransaction().commit();
+        ses.delete(req);
+        this.dao.delete(caps);
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao#addCapabilities(java.lang.String)}.
+     */
+    @Test
+    public void testAddNoReqCapabilities()
+    {
+        String capsStr = "a,b";
+        RigCapabilities caps = this.dao.addCapabilities(capsStr);
+        assertNotNull(caps);
+        assertEquals("a,b", caps.getCapabilities());
+
+        Set<MatchingCapabilities> matches = caps.getMatchingCapabilitieses();
+        assertEquals(0, matches.size());
+        this.dao.delete(caps);
+    }
+    
     @Test
     public void testDelete()
     {
