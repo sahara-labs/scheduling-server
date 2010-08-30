@@ -40,8 +40,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.ScrollMode;
-import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
@@ -97,6 +95,7 @@ public class RequestCapabilitiesDao extends GenericDao<RequestCapabilities>
      * @param capabilities rig capabilities string
      * @return rig capabilities persistent object
      */
+    @SuppressWarnings("unchecked")
     public RequestCapabilities addCapabilities(String capabilities)
     {
         Capabilities requestCaps = new Capabilities(capabilities);
@@ -109,12 +108,11 @@ public class RequestCapabilitiesDao extends GenericDao<RequestCapabilities>
         
         /* Iterate through all the rig capabilities and store matches. */
         Criteria cri = this.session.createCriteria(RigCapabilities.class);
-        ScrollableResults results = cri.scroll(ScrollMode.FORWARD_ONLY);
+        List<RigCapabilities> rigCapsList = cri.list();
         
         Capabilities caps = new Capabilities();
-        while (results.next())
+        for (RigCapabilities rigCaps : rigCapsList)
         {
-            RigCapabilities rigCaps = (RigCapabilities) results.get(0);
             caps.setCapabilitiesString(rigCaps.getCapabilities());
 
             if (caps.asCapabilitiesList().containsAll(capsList))
