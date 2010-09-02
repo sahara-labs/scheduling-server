@@ -126,6 +126,9 @@ public class ResourcePermission implements java.io.Serializable
     
     /** The name of the permission. */
     private String displayName;
+    
+    /** Whether to use activity detection for sessions. */
+    private boolean useActivityDetection;
 
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
     private Set<Session> sessionsForResourcePermission = new HashSet<Session>(0);
@@ -330,6 +333,17 @@ public class ResourcePermission implements java.io.Serializable
     public void setDisplayName(final String displayName)
     {
         this.displayName = displayName;
+    }
+    
+    @Column(name="use_activity_detection", nullable = false)
+    public boolean isActivityDetected()
+    {
+        return this.useActivityDetection;
+    }
+    
+    public void setActivityDetected(final boolean detection)
+    {
+        this.useActivityDetection = detection;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "resourcePermission")
