@@ -195,9 +195,10 @@ public class SessionExpiryChecker implements Runnable
                 }
                 /******************************************************************
                  * Finally, for sessions with time still remaining, check         *
-                 * session activity timeout.                                      * 
+                 * session activity timeout - if it is not ignored.               * 
                  ******************************************************************/
-                else if ((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000 > perm.getSessionActivityTimeout())
+                else if (ses.getResourcePermission().isActivityDetected() &&
+                        (System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000 > perm.getSessionActivityTimeout())
                 {
                     /* Check activity. */
                     if (this.notTest) new SessionIdleKicker().kickIfIdle(ses, db);

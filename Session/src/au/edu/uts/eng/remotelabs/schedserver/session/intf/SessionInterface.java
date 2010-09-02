@@ -169,9 +169,9 @@ public class SessionInterface implements SessionSkeletonInterface
                         "Your session will expire in " + remainingTime + " seconds." :
                         "Your session is being terminated.");
             }
-            else
+            else if (ses.getResourcePermission().isActivityDetected())
             {
-                /* Find out about activity. */
+                /* Find out about activity, if not ignored. */
                 try
                 {
                     if (this.notTest)
