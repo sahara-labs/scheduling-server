@@ -80,9 +80,11 @@ public class RigType implements java.io.Serializable
      *  requests. */
     private boolean codeAssignable;
     
+    /** Foreign key relations. */
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Rig> rigs = new HashSet<Rig>(0);
-
+    private Set<RigTypeMedia> media = new HashSet<RigTypeMedia>(0); 
+    
     public RigType()
     {
         /* Bean style constructor. */
@@ -176,5 +178,16 @@ public class RigType implements java.io.Serializable
     public void setRigs(final Set<Rig> rigs)
     {
         this.rigs = rigs;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rigType")
+    public Set<RigTypeMedia> getMedia()
+    {
+        return this.media;
+    }
+
+    public void setMedia(Set<RigTypeMedia> media)
+    {
+        this.media = media;
     }
 }
