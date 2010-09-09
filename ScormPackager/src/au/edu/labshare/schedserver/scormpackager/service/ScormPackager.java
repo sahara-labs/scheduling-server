@@ -1,8 +1,11 @@
 package au.edu.labshare.schedserver.scormpackager.service;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
+import au.edu.labshare.schedserver.scormpackager.SaharaRigMedia;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIF;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIFResponse;
 import au.edu.labshare.schedserver.scormpackager.types.CreateSCO;
@@ -22,6 +25,9 @@ import au.edu.labshare.schedserver.scormpackager.lila.ManifestXMLDecorator;
 import au.edu.labshare.schedserver.scormpackager.lila.ShareableContentObjectCreator;
 
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeMedia;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
@@ -39,7 +45,7 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 
 	@Override
 	public CreatePIFResponse createPIF(CreatePIF createPIF) 
-	{
+	{		
 		au.edu.labshare.schedserver.scormpackager.types.CreateSCO SCOInfo = new au.edu.labshare.schedserver.scormpackager.types.CreateSCO();
 		SCOInfo.setContent(createPIF.getContent());
 		SCOInfo.setExperimentName(createPIF.getExperimentName());
@@ -59,10 +65,22 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		
 		LinkedList<File> content = new LinkedList<File>();
 		
-		content = ScormUtilities.getFilesFromPath(createSCO.getContent());
+		//Start by adding extra content that was provided by user. Will not set if it is null
+		if(createSCO.getContent() != null)
+			content = ScormUtilities.getFilesFromPath(createSCO.getContent());
 	
 		//Add the lmsstub.js
 		content.add(new File(ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js"));
+		
+		//We want to get the content from the Rig DB Persistence end
+        org.hibernate.Session db = new RigTypeDao().getSession();
+        SaharaRigMedia saharaRigMedia = new SaharaRigMedia(db);
+        
+        //Go through the rig media information and add any data that is in them
+        Iterator<RigTypeMedia> iter = saharaRigMedia.getRigType(createSCO.getExperimentName()).getMedia().iterator();
+        
+        while(iter.hasNext())
+        	content.add(new File(iter.next().getFileName()));
 		
 		//Create the PIF to be sent out
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator(logger);
