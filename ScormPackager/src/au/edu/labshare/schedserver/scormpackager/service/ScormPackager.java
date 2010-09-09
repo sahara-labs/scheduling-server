@@ -3,7 +3,6 @@ package au.edu.labshare.schedserver.scormpackager.service;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Set;
 
 import au.edu.labshare.schedserver.scormpackager.SaharaRigMedia;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIF;
@@ -24,8 +23,6 @@ import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 import au.edu.labshare.schedserver.scormpackager.lila.ManifestXMLDecorator;
 import au.edu.labshare.schedserver.scormpackager.lila.ShareableContentObjectCreator;
 
-
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeMedia;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;

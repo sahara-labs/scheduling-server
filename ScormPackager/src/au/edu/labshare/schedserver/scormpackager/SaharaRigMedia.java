@@ -1,13 +1,7 @@
 package au.edu.labshare.schedserver.scormpackager;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeMedia;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeInformation;
-
 
 /** 
  * Class to access the relevant database entities:
