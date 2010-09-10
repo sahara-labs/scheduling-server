@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import au.edu.labshare.schedserver.scormpackager.SaharaRigMedia;
+import au.edu.labshare.schedserver.scormpackager.sahara.RigMedia;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIF;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIFResponse;
 import au.edu.labshare.schedserver.scormpackager.types.CreateSCO;
@@ -71,7 +71,7 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		
 		//We want to get the content from the Rig DB Persistence end
         org.hibernate.Session db = new RigTypeDao().getSession();
-        SaharaRigMedia saharaRigMedia = new SaharaRigMedia(db);
+        RigMedia saharaRigMedia = new RigMedia(db);
         
         //Go through the rig media information and add any data that is in them
         Iterator<RigTypeMedia> iter = saharaRigMedia.getRigType(createSCO.getExperimentName()).getMedia().iterator();

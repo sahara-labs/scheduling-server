@@ -1,4 +1,4 @@
-package au.edu.labshare.schedserver.scormpackager;
+package au.edu.labshare.schedserver.scormpackager.sahara;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
@@ -10,7 +10,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
  * 3. RigTypeInformation 
  * 
  */
-public class SaharaRigMedia 
+public class RigMedia 
 {
 	private RigType rigType;
 	//private RigTypeMedia rigMediaType;
@@ -18,7 +18,7 @@ public class SaharaRigMedia
 	
 	private org.hibernate.Session db; 
 	
-	public SaharaRigMedia(org.hibernate.Session session)
+	public RigMedia(org.hibernate.Session session)
 	{
 		this.db = session;
 	}

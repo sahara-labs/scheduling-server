@@ -56,5 +56,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Server"/>
 	<classpathentry kind="lib" path="/SchedServer-Framework/lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Configuration"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-DataAccess"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
