@@ -43,6 +43,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
@@ -108,6 +109,7 @@ public class DataAccessTestSetup
             props.setProperty("hibernate.generate_statistics", "true");
             cfg.setProperties(props);
             cfg.addAnnotatedClass(AcademicPermission.class);
+            cfg.addAnnotatedClass(Bookings.class);
             cfg.addAnnotatedClass(Config.class);
             cfg.addAnnotatedClass(MatchingCapabilities.class);
             cfg.addAnnotatedClass(MatchingCapabilitiesId.class);

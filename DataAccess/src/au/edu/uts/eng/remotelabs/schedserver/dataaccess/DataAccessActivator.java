@@ -46,6 +46,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
@@ -93,6 +94,7 @@ public class DataAccessActivator implements BundleActivator
         AnnotationConfiguration cfg = new AnnotationConfiguration();
         cfg.setProperties(new DataAccessConfiguration(context).getProperties());
         cfg.addAnnotatedClass(AcademicPermission.class);
+        cfg.addAnnotatedClass(Bookings.class);
         cfg.addAnnotatedClass(Config.class);
         cfg.addAnnotatedClass(MatchingCapabilities.class);
         cfg.addAnnotatedClass(MatchingCapabilitiesId.class);
