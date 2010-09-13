@@ -209,7 +209,7 @@ public class Session implements java.io.Serializable
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     public User getUser()
     {
@@ -221,7 +221,7 @@ public class Session implements java.io.Serializable
         this.user = user;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_permission_id")
     public ResourcePermission getResourcePermission()
     {
@@ -233,7 +233,7 @@ public class Session implements java.io.Serializable
         this.resourcePermission = resourcePermission;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assigned_rig_id")
     public Rig getRig()
     {
