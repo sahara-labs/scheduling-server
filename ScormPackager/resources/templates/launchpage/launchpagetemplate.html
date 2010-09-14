@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Begin Framework CSS -->  
+     <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection" />  
+     <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print" />  
+     <!--[if IE]>
+     <link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection" />
+     <![endif]-->     
+     <!-- Import fancy-type plugin. -->  
+     <link rel="stylesheet" href="css/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection" />
+     <!--  Import button plugin. -->
+     <link rel="stylesheet" href="css/blueprint/plugins/buttons/screen.css" type="text/css" media="screen, projection" />
+<!-- End Framework CSS -->  
+
+<!--  $BeginBlock titleblock -->
+<title>${experiment_name} Launch Page</title>
+<!--  $EndBlock titleblock -->
+</head>
+
+<body>
+<div class="container">
+<!--  $BeginBlock headingblock -->
+	<div id="header" class="span-24 last">
+		<h1 id="experiment_name">${experiment_name}</h1>
+	</div>
+	<hr/>
+<!--  $EndBlock headingblock -->	
+
+	<div class="span-16 last" id="content">
+<!-- Assuming image size of 480 x 320 px -->
+
+<!--  $BeginBlock profilepicblock -->	
+		<div class="prepend-5" id="profilepic">
+			<img src="${profile_pic}" alt="Featured Experiment"/>
+		</div>  
+<!--  $EndBlock profilepicblock -->
+
+		<div class="span-16" id="summarytitle">
+		<p/>
+		<h2 class="loud">Description</h2>
+		</div>
+		<div class="column span-3" id="summary"><hr/></div>
+
+<!--  $BeginBlock blurbblock -->		
+		<div class="span-16" id="blurb">
+			<h4>${blurb}</h4>
+		</div>
+<!--  $EndBlock blurbblock -->
+
+<!--  $BeginBlock launchbuttonblock -->
+		<div class="span-10" id="launchbutton">
+			<a class="button negative" href="http://remotelabs.eng.uts.edu.au/login/?">
+				<img src="css/blueprint/plugins/buttons/icons/package_go.png" alt=""/>
+				Launch Experiment
+			</a>
+		</div>
+<!--  $EndBlock launchbuttonblock -->		
+	</div>
+</div>
+</body>
+
+</html>
