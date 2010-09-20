@@ -30,10 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Author: Michael Diponio (mdiponio)
 Date: 5th January 2009
-
-Modification: Added new property to deal with resources directory so it gets included in path.
-Author: Herbert Yeung
-Date: 20th September 2010
 -->
 <project name="Scheduling Server Common Build File">
 
@@ -56,7 +52,6 @@ Date: 20th September 2010
 	<property name="reports.pmd.xml.dir" location="test/reports/pmd" /> <!-- PMD reports -->
 	<property name="reports.bugs.xml.dir" location="test/reports/bugs" /> <!-- Findbugs reports -->
 	<property name="reports.emma.dir" location="test/reports/coverage" /> <!-- Emma coverage report -->
-	<property name="resources.dir" location="resources" /> <!-- Resources directory. Applicable to ScormPackager -->
 	<property name="bundle.dir" location="bundle" />
 
 	<!-- ##################################################################
@@ -72,9 +67,6 @@ Date: 20th September 2010
 			<include name="**/*.jar" />
 		</fileset>
 		<fileset dir="${test.lib.dir}">
-			<include name="**/*.jar" />
-		</fileset>
-		<fileset dir="${resources.dir}">
 			<include name="**/*.jar" />
 		</fileset>
 		<fileset dir="../">
