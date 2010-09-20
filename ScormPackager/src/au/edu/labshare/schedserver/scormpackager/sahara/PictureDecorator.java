@@ -37,6 +37,7 @@ public class PictureDecorator extends LaunchPageDecorator
 	private MiniTemplator addPic(MiniTemplator t)
 	{
 		// Add picture to template location. This should be aligned above the blurb and below title
+		t.setVariable(PIC_LOCATION, this.pictureLocation);
 		t.setVariable (ALIGN_ELEM, this.alignment);
 		t.addBlock ("profilepicblock"); 
 		

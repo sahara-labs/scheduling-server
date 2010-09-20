@@ -41,10 +41,9 @@ public class BlurbDecorator extends LaunchPageDecorator
 		// Add the blurb to the centre of the page. This should be aligned below the picture
 		//t = new MiniTemplator(decoratedPage.getLaunchPageName());
 		t.setVariable (BLURB_ELEM, this.blurb);
-		t.setVariable (FONT_FAMILY_ELEM, this.fontType);
-		t.setVariable (FONT_SIZE_ELEM.toString(), Integer.toString(this.fontSize));
+		//t.setVariable (FONT_FAMILY_ELEM, this.fontType);
+		//t.setVariable (FONT_SIZE_ELEM.toString(), Integer.toString(this.fontSize));
 		t.setVariable (FONT_ALIGN_ELEM, this.alignment);
-		//t.setVariable (FONT_FAMILY_ELEM, "&nbsp;");
 		t.addBlock ("blurbblock");  
 		//t.generateOutput (outputFileName); 
 		
