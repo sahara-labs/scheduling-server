@@ -35,11 +35,19 @@ Date: 10th August 2010
 <project name="Scheduling Server ScormPackager" default="build" basedir=".">
     <import file="../common.xml"/>
     <import file="../dependencies.xml"/>
+	
+	<!-- Classpath -->
+	<path id="resourcespath">
+		<fileset dir="${basedir}">
+			<include name="resources/*.jar" />
+		</fileset>
+	</path>
     
 	<property name="component.name" value="Scheduling Server ScormPackager Bundle"/>
 	<property name="service.archive.name" value="ScormPackager.aar" />
 	
     <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,serverBundle,taskSchedulerBundle">
+    	<path refid="resourcespath" />
         <buildProject/>
     </target>
 </project>
