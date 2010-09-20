@@ -59,5 +59,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-DataAccess"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="/home/heyeung/workspace/SchedServer/trunk/ScormPackager/lib/miniTemplator.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
