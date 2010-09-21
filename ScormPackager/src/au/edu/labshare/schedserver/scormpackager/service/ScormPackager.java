@@ -1,9 +1,13 @@
 package au.edu.labshare.schedserver.scormpackager.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Properties;
 
+import au.edu.labshare.schedserver.scormpackager.sahara.RigLaunchPageCreator;
 import au.edu.labshare.schedserver.scormpackager.sahara.RigMedia;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIF;
 import au.edu.labshare.schedserver.scormpackager.types.CreatePIFResponse;
@@ -23,6 +27,7 @@ import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 import au.edu.labshare.schedserver.scormpackager.lila.ManifestXMLDecorator;
 import au.edu.labshare.schedserver.scormpackager.lila.ShareableContentObjectCreator;
 
+//import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeMedia;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -34,10 +39,12 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 {
 	 /** Logger. */
     private Logger logger;
+    //private org.hibernate.Session session;
 
     public ScormPackager()
     {
         this.logger = LoggerActivator.getLogger();
+        //this.session = DataAccessActivator.getNewSession();
     }
 
 	@Override
@@ -59,6 +66,8 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 	public CreateSCOResponse createSCO(CreateSCO createSCO) 
 	{
 		String pathOfSCO = null;
+        Properties defaultProps = new Properties();
+        FileInputStream in;
 		
 		LinkedList<File> content = new LinkedList<File>();
 		
@@ -78,16 +87,38 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
         
         while(iter.hasNext())
         	content.add(new File(iter.next().getFileName()));
+        
+        // We want to generate a LaunchPage (launchpage.html) that is to be added to SCO
+        RigLaunchPageCreator rigLaunchPageCreator = new RigLaunchPageCreator();
+
+        // create and load default properties
+		try 
+		{
+			in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
+	        defaultProps.load(in);
+	        in.close();
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+		}
+
+		//TODO: Should place this as static string - scormpackager_output_path
+		pathOfSCO = (String) defaultProps.getProperty("scormpackager_output_path");
+
+		//Add the content - i.e. Add launchPage with Experiment/Rig name
+        rigLaunchPageCreator.setOutputPath(pathOfSCO + ScormUtilities.replaceWhiteSpace(createSCO.getExperimentName(),"_")); 
+        content.add(new File(rigLaunchPageCreator.createLaunchPage(createSCO.getExperimentName(), db)));
 		
-		//Create the PIF to be sent out
+		//Create the SCO to be sent out
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator(logger);
-		pathOfSCO = shrContentObj.createSCO(createSCO.getExperimentName(), content, ShareableContentObjectCreator.OUTPUT_PATH);
+		shrContentObj.createSCO(createSCO.getExperimentName(), content, pathOfSCO);
 		
 		//Setup the response with the data to return back to the user
-		CreateSCOResponse createPIFResponse = new CreateSCOResponse();
-		createPIFResponse.setPathSCO(pathOfSCO);
+		CreateSCOResponse createSCOResponse = new CreateSCOResponse();
+		createSCOResponse.setPathSCO(pathOfSCO);
 		
-		return createPIFResponse;
+		return createSCOResponse;
 	}
 
 	@Override

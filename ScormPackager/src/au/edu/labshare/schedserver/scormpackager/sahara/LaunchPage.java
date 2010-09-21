@@ -1,15 +1,15 @@
 package au.edu.labshare.schedserver.scormpackager.sahara;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
+import java.io.IOException;
 
 import biz.source_code.miniTemplator.MiniTemplator;
 
 public class LaunchPage implements ILaunchPage 
 {
-	private String description;
-	private String experimentName;
-	private String title;
-	private File   picture;
+	private String path = null;
 	
 	@Override
 	public String getLaunchPageName() {
@@ -19,14 +19,28 @@ public class LaunchPage implements ILaunchPage
 	
 	public String getLaunchPagePath() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return path;
+	}
+	
+	public void setLaunchPagePath(String path) 
+	{
+		this.path = path;
 	}
 	
 	@Override
 	public void render(MiniTemplator template) 
 	{
-		// TODO Auto-generated method stub
-		
+		// Output the file
+		if(this.path != null)
+		{
+			try
+			{
+				template.generateOutput(this.path);
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+			}
+		}
 	}
 }

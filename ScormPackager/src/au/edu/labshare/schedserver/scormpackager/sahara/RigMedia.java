@@ -16,6 +16,14 @@ public class RigMedia
 	//private RigTypeMedia rigMediaType;
 	//private RigTypeInformation rigTypeInformation;
 	
+	// Rig Media MIME types supported
+	public static final String MIME_JPEG = "image/jpeg";
+	public static final String MIME_PNG= "image/png";
+	public static final String MIME_GIF= "image/gif";
+	public static final String MIME_SVG= "image/svg+xml";
+	public static final String MIME_TXT = "text/plain"; //Support just .txt format
+	
+	
 	private org.hibernate.Session db; 
 	
 	public RigMedia(org.hibernate.Session session)

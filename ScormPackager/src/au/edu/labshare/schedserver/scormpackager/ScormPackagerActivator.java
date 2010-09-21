@@ -25,11 +25,11 @@ public class ScormPackagerActivator implements BundleActivator
      @Override
      public void start(BundleContext context) throws Exception 
      {   
-         /*Initialise the properties for the configuration*/
+         /* Initialise the properties for the configuration*/
          this.logger = LoggerActivator.getLogger();
          new ScormPackagerProperties(context); 
-        
-         /* Service to host the LabConnector interface. */
+         
+         /* Service to host the ScormPackager interface. */
 		 ServletContainerService service = new ServletContainerService();
 		 service.addServlet(new ServletContainer(new AxisServlet(), true));
 		 this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
