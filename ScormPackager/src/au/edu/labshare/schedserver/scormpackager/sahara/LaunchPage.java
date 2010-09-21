@@ -1,8 +1,5 @@
 package au.edu.labshare.schedserver.scormpackager.sahara;
 
-import static org.junit.Assert.fail;
-
-import java.io.File;
 import java.io.IOException;
 
 import biz.source_code.miniTemplator.MiniTemplator;

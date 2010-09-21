@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Properties;
 import java.util.Set;
 
 import biz.source_code.miniTemplator.MiniTemplator;
@@ -22,7 +23,7 @@ public class RigLaunchPageCreator
 	
 	Class<ILaunchPage> decoratedPage;
 	
-	private static final String TEMPLATE_DOCUMENT = "resources/templates/launchpage/launchpagetemplate.html";
+	public static final String TEMPLATE_DOCUMENT_TYPE = "scormpackager_template_1";
 	
 	private LaunchPage launchPage;
 	private TitleDecorator titleDecorator;
@@ -34,6 +35,23 @@ public class RigLaunchPageCreator
 	 * This is the output path we are going to use using the templating engine
 	 */
 	private String path = null;
+	
+	public RigLaunchPageCreator()
+	{
+		try
+		{
+			Properties defaultProps = new Properties();
+		    FileInputStream in;
+			in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
+	        defaultProps.load(in);
+	        in.close();
+			templator = new MiniTemplator(defaultProps.getProperty(TEMPLATE_DOCUMENT_TYPE));
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+		}
+	}
 	
 	public void setOutputPath(String path)
 	{
