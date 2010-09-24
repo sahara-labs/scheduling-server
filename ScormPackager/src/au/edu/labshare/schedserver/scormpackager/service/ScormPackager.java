@@ -124,7 +124,7 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		pathOfSCO = (String) defaultProps.getProperty("scormpackager_output_path");
 
 		//Add the content - i.e. Add launchPage with Experiment/Rig name
-        rigLaunchPageCreator.setOutputPath(pathOfSCO + ScormUtilities.replaceWhiteSpace(createSCO.getExperimentName(),"_")); 
+        rigLaunchPageCreator.setOutputPath(pathOfSCO + ScormUtilities.replaceWhiteSpace(createSCO.getExperimentName(),"_") + ".html"); 
         content.add(new File(rigLaunchPageCreator.createLaunchPage(createSCO.getExperimentName(), db)));
 		
 		//Create the SCO to be sent out
