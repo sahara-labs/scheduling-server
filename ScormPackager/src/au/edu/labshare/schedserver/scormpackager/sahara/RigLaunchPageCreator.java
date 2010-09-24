@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.Set;
 
@@ -16,12 +15,17 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeMedia;
 import au.edu.labshare.schedserver.scormpackager.sahara.RigMedia;
 
+import au.edu.labshare.schedserver.scormpackager.sahara.BlurbDecorator;
+import au.edu.labshare.schedserver.scormpackager.sahara.PictureDecorator;
+import au.edu.labshare.schedserver.scormpackager.sahara.LaunchButtonDecorator;
+import au.edu.labshare.schedserver.scormpackager.sahara.TitleDecorator;
+
 
 public class RigLaunchPageCreator 
 {
 	private MiniTemplator templator;
 	
-	Class<ILaunchPage> decoratedPage;
+	ILaunchPage decoratedPage;
 	
 	public static final String TEMPLATE_DOCUMENT_TYPE = "scormpackager_template_1";
 	
@@ -42,7 +46,14 @@ public class RigLaunchPageCreator
 		{
 			Properties defaultProps = new Properties();
 		    FileInputStream in;
-			in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
+
+		    //in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
+		    String cwd = new java.io.File( "." ).getCanonicalPath();
+		    if(!cwd.contains("ScormPackager"))
+				in = new FileInputStream(cwd + "/ScormPackager/" + "resources/scormpackager.properties"); //TODO: Should place this as a static string
+			else
+				in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
+		    
 	        defaultProps.load(in);
 	        in.close();
 			templator = new MiniTemplator(defaultProps.getProperty(TEMPLATE_DOCUMENT_TYPE));
@@ -153,24 +164,21 @@ public class RigLaunchPageCreator
 		return launchPage.getLaunchPagePath(); 
 	}
 	
-	@SuppressWarnings("unchecked")
 	public String decoratePage(ILaunchPage launchPageDecorator)
 	{
-		try
+		// Appears to be issue with reflections in OSGi - limitation of 15 times - http://dev.eclipse.org/mhonarc/lists/eclipselink-dev/msg04431.html
+		decoratedPage = launchPageDecorator;
+		decoratedPage.render(templator);
+		return decoratedPage.getLaunchPageName();
+		
+		/*if(launchPageDecorator.getClass().toString().equals(PictureDecorator.class.toString()))
 		{
-			decoratedPage = (Class<ILaunchPage>) Class.forName(launchPageDecorator.getClass().toString());
-			Method mthd= decoratedPage.getMethod("render",decoratedPage);
-			
-			mthd.invoke(launchPageDecorator.getClass(),templator);
-			
-			//decoratedPage.render(templator);
-			mthd= decoratedPage.getMethod("getLaunchPageName", decoratedPage);
-			return (String)mthd.invoke(launchPageDecorator.getClass());
+
 		}
-		catch (Exception e)
+		else if(launchPageDecorator.getClass().toString().equals(TitleDecorator.class.toString()))
 		{
-			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
-			return null;
-		}
+			
+		}*/
+
 	}
 }

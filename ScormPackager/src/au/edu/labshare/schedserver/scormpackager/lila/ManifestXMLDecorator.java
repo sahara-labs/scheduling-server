@@ -1,8 +1,10 @@
 package au.edu.labshare.schedserver.scormpackager.lila;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -508,7 +510,25 @@ public class ManifestXMLDecorator
 		ArrayList<File> fileList = null;
 		
 		fileList = new ArrayList<File>();
-		File resourcesDirectory = new File(ManifestXMLDecorator.RESOURCES_PATH);
+		
+		// Need to check where we are running in and get path 
+		File resourcesDirectory = null;
+		String cwd = null;
+		try
+		{
+			cwd = new java.io.File( "." ).getCanonicalPath();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+		}
+		
+	    if(!cwd.contains("ScormPackager"))
+	    	resourcesDirectory = new File(cwd + "/ScormPackager/" + ManifestXMLDecorator.RESOURCES_PATH); //TODO: Should place this as a static string
+	    else
+	    	resourcesDirectory = new File(ManifestXMLDecorator.RESOURCES_PATH);
+		
+		
 		File[] listOfSchemaFiles = resourcesDirectory.listFiles();
 		
 		//Add the schemas *.xsd to SCOs

@@ -6,9 +6,10 @@ Bundle-Vendor: LabShare-UTS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
 !org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
-!org.jdom.*, !javax.*, !sun.*, !nu.xom, \
+!org.jdom.*, !javax.*, !sun.*, !nu.xom, !biz.source_code.miniTemplator.*, \
 au.edu.uts.eng.remotelabs.schedserver.server, *
-Private-Package: au.edu.labshare.schedserver.scormpackager, au.edu.labshare.schedserver.scormpackager.lila
+Private-Package: au.edu.labshare.schedserver.scormpackager, au.edu.labshare.schedserver.scormpackager.lila, \
+au.edu.labshare.schedserver.scormpackager.sahara
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
 Export-Package: au.edu.labshare.schedserver.scormpackager

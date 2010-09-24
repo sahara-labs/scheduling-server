@@ -6,7 +6,7 @@
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.labshare.schedserver.scormpackager.service.ScormPackagerMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.labshare.schedserver.scormpackager.ScormPackagerSkeleton</parameter>
+        <parameter name="ServiceClass">au.edu.labshare.schedserver.scormpackager.service.ScormPackager</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="deleteSCO" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">

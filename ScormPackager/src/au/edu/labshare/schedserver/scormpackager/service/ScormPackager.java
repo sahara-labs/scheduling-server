@@ -2,6 +2,7 @@ package au.edu.labshare.schedserver.scormpackager.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -67,6 +68,7 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		String pathOfSCO = null;
         Properties defaultProps = new Properties();
         FileInputStream in;
+        String cwd = null;
 		
 		LinkedList<File> content = new LinkedList<File>();
 		
@@ -74,8 +76,20 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		if(createSCO.getContent() != null)
 			content = ScormUtilities.getFilesFromPath(createSCO.getContent());
 	
+		try
+		{
+			cwd = new java.io.File( "." ).getCanonicalPath();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+		}
+		
 		//Add the lmsstub.js
-		content.add(new File(ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js"));
+		if(!cwd.contains("ScormPackager"))
+			content.add(new File(cwd + "/ScormPackager/" + ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js"));
+		else
+			content.add(new File(ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js"));
 		
 		//We want to get the content from the Rig DB Persistence end
         org.hibernate.Session db = new RigTypeDao().getSession();
@@ -93,8 +107,12 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
         // create and load default properties
 		try 
 		{
-			in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
-	        defaultProps.load(in);
+			if(!cwd.contains("ScormPackager"))
+				in = new FileInputStream(cwd + "/ScormPackager/" + "resources/scormpackager.properties"); //TODO: Should place this as a static string
+			else
+				in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
+	       
+			defaultProps.load(in);
 	        in.close();
 		} 
 		catch (Exception e) 
