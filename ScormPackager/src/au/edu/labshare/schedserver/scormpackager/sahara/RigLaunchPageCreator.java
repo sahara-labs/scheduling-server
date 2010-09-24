@@ -153,6 +153,7 @@ public class RigLaunchPageCreator
 		
 		// 2. Decorate with a LaunchButton
 		launchButtonDecorator = new LaunchButtonDecorator(launchPage);
+		launchButtonDecorator.setButtonLink("rigtype=" + rigType.getName());
 		decoratePage(launchButtonDecorator);
 		
 		// 3. Render the page. Need to set the path first though
@@ -171,15 +172,5 @@ public class RigLaunchPageCreator
 		decoratedPage = launchPageDecorator;
 		decoratedPage.render(templator);
 		return decoratedPage.getLaunchPageName();
-		
-		/*if(launchPageDecorator.getClass().toString().equals(PictureDecorator.class.toString()))
-		{
-
-		}
-		else if(launchPageDecorator.getClass().toString().equals(TitleDecorator.class.toString()))
-		{
-			
-		}*/
-
 	}
 }

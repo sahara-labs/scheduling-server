@@ -8,8 +8,9 @@ public class LaunchButtonDecorator extends LaunchPageDecorator
 	// Stores actual value of string in question (the content)
 	private String launchButtonPicLocation = "css/blueprint/plugins/buttons/icons/package_go.png";  // Default. But can be overridden 
 	private String buttonStyle = "button negative";
-	private String href = "http://remotelabs.eng.uts.edu.au/login/?";
+	private String href = null;
 	private String alignment = "span-10";		  //Derived from typograhpic.css - blueprintCSS 
+	private String href_base_url = "http://sahara2.eng.uts.edu.au/?";
 
 	// Variables and Constants used for alignment of Launch Button
 	public final String BUTTON_PIC = "BUTTON_PIC";
@@ -42,9 +43,10 @@ public class LaunchButtonDecorator extends LaunchPageDecorator
 	private MiniTemplator addButton(MiniTemplator t)
 	{
 		// Add picture to template location. This should be aligned above the blurb and below title
+		String urlToUse = this.href_base_url + this.href;
 		t.setVariable(BUTTON_PIC, this.launchButtonPicLocation);
 		t.setVariable (BUTTON_STYLE, this.buttonStyle);
-		t.setVariable (BUTTON_HREF, this.href);
+		t.setVariable (BUTTON_HREF, urlToUse);
 		t.setVariable (ALIGN_ELEM, this.alignment);
 		t.addBlock ("launchbuttonblock"); 
 		
@@ -79,5 +81,15 @@ public class LaunchButtonDecorator extends LaunchPageDecorator
 	public String getButtonLink()
 	{
 		return this.href;
+	}
+	
+	public void setBaseURL(String baseHREF)
+	{
+		this.href_base_url = baseHREF;
+	}
+	
+	public String getBaseURL()
+	{
+		return this.href_base_url;
 	}
 }
