@@ -19,6 +19,7 @@ import au.edu.labshare.schedserver.scormpackager.sahara.BlurbDecorator;
 import au.edu.labshare.schedserver.scormpackager.sahara.PictureDecorator;
 import au.edu.labshare.schedserver.scormpackager.sahara.LaunchButtonDecorator;
 import au.edu.labshare.schedserver.scormpackager.sahara.TitleDecorator;
+import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 
 
 public class RigLaunchPageCreator 
@@ -92,7 +93,7 @@ public class RigLaunchPageCreator
 			   itemRigTypeMedia.getMime().toString().equals(RigMedia.MIME_GIF))
 			{
 				picDecorator = new PictureDecorator(launchPage);
-				picDecorator.setPicLocation(itemRigTypeMedia.getFileName());
+				picDecorator.setPicLocation(ScormUtilities.getFilenameFromPath(itemRigTypeMedia.getFileName(), "/")); //TODO: Not sure if this only works on UNIX systems
 				decoratePage(picDecorator);
 			}
 			else if(itemRigTypeMedia.getMime().toString().equals(RigMedia.MIME_TXT)) //If it is just plain txt we are assuming blurb
