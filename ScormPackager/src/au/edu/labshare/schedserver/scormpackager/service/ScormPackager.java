@@ -97,7 +97,15 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
         RigMedia saharaRigMedia = new RigMedia(db);
         
         //Go through the rig media information and add any data that is in them
-        Iterator<RigTypeMedia> iter = saharaRigMedia.getRigType(createSCO.getExperimentName()).getMedia().iterator();
+        Iterator<RigTypeMedia> iter;
+        if(saharaRigMedia.getRigType(createSCO.getExperimentName()) != null)
+        	iter = saharaRigMedia.getRigType(createSCO.getExperimentName()).getMedia().iterator();
+        else 
+        {
+        	CreateSCOResponse errorSCOResponse = new CreateSCOResponse();
+        	errorSCOResponse.setPathSCO("NON EXISTENT RIGTYPE - SCORM WEB SERVICE ERROR"); //TODO: Place this as a status code static string
+        	return errorSCOResponse;
+        }
         
         while(iter.hasNext())
         	content.add(new File(iter.next().getFileName()));
