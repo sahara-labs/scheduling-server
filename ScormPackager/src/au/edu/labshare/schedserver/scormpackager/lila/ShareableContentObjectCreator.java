@@ -5,19 +5,23 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.Deflater;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 //Needed for Manifest creation
 import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
 import au.edu.labshare.schedserver.scormpackager.manifest.MetaData;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
+import au.edu.labshare.schedserver.scormpackager.sahara.RigLaunchPageCreator;
 import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 
@@ -117,7 +121,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 				    fileInStream.close();
 				}
 				
-				//Add the imsmanifest.xml file to SCO
+				// Add the imsmanifest.xml file to SCO
 				fileInStream = new FileInputStream(filePathManifest);
 				zipFileOutStream.putNextEntry(new ZipEntry(ScormUtilities.getFilenameFromPath(filePathManifest, "/")));
 				int len;
@@ -128,7 +132,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			    zipFileOutStream.closeEntry();
 			    fileInStream.close();
 				
-				//TODO Add the SCORM XML schemas to the SCO 
+				// Add the SCORM XML schemas to the SCO 
 				ArrayList<File> xmlSchemaList = ManifestXMLDecorator.addXMLSchemas(); 
 				Iterator <File> iterXMLSchemas = xmlSchemaList.iterator();
 				while(iterXMLSchemas.hasNext())
@@ -145,6 +149,46 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 				    				    	
 				    zipFileOutStream.closeEntry();
 				    fileInStream.close();
+				}
+				
+				
+				//Add the relevant LAUNCHPAGE CSS - in this case we are using BluePrintCSS
+				//Derived from: http://stackoverflow.com/questions/1399126/java-util-zip-recreating-directory-structure
+				RigLaunchPageCreator rigLaunchPageCreator = new RigLaunchPageCreator();
+				String cssDirStr =  rigLaunchPageCreator.addCSS();
+				File cssFilesDir = new File(cssDirStr);
+				URI base = cssFilesDir.toURI();
+				Deque<File> queue = new LinkedList<File>();
+				queue.push(cssFilesDir);
+
+				while(!queue.isEmpty())
+				{
+					cssFilesDir = queue.pop();
+					for (File childFile : cssFilesDir.listFiles())
+					{
+						String name = base.relativize(childFile.toURI()).getPath();
+									
+						//Ignore .svn directory
+						if(name.contains(".svn"))
+						{
+							queue.remove(childFile);
+						}
+						else
+						{
+							if(childFile.isDirectory())
+							{
+								queue.push(childFile);
+								name = name.endsWith("/") ? name : name + "/";
+								zipFileOutStream.putNextEntry(new ZipEntry(name));
+							}
+							else
+							{
+								zipFileOutStream.putNextEntry(new ZipEntry(name));
+								ScormUtilities.copy(childFile, zipFileOutStream);
+								zipFileOutStream.closeEntry();
+							}
+						}
+					}
 				}
 				
 				zipFileOutStream.close();

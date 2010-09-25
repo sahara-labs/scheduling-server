@@ -6,7 +6,7 @@ public class LaunchButtonDecorator extends LaunchPageDecorator
 {
 
 	// Stores actual value of string in question (the content)
-	private String launchButtonPicLocation = "css/blueprint/plugins/buttons/icons/package_go.png";  // Default. But can be overridden 
+	private String launchButtonPicLocation = "blueprint/plugins/buttons/icons/package_go.png";  // Default. But can be overridden 
 	private String buttonStyle = "button negative";
 	private String href = null;
 	private String alignment = "span-10";		  //Derived from typograhpic.css - blueprintCSS 

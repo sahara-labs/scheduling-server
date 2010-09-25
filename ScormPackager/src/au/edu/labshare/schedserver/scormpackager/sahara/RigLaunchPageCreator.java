@@ -173,4 +173,24 @@ public class RigLaunchPageCreator
 		decoratedPage.render(templator);
 		return decoratedPage.getLaunchPageName();
 	}
+	
+	public String addCSS()
+	{
+		String cssPath = null;
+		
+		try
+		{
+		    String cwd = new java.io.File( "." ).getCanonicalPath();
+		    if(!cwd.contains("ScormPackager"))
+				cssPath = cwd + "/ScormPackager/" + "resources/templates/launchpage/css"; //TODO: Should place this as a static string
+			else
+				cssPath = "resources/templates/launchpage/css"; //TODO: Should place this as a static string
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+		}
+		
+		return cssPath;
+	}
 }

@@ -3,6 +3,7 @@ package au.edu.labshare.schedserver.scormpackager.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -126,7 +127,7 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		//Add the content - i.e. Add launchPage with Experiment/Rig name
         rigLaunchPageCreator.setOutputPath(pathOfSCO + ScormUtilities.replaceWhiteSpace(createSCO.getExperimentName(),"_") + ".html"); 
         content.add(new File(rigLaunchPageCreator.createLaunchPage(createSCO.getExperimentName(), db)));
-		
+        
 		//Create the SCO to be sent out
 		ShareableContentObjectCreator shrContentObj = new ShareableContentObjectCreator(logger);
 		shrContentObj.createSCO(createSCO.getExperimentName(), content, pathOfSCO);
