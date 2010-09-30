@@ -1,8 +1,8 @@
 package au.edu.labshare.schedserver.scormpackager.service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -67,30 +67,16 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 	{
 		String pathOfSCO = null;
         Properties defaultProps = new Properties();
-        FileInputStream in;
-        String cwd = null;
+        //FileInputStream in = null;
+        InputStream in = null;
 		
+        //LinkedList<String> rigSCOResources = new LinkedList<String>();
 		LinkedList<File> content = new LinkedList<File>();
 		
 		//Start by adding extra content that was provided by user. Will not set if it is null
 		if(createSCO.getContent() != null)
 			content = ScormUtilities.getFilesFromPath(createSCO.getContent());
 	
-		try
-		{
-			cwd = new java.io.File( "." ).getCanonicalPath();
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
-		}
-		
-		//Add the lmsstub.js
-		if(!cwd.contains("ScormPackager"))
-			content.add(new File(cwd + "/ScormPackager/" + ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js"));
-		else
-			content.add(new File(ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js"));
-		
 		//We want to get the content from the Rig DB Persistence end
         org.hibernate.Session db = new RigTypeDao().getSession();
         RigMedia saharaRigMedia = new RigMedia(db);
@@ -115,11 +101,8 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
         // create and load default properties
 		try 
 		{
-			if(!cwd.contains("ScormPackager"))
-				in = new FileInputStream(cwd + "/ScormPackager/" + "resources/scormpackager.properties"); //TODO: Should place this as a static string
-			else
-				in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
-	       
+			in = this.getClass().getClassLoader().getResourceAsStream("resources/scormpackager.properties"); //TODO: Should place this as a static string*/
+						
 			defaultProps.load(in);
 	        in.close();
 		} 
@@ -131,6 +114,31 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		//TODO: Should place this as static string - scormpackager_output_path
 		pathOfSCO = (String) defaultProps.getProperty("scormpackager_output_path");
 
+		//Add the lmsstub.js
+		//TODO: Should replace this with a more elegant solution: Bit of a hack
+		//TODO: Maybe like Spring DM or ClassLoader. Preferably, Spring DM as it offers more options.
+		try
+		{
+			int len;
+			byte buf[]=new byte[1024];
+			
+			in = this.getClass().getClassLoader().getResourceAsStream(ManifestXMLDecorator.RESOURCES_PATH + "/lmsstub.js");
+
+			File tmpFile = new File(pathOfSCO + "lmsstub.js");
+			FileOutputStream fileOutStream = new FileOutputStream(tmpFile);
+
+		    while((len=in.read(buf))>0)
+		    	fileOutStream.write(buf,0,len);
+
+		    fileOutStream.close();
+
+		    content.add(tmpFile);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+		}
+		
 		//Add the content - i.e. Add launchPage with Experiment/Rig name
         rigLaunchPageCreator.setOutputPath(pathOfSCO + ScormUtilities.replaceWhiteSpace(createSCO.getExperimentName(),"_") + ".html"); 
         content.add(new File(rigLaunchPageCreator.createLaunchPage(createSCO.getExperimentName(), db)));

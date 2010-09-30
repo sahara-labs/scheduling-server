@@ -276,11 +276,10 @@
                     }
                     }
 
-        @SuppressWarnings("unchecked")
 		private  java.lang.Object fromOM(
         org.apache.axiom.om.OMElement param,
-        java.lang.Class type,
-        java.util.Map extraNamespaces) throws org.apache.axis2.AxisFault{
+        @SuppressWarnings("rawtypes") java.lang.Class type,
+        java.util.Map<String, String> extraNamespaces) throws org.apache.axis2.AxisFault{
 
         try {
         
@@ -395,10 +394,10 @@
         /**
         *  A utility method that copies the namepaces from the SOAPEnvelope
         */
-        @SuppressWarnings("unchecked")
-		private java.util.Map getEnvelopeNamespaces(org.apache.axiom.soap.SOAPEnvelope env){
-        java.util.Map returnMap = new java.util.HashMap();
-        java.util.Iterator namespaceIterator = env.getAllDeclaredNamespaces();
+		private java.util.Map<String, String> getEnvelopeNamespaces(org.apache.axiom.soap.SOAPEnvelope env){
+        java.util.Map<String, String> returnMap = new java.util.HashMap<String, String>();
+        @SuppressWarnings("rawtypes")
+		java.util.Iterator namespaceIterator = env.getAllDeclaredNamespaces();
         while (namespaceIterator.hasNext()) {
         org.apache.axiom.om.OMNamespace ns = (org.apache.axiom.om.OMNamespace) namespaceIterator.next();
         returnMap.put(ns.getPrefix(),ns.getNamespaceURI());

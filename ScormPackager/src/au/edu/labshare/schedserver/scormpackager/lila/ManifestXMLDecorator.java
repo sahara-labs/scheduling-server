@@ -1,10 +1,9 @@
 package au.edu.labshare.schedserver.scormpackager.lila;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -25,7 +24,6 @@ import au.edu.labshare.schedserver.scormpackager.lila.Manifest;
 import au.edu.labshare.schedserver.scormpackager.manifest.Item;
 import au.edu.labshare.schedserver.scormpackager.manifest.Organization;
 import au.edu.labshare.schedserver.scormpackager.manifest.Resource;
-import au.edu.labshare.schedserver.scormpackager.utilities.ScormUtilities;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 
 public class ManifestXMLDecorator 
@@ -505,31 +503,81 @@ public class ManifestXMLDecorator
 	}
 	
 	//XML Schema adding for each SCO as defined by SCORM 1.2
-	public static ArrayList<File> addXMLSchemas()
+	public static ArrayList<File> addXMLSchemas(String tmpLocationStore)
 	{
-		ArrayList<File> fileList = null;
+		ArrayList<File> fileList = new ArrayList<File>();
 		
-		fileList = new ArrayList<File>();
+		int len;
+		byte buf[]=new byte[1024];
+		File tmpFile = null;
+		FileOutputStream fileOutStream = null;
+		InputStream in = null;
 		
 		// Need to check where we are running in and get path 
-		File resourcesDirectory = null;
-		String cwd = null;
+		//File resourcesDirectory = null;
+		
 		try
 		{
-			cwd = new java.io.File( "." ).getCanonicalPath();
+			//TODO: Should replace this - bit of a hack 
+			//Write all the Schema files to a temporary location 
+			in = ManifestXMLDecorator.class.getClassLoader().getResourceAsStream(ManifestXMLDecorator.RESOURCES_PATH + "/adlcp_rootv1p2.xsd");
+			
+			//Write the adlcp_rootv1p2.xsd schema 
+			tmpFile = new File(tmpLocationStore + "adlcp_rootv1p2.xsd");
+			fileList.add(tmpFile);
+			fileOutStream = new FileOutputStream(tmpFile);
+
+		    while((len=in.read(buf))>0)
+		    	fileOutStream.write(buf,0,len);
+
+		    in.close();
+		    fileOutStream.close();
+		    
+		    //Write the ims_xml.xsd schema 
+		    in = ManifestXMLDecorator.class.getClassLoader().getResourceAsStream(ManifestXMLDecorator.RESOURCES_PATH + "/ims_xml.xsd");
+			tmpFile = new File(tmpLocationStore + "ims_xml.xsd");
+			fileList.add(tmpFile);
+			fileOutStream = new FileOutputStream(tmpFile);
+
+		    while((len=in.read(buf))>0)
+		    	fileOutStream.write(buf,0,len);
+
+		    in.close();
+		    fileOutStream.close();
+		    
+		    //Write the imscp_rootv1p1p2.xsd schema 
+		    in = ManifestXMLDecorator.class.getClassLoader().getResourceAsStream(ManifestXMLDecorator.RESOURCES_PATH + "/imscp_rootv1p1p2.xsd");
+			tmpFile = new File(tmpLocationStore + "imscp_rootv1p1p2.xsd");
+			fileList.add(tmpFile);
+			fileOutStream = new FileOutputStream(tmpFile);
+
+		    while((len=in.read(buf))>0)
+		    	fileOutStream.write(buf,0,len);
+
+		    in.close();
+		    fileOutStream.close();
+		    
+		    //Write the imscp_rootv1p2p1.xsd schema 
+		    in = ManifestXMLDecorator.class.getClassLoader().getResourceAsStream(ManifestXMLDecorator.RESOURCES_PATH + "/imsmd_rootv1p2p1.xsd");
+			tmpFile = new File(tmpLocationStore + "imsmd_rootv1p2p1.xsd");
+			fileList.add(tmpFile);
+			fileOutStream = new FileOutputStream(tmpFile);
+
+		    while((len=in.read(buf))>0)
+		    	fileOutStream.write(buf,0,len);
+
+		    in.close();
+		    fileOutStream.close();
+			
+			//resourcesDirectory = new File(ManifestXMLDecorator.RESOURCES_PATH);
+			//resourcesDirectory = new File(resrcDirURL.getFile());
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
-			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
+			e.printStackTrace(); //TODO: Need to replace with Sahara Logger			
 		}
 		
-	    if(!cwd.contains("ScormPackager"))
-	    	resourcesDirectory = new File(cwd + "/ScormPackager/" + ManifestXMLDecorator.RESOURCES_PATH); //TODO: Should place this as a static string
-	    else
-	    	resourcesDirectory = new File(ManifestXMLDecorator.RESOURCES_PATH);
-		
-		
-		File[] listOfSchemaFiles = resourcesDirectory.listFiles();
+		/*File[] listOfSchemaFiles = resourcesDirectory.listFiles();
 		
 		//Add the schemas *.xsd to SCOs
 		for(int i = 0; i < listOfSchemaFiles.length; i++) 
@@ -540,9 +588,8 @@ public class ManifestXMLDecorator
 			{
 				fileList.add(listOfSchemaFiles[i]);
 			} 
-		}
+		}*/
 				
 		return fileList;
 	}
-
 }

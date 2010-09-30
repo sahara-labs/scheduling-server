@@ -2,7 +2,7 @@ package au.edu.labshare.schedserver.scormpackager.sahara;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,18 +46,22 @@ public class RigLaunchPageCreator
 		try
 		{
 			Properties defaultProps = new Properties();
-		    FileInputStream in;
-
+		    InputStream in = null;
+			//InputStream in = null;
 		    //in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
-		    String cwd = new java.io.File( "." ).getCanonicalPath();
-		    if(!cwd.contains("ScormPackager"))
-				in = new FileInputStream(cwd + "/ScormPackager/" + "resources/scormpackager.properties"); //TODO: Should place this as a static string
-			else
-				in = new FileInputStream("resources/scormpackager.properties"); //TODO: Should place this as a static string
+			try
+			{
+				in = this.getClass().getClassLoader().getResourceAsStream("resources/scormpackager.properties");
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace(); //TODO: Need to replace with Sahara Logger			
+			}
 		    
 	        defaultProps.load(in);
-	        in.close();
+	        
 			templator = new MiniTemplator(defaultProps.getProperty(TEMPLATE_DOCUMENT_TYPE));
+			in.close();
 		}
 		catch(IOException e)
 		{
@@ -175,22 +179,7 @@ public class RigLaunchPageCreator
 	}
 	
 	public String addCSS()
-	{
-		String cssPath = null;
-		
-		try
-		{
-		    String cwd = new java.io.File( "." ).getCanonicalPath();
-		    if(!cwd.contains("ScormPackager"))
-				cssPath = cwd + "/ScormPackager/" + "resources/templates/launchpage/css"; //TODO: Should place this as a static string
-			else
-				cssPath = "resources/templates/launchpage/css"; //TODO: Should place this as a static string
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace(); //TODO: Need to replace with Sahara Logger
-		}
-		
-		return cssPath;
+	{	
+		return "/resources/templates/launchpage/css"; //TODO: Should place this as a static string;
 	}
 }

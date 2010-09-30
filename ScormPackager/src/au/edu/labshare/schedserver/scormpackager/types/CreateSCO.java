@@ -115,7 +115,8 @@ public class CreateSCO implements org.apache.axis2.databinding.ADBBean
 		//update the setting tracker
         localContentTracker = true;
                                
-        java.util.List list = org.apache.axis2.databinding.utils.ConverterUtil.toList(localContent);
+        @SuppressWarnings("rawtypes")
+		java.util.List list = org.apache.axis2.databinding.utils.ConverterUtil.toList(localContent);
         list.add(param);
         this.localContent = (java.lang.String[])list.toArray(new java.lang.String[list.size()]);
 	}
@@ -352,7 +353,9 @@ public class CreateSCO implements org.apache.axis2.databinding.ADBBean
 	@SuppressWarnings("unchecked")
 	public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName) throws org.apache.axis2.databinding.ADBException
 	{
+		@SuppressWarnings("rawtypes")
 		java.util.ArrayList elementList = new java.util.ArrayList();
+		@SuppressWarnings("rawtypes")
 		java.util.ArrayList attribList = new java.util.ArrayList();
 
 		elementList.add(new javax.xml.namespace.QName("", "experimentName"));
@@ -442,7 +445,8 @@ public class CreateSCO implements org.apache.axis2.databinding.ADBBean
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.ArrayList list2 = new java.util.ArrayList();
+                @SuppressWarnings("rawtypes")
+				java.util.ArrayList list2 = new java.util.ArrayList();
                 reader.next();
                                     
                 while(!reader.isStartElement() && !reader.isEndElement()) 

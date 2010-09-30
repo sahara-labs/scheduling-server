@@ -228,8 +228,10 @@ public class ValidateSCOResponse implements org.apache.axis2.databinding.ADBBean
 
 
         
-                 java.util.ArrayList elementList = new java.util.ArrayList();
-                 java.util.ArrayList attribList = new java.util.ArrayList();
+                 @SuppressWarnings("rawtypes")
+				java.util.ArrayList elementList = new java.util.ArrayList();
+                 @SuppressWarnings("rawtypes")
+				java.util.ArrayList attribList = new java.util.ArrayList();
 
                 
                                       elementList.add(new javax.xml.namespace.QName("",

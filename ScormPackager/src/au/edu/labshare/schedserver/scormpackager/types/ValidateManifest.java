@@ -228,7 +228,9 @@ public class ValidateManifest implements org.apache.axis2.databinding.ADBBean
 	@SuppressWarnings("unchecked")
 	public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName) throws org.apache.axis2.databinding.ADBException
 	{
+		@SuppressWarnings("rawtypes")
 		java.util.ArrayList elementList = new java.util.ArrayList();
+		@SuppressWarnings("rawtypes")
 		java.util.ArrayList attribList = new java.util.ArrayList();
 
 		elementList.add(new javax.xml.namespace.QName("", "pathManifest"));

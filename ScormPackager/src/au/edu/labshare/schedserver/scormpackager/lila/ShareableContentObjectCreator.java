@@ -133,7 +133,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 			    fileInStream.close();
 				
 				// Add the SCORM XML schemas to the SCO 
-				ArrayList<File> xmlSchemaList = ManifestXMLDecorator.addXMLSchemas(); 
+				ArrayList<File> xmlSchemaList = ManifestXMLDecorator.addXMLSchemas(outputPath); 
 				Iterator <File> iterXMLSchemas = xmlSchemaList.iterator();
 				while(iterXMLSchemas.hasNext())
 				{
@@ -155,8 +155,12 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 				//Add the relevant LAUNCHPAGE CSS - in this case we are using BluePrintCSS
 				//Derived from: http://stackoverflow.com/questions/1399126/java-util-zip-recreating-directory-structure
 				RigLaunchPageCreator rigLaunchPageCreator = new RigLaunchPageCreator();
+				//TODO: Bit of a hack - this should technically be more elegant, assumption output path has css files:
 				String cssDirStr =  rigLaunchPageCreator.addCSS();
-				File cssFilesDir = new File(cssDirStr);
+				File cssFilesDir = null;
+				
+				cssFilesDir = new File(OUTPUT_PATH + cssDirStr);
+				
 				URI base = cssFilesDir.toURI();
 				Deque<File> queue = new LinkedList<File>();
 				queue.push(cssFilesDir);
@@ -190,7 +194,7 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 						}
 					}
 				}
-				
+
 				zipFileOutStream.close();
 				fileOutStream.close();
 			}
