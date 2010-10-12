@@ -30,6 +30,8 @@ public class ShareableContentObjectCreator extends au.edu.labshare.schedserver.s
 	private ManifestXMLDecorator manifestXMLDecorator;
 	private Logger saharaLogger;
 	
+	public static final int VERSION_NUM = 1;
+	
 	//TODO - this is to be replaced by reading from Properties file. 
 	public static final String OUTPUT_PATH = "/tmp";
 	

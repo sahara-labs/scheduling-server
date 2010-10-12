@@ -140,7 +140,11 @@ public class ScormPackager implements ScormPackagerSkeletonInterface
 		}
 		
 		//Add the content - i.e. Add launchPage with Experiment/Rig name
-        rigLaunchPageCreator.setOutputPath(pathOfSCO + ScormUtilities.replaceWhiteSpace(createSCO.getExperimentName(),"_") + ".html"); 
+		if(ShareableContentObjectCreator.VERSION_NUM <= 1) // According to email correspondence with LiLa currently only supports applet.html
+			rigLaunchPageCreator.setOutputPath(pathOfSCO + "applet.html");
+		else
+			rigLaunchPageCreator.setOutputPath(pathOfSCO + ScormUtilities.replaceWhiteSpace(createSCO.getExperimentName(),"_") + ".html");
+        
         content.add(new File(rigLaunchPageCreator.createLaunchPage(createSCO.getExperimentName(), db)));
         
 		//Create the SCO to be sent out
