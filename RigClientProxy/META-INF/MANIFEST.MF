@@ -64,3 +64,4 @@ Bundle-ClassPath: .,
  lib/XmlSchema-1.4.3.jar
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy,
  au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types
+Require-Bundle: SchedulingServer-DataAccess
