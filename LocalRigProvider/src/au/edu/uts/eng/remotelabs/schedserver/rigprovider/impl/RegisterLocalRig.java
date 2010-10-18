@@ -146,6 +146,7 @@ public class RegisterLocalRig
         this.rig.setOnline(false);
         this.rig.setOfflineReason("Registered but no status received.");
         this.rig.setInSession(false);
+        this.rig.setSession(null);
         this.rig.setManaged(true); // All local rigs are managed
         
         if (this.rig.getId() == null || this.rig.getId() < 1)
