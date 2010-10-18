@@ -137,6 +137,63 @@ public class RigClientProxy implements RigClientProxyInterface
     @Override
     public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback)
     {
-        return null;
+        CallbackRequestType request = releaseCallback.getReleaseCallback();
+        this.logger.debug("Received release callback with params: rigname=" + request.getRigname() + ", success=" +
+                request.getSuccess() + '.');
+        
+        ReleaseCallbackResponse response = new ReleaseCallbackResponse();
+        CallbackResponseType status = new CallbackResponseType();
+        response.setReleaseCallbackResponse(status);
+        
+        /* Load session from rig. */
+        RigDao dao = new RigDao();
+        Rig rig = dao.findByName(request.getRigname());
+        Session ses = null;
+        if (rig == null)
+        {
+            /* If the rig wasn't found, something is seriously wrong. */
+            this.logger.error("Received release callback for rig '" + request.getRigname() + "' that doesn't exist.");
+            status.setSuccess(false);
+        }
+        else if (request.getSuccess())
+        {
+            /* If the response from allocate is successful, free the rig and attempt to run allocation. */
+            rig.setLastUpdateTimestamp(new Date());
+            rig.setInSession(false);
+            rig.setSession(null);
+            dao.flush();
+        }
+        else
+        {
+            ErrorType err = request.getError();
+            this.logger.error("Received allocate response for " + ses.getUserNamespace() + ':' + 
+                    ses.getUserName() + ", allocation not successful. Error reason is '" + err.getReason() + "'.");
+            
+            /* Allocation failed so end the session and take the rig offline depending on error. */
+            ses.setActive(false);
+            ses.setReady(false);
+            ses.setRemovalReason("Allocation failure with reason '" + err.getReason() + "'.");
+            ses.setRemovalTime(new Date());
+            
+            if (err.getCode() == 4) // Error code 4 is an existing session exists
+            {
+                this.logger.error("Allocation failure reason was caused by an existing session, so not putting rig offline " +
+                        "because a session already has it.");
+            }
+            else
+            {
+                rig.setInSession(false);
+                rig.setOnline(false);
+                rig.setOfflineReason("Allocation failured with reason '" + err.getReason() + "'.");
+                rig.setSession(null);
+            }
+            
+            /* Whilst allocation was not successful, the process was clean. */
+            status.setSuccess(true);
+        }
+        
+        dao.flush();
+        dao.closeSession();
+        return response;
     }
 }
