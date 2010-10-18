@@ -123,7 +123,7 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
         {
             /* The response will come in a callback request so no work required now. */
             this.logger.debug("Received notification allocation for rig " + this.session.getAssignedRigName() + 
-                    " will can in a callback message.");
+                    " will come in a callback message.");
             return;
         }
         
