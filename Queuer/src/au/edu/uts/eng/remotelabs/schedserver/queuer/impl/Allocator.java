@@ -128,8 +128,6 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
             /* The session is being set to ready, so it may be used. */
             this.session.setReady(true);
             dao.flush();
-            
-            
         }
         else
         {
@@ -183,6 +181,7 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
         rig.setInSession(false);
         rig.setOnline(false);
         rig.setOfflineReason("Allocation failed with SOAP error '" + e.getMessage() + "'.");
+        rig.setSession(null);
         dao.flush();
         
         dao.closeSession();

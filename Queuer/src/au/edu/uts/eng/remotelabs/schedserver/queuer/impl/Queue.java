@@ -244,6 +244,7 @@ public class Queue
             targetSes.setActivityLastUpdated(new Date());
             targetSes.setRig(rig);
             rig.setInSession(true);
+            rig.setSession(targetSes);
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
