@@ -61,7 +61,7 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 /**
  * Activator for the local rig provider bundle.
  */
-public class LocalRigProviderActivator implements BundleActivator
+public class RigProviderActivator implements BundleActivator
 {
     /** Servlet container service registration. */
     private ServiceRegistration serverReg;
@@ -90,8 +90,8 @@ public class LocalRigProviderActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
         
-        LocalRigProviderActivator.configTracker = new ServiceTracker(context, Config.class.getName(), null);
-        LocalRigProviderActivator.configTracker.open();
+        RigProviderActivator.configTracker = new ServiceTracker(context, Config.class.getName(), null);
+        RigProviderActivator.configTracker.open();
         
         /* Service to allow other bundles to obtain identity tokens for rigs. */
         Properties props = new Properties();
@@ -111,8 +111,8 @@ public class LocalRigProviderActivator implements BundleActivator
         this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
         
         /* Add service listener to add and remove registered rig event listeners. */
-        LocalRigProviderActivator.listenerList = new ArrayList<RigEventListener>();
-        RigEventServiceListener listener = new RigEventServiceListener(LocalRigProviderActivator.listenerList, context);
+        RigProviderActivator.listenerList = new ArrayList<RigEventListener>();
+        RigEventServiceListener listener = new RigEventServiceListener(RigProviderActivator.listenerList, context);
         context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         
         /* Fire pseudo events for all registered services. */
@@ -139,8 +139,8 @@ public class LocalRigProviderActivator implements BundleActivator
         this.runnableReg.unregister();
         
         /* Cleanup the configuration service tracker. */
-        LocalRigProviderActivator.configTracker.close();
-        LocalRigProviderActivator.configTracker = null;
+        RigProviderActivator.configTracker.close();
+        RigProviderActivator.configTracker = null;
     }
     
     /**
@@ -154,12 +154,12 @@ public class LocalRigProviderActivator implements BundleActivator
      */
     public static String getConfigurationProperty(String prop, String def)
     {
-        if (LocalRigProviderActivator.configTracker == null)
+        if (RigProviderActivator.configTracker == null)
         {
             return def;
         }
         
-        Config config = (Config)LocalRigProviderActivator.configTracker.getService();
+        Config config = (Config)RigProviderActivator.configTracker.getService();
         if (config == null)
         {
             return def;
@@ -175,15 +175,15 @@ public class LocalRigProviderActivator implements BundleActivator
      */
     public static RigEventListener[] getRigEventListeners()
     {
-        if (LocalRigProviderActivator.listenerList == null)
+        if (RigProviderActivator.listenerList == null)
         {
             return new RigEventListener[0];
         }
         
-        synchronized (LocalRigProviderActivator.listenerList)
+        synchronized (RigProviderActivator.listenerList)
         {
-            return LocalRigProviderActivator.listenerList.toArray(
-                    new RigEventListener[LocalRigProviderActivator.listenerList.size()]);
+            return RigProviderActivator.listenerList.toArray(
+                    new RigEventListener[RigProviderActivator.listenerList.size()]);
         }
     }
 }

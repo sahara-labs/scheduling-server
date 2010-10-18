@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Author: Michael Diponio (mdiponio)
 Date: 5th February 2009
 -->
-<wsdl:definitions xmlns:lrp="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider" name="LocalRigProvider" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider"
+<wsdl:definitions xmlns:lrp="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider" name="RigProvider" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
   <wsdl:types>
     <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
@@ -138,7 +138,7 @@ Date: 5th February 2009
   	<wsdl:part name="parameters" element="lrp:removeRigResponse"></wsdl:part>
   </wsdl:message>
   
-  <wsdl:portType name="LocalRigProvider">
+  <wsdl:portType name="RigProvider">
     <wsdl:operation name="registerRig">
       <wsdl:input message="lrp:registerRigRequest"/>
       <wsdl:output message="lrp:registerRigResponse"/>
@@ -154,7 +154,7 @@ Date: 5th February 2009
   </wsdl:portType>
   
   <wsdl:binding name="LocalRigProviderSOAP"
-  	type="lrp:LocalRigProvider">
+  	type="lrp:RigProvider">
   	<soap:binding style="document"
   		transport="http://schemas.xmlsoap.org/soap/http" />
   	<wsdl:operation name="registerRig">
@@ -188,7 +188,7 @@ Date: 5th February 2009
   		</wsdl:output>
   	</wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="LocalRigProvider">
+  <wsdl:service name="RigProvider">
     <wsdl:port binding="lrp:LocalRigProviderSOAP" name="LocalRigProviderSOAP">
       <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider"/>
     </wsdl:port>

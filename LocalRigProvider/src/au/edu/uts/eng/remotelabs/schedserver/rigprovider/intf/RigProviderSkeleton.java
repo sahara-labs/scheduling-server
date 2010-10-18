@@ -51,14 +51,14 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigTyp
 
 
 /**
- * LocalRigProviderSkeleton java skeleton for the axisService
+ * RigProviderSkeleton java skeleton for the axisService
  */
-public class LocalRigProviderSkeleton implements LocalRigProviderSkeletonInterface
+public class RigProviderSkeleton implements RigProviderSkeletonInterface
 {
     /** Logger. */
     private Logger logger;
 
-    public LocalRigProviderSkeleton()
+    public RigProviderSkeleton()
     {
         this.logger = LoggerActivator.getLogger();
     }

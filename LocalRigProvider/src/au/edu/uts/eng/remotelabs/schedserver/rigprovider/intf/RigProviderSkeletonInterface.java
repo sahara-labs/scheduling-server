@@ -44,10 +44,10 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigSta
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatusResponse;
 
 /**
- * LocalRigProviderSkeletonInterface, interface for the local rig provider 
+ * RigProviderSkeletonInterface, interface for the local rig provider 
  * SOAP operations.
  */
-public interface LocalRigProviderSkeletonInterface
+public interface RigProviderSkeletonInterface
 {
     /**
      * Registers a rig with the scheduling server.

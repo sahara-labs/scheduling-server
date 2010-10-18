@@ -44,7 +44,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 
@@ -131,7 +131,7 @@ public class UpdateLocalRigStatus
             this.rigDao.flush();
             
             /* Fire online rig event. */
-            for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
             {
                 list.eventOccurred(RigStateChangeEvent.ONLINE, rig, this.rigDao.getSession());
             }    
@@ -146,7 +146,7 @@ public class UpdateLocalRigStatus
             this.rigDao.flush();
             
             /* Fire offline rig event. */
-            for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
             {
                 list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, this.rigDao.getSession());
             }

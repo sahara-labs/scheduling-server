@@ -64,7 +64,7 @@ public class RegisterRigTypeTester extends TestCase
         reg.setType("loadedbeam");
         reg.setCapabilities("foo,bar,baz");
 
-        URI uri = new URI("http://138.25.47.151:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider");
+        URI uri = new URI("http://138.25.47.151:8080/SchedulingServer-RigProvider/services/RigProvider");
         assertNotNull(uri);
         reg.setContactUrl(uri);
         
@@ -86,7 +86,7 @@ public class RegisterRigTypeTester extends TestCase
         assertTrue(xml.contains("<isOnline>true</isOnline>"));
         assertTrue(xml.contains("<offlineReason>Tomorrows problem.</offlineReason>"));
         assertTrue(xml.contains("<contactUrl>http://138.25.47.151:8080/" +
-        		"SchedulingServer-LocalRigProvider/services/LocalRigProvider</contactUrl>"));
+        		"SchedulingServer-RigProvider/services/RigProvider</contactUrl>"));
     }
     
     @Test
@@ -96,7 +96,7 @@ public class RegisterRigTypeTester extends TestCase
         		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"ns1:RegisterRigType\"><name>lb1</name>" +
         		"<type>loadedbeam</type>" +
         		"<capabilities>foo,bar,baz</capabilities>" +
-        		"<contactUrl>http://138.25.47.151:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider</contactUrl>" +
+        		"<contactUrl>http://138.25.47.151:8080/SchedulingServer-RigProvider/services/RigProvider</contactUrl>" +
         		"<status><isOnline>true</isOnline>" +
         		"<offlineReason>Tomorrows problem.</offlineReason></status>" +
         		"</ns1:registerRig>\n";
@@ -109,7 +109,7 @@ public class RegisterRigTypeTester extends TestCase
         assertEquals("loadedbeam", reg.getType());
         assertEquals("foo,bar,baz", reg.getCapabilities());
         
-        assertEquals("http://138.25.47.151:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider", 
+        assertEquals("http://138.25.47.151:8080/SchedulingServer-RigProvider/services/RigProvider", 
                 reg.getContactUrl().toString());
         
         StatusType st = reg.getStatus();

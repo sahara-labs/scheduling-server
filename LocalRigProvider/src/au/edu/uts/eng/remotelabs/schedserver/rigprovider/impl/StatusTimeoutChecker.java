@@ -48,7 +48,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.LocalRigProviderActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 
@@ -90,7 +90,7 @@ public class StatusTimeoutChecker implements Runnable
     {
         this.logger = LoggerActivator.getLogger();
 
-        String tmStr = LocalRigProviderActivator.getConfigurationProperty("Rig_Timeout_Period", 
+        String tmStr = RigProviderActivator.getConfigurationProperty("Rig_Timeout_Period", 
                 String.valueOf(StatusTimeoutChecker.DEFAULT_TIMEOUT));
         try
         {
@@ -162,7 +162,7 @@ public class StatusTimeoutChecker implements Runnable
                 db.getTransaction().commit();
                 
                 /* Fire a notification the rig has gone offline. */
-                for (RigEventListener list : LocalRigProviderActivator.getRigEventListeners())
+                for (RigEventListener list : RigProviderActivator.getRigEventListeners())
                 {
                     list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, db);
                 }

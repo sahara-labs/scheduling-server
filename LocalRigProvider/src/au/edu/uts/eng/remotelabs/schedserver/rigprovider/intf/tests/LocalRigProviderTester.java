@@ -55,7 +55,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.LocalRigProvider;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ProviderResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
@@ -69,12 +69,12 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigSta
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigType;
 
 /**
- * Tests the {@link LocalRigProvider} class.
+ * Tests the {@link RigProvider} class.
  */
 public class LocalRigProviderTester extends TestCase
 {
     /** Object of class under test. */
-    private LocalRigProvider provider;
+    private RigProvider provider;
     
     @Override
     @Before
@@ -82,11 +82,11 @@ public class LocalRigProviderTester extends TestCase
     {
         DataAccessTestSetup.setup();
         IdentityTokenRegister.getInstance().expunge();
-        this.provider = new LocalRigProvider();
+        this.provider = new RigProvider();
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.LocalRigProvider#registerRig(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider#registerRig(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig)}.
      * @throws MalformedURIException 
      */
     @Test
@@ -146,7 +146,7 @@ public class LocalRigProviderTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.LocalRigProvider#registerRig(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider#registerRig(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig)}.
      * @throws MalformedURIException 
      */
     @Test
@@ -206,7 +206,7 @@ public class LocalRigProviderTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.LocalRigProvider#updateRigStatus(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider#updateRigStatus(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus)}.
      */
     @Test
     public void testUpdateRigStatus() throws Exception
@@ -262,7 +262,7 @@ public class LocalRigProviderTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.LocalRigProvider#updateRigStatus(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider#updateRigStatus(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus)}.
      */
     @Test
     public void testUpdateRigStatusError() throws Exception
@@ -295,7 +295,7 @@ public class LocalRigProviderTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.LocalRigProvider#removeRig(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider#removeRig(au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus)}.
      */
     @Test
     public void testRemoveRig() throws Exception
@@ -349,7 +349,7 @@ public class LocalRigProviderTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.LocalRigProvider#removeRig(RemoveRig)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider#removeRig(RemoveRig)}.
      */
     @Test
     public void testRemoveRigError() throws Exception

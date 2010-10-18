@@ -60,9 +60,9 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigSta
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatusResponse;
 
 /**
- * LocalRigProviderMessageReceiverInOut message receiver.
+ * RigProviderMessageReceiverInOut message receiver.
  */
-public class LocalRigProviderMessageReceiverInOut extends AbstractInOutMessageReceiver
+public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceiver
 {
     @Override
     public void invokeBusinessLogic(final MessageContext msgContext, final MessageContext newMsgContext) 
@@ -71,7 +71,7 @@ public class LocalRigProviderMessageReceiverInOut extends AbstractInOutMessageRe
         try
         {
             final Object obj = this.getTheImplementationObject(msgContext);
-            final LocalRigProviderSkeletonInterface skel = (LocalRigProviderSkeletonInterface) obj;
+            final RigProviderSkeletonInterface skel = (RigProviderSkeletonInterface) obj;
 
             
             SOAPEnvelope envelope = null;

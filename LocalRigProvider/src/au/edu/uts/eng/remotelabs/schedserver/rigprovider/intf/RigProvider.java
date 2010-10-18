@@ -58,12 +58,12 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigTyp
 /**
  * Local rig provider SOAP interface operation implementations.
  */
-public class LocalRigProvider implements LocalRigProviderSkeletonInterface
+public class RigProvider implements RigProviderSkeletonInterface
 {
     /** Logger. */
     private Logger logger;
     
-    public LocalRigProvider()
+    public RigProvider()
     {
         this.logger = LoggerActivator.getLogger();
     }
