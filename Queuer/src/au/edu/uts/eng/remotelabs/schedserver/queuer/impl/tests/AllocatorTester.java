@@ -178,6 +178,107 @@ public class AllocatorTester extends TestCase
     }
     
     @Test
+    public void testAllocateResponseCallbackAsync() throws Exception
+    {
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        db.beginTransaction();
+        User user1 = new User("qperm1", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setActive(true);
+        ses1.setReady(false);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 5);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(r.getId());
+        ses1.setRequestedResourceName(r.getName());
+        ses1.setResourceType("RIG");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        ses1.setAssignmentTime(now);
+        ses1.setRig(r);
+        db.persist(ses1);        
+        db.getTransaction().commit();
+
+        AllocateResponse resp = new AllocateResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setAllocateResponse(op);
+        op.setSuccess(true);
+        op.setWillCallback(true);
+        
+        Field f = Allocator.class.getDeclaredField("session");
+        f.setAccessible(true);
+        f.set(this.alloc, ses1);
+        
+        this.alloc.allocateResponseCallback(resp);
+        
+        db.refresh(ses1);
+        db.refresh(r);
+        
+        db.beginTransaction();
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit();
+        
+        assertTrue(ses1.isActive());
+        assertFalse(ses1.isReady());
+        assertNull(ses1.getRemovalReason());
+        assertNull(ses1.getRemovalTime());
+        
+        assertTrue(r.isInSession());
+        assertTrue(r.isOnline());
+        assertNull(r.getOfflineReason());
+    }
+    
+    @Test
     public void testAllocateResponseCallbackError() throws Exception
     {
         Date before = new Date(System.currentTimeMillis() - 10000);
@@ -239,7 +340,10 @@ public class AllocatorTester extends TestCase
         ses1.setUserNamespace(user1.getNamespace());
         ses1.setAssignmentTime(now);
         ses1.setRig(r);
-        db.persist(ses1);        
+        db.persist(ses1);       
+        
+        r.setSession(ses1);
+        
         db.getTransaction().commit();
 
         AllocateResponse resp = new AllocateResponse();
@@ -280,6 +384,7 @@ public class AllocatorTester extends TestCase
         assertFalse(r.isInSession());
         assertFalse(r.isOnline());
         assertNotNull(r.getOfflineReason());
+        assertNull(r.getSession());
     }
     
     @Test
@@ -345,6 +450,9 @@ public class AllocatorTester extends TestCase
         ses1.setAssignmentTime(now);
         ses1.setRig(r);
         db.persist(ses1);        
+        
+        r.setSession(ses1);
+        
         db.getTransaction().commit();
         
         Field f = Allocator.class.getDeclaredField("session");
@@ -375,5 +483,6 @@ public class AllocatorTester extends TestCase
         assertFalse(r.isInSession());
         assertFalse(r.isOnline());
         assertNotNull(r.getOfflineReason());
+        assertNull(r.getSession());
     }
 }

@@ -100,6 +100,7 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
             rig.setInSession(false);
             rig.setOnline(false);
             rig.setOfflineReason("Allocation failed for session " + ses.getId() + ".");
+            rig.setSession(null);
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
@@ -117,6 +118,14 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
             Thread.sleep(500);
         }
         catch (InterruptedException ex) { /* Embrassing timing jiffy, which empircally works. */ }
+        
+        if (op.getWillCallback())
+        {
+            /* The response will come in a callback request so no work required now. */
+            this.logger.debug("Received notification allocation for rig " + this.session.getAssignedRigName() + 
+                    " will can in a callback message.");
+            return;
+        }
         
         SessionDao dao = new SessionDao();
         this.session = dao.merge(this.session);
@@ -153,6 +162,7 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
                 rig.setInSession(false);
                 rig.setOnline(false);
                 rig.setOfflineReason("Allocation failured with reason '" + err.getReason() + "'.");
+                rig.setSession(null);
                 dao.flush();
             }
         }
