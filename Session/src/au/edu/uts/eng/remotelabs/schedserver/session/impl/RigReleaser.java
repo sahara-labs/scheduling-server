@@ -97,6 +97,15 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         this.rig = dao.merge(this.rig);
             
         OperationResponseType op = response.getReleaseResponse();
+        
+        if (op.getWillCallback())
+        {
+            /* The response will come in a callback request so no work required now. */
+            this.logger.debug("Received notification release of rig " + this.rig.getName() + 
+                    " will come in a callback message.");
+            return;
+        }
+        
         if (op.getSuccess())
         {
             this.logger.debug("Received release callback, releasing " + this.rig.getName() + " was successful.");

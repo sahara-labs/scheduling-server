@@ -213,6 +213,115 @@ public class RigReleaserTester extends TestCase
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse)}.
      */
+    public void testReleaseResponseCallbackAsync() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        
+        User user = new User("qperm1", "testns", "USER");
+        db.persist(user);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("uc1");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setPriority((short)4);
+        db.persist(uc1);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        db.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("Perm_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("perm,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Perm_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        p1.setAllowedExtensions((short)10);
+        db.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        db.persist(ses);
+        
+        r.setSession(ses);
+        
+        db.getTransaction().commit();
+        
+        db.refresh(uc1);
+        db.refresh(user);
+        db.refresh(p1);
+        db.refresh(r);
+        db.refresh(rt);
+        db.refresh(ses);
+                
+        Field f = RigReleaser.class.getDeclaredField("rig");
+        f.setAccessible(true);
+        f.set(this.releaser, r);
+        
+        ReleaseResponse resp = new ReleaseResponse();
+        OperationResponseType op = new OperationResponseType();
+        resp.setReleaseResponse(op);
+        op.setSuccess(true);
+        op.setWillCallback(true);
+        
+        this.releaser.releaseResponseCallback(resp);
+        
+        db.refresh(r);
+        db.refresh(ses);
+        
+        db.beginTransaction();
+        db.delete(ses);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass);
+        db.delete(uc1);
+        db.delete(user);
+        db.getTransaction().commit();
+        
+        assertTrue(r.isInSession());
+        assertNotNull(r.getSession());
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse)}.
+     */
     public void testReleaseResponseCallbackError() throws Exception
     {
         Date before = new Date(System.currentTimeMillis() - 10000);
