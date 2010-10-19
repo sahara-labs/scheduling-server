@@ -146,7 +146,7 @@ public class RigProviderActivator implements BundleActivator
         Session ses = DataAccessActivator.getNewSession();
         if (ses != null)
         {
-            Query qu = ses.createQuery("update Rig set active=:false, in_session=:false, online=:false, " +
+            Query qu = ses.createQuery("UPDATE Rig SET active=:false, in_session=:false, online=:false, " +
             		"session_id=:null, offline_reason=:offline");
             qu.setBoolean("false", false);
             qu.setParameter("null", null, Hibernate.BIG_INTEGER);
