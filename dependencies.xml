@@ -101,15 +101,15 @@ Date: 28th December 2009
 		<buildRequiredBundle bundle="SchedulingServer-Queuer.jar" bundleProject="Queuer" />
 	</target>
 
-	<!-- ### Local Rig Provider Bundle. -->
+	<!-- ### Rig Provider Bundle. -->
 	<detectIfBundlePresent property="missing.rigprovider" bundle="SchedulingServer-RigProvider.jar" />
 	<target name="rigProviderBundle" if="missing.rigprovider">
 		<buildRequiredBundle bundle="SchedulingServer-RigProvider.jar" bundleProject="RigProvider" />
 	</target>
 
-	<!-- ### Rig Client Proxy Bundle. -->
+	<!-- ### Rig Proxy Bundle. -->
 	<detectIfBundlePresent property="missing.rigproxy" bundle="SchedulingServer-RigProxy.jar" />
-	<target name="rigProxyBundle" if="missing.rigProxy">
+	<target name="rigProxyBundle" if="missing.rigproxy">
 		<buildRequiredBundle bundle="SchedulingServer-RigProxy.jar" bundleProject="RigProxy" />
 	</target>
 	
