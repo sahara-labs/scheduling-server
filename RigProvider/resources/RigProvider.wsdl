@@ -135,7 +135,7 @@ Date: 5th February 2009
       			<xsd:sequence>
       				<xsd:element name="success" type="xsd:boolean">
       				</xsd:element>
-      				<xsd:element name="error" type="lrp:ErrorType">
+      				<xsd:element name="error" type="lrp:ErrorType" maxOccurs="1" minOccurs="0">
       				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>

@@ -43,10 +43,14 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTo
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RegisterLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RemoveLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.UpdateLocalRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ProviderResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigType;
@@ -58,7 +62,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigTyp
 /**
  * Local rig provider SOAP interface operation implementations.
  */
-public class RigProvider implements RigProviderSkeletonInterface
+public class RigProvider implements RigProviderInterface
 {
     /** Logger. */
     private Logger logger;
@@ -171,6 +175,20 @@ public class RigProvider implements RigProviderSkeletonInterface
         
         updater.getSession().close();
         return response;
+    }
+
+    @Override
+    public AllocateCallbackResponse allocateCallback(AllocateCallback allocateCallback)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

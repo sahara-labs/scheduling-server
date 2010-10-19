@@ -34,12 +34,6 @@
  * @date 18th January 2010
  */
 
-/**
- * ExtensionMapper.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
- */
-
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types;
 
 import javax.xml.stream.XMLStreamReader;
@@ -47,20 +41,24 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axis2.databinding.ADBException;
 
 /**
- * ExtensionMapper class
+ * Extension mapper.
  */
-
 public class ExtensionMapper
 {
 
     public static Object getTypeObject(final String namespaceURI, final String typeName, final XMLStreamReader reader)
             throws Exception
     {
-
         if ("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider".equals(namespaceURI)
                 && "RigType".equals(typeName))
         {
             return RigType.Factory.parse(reader);
+        }
+
+        if ("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider".equals(namespaceURI)
+                && "CallbackRequestType".equals(typeName))
+        {
+            return CallbackRequestType.Factory.parse(reader);
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider".equals(namespaceURI)
@@ -91,6 +89,12 @@ public class ExtensionMapper
                 && "RegisterRigType".equals(typeName))
         {
             return RegisterRigType.Factory.parse(reader);
+        }
+
+        if ("http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider".equals(namespaceURI)
+                && "ErrorType".equals(typeName))
+        {
+            return ErrorType.Factory.parse(reader);
         }
 
         throw new ADBException("Unsupported type " + namespaceURI + " " + typeName);

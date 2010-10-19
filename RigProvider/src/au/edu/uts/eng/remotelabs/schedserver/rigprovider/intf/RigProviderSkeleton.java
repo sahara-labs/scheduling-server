@@ -38,9 +38,14 @@ package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.CallbackRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigType;
@@ -53,7 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigTyp
 /**
  * RigProviderSkeleton java skeleton for the axisService
  */
-public class RigProviderSkeleton implements RigProviderSkeletonInterface
+public class RigProviderSkeleton implements RigProviderInterface
 {
     /** Logger. */
     private Logger logger;
@@ -91,5 +96,23 @@ public class RigProviderSkeleton implements RigProviderSkeletonInterface
         this.logger.info("Called " + this.getClass().getName() + "#updateRigStatus with parameters: name=" + type.getName()
                 + ", isOnline=" + status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + '.');
         throw new UnsupportedOperationException("Mock " + this.getClass().getName() + "#updateRigStatus implementation.");
+    }
+
+    @Override
+    public AllocateCallbackResponse allocateCallback(AllocateCallback allocateCallback)
+    {
+        CallbackRequestType type = allocateCallback.getAllocateCallback();
+        this.logger.info("Called " + this.getClass().getName() + "#allocateCallback with parameters: name=" +
+                type.getName() + ", success=" + type.getSuccess() + '.');
+        throw new UnsupportedOperationException("Mock " + this.getClass().getName() + "#allocateCallback implementation.");
+    }
+
+    @Override
+    public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback)
+    {
+        CallbackRequestType type = releaseCallback.getReleaseCallback();
+        this.logger.info("Called " + this.getClass().getName() + "#releaseCallback with parameters: name=" +
+                type.getName() + ", success=" + type.getSuccess() + '.');
+        throw new UnsupportedOperationException("Mock " + this.getClass().getName() + "#releaseCallback implementation.");
     }
 }

@@ -52,8 +52,12 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus;
@@ -71,7 +75,7 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
         try
         {
             final Object obj = this.getTheImplementationObject(msgContext);
-            final RigProviderSkeletonInterface skel = (RigProviderSkeletonInterface) obj;
+            final RigProviderInterface skel = (RigProviderInterface) obj;
 
             
             SOAPEnvelope envelope = null;
@@ -112,6 +116,22 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
                             this.getEnvelopeNamespaces(msgContext.getEnvelope()));
                     registerRigResponse = skel.registerRig(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), registerRigResponse, false);
+                }
+                else if ("allocateCallback".equals(methodName))
+                {
+                    final AllocateCallback wrappedParam = (AllocateCallback) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), AllocateCallback.class, 
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    AllocateCallbackResponse response = skel.allocateCallback(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
+                }
+                else if ("releaseCallback".equals(methodName))
+                {
+                    final ReleaseCallback wrappedParam = (ReleaseCallback) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), ReleaseCallback.class, 
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    ReleaseCallbackResponse response = skel.releaseCallback(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else
                 {
@@ -164,6 +184,36 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
         {
             final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
             emptyEnvelope.getBody().addChild(param.getOMElement(RegisterRigResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AllocateCallbackResponse param, 
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AllocateCallbackResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final ReleaseCallbackResponse param, 
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(ReleaseCallbackResponse.MY_QNAME, factory));
             return emptyEnvelope;
         }
         catch (final ADBException e)

@@ -36,18 +36,22 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatusResponse;
 
 /**
- * RigProviderSkeletonInterface, interface for the local rig provider 
+ * RigProviderInterface, interface for the local rig provider 
  * SOAP operations.
  */
-public interface RigProviderSkeletonInterface
+public interface RigProviderInterface
 {
     /**
      * Registers a rig with the scheduling server.
@@ -72,4 +76,20 @@ public interface RigProviderSkeletonInterface
      * @return response parameters
      */
     public RemoveRigResponse removeRig(RemoveRig removeRig);
+    
+    /**
+     * Notification of asynchronous allocate completion.
+     * 
+     * @param allocateCallback request parameters
+     * @return response parameters
+     */
+    public AllocateCallbackResponse allocateCallback(AllocateCallback allocateCallback);
+    
+    /**
+     * Notification of asynchronous release completion.
+     * 
+     * @param releaseCallback request parameters
+     * @return response parameters
+     */
+    public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback);
 }
