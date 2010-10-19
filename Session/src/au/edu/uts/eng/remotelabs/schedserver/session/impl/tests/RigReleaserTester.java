@@ -57,9 +57,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.InnerQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ErrorType;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.OperationResponseType;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ErrorType;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser;
 
 /**
@@ -94,7 +94,7 @@ public class RigReleaserTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse)}.
      */
     public void testReleaseResponseCallback() throws Exception
     {
@@ -211,7 +211,7 @@ public class RigReleaserTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse)}.
      */
     public void testReleaseResponseCallbackAsync() throws Exception
     {
@@ -320,7 +320,7 @@ public class RigReleaserTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser#releaseResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse)}.
      */
     public void testReleaseResponseCallbackError() throws Exception
     {

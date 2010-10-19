@@ -4,9 +4,9 @@
 <serviceGroup>
     <service name="RigClientProxy">
         <messageReceivers>
-            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.service.RigClientProxyMessageReceiverInOut"/>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.rigproxy.service.RigClientProxyMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.service.RigClientProxy</parameter>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigproxy.service.RigClientProxy</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="allocateCallback" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/rigclientproxy">

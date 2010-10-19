@@ -57,9 +57,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Allocator;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.AllocateResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ErrorType;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.AllocateResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ErrorType;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
 
 /**
  * Tests the {@link Allocator} class.

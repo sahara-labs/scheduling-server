@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: RigProxy
 Bundle-SymbolicName: SchedulingServer-RigProxy
 Bundle-Version: 3.0.0.alpha
-Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigProxyActivator
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigProxyActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
@@ -62,6 +62,6 @@ Bundle-ClassPath: .,
  lib/xml-resolver-1.2.jar,
  lib/xmlbeans-2.3.0.jar,
  lib/XmlSchema-1.4.3.jar
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy,
- au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigproxy,
+ au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types
 Require-Bundle: SchedulingServer-DataAccess

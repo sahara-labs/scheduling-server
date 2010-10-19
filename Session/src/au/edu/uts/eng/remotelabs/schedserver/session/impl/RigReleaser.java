@@ -44,10 +44,10 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueRun;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncService;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncServiceCallbackHandler;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.OperationResponseType;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.ReleaseResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncServiceCallbackHandler;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse;
 
 /**
  * Calls the rig client release operation to remove a user from the rig client.

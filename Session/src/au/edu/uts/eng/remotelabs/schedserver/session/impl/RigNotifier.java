@@ -41,10 +41,10 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncService;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientAsyncServiceCallbackHandler;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.NotifyResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncServiceCallbackHandler;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.NotifyResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
 
 /**
  * Notifies the in session user on the rig of a message.
