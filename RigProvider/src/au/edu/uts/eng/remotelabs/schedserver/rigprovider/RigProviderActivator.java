@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
+import org.hibernate.Hibernate;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -49,6 +52,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
@@ -137,6 +141,23 @@ public class RigProviderActivator implements BundleActivator
         IdentityTokenRegister.getInstance().expunge();
         
         this.runnableReg.unregister();
+        
+        /* Take all rigs offline. */
+        Session ses = DataAccessActivator.getNewSession();
+        if (ses != null)
+        {
+            Query qu = ses.createQuery("update Rig set active=:false, in_session=:false, online=:false, " +
+            		"session_id=:null, offline_reason=:offline");
+            qu.setBoolean("false", false);
+            qu.setParameter("null", null, Hibernate.BIG_INTEGER);
+            qu.setString("offline", "Scheduling Server shutting down.");
+            
+            ses.beginTransaction();
+            int num = qu.executeUpdate();
+            ses.getTransaction().commit();
+            this.logger.info("Took " + num + " rigs offline for shutdown.");
+            ses.close();
+        }
         
         /* Cleanup the configuration service tracker. */
         RigProviderActivator.configTracker.close();
