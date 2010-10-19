@@ -102,15 +102,15 @@ Date: 28th December 2009
 	</target>
 
 	<!-- ### Local Rig Provider Bundle. -->
-	<detectIfBundlePresent property="missing.localrigprovider" bundle="SchedulingServer-LocalRigProvider.jar" />
-	<target name="localRigProviderBundle" if="missing.localrigprovider">
-		<buildRequiredBundle bundle="SchedulingServer-LocalRigProvider.jar" bundleProject="LocalRigProvider" />
+	<detectIfBundlePresent property="missing.rigprovider" bundle="SchedulingServer-RigProvider.jar" />
+	<target name="rigProviderBundle" if="missing.rigprovider">
+		<buildRequiredBundle bundle="SchedulingServer-RigProvider.jar" bundleProject="RigProvider" />
 	</target>
 
 	<!-- ### Rig Client Proxy Bundle. -->
-	<detectIfBundlePresent property="missing.rigClientProxy" bundle="SchedulingServer-RigClientProxy.jar" />
-	<target name="rigClientProxyBundle" if="missing.rigClientProxy">
-		<buildRequiredBundle bundle="SchedulingServer-RigClientProxy.jar" bundleProject="RigClientProxy" />
+	<detectIfBundlePresent property="missing.rigproxy" bundle="SchedulingServer-RigProxy.jar" />
+	<target name="rigProxyBundle" if="missing.rigProxy">
+		<buildRequiredBundle bundle="SchedulingServer-RigProxy.jar" bundleProject="RigProxy" />
 	</target>
 	
 	<!-- ### Session Bundle. -->
