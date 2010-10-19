@@ -41,12 +41,14 @@ import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.AbortBatchContr
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.AllocateResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetAttributeResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetBatchControlStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetConfigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectableResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.NotifyResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.PerformBatchControlResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.PerformPrimitiveControlResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetConfigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetMaintenanceResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetTestIntervalResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SlaveAllocateResponse;
@@ -127,64 +129,220 @@ public abstract class RigClientAsyncServiceCallbackHandler
      */
     public void activityDetectionErrorCallback(final Exception e)
     { /* Does nothing by default. */ }
-
-    public void receiveResultslaveAllocate(final SlaveAllocateResponse result)
+    
+    /**
+     * Method to override to receive the response from an slave allocate operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void slaveAllocateResponseCallback(final SlaveAllocateResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveResultperformPrimitiveControl(final PerformPrimitiveControlResponse result)
+    /**
+     * Method to override to receive error information from a failed 
+     * slave allocate operation call.
+     * 
+     * @param e error exception
+     */    
+    public void slaveAllocateErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an slave release operation
+     * call.
+     * 
+     * @param response response from call
+     */    
+    public void slaveReleaseResponseCallback(final SlaveReleaseResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveErrorperformPrimitiveControl(final Exception e)
+    /**
+     * Method to override to receive error information from a failed 
+     * slave release operation call.
+     * 
+     * @param e error exception
+     */
+    public void slaveReleaseErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an primitive control operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void performPrimitiveControlResponseCallback(final PerformPrimitiveControlResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveResultgetBatchControlStatus(final GetBatchControlStatusResponse result)
+    /**
+     * Method to override to receive error information from a failed 
+     * primitive control operation call.
+     * 
+     * @param e error exception
+     */
+    public void performPrimitiveControlErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an get attribute operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void getAttributeResponseCallback(final GetAttributeResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveErrorgetBatchControlStatus(final Exception e)
+    /**
+     * Method to override to receive error information from a failed 
+     * get attribute operation call.
+     * 
+     * @param e error exception
+     */
+    public void getAttributeErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an set test interval operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void setTestIntervalResponseCallback(final SetTestIntervalResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveResultgetAttribute(final GetAttributeResponse result)
+    /**
+     * Method to override to receive error information from a failed 
+     * set test interval operation call.
+     * 
+     * @param e error exception
+     */
+    public void setTestIntervalErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an set maintenance operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void setMaintenanceResponseCallback(final SetMaintenanceResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveErrorgetAttribute(final Exception e)
+    /**
+     * Method to override to receive error information from a failed 
+     * set maintenance operation call.
+     * 
+     * @param e error exception
+     */
+    public void setMaintenanceErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an batch control operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void performBatchControlResponseCallback(final PerformBatchControlResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveResultslaveRelease(final SlaveReleaseResponse result)
+    /**
+     * Method to override to receive error information from a failed 
+     * batch control operation call.
+     * 
+     * @param e error exception
+     */
+    public void performBatchControlErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an abort batch operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void abortBatchControlResponseCallback(final AbortBatchControlResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveErrorslaveRelease(final Exception e)
+    /**
+     * Method to override to receive error information from a failed 
+     * abort batch operation call.
+     * 
+     * @param e error exception
+     */
+    public void abortBatchControlErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+     /**
+     * Method to override to receive the response from an batch control status operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void getBatchControlStatusResponseCallback(final GetBatchControlStatusResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveResultsetTestInterval(final SetTestIntervalResponse result)
+    /**
+     * Method to override to receive error information from a failed 
+     * batch control status operation call.
+     * 
+     * @param e error exception
+     */
+    public void getBatchControlStatusErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an get status operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void getStatusResponseCallback(final GetStatusResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveErrorsetTestInterval(final Exception e)
+    /**
+     * Method to override to receive error information from a failed 
+     * get status operation call.
+     * 
+     * @param e error exception
+     */
+    public void getStatusErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an get config operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void getConfigResponseCallback(final GetConfigResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveResultsetMaintenance(final SetMaintenanceResponse result)
+    /**
+     * Method to override to receive error information from a failed 
+     * get config operation call.
+     * 
+     * @param e error exception
+     */
+    public void getConfigErrorCallback(final Exception e)
+    { /* Does nothing by default. */ }
+    
+    /**
+     * Method to override to receive the response from an set config operation
+     * call.
+     * 
+     * @param response response from call
+     */
+    public void setConfigResponseCallback(final SetConfigResponse result)
     { /* Does nothing by default. */ }
 
-    public void receiveErrorsetMaintenance(final Exception e)
-    { /* Does nothing by default. */ }
-
-    public void receiveResultperformBatchControl(final PerformBatchControlResponse result)
-    { /* Does nothing by default. */ }
-
-    public void receiveErrorperformBatchControl(final Exception e)
-    { /* Does nothing by default. */ }
-
-    public void receiveResultgetStatus(final GetStatusResponse result)
-    { /* Does nothing by default. */ }
-
-    public void receiveErrorgetStatus(final Exception e)
-    { /* Does nothing by default. */ }
-
-    public void receiveErrorslaveAllocate(final Exception e)
-    { /* Does nothing by default. */ }
-
-    public void receiveResultabortBatchControl(final AbortBatchControlResponse result)
-    { /* Does nothing by default. */ }
-
-    public void receiveErrorabortBatchControl(final Exception e)
+    /**
+     * Method to override to receive error information from a failed 
+     * set config operation call.
+     * 
+     * @param e error exception
+     */
+    public void setConfigErrorCallback(final Exception e)
     { /* Does nothing by default. */ }
 }

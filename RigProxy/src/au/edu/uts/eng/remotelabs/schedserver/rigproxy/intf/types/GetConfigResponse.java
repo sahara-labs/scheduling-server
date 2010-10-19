@@ -32,12 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 5th April 2009
- */
-
-/**
- * AbortBatchControlResponse.java This file was auto-generated from WSDL by the
- * Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
+ * @date 19th October 2009
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types;
@@ -45,40 +40,31 @@ package au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMConstants;
 import org.apache.axiom.om.OMDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
 import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
-import org.apache.axis2.databinding.utils.BeanUtil;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * AbortBatchControlResponse bean class.
+ * GetConfigResponse bean class.
  */
-public class AbortBatchControlResponse implements ADBBean
+public class GetConfigResponse implements ADBBean
 {
-    private static final long serialVersionUID = -7631767787007427232L;
 
-    protected OperationResponseType controlResponse;
+    private static final long serialVersionUID = -8704851583400050295L;
 
-    public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", 
-            "abortBatchControlResponse", "ns1");
-
-    private static String generatePrefix(final String namespace)
-    {
-        if (namespace.equals("http://remotelabs.eng.uts.edu.au/rigclient/protocol")) return "ns1";
-        return BeanUtil.getUniquePrefix();
-    }
+    public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol",
+            "getConfigResponse", "ns1");
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
             isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
@@ -90,100 +76,74 @@ public class AbortBatchControlResponse implements ADBBean
         return isReaderMTOMAware;
     }
 
-    public OperationResponseType getAbortBatchControlResponse()
+    protected ConfigResponseType configResponse;
+
+    public ConfigResponseType getGetConfigResponse()
     {
-        return this.controlResponse;
+        return this.configResponse;
     }
 
     public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-        final OMDataSource dataSource = new ADBDataSource(this, AbortBatchControlResponse.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this, GetConfigResponse.MY_QNAME)
         {
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                AbortBatchControlResponse.this.serialize(AbortBatchControlResponse.MY_QNAME, factory, xmlWriter);
+                GetConfigResponse.this.serialize(GetConfigResponse.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(AbortBatchControlResponse.MY_QNAME, factory,
-                dataSource);
-
+        return new OMSourcedElementImpl(GetConfigResponse.MY_QNAME, factory, dataSource);
     }
 
     @Override
-    public XMLStreamReader getPullParser(final QName qName)
-            throws ADBException
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        return this.controlResponse.getPullParser(AbortBatchControlResponse.MY_QNAME);
-    }
-
-    @SuppressWarnings("unused")
-    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
-    {
-        String prefix = xmlWriter.getPrefix(namespace);
-
-        if (prefix == null)
-        {
-            prefix = AbortBatchControlResponse.generatePrefix(namespace);
-
-            while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
-            {
-                prefix = BeanUtil.getUniquePrefix();
-            }
-
-            xmlWriter.writeNamespace(prefix, namespace);
-            xmlWriter.setPrefix(prefix, namespace);
-        }
-
-        return prefix;
+        return this.configResponse.getPullParser(GetConfigResponse.MY_QNAME);
     }
 
     @Override
-    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter) 
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
             throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
     @Override
-    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter, 
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
-        // We can safely assume an element has only one type associated with it
-        if (this.controlResponse == null)
+        if (this.configResponse == null)
         {
-            throw new ADBException("Property cannot be null.");
+            throw new ADBException("Property cannot be null!");
         }
-        this.controlResponse.serialize(AbortBatchControlResponse.MY_QNAME, factory, xmlWriter);
+        this.configResponse.serialize(GetConfigResponse.MY_QNAME, factory, xmlWriter);
     }
 
-    public void setAbortBatchControlResponse(final OperationResponseType param)
+    public void setGetConfigResponse(final ConfigResponseType param)
     {
-        this.controlResponse = param;
+        this.configResponse = param;
     }
 
     public static class Factory
     {
-        public static AbortBatchControlResponse parse(final javax.xml.stream.XMLStreamReader reader)
-                throws Exception
+        public static GetConfigResponse parse(final XMLStreamReader reader) throws Exception
         {
-            final AbortBatchControlResponse object = new AbortBatchControlResponse();
+            final GetConfigResponse object = new GetConfigResponse();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
-                {
                     reader.next();
-                }
+
                 while (!reader.isEndElement())
                 {
                     if (reader.isStartElement())
                     {
                         if (reader.isStartElement()
-                                && new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol",
-                                        "abortBatchControlResponse").equals(reader.getName()))
+                                && new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "getConfigResponse")
+                                        .equals(reader.getName()))
                         {
-                            object.setAbortBatchControlResponse(OperationResponseType.Factory.parse(reader));
+                            object.setGetConfigResponse(ConfigResponseType.Factory.parse(reader));
                         }
                         else
                         {

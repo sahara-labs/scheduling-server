@@ -32,13 +32,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 5th April 2009
+ * @date 19th October 2009
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -49,6 +50,8 @@ import org.apache.axiom.om.OMConstants;
 import org.apache.axiom.om.OMDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.BeanUtil;
@@ -57,24 +60,25 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * ActivityDetectableType bean class.
+ * ConfigResponseType bean class.
  */
-public class ActivityDetectableType implements org.apache.axis2.databinding.ADBBean
+public class ConfigResponseType implements ADBBean
 {
     /*
-     * This type was generated from the piece of schema that had name =
-     * ActivityDetectableType Namespace URI =
-     * http://remotelabs.eng.uts.edu.au/rigclient/protocol Namespace Prefix =
-     * ns1
+     * This type was generated from the piece of schema that had
+     * name = ConfigResponseType
+     * Namespace URI = http://remotelabs.eng.uts.edu.au/rigclient/protocol
+     * Namespace Prefix = ns1
      */
     
-    private static final long serialVersionUID = -2497504099400481797L;
-    
-    protected boolean isActivity;
+    private static final long serialVersionUID = 5260149899563640723L;
 
     private static String generatePrefix(final String namespace)
     {
-        if (namespace.equals("http://remotelabs.eng.uts.edu.au/rigclient/protocol")) return "ns1";
+        if (namespace.equals("http://remotelabs.eng.uts.edu.au/rigclient/protocol"))
+        {
+            return "ns1";
+        }
         return BeanUtil.getUniquePrefix();
     }
 
@@ -92,40 +96,74 @@ public class ActivityDetectableType implements org.apache.axis2.databinding.ADBB
         return isReaderMTOMAware;
     }
 
+    protected ConfigPropertyType[] config;
+    protected boolean configTracker = false;
+
+    public void addConfig(final ConfigPropertyType param)
+    {
+        if (this.config == null)
+        {
+            this.config = new ConfigPropertyType[] {};
+        }
+        this.configTracker = true;
+        @SuppressWarnings("unchecked")
+        final List<ConfigPropertyType> list = ConverterUtil.toList(this.config);
+        list.add(param);
+        this.config = list.toArray(new ConfigPropertyType[list.size()]);
+
+    }
+
+    public ConfigPropertyType[] getConfig()
+    {
+        return this.config;
+    }
+
     public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
         final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                ActivityDetectableType.this.serialize(this.parentQName, factory, xmlWriter);
+                ConfigResponseType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
     }
 
     @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
-        final ArrayList<QName> attribList = new ArrayList<QName>();
 
-        elementList.add(new QName("", "activity"));
-        elementList.add(ConverterUtil.convertToString(this.isActivity));
-        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
+        if (this.configTracker)
+        {
+            if (this.config != null)
+            {
+                for (final ConfigPropertyType element : this.config)
+                {
+                    if (element != null)
+                    {
+                        elementList.add(new QName("", "config"));
+                        elementList.add(element);
+                    }
+                }
+            }
+            else
+            {
+                throw new ADBException("config cannot be null!!");
+            }
+        }
 
+        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
     }
 
-    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace)
-            throws XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
         String prefix = xmlWriter.getPrefix(namespace);
-
         if (prefix == null)
         {
-            prefix = ActivityDetectableType.generatePrefix(namespace);
+            prefix = ConfigResponseType.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
@@ -134,7 +172,6 @@ public class ActivityDetectableType implements org.apache.axis2.databinding.ADBB
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
-
         return prefix;
     }
 
@@ -146,16 +183,14 @@ public class ActivityDetectableType implements org.apache.axis2.databinding.ADBB
     }
 
     @Override
-    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter, 
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
-        String prefix = null;
-        String namespace = null;
 
-        prefix = parentQName.getPrefix();
-        namespace = parentQName.getNamespaceURI();
+        String prefix = parentQName.getPrefix();
+        String namespace = parentQName.getNamespaceURI();
 
-        if (namespace != null && namespace.trim().length() > 0)
+        if ((namespace != null) && (namespace.trim().length() > 0))
         {
             final String writerPrefix = xmlWriter.getPrefix(namespace);
             if (writerPrefix != null)
@@ -166,8 +201,9 @@ public class ActivityDetectableType implements org.apache.axis2.databinding.ADBB
             {
                 if (prefix == null)
                 {
-                    prefix = ActivityDetectableType.generatePrefix(namespace);
+                    prefix = ConfigResponseType.generatePrefix(namespace);
                 }
+
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
@@ -180,83 +216,82 @@ public class ActivityDetectableType implements org.apache.axis2.databinding.ADBB
 
         if (serializeType)
         {
-            final String namespacePrefix = this.registerPrefix(xmlWriter, 
+            final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/rigclient/protocol");
-            if (namespacePrefix != null && namespacePrefix.trim().length() > 0)
+            if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":ActivityDetectableType", xmlWriter);
+                        + ":ConfigResponseType", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                        "ActivityDetectableType", xmlWriter);
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "ConfigResponseType",
+                        xmlWriter);
             }
         }
-
-        namespace = "";
-        if (!namespace.equals(""))
+        
+        if (this.configTracker)
         {
-            prefix = xmlWriter.getPrefix(namespace);
-            if (prefix == null)
+            if (this.config != null)
             {
-                prefix = ActivityDetectableType.generatePrefix(namespace);
-
-                xmlWriter.writeStartElement(prefix, "activity", namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
+                for (final ConfigPropertyType element : this.config)
+                {
+                    if (element != null)
+                    {
+                        element.serialize(new QName("", "config"), factory, xmlWriter);
+                    }
+                }
             }
             else
             {
-                xmlWriter.writeStartElement(namespace, "activity");
+                throw new ADBException("config cannot be null!!");
             }
+        }
+        xmlWriter.writeEndElement();
+    }
+
+
+    public void setConfig(final ConfigPropertyType[] param)
+    {
+        if (param != null)
+        {
+            this.configTracker = true;
         }
         else
         {
-            xmlWriter.writeStartElement("activity");
+            this.configTracker = false;
+
         }
 
-        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isActivity));
-        xmlWriter.writeEndElement();
-        xmlWriter.writeEndElement();
-    }
-    
-    public boolean getActivity()
-    {
-        return this.isActivity;
+        this.config = param;
     }
 
-    public void setActivity(final boolean param)
-    {
-        this.isActivity = param;
-    }
-
-    private void writeAttribute(final String prefix, final String namespace, final String attName, final String attValue,
-            final XMLStreamWriter xmlWriter) throws XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
+
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
-
+    
     public static class Factory
     {
-        public static ActivityDetectableType parse(final XMLStreamReader reader) throws Exception
+        public static ConfigResponseType parse(final XMLStreamReader reader) throws Exception
         {
-            final ActivityDetectableType object = new ActivityDetectableType();
+            final ConfigResponseType object = new ConfigResponseType();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
-                {
                     reader.next();
-                }
 
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
-                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
+                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
+                            "type");
                     if (fullTypeName != null)
                     {
                         String nsPrefix = null;
@@ -267,41 +302,54 @@ public class ActivityDetectableType implements org.apache.axis2.databinding.ADBB
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
                         final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-                        if (!"ActivityDetectableType".equals(type))
+                        if (!"ConfigResponseType".equals(type))
                         {
-
                             final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (ActivityDetectableType) ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            return (ConfigResponseType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
                     }
                 }
 
                 reader.next();
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement() && new QName("", "activity").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setActivity(ConverterUtil.convertToBoolean(content));
-                    reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
+                final ArrayList<ConfigPropertyType> elems = new ArrayList<ConfigPropertyType>();
 
                 while (!reader.isStartElement() && !reader.isEndElement())
-                {
                     reader.next();
+
+                if (reader.isStartElement() && new QName("", "config").equals(reader.getName()))
+                {
+                    elems.add(ConfigPropertyType.Factory.parse(reader));
+                    boolean noMoreELems = false;
+                    while (!noMoreELems)
+                    {
+                        while (!reader.isEndElement())
+                            reader.next();
+                        reader.next();
+
+                        while (!reader.isStartElement() && !reader.isEndElement())
+                            reader.next();
+                        if (reader.isEndElement())
+                        {
+                            noMoreELems = true;
+                        }
+                        else
+                        {
+                            if (new QName("", "config").equals(reader.getName()))
+                            {
+                                elems.add(ConfigPropertyType.Factory.parse(reader));
+                            }
+                        }
+                    }
+
+                    object.setConfig((ConfigPropertyType[]) ConverterUtil.convertToArray(ConfigPropertyType.class,
+                            elems));
                 }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                    reader.next();
 
                 if (reader.isStartElement())
-                {
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
             }
             catch (final XMLStreamException e)
             {

@@ -73,6 +73,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetAttribute;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetAttributeResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetBatchControlStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetBatchControlStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetConfig;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetConfigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectable;
@@ -85,6 +87,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.PerformPrimitiv
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.PerformPrimitiveControlResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.Release;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetConfig;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetConfigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetMaintenance;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetMaintenanceResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetTestInterval;
@@ -172,7 +176,7 @@ public class RigClientServiceImpl extends Stub
         this.addAnonymousOperations();
 
         AxisOperation __operation;
-        this._operations = new AxisOperation[14];
+        this._operations = new AxisOperation[16];
         __operation = new OutInAxisOperation();
 
         __operation
@@ -244,6 +248,16 @@ public class RigClientServiceImpl extends Stub
         __operation.setName(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "abortBatchControl"));
         this._service.addOperation(__operation);
         this._operations[13] = __operation;
+        
+          __operation = new OutInAxisOperation();
+        __operation.setName(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "getConfig"));
+        this._service.addOperation(__operation);
+        this._operations[14] = __operation;
+        
+          __operation = new OutInAxisOperation();
+        __operation.setName(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "setConfig"));
+        this._service.addOperation(__operation);
+        this._operations[15] = __operation;
     }
 
     public PerformPrimitiveControlResponse performPrimitiveControl(final PerformPrimitiveControl request)
@@ -1585,6 +1599,197 @@ public class RigClientServiceImpl extends Stub
             _messageContext.getTransportOut().getSender().cleanup(_messageContext);
         }
     }
+    
+    public GetConfigResponse getConfig(final GetConfig request) throws RemoteException
+    {
+        MessageContext _messageContext = null;
+        try
+        {
+            final OperationClient _operationClient = this._serviceClient.createClient(this._operations[14].getName());
+            _operationClient.getOptions().setAction("http://remotelabs.eng.uts.edu.au/rigclient/getConfig");
+            _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
+
+            this.addPropertyToOperationClient(_operationClient, WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR,
+                    "&");
+
+            _messageContext = new MessageContext();
+
+            SOAPEnvelope env = this.toEnvelope(Stub.getFactory(_operationClient.getOptions().getSoapVersionURI()),
+                    request, this.optimizeContent(new QName(
+                            "http://remotelabs.eng.uts.edu.au/rigclient/protocol", "getConfig")));
+
+            this._serviceClient.addHeadersToEnvelope(env);
+
+            _messageContext.setEnvelope(env);
+            _operationClient.addMessageContext(_messageContext);
+            _operationClient.execute(true);
+
+            final MessageContext _returnMessageContext = _operationClient
+                    .getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+            final SOAPEnvelope _returnEnv = _returnMessageContext.getEnvelope();
+
+            final Object object = this.fromOM(_returnEnv.getBody().getFirstElement(), GetConfigResponse.class,
+                    this.getEnvelopeNamespaces(_returnEnv));
+            return (GetConfigResponse) object;
+        }
+        catch (final AxisFault f)
+        {
+            final OMElement faultElt = f.getDetail();
+            if (faultElt != null)
+            {
+                if (this.faultExceptionNameMap.containsKey(faultElt.getQName()))
+                {
+                    try
+                    {
+                        final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
+                                .getQName());
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
+
+                        final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
+                        final Class<?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = this.fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
+
+                        throw new RemoteException(ex.getMessage(), ex);
+                    }
+                    catch (final ClassCastException e)
+                    {
+                        throw f;
+                    }
+                    catch (final ClassNotFoundException e)
+                    {
+                        throw f;
+                    }
+                    catch (final NoSuchMethodException e)
+                    {
+                        throw f;
+                    }
+                    catch (final InvocationTargetException e)
+                    {
+                        throw f;
+                    }
+                    catch (final IllegalAccessException e)
+                    {
+                        throw f;
+                    }
+                    catch (final InstantiationException e)
+                    {
+                        throw f;
+                    }
+                }
+                else
+                {
+                    throw f;
+                }
+            }
+            else
+            {
+                throw f;
+            }
+        }
+        finally
+        {
+            _messageContext.getTransportOut().getSender().cleanup(_messageContext);
+        }
+    }
+    
+    public SetConfigResponse setConfig(final SetConfig request) throws RemoteException
+    {
+        MessageContext _messageContext = null;
+        try
+        {
+            final OperationClient _operationClient = this._serviceClient.createClient(this._operations[15].getName());
+            _operationClient.getOptions().setAction("http://remotelabs.eng.uts.edu.au/rigclient/setConfig");
+            _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
+
+            this.addPropertyToOperationClient(_operationClient, WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR,
+                    "&");
+
+            _messageContext = new MessageContext();
+
+            SOAPEnvelope env = null;
+            env = this.toEnvelope(Stub.getFactory(_operationClient.getOptions().getSoapVersionURI()),
+                    request, this.optimizeContent(new QName(
+                            "http://remotelabs.eng.uts.edu.au/rigclient/protocol", "setConfig")));
+
+            this._serviceClient.addHeadersToEnvelope(env);
+
+            _messageContext.setEnvelope(env);
+            _operationClient.addMessageContext(_messageContext);
+            _operationClient.execute(true);
+
+            final MessageContext _returnMessageContext = _operationClient
+                    .getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+            final SOAPEnvelope _returnEnv = _returnMessageContext.getEnvelope();
+
+            final Object object = this.fromOM(_returnEnv.getBody().getFirstElement(), SetConfigResponse.class,
+                    this.getEnvelopeNamespaces(_returnEnv));
+            return (SetConfigResponse) object;
+        }
+        catch (final AxisFault f)
+        {
+            final OMElement faultElt = f.getDetail();
+            if (faultElt != null)
+            {
+                if (this.faultExceptionNameMap.containsKey(faultElt.getQName()))
+                {
+                    try
+                    {
+                        final String exceptionClassName = (String) this.faultExceptionClassNameMap.get(faultElt
+                                .getQName());
+                        final Class<?> exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
+
+                        final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
+                        final Class<?> messageClass = Class.forName(messageClassName);
+                        final Object messageObject = this.fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                        m.invoke(ex, new Object[] { messageObject });
+
+                        throw new RemoteException(ex.getMessage(), ex);
+                    }
+                    catch (final ClassCastException e)
+                    {
+                        throw f;
+                    }
+                    catch (final ClassNotFoundException e)
+                    {
+                        throw f;
+                    }
+                    catch (final NoSuchMethodException e)
+                    {
+                        throw f;
+                    }
+                    catch (final InvocationTargetException e)
+                    {
+                        throw f;
+                    }
+                    catch (final IllegalAccessException e)
+                    {
+                        throw f;
+                    }
+                    catch (final InstantiationException e)
+                    {
+                        throw f;
+                    }
+                }
+                else
+                {
+                    throw f;
+                }
+            }
+            else
+            {
+                throw f;
+            }
+        }
+        finally
+        {
+            _messageContext.getTransportOut().getSender().cleanup(_messageContext);
+        }
+    }
 
 
     private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
@@ -1821,6 +2026,36 @@ public class RigClientServiceImpl extends Stub
         {
             final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
             emptyEnvelope.getBody().addChild(param.getOMElement(AbortBatchControl.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetConfig param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetConfig.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final SetConfig param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(SetConfig.MY_QNAME, factory));
             return emptyEnvelope;
         }
         catch (final ADBException e)

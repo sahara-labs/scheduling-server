@@ -46,12 +46,17 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
 import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.BeanUtil;
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
  * UserType bean class.
@@ -68,35 +73,27 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
     private static final long serialVersionUID = 8325159414836793539L;
 
     /** User. */
-    protected String localUser;
+    protected String user;
 
     private static String generatePrefix(final String namespace)
     {
-        if ("http://remotelabs.eng.uts.edu.au/rigclient/protocol".equals(namespace)) return "ns1";
+        if ("http://remotelabs.eng.uts.edu.au/rigclient/protocol".equals(namespace))
+            return "ns1";
         return BeanUtil.getUniquePrefix();
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
     @Override
-    public org.apache.axiom.om.OMElement getOMElement(final QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final  org.apache.axiom.om.OMDataSource dataSource = new ADBDataSource(this, parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
-
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 UserType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
     }
 
     /**
@@ -138,11 +135,17 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
                 throw new ADBException("requestor cannot be null.");
             }
         }
-        elementList.add(new QName("", "user"));
-
-        if (this.localUser != null)
+        
+        if (this.asyncTracker)
         {
-            elementList.add(ConverterUtil.convertToString(this.localUser));
+            elementList.add(new QName("", "async"));
+            elementList.add(ConverterUtil.convertToString(this.async));
+        }
+        
+        elementList.add(new QName("", "user"));
+        if (this.user != null)
+        {
+            elementList.add(ConverterUtil.convertToString(this.user));
         }
         else
         {
@@ -151,8 +154,6 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
     }
-
-
 
     /**
      * Register a namespace prefix
@@ -178,18 +179,15 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
     }
 
     @Override
-    public void serialize(final QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException,
-            ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
     @Override
-    public void serialize(final QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType)
-            throws XMLStreamException, ADBException
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
 
         String prefix = null;
@@ -222,7 +220,8 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
             xmlWriter.writeStartElement(parentQName.getLocalPart());
         }
 
-        final String namespacePrefix = this.registerPrefix(xmlWriter, "http://remotelabs.eng.uts.edu.au/rigclient/protocol");
+        final String namespacePrefix = this.registerPrefix(xmlWriter,
+                "http://remotelabs.eng.uts.edu.au/rigclient/protocol");
         if (namespacePrefix != null && namespacePrefix.trim().length() > 0)
         {
             this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
@@ -302,6 +301,32 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
             }
             xmlWriter.writeEndElement();
         }
+        
+        if (this.asyncTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = UserType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "async", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "async");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("async");
+            }
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.async));
+            xmlWriter.writeEndElement();
+        }
 
         namespace = "";
         if (!namespace.equals(""))
@@ -326,13 +351,13 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
             xmlWriter.writeStartElement("user");
         }
 
-        if (this.localUser == null)
+        if (this.user == null)
         {
             throw new ADBException("user cannot be null.");
         }
         else
         {
-            xmlWriter.writeCharacters(this.localUser);
+            xmlWriter.writeCharacters(this.user);
         }
 
         xmlWriter.writeEndElement();
@@ -340,26 +365,21 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
     }
 
     /**
-     * @param param User
+     * @param param
+     *            User
      */
     public void setUser(final String param)
     {
-        this.localUser = param;
+        this.user = param;
     }
 
-    /**
-     * @return String user
-     */
     public String getUser()
     {
-        return this.localUser;
+        return this.user;
     }
 
-    /**
-     * Utility method to write an attribute with the ns prefix.
-     */
-    private void writeAttribute(final String prefix, final String namespace, final String attName, final String attValue,
-            final XMLStreamWriter xmlWriter) throws XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
@@ -371,11 +391,6 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
 
-    /**
-     * True if reader is MTOM aware.
-     *
-     * @return true if the reader supports MTOM
-     */
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
@@ -396,14 +411,6 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
      */
     public static class Factory
     {
-        /**
-         * Parses an XML representation of the surrounding and generates an instance
-         * of the surrounding class.
-         *
-         * @param reader stream containing an XML representation of this class
-         * @return instance of surrounding class
-         * @throws Exception XML representation is invalid
-         */
         public static UserType parse(final XMLStreamReader reader) throws Exception
         {
             final UserType object = new UserType();
@@ -416,7 +423,8 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
 
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
-                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
+                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
+                            "type");
                     if (fullTypeName != null)
                     {
                         String nsPrefix = null;
@@ -460,7 +468,18 @@ public class UserType extends AuthRequiredRequestType implements ADBBean
                     object.setRequestor(ConverterUtil.convertToString(content));
                     reader.next();
                 }
-
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                
+                if (reader.isStartElement() && new QName("", "async").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setAsync(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {

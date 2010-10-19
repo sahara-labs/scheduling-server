@@ -76,6 +76,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetAttribute;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetAttributeResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetBatchControlStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetBatchControlStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetConfig;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetConfigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.GetStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectable;
@@ -88,6 +90,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.PerformPrimitiv
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.PerformPrimitiveControlResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.Release;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetConfig;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetConfigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetMaintenance;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetMaintenanceResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetTestInterval;
@@ -159,7 +163,7 @@ public class RigClientAsyncServiceImpl extends Stub
         this.addAnonymousOperations();
 
         AxisOperation op;
-        this._operations = new AxisOperation[14];
+        this._operations = new AxisOperation[16];
         
         op = new OutInAxisOperation();
         op.setName(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "performPrimitiveControl"));
@@ -230,9 +234,19 @@ public class RigClientAsyncServiceImpl extends Stub
         op.setName(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "abortBatchControl"));
         this._service.addOperation(op);
         this._operations[13] = op;
+        
+        op = new OutInAxisOperation();
+        op.setName(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "getConfig"));
+        this._service.addOperation(op);
+        this._operations[14] = op;
+        
+        op = new OutInAxisOperation();
+        op.setName(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "setConfig"));
+        this._service.addOperation(op);
+        this._operations[15] = op;
     }
 
-    public void startperformPrimitiveControl(final PerformPrimitiveControl request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callPerformPrimitiveControl(final PerformPrimitiveControl request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
 
@@ -259,11 +273,11 @@ public class RigClientAsyncServiceImpl extends Stub
                     final SOAPEnvelope resultEnv = resultContext.getEnvelope();
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             PerformPrimitiveControlResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultperformPrimitiveControl((PerformPrimitiveControlResponse) object);
+                    callback.performPrimitiveControlResponseCallback((PerformPrimitiveControlResponse) object);
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorperformPrimitiveControl(e);
+                    callback.performPrimitiveControlErrorCallback(e);
                 }
             }
 
@@ -294,50 +308,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorperformPrimitiveControl(new RemoteException(ex.getMessage(), ex));
+                                callback.performPrimitiveControlErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {                                
-                                callback.receiveErrorperformPrimitiveControl(f);
+                                callback.performPrimitiveControlErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorperformPrimitiveControl(f);
+                                callback.performPrimitiveControlErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorperformPrimitiveControl(f);
+                                callback.performPrimitiveControlErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorperformPrimitiveControl(f);
+                                callback.performPrimitiveControlErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorperformPrimitiveControl(f);
+                                callback.performPrimitiveControlErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorperformPrimitiveControl(f);
+                                callback.performPrimitiveControlErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorperformPrimitiveControl(f);
+                                callback.performPrimitiveControlErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorperformPrimitiveControl(f);
+                            callback.performPrimitiveControlErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorperformPrimitiveControl(f);
+                        callback.performPrimitiveControlErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorperformPrimitiveControl(error);
+                    callback.performPrimitiveControlErrorCallback(error);
                 }
             }
 
@@ -357,7 +371,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorperformPrimitiveControl(axisFault);
+                    callback.performPrimitiveControlErrorCallback(axisFault);
                 }
             }
         });
@@ -372,7 +386,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startgetBatchControlStatus(final GetBatchControlStatus request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callGetBatchControlStatus(final GetBatchControlStatus request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[1].getName());
@@ -402,11 +416,11 @@ public class RigClientAsyncServiceImpl extends Stub
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             GetBatchControlStatusResponse.class, RigClientAsyncServiceImpl.this
                                     .getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultgetBatchControlStatus((GetBatchControlStatusResponse) object);
+                    callback.getBatchControlStatusResponseCallback((GetBatchControlStatusResponse) object);
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorgetBatchControlStatus(e);
+                    callback.getBatchControlStatusErrorCallback(e);
                 }
             }
 
@@ -436,50 +450,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                 final Method m = exceptionClass.getMethod("setFaultMessage",
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
-                                callback.receiveErrorgetBatchControlStatus(new RemoteException(ex.getMessage(), ex));
+                                callback.getBatchControlStatusErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {
-                                callback.receiveErrorgetBatchControlStatus(f);
+                                callback.getBatchControlStatusErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {
-                                callback.receiveErrorgetBatchControlStatus(f);
+                                callback.getBatchControlStatusErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {
-                                callback.receiveErrorgetBatchControlStatus(f);
+                                callback.getBatchControlStatusErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {
-                                callback.receiveErrorgetBatchControlStatus(f);
+                                callback.getBatchControlStatusErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {
-                                callback.receiveErrorgetBatchControlStatus(f);
+                                callback.getBatchControlStatusErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {
-                                callback.receiveErrorgetBatchControlStatus(f);
+                                callback.getBatchControlStatusErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {
-                                callback.receiveErrorgetBatchControlStatus(f);
+                                callback.getBatchControlStatusErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorgetBatchControlStatus(f);
+                            callback.getBatchControlStatusErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorgetBatchControlStatus(f);
+                        callback.getBatchControlStatusErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorgetBatchControlStatus(error);
+                    callback.getBatchControlStatusErrorCallback(error);
                 }
             }
 
@@ -499,7 +513,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorgetBatchControlStatus(axisFault);
+                    callback.getBatchControlStatusErrorCallback(axisFault);
                 }
             }
         });
@@ -656,7 +670,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startgetAttribute(final GetAttribute request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callGetAttribute(final GetAttribute request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[3].getName());
@@ -684,11 +698,11 @@ public class RigClientAsyncServiceImpl extends Stub
 
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             GetAttributeResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultgetAttribute((GetAttributeResponse) object);
+                    callback.getAttributeResponseCallback((GetAttributeResponse) object);
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorgetAttribute(e);
+                    callback.getAttributeErrorCallback(e);
                 }
             }
 
@@ -718,57 +732,57 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorgetAttribute(new RemoteException(ex.getMessage(), ex));
+                                callback.getAttributeErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {
                                 
-                                callback.receiveErrorgetAttribute(f);
+                                callback.getAttributeErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {
                                 
-                                callback.receiveErrorgetAttribute(f);
+                                callback.getAttributeErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {
                                 
-                                callback.receiveErrorgetAttribute(f);
+                                callback.getAttributeErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {
                                 
-                                callback.receiveErrorgetAttribute(f);
+                                callback.getAttributeErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {
                                 
-                                callback.receiveErrorgetAttribute(f);
+                                callback.getAttributeErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {
                                 
-                                callback.receiveErrorgetAttribute(f);
+                                callback.getAttributeErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {
                                 
-                                callback.receiveErrorgetAttribute(f);
+                                callback.getAttributeErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorgetAttribute(f);
+                            callback.getAttributeErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorgetAttribute(f);
+                        callback.getAttributeErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorgetAttribute(error);
+                    callback.getAttributeErrorCallback(error);
                 }
             }
 
@@ -788,7 +802,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorgetAttribute(axisFault);
+                    callback.getAttributeErrorCallback(axisFault);
                 }
             }
         });
@@ -803,7 +817,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startslaveRelease(final SlaveRelease request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callSlaveRelease(final SlaveRelease request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[4].getName());
@@ -834,12 +848,12 @@ public class RigClientAsyncServiceImpl extends Stub
 
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             SlaveReleaseResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultslaveRelease((SlaveReleaseResponse) object);
+                    callback.slaveReleaseResponseCallback((SlaveReleaseResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorslaveRelease(e);
+                    callback.slaveReleaseErrorCallback(e);
                 }
             }
 
@@ -870,50 +884,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorslaveRelease(new RemoteException(ex.getMessage(), ex));
+                                callback.slaveReleaseErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {       
-                                callback.receiveErrorslaveRelease(f);
+                                callback.slaveReleaseErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorslaveRelease(f);
+                                callback.slaveReleaseErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorslaveRelease(f);
+                                callback.slaveReleaseErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorslaveRelease(f);
+                                callback.slaveReleaseErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorslaveRelease(f);
+                                callback.slaveReleaseErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorslaveRelease(f);
+                                callback.slaveReleaseErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorslaveRelease(f);
+                                callback.slaveReleaseErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorslaveRelease(f);
+                            callback.slaveReleaseErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorslaveRelease(f);
+                        callback.slaveReleaseErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorslaveRelease(error);
+                    callback.slaveReleaseErrorCallback(error);
                 }
             }
 
@@ -933,7 +947,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorslaveRelease(axisFault);
+                    callback.slaveReleaseErrorCallback(axisFault);
                 }
             }
         });
@@ -1233,7 +1247,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startsetTestInterval(final SetTestInterval request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callSetTestInterval(final SetTestInterval request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[7].getName());
@@ -1261,12 +1275,12 @@ public class RigClientAsyncServiceImpl extends Stub
 
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             SetTestIntervalResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultsetTestInterval((SetTestIntervalResponse) object);
+                    callback.setTestIntervalResponseCallback((SetTestIntervalResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorsetTestInterval(e);
+                    callback.setTestIntervalErrorCallback(e);
                 }
             }
 
@@ -1298,50 +1312,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorsetTestInterval(new RemoteException(ex.getMessage(), ex));
+                                callback.setTestIntervalErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {
-                                callback.receiveErrorsetTestInterval(f);
+                                callback.setTestIntervalErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorsetTestInterval(f);
+                                callback.setTestIntervalErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorsetTestInterval(f);
+                                callback.setTestIntervalErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorsetTestInterval(f);
+                                callback.setTestIntervalErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorsetTestInterval(f);
+                                callback.setTestIntervalErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorsetTestInterval(f);
+                                callback.setTestIntervalErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorsetTestInterval(f);
+                                callback.setTestIntervalErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorsetTestInterval(f);
+                            callback.setTestIntervalErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorsetTestInterval(f);
+                        callback.setTestIntervalErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorsetTestInterval(error);
+                    callback.setTestIntervalErrorCallback(error);
                 }
             }
 
@@ -1361,7 +1375,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorsetTestInterval(axisFault);
+                    callback.setTestIntervalErrorCallback(axisFault);
                 }
             }
         });
@@ -1376,7 +1390,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startsetMaintenance(final SetMaintenance request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callSetMaintenance(final SetMaintenance request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[8].getName());
@@ -1405,12 +1419,12 @@ public class RigClientAsyncServiceImpl extends Stub
 
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             SetMaintenanceResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultsetMaintenance((SetMaintenanceResponse) object);
+                    callback.setMaintenanceResponseCallback((SetMaintenanceResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorsetMaintenance(e);
+                    callback.setMaintenanceErrorCallback(e);
                 }
             }
 
@@ -1441,50 +1455,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorsetMaintenance(new RemoteException(ex.getMessage(), ex));
+                                callback.setMaintenanceErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {       
-                                callback.receiveErrorsetMaintenance(f);
+                                callback.setMaintenanceErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorsetMaintenance(f);
+                                callback.setMaintenanceErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorsetMaintenance(f);
+                                callback.setMaintenanceErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorsetMaintenance(f);
+                                callback.setMaintenanceErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorsetMaintenance(f);
+                                callback.setMaintenanceErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorsetMaintenance(f);
+                                callback.setMaintenanceErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorsetMaintenance(f);
+                                callback.setMaintenanceErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorsetMaintenance(f);
+                            callback.setMaintenanceErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorsetMaintenance(f);
+                        callback.setMaintenanceErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorsetMaintenance(error);
+                    callback.setMaintenanceErrorCallback(error);
                 }
             }
 
@@ -1504,7 +1518,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorsetMaintenance(axisFault);
+                    callback.setMaintenanceErrorCallback(axisFault);
                 }
             }
         });
@@ -1519,8 +1533,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-
-    public void startperformBatchControl(final PerformBatchControl request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callPerformBatchControl(final PerformBatchControl request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[9].getName());
@@ -1553,11 +1566,11 @@ public class RigClientAsyncServiceImpl extends Stub
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             PerformBatchControlResponse.class, RigClientAsyncServiceImpl.this
                                     .getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultperformBatchControl((PerformBatchControlResponse) object);
+                    callback.performBatchControlResponseCallback((PerformBatchControlResponse) object);
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorperformBatchControl(e);
+                    callback.performBatchControlErrorCallback(e);
                 }
             }
 
@@ -1588,50 +1601,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorperformBatchControl(new RemoteException(ex.getMessage(), ex));
+                                callback.performBatchControlErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {       
-                                callback.receiveErrorperformBatchControl(f);
+                                callback.performBatchControlErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorperformBatchControl(f);
+                                callback.performBatchControlErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorperformBatchControl(f);
+                                callback.performBatchControlErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorperformBatchControl(f);
+                                callback.performBatchControlErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorperformBatchControl(f);
+                                callback.performBatchControlErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorperformBatchControl(f);
+                                callback.performBatchControlErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorperformBatchControl(f);
+                                callback.performBatchControlErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorperformBatchControl(f);
+                            callback.performBatchControlErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorperformBatchControl(f);
+                        callback.performBatchControlErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorperformBatchControl(error);
+                    callback.performBatchControlErrorCallback(error);
                 }
             }
 
@@ -1651,7 +1664,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorperformBatchControl(axisFault);
+                    callback.performBatchControlErrorCallback(axisFault);
                 }
             }
         });
@@ -1666,7 +1679,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startgetStatus(final GetStatus request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callGetStatus(final GetStatus request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[10].getName());
@@ -1698,12 +1711,12 @@ public class RigClientAsyncServiceImpl extends Stub
 
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             GetStatusResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultgetStatus((GetStatusResponse) object);
+                    callback.getStatusResponseCallback((GetStatusResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorgetStatus(e);
+                    callback.getStatusErrorCallback(e);
                 }
             }
 
@@ -1734,50 +1747,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorgetStatus(new RemoteException(ex.getMessage(), ex));
+                                callback.getStatusErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {                                
-                                callback.receiveErrorgetStatus(f);
+                                callback.getStatusErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorgetStatus(f);
+                                callback.getStatusErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorgetStatus(f);
+                                callback.getStatusErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorgetStatus(f);
+                                callback.getStatusErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorgetStatus(f);
+                                callback.getStatusErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorgetStatus(f);
+                                callback.getStatusErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorgetStatus(f);
+                                callback.getStatusErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorgetStatus(f);
+                            callback.getStatusErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorgetStatus(f);
+                        callback.getStatusErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorgetStatus(error);
+                    callback.getStatusErrorCallback(error);
                 }
             }
 
@@ -1797,7 +1810,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorgetStatus(axisFault);
+                    callback.getStatusErrorCallback(axisFault);
                 }
             }
         });
@@ -1956,7 +1969,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startslaveAllocate(final SlaveAllocate request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callSlaveAllocate(final SlaveAllocate request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[12].getName());
@@ -1987,11 +2000,11 @@ public class RigClientAsyncServiceImpl extends Stub
                     final SOAPEnvelope resultEnv = resultContext.getEnvelope();
                     final Object object = RigClientAsyncServiceImpl.this.fromOM(resultEnv.getBody().getFirstElement(),
                             SlaveAllocateResponse.class, RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultslaveAllocate((SlaveAllocateResponse) object);
+                    callback.slaveAllocateResponseCallback((SlaveAllocateResponse) object);
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorslaveAllocate(e);
+                    callback.slaveAllocateErrorCallback(e);
                 }
             }
 
@@ -2022,50 +2035,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorslaveAllocate(new RemoteException(ex.getMessage(), ex));
+                                callback.slaveAllocateErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {       
-                                callback.receiveErrorslaveAllocate(f);
+                                callback.slaveAllocateErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorslaveAllocate(f);
+                                callback.slaveAllocateErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorslaveAllocate(f);
+                                callback.slaveAllocateErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorslaveAllocate(f);
+                                callback.slaveAllocateErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorslaveAllocate(f);
+                                callback.slaveAllocateErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorslaveAllocate(f);
+                                callback.slaveAllocateErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorslaveAllocate(f);
+                                callback.slaveAllocateErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorslaveAllocate(f);
+                            callback.slaveAllocateErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorslaveAllocate(f);
+                        callback.slaveAllocateErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorslaveAllocate(error);
+                    callback.slaveAllocateErrorCallback(error);
                 }
             }
 
@@ -2085,7 +2098,7 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorslaveAllocate(axisFault);
+                    callback.slaveAllocateErrorCallback(axisFault);
                 }
             }
         });
@@ -2100,7 +2113,7 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    public void startabortBatchControl(final AbortBatchControl request, final RigClientAsyncServiceCallbackHandler callback)
+    public void callAbortBatchControl(final AbortBatchControl request, final RigClientAsyncServiceCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[13].getName());
@@ -2133,12 +2146,12 @@ public class RigClientAsyncServiceImpl extends Stub
                     final Object object = RigClientAsyncServiceImpl.this
                             .fromOM(resultEnv.getBody().getFirstElement(), AbortBatchControlResponse.class,
                                     RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultabortBatchControl((AbortBatchControlResponse) object);
+                    callback.abortBatchControlResponseCallback((AbortBatchControlResponse) object);
 
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorabortBatchControl(e);
+                    callback.abortBatchControlErrorCallback(e);
                 }
             }
 
@@ -2169,50 +2182,50 @@ public class RigClientAsyncServiceImpl extends Stub
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorabortBatchControl(new RemoteException(ex.getMessage(), ex));
+                                callback.abortBatchControlErrorCallback(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {
-                                callback.receiveErrorabortBatchControl(f);
+                                callback.abortBatchControlErrorCallback(f);
                             }
                             catch (final ClassNotFoundException e)
                             {   
-                                callback.receiveErrorabortBatchControl(f);
+                                callback.abortBatchControlErrorCallback(f);
                             }
                             catch (final NoSuchMethodException e)
                             {   
-                                callback.receiveErrorabortBatchControl(f);
+                                callback.abortBatchControlErrorCallback(f);
                             }
                             catch (final InvocationTargetException e)
                             {   
-                                callback.receiveErrorabortBatchControl(f);
+                                callback.abortBatchControlErrorCallback(f);
                             }
                             catch (final IllegalAccessException e)
                             {   
-                                callback.receiveErrorabortBatchControl(f);
+                                callback.abortBatchControlErrorCallback(f);
                             }
                             catch (final InstantiationException e)
                             {   
-                                callback.receiveErrorabortBatchControl(f);
+                                callback.abortBatchControlErrorCallback(f);
                             }
                             catch (final AxisFault e)
                             {   
-                                callback.receiveErrorabortBatchControl(f);
+                                callback.abortBatchControlErrorCallback(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorabortBatchControl(f);
+                            callback.abortBatchControlErrorCallback(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorabortBatchControl(f);
+                        callback.abortBatchControlErrorCallback(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorabortBatchControl(error);
+                    callback.abortBatchControlErrorCallback(error);
                 }
             }
 
@@ -2232,7 +2245,291 @@ public class RigClientAsyncServiceImpl extends Stub
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorabortBatchControl(axisFault);
+                    callback.abortBatchControlErrorCallback(axisFault);
+                }
+            }
+        });
+
+        CallbackReceiver _callbackReceiver = null;
+        if (this._operations[13].getMessageReceiver() == null && _operationClient.getOptions().isUseSeparateListener())
+        {
+            _callbackReceiver = new CallbackReceiver();
+            this._operations[13].setMessageReceiver(_callbackReceiver);
+        }
+
+        _operationClient.execute(false);
+    }
+    
+    public void callGetConfig(final GetConfig request, final RigClientAsyncServiceCallbackHandler callback)
+            throws RemoteException
+    {
+        final OperationClient _operationClient = this._serviceClient.createClient(this._operations[14].getName());
+        _operationClient.getOptions().setAction("http://remotelabs.eng.uts.edu.au/rigclient/getConfig");
+        _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
+
+        this.addPropertyToOperationClient(_operationClient, WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
+        
+        SOAPEnvelope env = null;
+        final MessageContext _messageContext = new MessageContext();
+
+        env = this.toEnvelope(Stub.getFactory(_operationClient.getOptions().getSoapVersionURI()), request,
+                this.optimizeContent(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol", "getConfig")));
+        
+        this._serviceClient.addHeadersToEnvelope(env);
+        _messageContext.setEnvelope(env);
+
+        _operationClient.addMessageContext(_messageContext);
+        _operationClient.setCallback(new AxisCallback()
+        {
+            @Override
+            public void onMessage(final MessageContext resultContext)
+            {
+                try
+                {
+                    final SOAPEnvelope resultEnv = resultContext.getEnvelope();
+                    final Object object = RigClientAsyncServiceImpl.this
+                            .fromOM(resultEnv.getBody().getFirstElement(), GetConfigResponse.class,
+                                    RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
+                    callback.getConfigResponseCallback((GetConfigResponse) object);
+                }
+                catch (final AxisFault e)
+                {
+                    callback.getConfigErrorCallback(e);
+                }
+            }
+
+            @Override
+            public void onError(final Exception error)
+            {
+                if (error instanceof AxisFault)
+                {
+                    final AxisFault f = (AxisFault) error;
+                    final OMElement faultElt = f.getDetail();
+                    if (faultElt != null)
+                    {
+                        if (RigClientAsyncServiceImpl.this.faultExceptionNameMap.containsKey(faultElt.getQName()))
+                        {
+                            try
+                            {
+                                final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
+                                        .get(faultElt.getQName());
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
+                                final Exception ex = (Exception) exceptionClass.newInstance();
+                                
+                                final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
+                                        .get(faultElt.getQName());
+                                final Class<?> messageClass = Class.forName(messageClassName);
+                                final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
+                                        null);
+                                final Method m = exceptionClass.getMethod("setFaultMessage", new Class[] { messageClass });
+                                m.invoke(ex, new Object[] { messageObject });
+
+                                callback.getConfigErrorCallback(new RemoteException(ex.getMessage(), ex));
+                            }
+                            catch (final ClassCastException e)
+                            {
+                                callback.getConfigErrorCallback(f);
+                            }
+                            catch (final ClassNotFoundException e)
+                            {   
+                                callback.getConfigErrorCallback(f);
+                            }
+                            catch (final NoSuchMethodException e)
+                            {   
+                                callback.getConfigErrorCallback(f);
+                            }
+                            catch (final InvocationTargetException e)
+                            {   
+                                callback.getConfigErrorCallback(f);
+                            }
+                            catch (final IllegalAccessException e)
+                            {   
+                                callback.getConfigErrorCallback(f);
+                            }
+                            catch (final InstantiationException e)
+                            {   
+                                callback.getConfigErrorCallback(f);
+                            }
+                            catch (final AxisFault e)
+                            {   
+                                callback.getConfigErrorCallback(f);
+                            }
+                        }
+                        else
+                        {
+                            callback.getConfigErrorCallback(f);
+                        }
+                    }
+                    else
+                    {
+                        callback.getConfigErrorCallback(f);
+                    }
+                }
+                else
+                {
+                    callback.getConfigErrorCallback(error);
+                }
+            }
+
+            @Override
+            public void onFault(final MessageContext faultContext)
+            {
+                final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
+                this.onError(fault);
+            }
+
+            @Override
+            public void onComplete()
+            {
+                try
+                {
+                    _messageContext.getTransportOut().getSender().cleanup(_messageContext);
+                }
+                catch (final AxisFault axisFault)
+                {
+                    callback.getConfigErrorCallback(axisFault);
+                }
+            }
+        });
+
+        CallbackReceiver _callbackReceiver = null;
+        if (this._operations[13].getMessageReceiver() == null && _operationClient.getOptions().isUseSeparateListener())
+        {
+            _callbackReceiver = new CallbackReceiver();
+            this._operations[13].setMessageReceiver(_callbackReceiver);
+        }
+
+        _operationClient.execute(false);
+    }
+    
+    public void callSetConfigControl(final SetConfig request, final RigClientAsyncServiceCallbackHandler callback)
+            throws RemoteException
+    {
+        final OperationClient _operationClient = this._serviceClient.createClient(this._operations[15].getName());
+        _operationClient.getOptions().setAction("http://remotelabs.eng.uts.edu.au/rigclient/setConfig");
+        _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
+
+        this.addPropertyToOperationClient(_operationClient, WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
+        
+        final MessageContext _messageContext = new MessageContext();
+        SOAPEnvelope env = this.toEnvelope(Stub.getFactory(_operationClient.getOptions().getSoapVersionURI()), request,
+                this.optimizeContent(new QName("http://remotelabs.eng.uts.edu.au/rigclient/protocol",
+                        "setConfig")));
+        
+        this._serviceClient.addHeadersToEnvelope(env);
+        _messageContext.setEnvelope(env);
+
+        _operationClient.addMessageContext(_messageContext);
+        _operationClient.setCallback(new AxisCallback()
+        {
+            @Override
+            public void onMessage(final MessageContext resultContext)
+            {
+                try
+                {
+                    final SOAPEnvelope resultEnv = resultContext.getEnvelope();
+                    final Object object = RigClientAsyncServiceImpl.this
+                            .fromOM(resultEnv.getBody().getFirstElement(), SetConfigResponse.class,
+                                    RigClientAsyncServiceImpl.this.getEnvelopeNamespaces(resultEnv));
+                    callback.setConfigResponseCallback((SetConfigResponse) object);
+                }
+                catch (final AxisFault e)
+                {
+                    callback.setConfigErrorCallback(e);
+                }
+            }
+
+            @Override
+            public void onError(final Exception error)
+            {
+                if (error instanceof AxisFault)
+                {
+                    final AxisFault f = (AxisFault) error;
+                    final OMElement faultElt = f.getDetail();
+                    if (faultElt != null)
+                    {
+                        if (RigClientAsyncServiceImpl.this.faultExceptionNameMap.containsKey(faultElt.getQName()))
+                        {
+                            try
+                            {
+                                final String exceptionClassName = (String) RigClientAsyncServiceImpl.this.faultExceptionClassNameMap
+                                        .get(faultElt.getQName());
+                                final Class<?> exceptionClass = Class.forName(exceptionClassName);
+                                final Exception ex = (Exception) exceptionClass.newInstance();
+                                
+                                final String messageClassName = (String) RigClientAsyncServiceImpl.this.faultMessageMap
+                                        .get(faultElt.getQName());
+                                final Class<?> messageClass = Class.forName(messageClassName);
+                                final Object messageObject = RigClientAsyncServiceImpl.this.fromOM(faultElt, messageClass,
+                                        null);
+                                final Method m = exceptionClass.getMethod("setFaultMessage",
+                                        new Class[] { messageClass });
+                                m.invoke(ex, new Object[] { messageObject });
+
+                                callback.setConfigErrorCallback(new RemoteException(ex.getMessage(), ex));
+                            }
+                            catch (final ClassCastException e)
+                            {
+                                callback.setConfigErrorCallback(f);
+                            }
+                            catch (final ClassNotFoundException e)
+                            {   
+                                callback.setConfigErrorCallback(f);
+                            }
+                            catch (final NoSuchMethodException e)
+                            {   
+                                callback.setConfigErrorCallback(f);
+                            }
+                            catch (final InvocationTargetException e)
+                            {   
+                                callback.setConfigErrorCallback(f);
+                            }
+                            catch (final IllegalAccessException e)
+                            {   
+                                callback.setConfigErrorCallback(f);
+                            }
+                            catch (final InstantiationException e)
+                            {   
+                                callback.setConfigErrorCallback(f);
+                            }
+                            catch (final AxisFault e)
+                            {   
+                                callback.setConfigErrorCallback(f);
+                            }
+                        }
+                        else
+                        {
+                            callback.setConfigErrorCallback(f);
+                        }
+                    }
+                    else
+                    {
+                        callback.setConfigErrorCallback(f);
+                    }
+                }
+                else
+                {
+                    callback.setConfigErrorCallback(error);
+                }
+            }
+
+            @Override
+            public void onFault(final MessageContext faultContext)
+            {
+                final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
+                this.onError(fault);
+            }
+
+            @Override
+            public void onComplete()
+            {
+                try
+                {
+                    _messageContext.getTransportOut().getSender().cleanup(_messageContext);
+                }
+                catch (final AxisFault axisFault)
+                {
+                    callback.setConfigErrorCallback(axisFault);
                 }
             }
         });
@@ -2247,9 +2544,6 @@ public class RigClientAsyncServiceImpl extends Stub
         _operationClient.execute(false);
     }
 
-    /**
-     * A utility method that copies the namepaces from the SOAPEnvelope
-     */
     private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
     {
         final Map<String, String> returnMap = new HashMap<String, String>();
@@ -2485,6 +2779,36 @@ public class RigClientAsyncServiceImpl extends Stub
         {
             final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
             emptyEnvelope.getBody().addChild(param.getOMElement(AbortBatchControl.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetConfig param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetConfig.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final SetConfig param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(SetConfig.MY_QNAME, factory));
             return emptyEnvelope;
         }
         catch (final ADBException e)

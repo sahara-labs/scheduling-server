@@ -35,11 +35,6 @@
  * @date 5th April 2009
  */
 
-/**
- * BatchStatusResponseType.java This file was auto-generated from WSDL by the
- * Apache Axis2 version: 1.4.1 Built on : Aug 19, 2008 (10:13:44 LKT)
- */
-
 package au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types;
 
 import java.io.Serializable;
