@@ -116,6 +116,38 @@ Date: 5th February 2009
       		</xsd:extension>
       	</xsd:complexContent>
       </xsd:complexType>
+      <xsd:element name="allocateCallback"
+      	type="lrp:CallbackRequestType">
+      </xsd:element>
+      <xsd:element name="allocateCallbackResponse"
+      	type="lrp:ProviderResponse">
+      </xsd:element>
+      <xsd:element name="releaseCallback"
+      	type="lrp:CallbackRequestType">
+      </xsd:element>
+      <xsd:element name="releaseCallbackResponse"
+      	type="lrp:ProviderResponse">
+      </xsd:element>
+    
+      <xsd:complexType name="CallbackRequestType">
+      	<xsd:complexContent>
+      		<xsd:extension base="lrp:RigType">
+      			<xsd:sequence>
+      				<xsd:element name="success" type="xsd:boolean">
+      				</xsd:element>
+      				<xsd:element name="error" type="lrp:ErrorType">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+    
+      <xsd:complexType name="ErrorType">
+      	<xsd:sequence>
+      		<xsd:element name="code" type="xsd:string"></xsd:element>
+      		<xsd:element name="reason" type="xsd:string"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
     </xsd:schema>
   </wsdl:types>
   
@@ -137,7 +169,19 @@ Date: 5th February 2009
   <wsdl:message name="removeRigResponse">
   	<wsdl:part name="parameters" element="lrp:removeRigResponse"></wsdl:part>
   </wsdl:message>
-  
+
+  <wsdl:message name="allocateCallbackRequest">
+  	<wsdl:part name="parameters" element="lrp:allocateCallback"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="allocateCallbackResponse">
+  	<wsdl:part name="parameters" element="lrp:allocateCallbackResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseCallbackRequest">
+  	<wsdl:part name="parameters" element="lrp:releaseCallback"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseCallbackResponse">
+  	<wsdl:part name="parameters" element="lrp:releaseCallbackResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="RigProvider">
     <wsdl:operation name="registerRig">
       <wsdl:input message="lrp:registerRigRequest"/>
@@ -151,10 +195,17 @@ Date: 5th February 2009
     	<wsdl:input message="lrp:removeRigRequest"></wsdl:input>
     	<wsdl:output message="lrp:removeRigResponse"></wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="allocateCallback">
+    	<wsdl:input message="lrp:allocateCallbackRequest"></wsdl:input>
+    	<wsdl:output message="lrp:allocateCallbackResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="releaseCallback">
+    	<wsdl:input message="lrp:releaseCallbackRequest"></wsdl:input>
+    	<wsdl:output message="lrp:releaseCallbackResponse"></wsdl:output>
+    </wsdl:operation>
   </wsdl:portType>
   
-  <wsdl:binding name="LocalRigProviderSOAP"
-  	type="lrp:RigProvider">
+  <wsdl:binding name="RigProviderSOAP" type="lrp:RigProvider">
   	<soap:binding style="document"
   		transport="http://schemas.xmlsoap.org/soap/http" />
   	<wsdl:operation name="registerRig">
@@ -187,9 +238,29 @@ Date: 5th February 2009
   			<soap:body use="literal" />
   		</wsdl:output>
   	</wsdl:operation>
+  	<wsdl:operation name="allocateCallback">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/allocateCallback" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="releaseCallback">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/releaseCallback" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="RigProvider">
-    <wsdl:port binding="lrp:LocalRigProviderSOAP" name="LocalRigProviderSOAP">
+    <wsdl:port binding="lrp:RigProviderSOAP" name="RigProviderSOAP">
       <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-LocalRigProvider/services/LocalRigProvider"/>
     </wsdl:port>
   </wsdl:service>

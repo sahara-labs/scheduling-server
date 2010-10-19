@@ -1,5 +1,5 @@
-Bundle-Name: LocalRigProvider
-Bundle-SymbolicName: SchedulingServer-LocalRigProvider
+Bundle-Name: RigProvider
+Bundle-SymbolicName: SchedulingServer-RigProvider
 Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
