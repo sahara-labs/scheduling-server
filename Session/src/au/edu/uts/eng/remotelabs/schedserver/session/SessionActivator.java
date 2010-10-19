@@ -37,13 +37,17 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.session;
 
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
@@ -100,6 +104,23 @@ public class SessionActivator implements BundleActivator
 	    this.soapReg.unregister();
 	    this.terminatorService.unregister();
 	    this.sessionCheckerReg.unregister();
+	    
+	    /* Terminate all in progress sessions. */
+	    Session ses = DataAccessActivator.getNewSession();
+        if (ses != null)
+        {
+            Query qu = ses.createQuery("UPDATE Session SET active=:false, removal_reason=:reason, removal_time=:time " +
+                    " WHERE active=:true");
+            qu.setBoolean("false", false);
+            qu.setBoolean("true", true);
+            qu.setString("reason", "Scheduling Server shutting down.");
+            qu.setTimestamp("time", new Date());
+            
+            ses.beginTransaction();
+            int num = qu.executeUpdate();
+            ses.getTransaction().commit();
+            this.logger.info("Terminated " + num + " sessions for shutdown.");
+            ses.close();
+        }
 	}
-
 }
