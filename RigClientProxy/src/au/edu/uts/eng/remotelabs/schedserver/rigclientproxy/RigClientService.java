@@ -80,9 +80,9 @@ public class RigClientService
      * Creates a service client for the rig.
      *
      * @param rig 
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(Rig rig) throws RigClientProxyException
+    public RigClientService(Rig rig) throws RigProxyException
     {
         this(rig.getName());
     }
@@ -93,9 +93,9 @@ public class RigClientService
      * 
      * @param rig
      * @param tm timeout in seconds
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(Rig rig, int tm) throws RigClientProxyException
+    public RigClientService(Rig rig, int tm) throws RigProxyException
     {
         this(rig.getName(), tm);
     }
@@ -104,18 +104,18 @@ public class RigClientService
      * Creates a service client for the rig with the specified name.
      *
      * @param rig rig name
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(String rig) throws RigClientProxyException
+    public RigClientService(String rig) throws RigProxyException
     {
         this.rig = rig;
         this.logger = LoggerActivator.getLogger();
         
-        if ((this.tok = RigClientProxyActivator.getIdentityTokenRegister()) == null)
+        if ((this.tok = RigProxyActivator.getIdentityTokenRegister()) == null)
         {
             this.logger.error("Unable to create a rig client proxy because no identity token register is found. " +
                     "Ensure the SchedulingServer-LocalRigProvider bundle is installed and active.");
-            throw new RigClientProxyException("Identity token register not found.");
+            throw new RigProxyException("Identity token register not found.");
         }
         
         RigDao dao = new RigDao();
@@ -124,7 +124,7 @@ public class RigClientService
         if (record == null || record.getContactUrl() == null)
         {
             this.logger.error("Unable to create a rig client proxy to rig " + rig + " because unable to determine its address.");
-            throw new RigClientProxyException("Unable to find rig address.");
+            throw new RigProxyException("Unable to find rig address.");
         }
         
         this.logger.debug("Creating a rig client proxy to " + rig + " at address " + record.getContactUrl() + '.');
@@ -136,7 +136,7 @@ public class RigClientService
         catch (AxisFault e)
         {
             this.logger.error("Unable to create a rig client proxy because of Axis fault with message: " + e.getMessage() + ".");
-            throw new RigClientProxyException(e.getMessage(), e);
+            throw new RigProxyException(e.getMessage(), e);
         }
     }
     
@@ -146,18 +146,18 @@ public class RigClientService
      * 
      * @param rig rig name
      * @param tm timeout in seconds
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(String rig, int tm) throws RigClientProxyException
+    public RigClientService(String rig, int tm) throws RigProxyException
     {
         this.rig = rig;
         this.logger = LoggerActivator.getLogger();
         
-        if ((this.tok = RigClientProxyActivator.getIdentityTokenRegister()) == null)
+        if ((this.tok = RigProxyActivator.getIdentityTokenRegister()) == null)
         {
             this.logger.error("Unable to create a rig client proxy because no identity token register is found. " +
                     "Ensure the SchedulingServer-LocalRigProvider bundle is installed and active.");
-            throw new RigClientProxyException("Identity token register not found.");
+            throw new RigProxyException("Identity token register not found.");
         }
         
         RigDao dao = new RigDao();
@@ -166,7 +166,7 @@ public class RigClientService
         if (record == null || record.getContactUrl() == null)
         {
             this.logger.error("Unable to create a rig client proxy to rig " + rig + " because unable to determine its address.");
-            throw new RigClientProxyException("Unable to find rig address.");
+            throw new RigProxyException("Unable to find rig address.");
         }
         
         this.logger.debug("Creating a rig client proxy to " + rig + " at address " + record.getContactUrl() + '.');
@@ -178,7 +178,7 @@ public class RigClientService
         catch (AxisFault e)
         {
             this.logger.error("Unable to create a rig client proxy because of Axis fault with message: " + e.getMessage() + ".");
-            throw new RigClientProxyException(e.getMessage(), e);
+            throw new RigProxyException(e.getMessage(), e);
         }
     }
     
@@ -188,9 +188,9 @@ public class RigClientService
      * 
      * @param rig
      * @param db database session
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(Rig rig, Session db) throws RigClientProxyException
+    public RigClientService(Rig rig, Session db) throws RigProxyException
     {
         this(rig.getName(), db);
     }
@@ -202,9 +202,9 @@ public class RigClientService
      * @param rig
      * @param db database session
      * @param tm timeout in seconds
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(Rig rig, Session db, int tm) throws RigClientProxyException
+    public RigClientService(Rig rig, Session db, int tm) throws RigProxyException
     {
         this(rig.getName(), db, tm);
     }
@@ -215,25 +215,25 @@ public class RigClientService
      * 
      * @param rig
      * @param db database session
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(String rig, Session db) throws RigClientProxyException
+    public RigClientService(String rig, Session db) throws RigProxyException
     {
         this.rig = rig;
         this.logger = LoggerActivator.getLogger();
         
-        if ((this.tok = RigClientProxyActivator.getIdentityTokenRegister()) == null)
+        if ((this.tok = RigProxyActivator.getIdentityTokenRegister()) == null)
         {
             this.logger.error("Unable to create a rig client proxy because no identity token register is found. " +
                     "Ensure the SchedulingServer-LocalRigProvider bundle is installed and active.");
-            throw new RigClientProxyException("Identity token register not found.");
+            throw new RigProxyException("Identity token register not found.");
         }
         
         Rig record = new RigDao(db).findByName(rig);
         if (record == null || record.getContactUrl() == null)
         {
             this.logger.error("Unable to create a rig client proxy to rig " + rig + " because unable to determine its address.");
-            throw new RigClientProxyException("Unable to find rig address.");
+            throw new RigProxyException("Unable to find rig address.");
         }
         
         this.logger.debug("Creating a rig client proxy to " + rig + " at address " + record.getContactUrl() + '.');
@@ -245,7 +245,7 @@ public class RigClientService
         catch (AxisFault e)
         {
             this.logger.error("Unable to create a rig client proxy because of Axis fault with message: " + e.getMessage() + ".");
-            throw new RigClientProxyException(e.getMessage(), e);
+            throw new RigProxyException(e.getMessage(), e);
         }
     }
     
@@ -256,25 +256,25 @@ public class RigClientService
      * @param rig
      * @param db database session
      * @param tm timeout in seconds
-     * @throws RigClientProxyException
+     * @throws RigProxyException
      */
-    public RigClientService(String rig, Session db, int tm) throws RigClientProxyException
+    public RigClientService(String rig, Session db, int tm) throws RigProxyException
     {
         this.rig = rig;
         this.logger = LoggerActivator.getLogger();
         
-        if ((this.tok = RigClientProxyActivator.getIdentityTokenRegister()) == null)
+        if ((this.tok = RigProxyActivator.getIdentityTokenRegister()) == null)
         {
             this.logger.error("Unable to create a rig client proxy because no identity token register is found. " +
                     "Ensure the SchedulingServer-LocalRigProvider bundle is installed and active.");
-            throw new RigClientProxyException("Identity token register not found.");
+            throw new RigProxyException("Identity token register not found.");
         }
         
         Rig record = new RigDao(db).findByName(rig);
         if (record == null || record.getContactUrl() == null)
         {
             this.logger.error("Unable to create a rig client proxy to rig " + rig + " because unable to determine its address.");
-            throw new RigClientProxyException("Unable to find rig address.");
+            throw new RigProxyException("Unable to find rig address.");
         }
         
         this.logger.debug("Creating a rig client proxy to " + rig + " at address " + record.getContactUrl() + '.');
@@ -286,7 +286,7 @@ public class RigClientService
         catch (AxisFault e)
         {
             this.logger.error("Unable to create a rig client proxy because of Axis fault with message: " + e.getMessage() + ".");
-            throw new RigClientProxyException(e.getMessage(), e);
+            throw new RigProxyException(e.getMessage(), e);
         }
     }
     

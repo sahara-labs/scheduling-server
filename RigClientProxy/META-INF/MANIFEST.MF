@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: RigClientProxy
-Bundle-SymbolicName: SchedulingServer-RigClientProxy
-Bundle-Version: 1.0.0.alpha
-Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigClientProxyActivator
+Bundle-Name: RigProxy
+Bundle-SymbolicName: SchedulingServer-RigProxy
+Bundle-Version: 3.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigclientproxy.RigProxyActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,

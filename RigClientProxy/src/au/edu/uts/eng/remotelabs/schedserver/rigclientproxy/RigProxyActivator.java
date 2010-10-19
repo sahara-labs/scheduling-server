@@ -51,7 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
  * The RigClient proxy bundles provides a client side implementation of the
  * RigClient SOAP interface.
  */
-public class RigClientProxyActivator implements BundleActivator 
+public class RigProxyActivator implements BundleActivator 
 {
     /** The default async operation timeout in seconds. */
     public static final int DEFAULT_ASYNC_TIMEOUT = 60;
@@ -72,39 +72,39 @@ public class RigClientProxyActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Rig client proxy bundle starting up...");
         
-        RigClientProxyActivator.idenTokTracker = new ServiceTracker(context, IdentityToken.class.getName(), null);
-        RigClientProxyActivator.idenTokTracker.open();        
+        RigProxyActivator.idenTokTracker = new ServiceTracker(context, IdentityToken.class.getName(), null);
+        RigProxyActivator.idenTokTracker.open();        
         
         /* Load the service timeout. */
 	    ServiceReference confRef = context.getServiceReference(Config.class.getName());
 	    if (confRef == null)
 	    {
-	        RigClientProxyActivator.timeout = RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT;
+	        RigProxyActivator.timeout = RigProxyActivator.DEFAULT_ASYNC_TIMEOUT;
 	        this.logger.info("Configuration service not loaded, using default async operation timeout of " +
-	                RigClientProxyActivator.timeout + " seconds.");
+	                RigProxyActivator.timeout + " seconds.");
 	        return;
 	    }
 	    
 	    Config conf = (Config) context.getService(confRef);
 	    if (conf == null)
 	    {
-	        RigClientProxyActivator.timeout = RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT;
+	        RigProxyActivator.timeout = RigProxyActivator.DEFAULT_ASYNC_TIMEOUT;
 	        this.logger.info("Configuration service not loaded, using default async operation timeout of " +
-	                RigClientProxyActivator.timeout + " seconds.");
+	                RigProxyActivator.timeout + " seconds.");
 	        return;
 	    }
 	    
 	    try
 	    {
-	        RigClientProxyActivator.timeout = Integer.parseInt(conf.getProperty("Rig_Client_Async_Timeout"));
-	        this.logger.info("Rig client proxy async operation timeout is " + RigClientProxyActivator.timeout + 
+	        RigProxyActivator.timeout = Integer.parseInt(conf.getProperty("Rig_Client_Async_Timeout"));
+	        this.logger.info("Rig client proxy async operation timeout is " + RigProxyActivator.timeout + 
 	                " seconds.");
 	    }
 	    catch (NumberFormatException ex)
 	    {
-	        RigClientProxyActivator.timeout = RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT;
+	        RigProxyActivator.timeout = RigProxyActivator.DEFAULT_ASYNC_TIMEOUT;
 	        this.logger.info("Using default rig client proxy async operation timeout of " + 
-	                RigClientProxyActivator.DEFAULT_ASYNC_TIMEOUT + " seconds");
+	                RigProxyActivator.DEFAULT_ASYNC_TIMEOUT + " seconds");
 	    }
 	}
 
@@ -112,9 +112,9 @@ public class RigClientProxyActivator implements BundleActivator
 	public void stop(BundleContext context) throws Exception 
 	{
 	    this.logger.info("Rig client proxy bundle shutting down...");
-	    if (RigClientProxyActivator.idenTokTracker != null)
+	    if (RigProxyActivator.idenTokTracker != null)
 	    {
-	        RigClientProxyActivator.idenTokTracker.close();
+	        RigProxyActivator.idenTokTracker.close();
 	    }
 	}
 
@@ -127,7 +127,7 @@ public class RigClientProxyActivator implements BundleActivator
 	 */
 	public static IdentityToken getIdentityTokenRegister()
 	{
-	    return (IdentityToken) RigClientProxyActivator.idenTokTracker.getService();
+	    return (IdentityToken) RigProxyActivator.idenTokTracker.getService();
 	}
 	
 	/**
@@ -137,6 +137,6 @@ public class RigClientProxyActivator implements BundleActivator
 	 */
 	public static int getAsyncTimeout()
 	{
-	    return RigClientProxyActivator.timeout;
+	    return RigProxyActivator.timeout;
 	}
 }

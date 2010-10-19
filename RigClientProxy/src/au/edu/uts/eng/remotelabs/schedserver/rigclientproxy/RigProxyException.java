@@ -41,19 +41,19 @@ import java.rmi.RemoteException;
 /**
  * Exception thrown if error using the Rig Client proxy.
  */
-public class RigClientProxyException extends RemoteException
+public class RigProxyException extends RemoteException
 {
     private static final long serialVersionUID = -6913650293362893564L;
 
-    public RigClientProxyException()
+    public RigProxyException()
     { /* Default. */ }
 
-    public RigClientProxyException(String message)
+    public RigProxyException(String message)
     {
         super(message);
     }
 
-    public RigClientProxyException(String message, Throwable cause)
+    public RigProxyException(String message, Throwable cause)
     {
         super(message, cause);
     }

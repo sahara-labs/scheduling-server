@@ -32,13 +32,13 @@ Author: Michael Diponio (mdiponio)
 Date: 5th April 2009
 
 -->
-<project name="Scheduling Server Rig Client Proxy" default="build" basedir=".">
+<project name="Scheduling Server Rig Proxy" default="build" basedir=".">
     <import file="../common.xml"/>
     <import file="../dependencies.xml"/>
     
-	<property name="component.name" value="Scheduling Server Rig Client Proxy Bundle"/>
+	<property name="component.name" value="Scheduling Server Rig Proxy Bundle"/>
 	
-    <target name="build" depends="loggerBundle,dataAccessBundle,localRigProviderBundle">
+    <target name="build" depends="loggerBundle,dataAccessBundle,rigProviderBundle">
         <buildProject/>
     </target>
 </project>
