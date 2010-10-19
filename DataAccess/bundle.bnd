@@ -1,7 +1,7 @@
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess, \
 au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities, \
 au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao, \
-org.hibernate, org.hibernate.criterion 
+org.hibernate, org.hibernate.criterion, org.hibernate.type
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.impl, \
 au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup
 Include-Resource: lib/=lib/;-donotcopy=.svn

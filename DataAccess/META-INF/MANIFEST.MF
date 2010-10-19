@@ -29,4 +29,5 @@ Export-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
  org.hibernate,
- org.hibernate.criterion
+ org.hibernate.criterion,
+ org.hibernate.type
