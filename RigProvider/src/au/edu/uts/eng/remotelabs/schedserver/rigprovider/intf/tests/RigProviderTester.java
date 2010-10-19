@@ -44,18 +44,27 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.databinding.types.URI;
 import org.apache.axis2.databinding.types.URI.MalformedURIException;
-import org.hibernate.Session;
 import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.CallbackRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ErrorType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ProviderResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
@@ -71,7 +80,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigTyp
 /**
  * Tests the {@link RigProvider} class.
  */
-public class LocalRigProviderTester extends TestCase
+public class RigProviderTester extends TestCase
 {
     /** Object of class under test. */
     private RigProvider provider;
@@ -92,7 +101,7 @@ public class LocalRigProviderTester extends TestCase
     @Test
     public void testRegisterRig() throws Exception
     {
-        Session ses = DataAccessActivator.getNewSession();
+        org.hibernate.Session ses = DataAccessActivator.getNewSession();
         
         String name = "lp1";
         String type = "localrigprovidertest";
@@ -152,7 +161,7 @@ public class LocalRigProviderTester extends TestCase
     @Test
     public void testRegisterRigError() throws Exception
     {
-        Session ses = DataAccessActivator.getNewSession();
+        org.hibernate.Session ses = DataAccessActivator.getNewSession();
         
         String name = "lp1";
         String type = "localrigprovidertest";
@@ -211,7 +220,7 @@ public class LocalRigProviderTester extends TestCase
     @Test
     public void testUpdateRigStatus() throws Exception
     {
-        Session ses = DataAccessActivator.getNewSession();
+        org.hibernate.Session ses = DataAccessActivator.getNewSession();
         
         String name = "lp1";
         String type = "localrigprovidertest";
@@ -300,7 +309,7 @@ public class LocalRigProviderTester extends TestCase
     @Test
     public void testRemoveRig() throws Exception
     {
-        Session ses = DataAccessActivator.getNewSession();
+        org.hibernate.Session ses = DataAccessActivator.getNewSession();
         
         String name = "lp1";
         String type = "localrigprovidertest";
@@ -376,5 +385,295 @@ public class LocalRigProviderTester extends TestCase
         assertTrue(xml.contains("<successful>false</successful>"));
         assertTrue(xml.contains("<errorReason>"));
         assertFalse(xml.contains("<identityToken>"));
+    }
+    
+    @Test
+    public void testAllocateCallback()
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        Date now = new Date();
+        db.beginTransaction();
+        
+        User user = new User("rcpperm1", "testns", "USER");
+        db.persist(user);
+        
+        UserClass uc = new UserClass();
+        uc.setName("uc1");
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setPriority((short)4);
+        db.persist(uc);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc.getId()), uc, user);
+        db.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("RCP_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("rcp,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("RCP_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(now);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission rp = new ResourcePermission();
+        rp.setType("RIG");
+        rp.setUserClass(uc);
+        rp.setStartTime(now);
+        rp.setExpiryTime(now);
+        rp.setRig(r);
+        rp.setAllowedExtensions((short)10);
+        db.persist(rp);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(false);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(rp);
+        ses.setAssignedRigName(r.getName());
+        ses.setAssignmentTime(now);
+        ses.setRig(r);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        db.persist(ses);
+        
+        r.setSession(ses);
+        db.getTransaction().commit();
+        
+        AllocateCallback alloc = new AllocateCallback();
+        CallbackRequestType call = new CallbackRequestType();
+        alloc.setAllocateCallback(call);
+        call.setSuccess(true);
+        call.setName(r.getName());
+        
+        AllocateCallbackResponse resp = this.provider.allocateCallback(alloc);
+        assertNotNull(resp);
+        
+        ProviderResponse status = resp.getAllocateCallbackResponse();
+        assertNotNull(status);
+        assertTrue(status.getSuccessful());
+        
+        db.refresh(ses);
+        assertTrue(ses.isReady());
+        assertTrue(ses.isActive());
+        assertNull(ses.getRemovalReason());
+        
+        db.beginTransaction();
+        r.setSession(null);
+        db.delete(ses);
+        db.delete(rp);
+        db.delete(r);
+        db.delete(caps);
+        db.delete(rt);
+        db.delete(ass);
+        db.delete(uc);
+        db.delete(user);
+        db.getTransaction().commit();
+    }
+    
+    @Test
+    public void testAllocateCallbackFailAlloc()
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        Date now = new Date();
+        db.beginTransaction();
+        
+        User user = new User("rcpperm1", "testns", "USER");
+        db.persist(user);
+        
+        UserClass uc = new UserClass();
+        uc.setName("uc1");
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setPriority((short)4);
+        db.persist(uc);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc.getId()), uc, user);
+        db.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("RCP_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("rcp,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("RCP_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(now);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission rp = new ResourcePermission();
+        rp.setType("RIG");
+        rp.setUserClass(uc);
+        rp.setStartTime(now);
+        rp.setExpiryTime(now);
+        rp.setRig(r);
+        rp.setAllowedExtensions((short)10);
+        db.persist(rp);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(false);
+        ses.setActivityLastUpdated(now);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(now);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(rp);
+        ses.setAssignedRigName(r.getName());
+        ses.setAssignmentTime(now);
+        ses.setRig(r);
+        ses.setUser(user);
+        ses.setUserName(user.getName());
+        ses.setUserNamespace(user.getNamespace());
+        db.persist(ses);
+        
+        r.setSession(ses);
+        db.getTransaction().commit();
+        
+        AllocateCallback alloc = new AllocateCallback();
+        CallbackRequestType call = new CallbackRequestType();
+        alloc.setAllocateCallback(call);
+        call.setSuccess(false);
+        call.setName(r.getName());
+        
+        ErrorType err = new ErrorType();
+        err.setCode(1);
+        err.setReason("Allocation failed for some unknown reason");
+        call.setError(err);
+        
+        AllocateCallbackResponse resp = this.provider.allocateCallback(alloc);
+        assertNotNull(resp);
+        
+        ProviderResponse status = resp.getAllocateCallbackResponse();
+        assertNotNull(status);
+        assertTrue(status.getSuccessful());
+        
+        db.refresh(ses);
+        db.refresh(r);
+        
+        assertFalse(ses.isActive());
+        assertFalse(ses.isReady());
+        assertNotNull(ses.getRemovalReason());
+        assertNotNull(ses.getRemovalTime());
+        
+        assertFalse(r.isInSession());
+        assertFalse(r.isOnline());
+        assertNotNull(r.getOfflineReason());
+        assertNull(r.getSession());
+        
+        db.beginTransaction();
+        r.setSession(null);
+        db.delete(ses);
+        db.delete(rp);
+        db.delete(r);
+        db.delete(caps);
+        db.delete(rt);
+        db.delete(ass);
+        db.delete(uc);
+        db.delete(user);
+        db.getTransaction().commit();
+    }
+    
+    @Test
+    public void testAllocateCallbackNoSession()
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        Date now = new Date();
+        db.beginTransaction();
+        
+        User user = new User("rcpperm1", "testns", "USER");
+        db.persist(user);
+        
+        UserClass uc = new UserClass();
+        uc.setName("uc1");
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setPriority((short)4);
+        db.persist(uc);
+        
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc.getId()), uc, user);
+        db.persist(ass);
+        
+        RigType rt = new RigType();
+        rt.setName("RCP_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("rcp,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("RCP_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(now);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission rp = new ResourcePermission();
+        rp.setType("RIG");
+        rp.setUserClass(uc);
+        rp.setStartTime(now);
+        rp.setExpiryTime(now);
+        rp.setRig(r);
+        rp.setAllowedExtensions((short)10);
+        db.persist(rp);
+
+        db.getTransaction().commit();
+        
+        AllocateCallback alloc = new AllocateCallback();
+        CallbackRequestType call = new CallbackRequestType();
+        alloc.setAllocateCallback(call);
+        call.setSuccess(true);
+        call.setName(r.getName());
+        
+        AllocateCallbackResponse resp = this.provider.allocateCallback(alloc);
+        assertNotNull(resp);
+        
+        ProviderResponse status = resp.getAllocateCallbackResponse();
+        assertNotNull(status);
+        assertFalse(status.getSuccessful());
+        
+        db.refresh(r);
+        
+        assertFalse(r.isInSession());
+        assertTrue(r.isOnline());
+        assertNull(r.getSession());
+        
+        db.beginTransaction();
+        r.setSession(null);
+        db.delete(rp);
+        db.delete(r);
+        db.delete(caps);
+        db.delete(rt);
+        db.delete(ass);
+        db.delete(uc);
+        db.delete(user);
+        db.getTransaction().commit();
     }
 }

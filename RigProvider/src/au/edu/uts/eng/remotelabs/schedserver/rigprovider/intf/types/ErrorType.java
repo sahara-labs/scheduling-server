@@ -79,14 +79,14 @@ public class ErrorType implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    protected String code;
+    protected int code;
 
-    public String getCode()
+    public int getCode()
     {
         return this.code;
     }
 
-    public void setCode(final String param)
+    public void setCode(final int param)
     {
         this.code = param;
     }
@@ -203,13 +203,13 @@ public class ErrorType implements ADBBean
             xmlWriter.writeStartElement("code");
         }
 
-        if (this.code == null)
+        if (this.code == Integer.MIN_VALUE)
         {
             throw new ADBException("code cannot be null!!");
         }
         else
         {
-            xmlWriter.writeCharacters(this.code);
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.code));
         }
         xmlWriter.writeEndElement();
 
@@ -282,7 +282,7 @@ public class ErrorType implements ADBBean
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
         elementList.add(new QName("", "code"));
-        if (this.code != null)
+        if (this.code != Integer.MIN_VALUE)
         {
             elementList.add(ConverterUtil.convertToString(this.code));
         }
@@ -348,7 +348,7 @@ public class ErrorType implements ADBBean
                 if (reader.isStartElement() && new QName("", "code").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setCode(ConverterUtil.convertToString(content));
+                    object.setCode(ConverterUtil.convertToInt(content));
                     reader.next();
                 }
                 else

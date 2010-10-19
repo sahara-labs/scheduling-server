@@ -144,7 +144,7 @@ Date: 5th February 2009
     
       <xsd:complexType name="ErrorType">
       	<xsd:sequence>
-      		<xsd:element name="code" type="xsd:string"></xsd:element>
+      		<xsd:element name="code" type="xsd:int"></xsd:element>
       		<xsd:element name="reason" type="xsd:string"></xsd:element>
       	</xsd:sequence>
       </xsd:complexType>

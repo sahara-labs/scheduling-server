@@ -36,7 +36,11 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
+import java.util.Date;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
@@ -45,6 +49,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RemoveLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.UpdateLocalRigStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.CallbackRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ErrorType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ProviderResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRigResponse;
@@ -180,8 +186,71 @@ public class RigProvider implements RigProviderInterface
     @Override
     public AllocateCallbackResponse allocateCallback(AllocateCallback allocateCallback)
     {
-        // TODO Auto-generated method stub
-        return null;
+        CallbackRequestType request = allocateCallback.getAllocateCallback();
+        this.logger.debug("Received allocate callback with params: rigname=" + request.getName() + ", success=" +
+                request.getSuccess() + '.');
+        
+        AllocateCallbackResponse response = new AllocateCallbackResponse();
+        ProviderResponse status = new ProviderResponse();
+        response.setAllocateCallbackResponse(status);
+        
+        /* Load session from rig. */
+        RigDao dao = new RigDao();
+        Rig rig = dao.findByName(request.getName());
+        Session ses = null;
+        if (rig == null)
+        {
+            /* If the rig wasn't found, something is seriously wrong. */
+            this.logger.error("Received allocate callback for rig '" + request.getName() + "' that doesn't exist.");
+            status.setSuccessful(false);
+        }
+        else if ((ses = rig.getSession()) == null)
+        {
+            this.logger.warn("Received allocate callback for session that doesn't exist. Rig who sent callback " +
+            		"response was '" + request.getName() + "'.");
+            status.setSuccessful(false);
+            
+            /* Make sure the rig is no marked as in session. */
+            rig.setInSession(false);
+        }
+        else if (request.getSuccess())
+        {
+           /* If the response from allocate is successful, put the session to ready. */
+           ses.setReady(true);
+           status.setSuccessful(true);
+        }
+        else
+        {
+            ErrorType err = request.getError();
+            this.logger.error("Received allocate response for " + ses.getUserNamespace() + ':' + 
+                    ses.getUserName() + ", allocation not successful. Error reason is '" + err.getReason() + "'.");
+            
+            /* Allocation failed so end the session and take the rig offline depending on error. */
+            ses.setActive(false);
+            ses.setReady(false);
+            ses.setRemovalReason("Allocation failure with reason '" + err.getReason() + "'.");
+            ses.setRemovalTime(new Date());
+        
+            if (err.getCode() == 4) // Error code 4 is an existing session exists
+            {
+                this.logger.error("Allocation failure reason was caused by an existing session, so not putting rig offline " +
+                        "because a session already has it.");
+            }
+            else
+            {
+                rig.setInSession(false);
+                rig.setOnline(false);
+                rig.setOfflineReason("Allocation failured with reason '" + err.getReason() + "'.");
+                rig.setSession(null);
+            }
+            
+            /* Whilst allocation was not successful, the process was clean. */
+            status.setSuccessful(true);
+        }
+        
+        dao.flush();
+        dao.closeSession();
+        return response;
     }
 
     @Override
