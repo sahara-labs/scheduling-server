@@ -170,6 +170,28 @@ public class RigClientAsyncService
     }
     
     /**
+     * Request to allocate a specified user to the rig. This method allows a 
+     * async 'hint' to be specified.
+     * 
+     * @param name user to allocate
+     * @param async async hint 
+     * @param callback response call back handler
+     * @throws RemoteException 
+     */
+    public void allocate(String name, boolean async, RigClientAsyncServiceCallbackHandler callback) 
+            throws RemoteException 
+    {        
+        Allocate request = new Allocate();
+        UserType user = new UserType();
+        request.setAllocate(user);
+        user.setUser(name);
+        user.setIdentityToken(this.tok.getIdentityToken(this.rig));
+        user.setAsync(async);
+
+        this.service.callAllocate(request, callback);
+    }
+    
+    /**
      * Request to release the specified user from the rig.
      * 
      * @param name user to release
@@ -183,6 +205,28 @@ public class RigClientAsyncService
         request.setRelease(user);
         user.setUser(name);
         user.setIdentityToken(this.tok.getIdentityToken(this.rig));
+        
+        this.service.callRelease(request, callback);
+    }
+    
+    /**
+     * Request to release the specified user from the rig. This method allows a 
+     * async 'hint' to specified.
+     * 
+     * @param name user to release
+     * @param async hint
+     * @param callback response call back handler
+     * @throws RemoteException
+     */
+    public void release(String name, boolean async, RigClientAsyncServiceCallbackHandler callback) 
+            throws RemoteException
+    {
+        Release request = new Release();
+        UserType user = new UserType();
+        request.setRelease(user);
+        user.setUser(name);
+        user.setIdentityToken(this.tok.getIdentityToken(this.rig));
+        user.setAsync(async);
         
         this.service.callRelease(request, callback);
     }
@@ -219,5 +263,15 @@ public class RigClientAsyncService
         nll.set_void("Hello, World!");
         
         this.service.callIsActivityDetectable(request, callback);
+    }
+    
+    /**
+     * Returns the timeout in seconds for asynchronous requests.
+     * 
+     * @return request timeout
+     */
+    public int getAsyncTimeout()
+    {
+        return RigProxyActivator.getAsyncTimeout();
     }
 }
