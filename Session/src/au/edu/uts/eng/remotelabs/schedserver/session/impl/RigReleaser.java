@@ -46,6 +46,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueRun;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncServiceCallbackHandler;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigProxyActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse;
 
@@ -71,8 +72,11 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         
         try
         {
+            int setupTime = this.rig.getRigType().getSetUpTime();
+            boolean async = setupTime > 0 && setupTime > RigProxyActivator.getAsyncTimeout() - 10;
+            
             RigClientAsyncService service = new RigClientAsyncService(this.rig.getName(), db);
-            service.release(ses.getUserName(), this);
+            service.release(ses.getUserName(), async, this);
         }
         catch (Exception e)
         {
