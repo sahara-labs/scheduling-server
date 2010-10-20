@@ -43,6 +43,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RegisterLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RemoveLocalRig;
@@ -212,12 +215,14 @@ public class RigProvider implements RigProviderInterface
             
             /* Make sure the rig is no marked as in session. */
             rig.setInSession(false);
+            rig.setLastUpdateTimestamp(new Date());
         }
         else if (request.getSuccess())
         {
            /* If the response from allocate is successful, put the session to ready. */
            ses.setReady(true);
            status.setSuccessful(true);
+           rig.setLastUpdateTimestamp(new Date());
         }
         else
         {
@@ -244,6 +249,8 @@ public class RigProvider implements RigProviderInterface
                 rig.setSession(null);
             }
             
+            rig.setLastUpdateTimestamp(new Date());
+            
             /* Whilst allocation was not successful, the process was clean. */
             status.setSuccessful(true);
         }
@@ -256,8 +263,74 @@ public class RigProvider implements RigProviderInterface
     @Override
     public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback)
     {
-        // TODO Auto-generated method stub
-        return null;
+        CallbackRequestType request = releaseCallback.getReleaseCallback();
+        this.logger.debug("Received release callback with params: rigname=" + request.getName() + ", success=" +
+                request.getSuccess());
+
+        ReleaseCallbackResponse response = new ReleaseCallbackResponse();
+        ProviderResponse status = new ProviderResponse();
+        response.setReleaseCallbackResponse(status);
+        
+        /* Load rig information. */
+        RigDao dao = new RigDao();
+        Rig rig = dao.findByName(request.getName());
+        if (rig == null)
+        {
+            /* If the rig wasn't found something is seriously wrong. */
+            this.logger.error("Received release notification from rig '" + request.getName() + "' which does not " +
+            		"exist.");
+            status.setSuccessful(false);
+        }
+        else if (request.getSuccess())
+        {
+            status.setSuccessful(true);
+            
+            /* Release was successful so provide the rig back to the queue. */
+            this.logger.debug("Release of rig '" + request.getName() + "' successful, going to requeue rig.");
+            rig.setInSession(false);
+            rig.setSession(null);
+            rig.setLastUpdateTimestamp(new Date());
+            dao.flush();
+            
+            /* Provide notification a new rig is free. */
+            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
+            {
+                list.eventOccurred(RigStateChangeEvent.ONLINE, rig, dao.getSession());
+            }
+        }
+        else
+        {
+            status.setSuccessful(true);
+            
+            /* Allocation failed so take the rig off line. */
+            rig.setInSession(false);
+            rig.setSession(null);
+            rig.setLastUpdateTimestamp(new Date());
+            rig.setOnline(false);
+            
+            ErrorType err = request.getError();
+            if (err == null)
+            {
+                this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed.");
+                rig.setOfflineReason("Release failed.");
+            }
+            else
+            {
+                this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed with reason '" +
+                        err.getReason() + "'.");
+                rig.setOfflineReason("Release failed with reason: " + err.getReason());
+            }
+            
+            /* Provide notification a new rig is offline. */
+            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
+            {
+                list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
+            }
+        }
+        
+        dao.flush();
+        dao.closeSession();
+        return response;
     }
 
 }
