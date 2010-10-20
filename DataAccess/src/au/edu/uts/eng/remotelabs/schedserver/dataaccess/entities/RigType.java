@@ -162,7 +162,7 @@ public class RigType implements java.io.Serializable
         this.codeAssignable = codeAssignable;
     }
     
-    @Column(name = "set_up_time", nullable = false, columnDefinition="default '0'")
+    @Column(name = "set_up_time", columnDefinition="int default '0'")
     public int getSetUpTime()
     {
         return this.setUpTime;
@@ -173,7 +173,7 @@ public class RigType implements java.io.Serializable
         this.setUpTime = setUpTime;
     }
     
-    @Column(name = "tear_down_time", nullable = false, columnDefinition="default '0'")
+    @Column(name = "tear_down_time", columnDefinition="int default '0'")
     public int getTearDownTime()
     {
         return this.tearDownTime;
