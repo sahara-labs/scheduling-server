@@ -80,6 +80,12 @@ public class RigType implements java.io.Serializable
      *  requests. */
     private boolean codeAssignable;
     
+    /** The duration in seconds that allocation is expected to take. */
+    private int setUpTime;
+    
+    /** The duration in seconds that release is expected to take. */
+    private int tearDownTime;
+    
     /** Foreign key relations. */
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Rig> rigs = new HashSet<Rig>(0);
@@ -154,6 +160,28 @@ public class RigType implements java.io.Serializable
     public void setCodeAssignable(final boolean codeAssignable)
     {
         this.codeAssignable = codeAssignable;
+    }
+    
+    @Column(name = "set_up_time", nullable = true)
+    public int getSetUpTime()
+    {
+        return this.setUpTime;
+    }
+    
+    public void setSetUpTime(final int setUpTime)
+    {
+        this.setUpTime = setUpTime;
+    }
+    
+    @Column(name = "tear_down_time", nullable = true)
+    public int getTearDownTime()
+    {
+        return this.tearDownTime;
+    }
+    
+    public void setTearDownTime(final int tearDownTime)
+    {
+        this.tearDownTime = tearDownTime;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "rigType")
