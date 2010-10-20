@@ -45,6 +45,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncServiceCallbackHandler;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigProxyActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.AllocateResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ErrorType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
@@ -52,7 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationRespon
 /**
  * Call back handler which sets the session to ready.
  */
-public class Allocator extends RigClientAsyncServiceCallbackHandler
+public class RigAllocator extends RigClientAsyncServiceCallbackHandler
 {
     /** Session that is being allocated. */
     private Session session;
@@ -60,7 +61,7 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
     /** Logger. */
     private Logger logger;
     
-    public Allocator()
+    public RigAllocator()
     {
         this.logger = LoggerActivator.getLogger();
     }
@@ -79,8 +80,11 @@ public class Allocator extends RigClientAsyncServiceCallbackHandler
         
         try
         {
+            int setupTime = rig.getRigType().getSetUpTime();
+            boolean async = setupTime > 0 && setupTime > RigProxyActivator.getAsyncTimeout() - 10;
+            
             RigClientAsyncService service = new RigClientAsyncService(rig.getName(), db);
-            service.allocate(ses.getUserName(), this);
+            service.allocate(ses.getUserName(), async, this);
         }
         catch (Exception e)
         {

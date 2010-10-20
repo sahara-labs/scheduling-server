@@ -257,7 +257,7 @@ public class Queue
              ******************************************************************/
             if (this.notTest)
             {
-                new Allocator().allocate(targetSes, db);
+                new RigAllocator().allocate(targetSes, db);
             }
         }
     }

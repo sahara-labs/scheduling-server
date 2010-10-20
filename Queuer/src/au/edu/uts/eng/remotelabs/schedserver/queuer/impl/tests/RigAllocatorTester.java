@@ -56,25 +56,25 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Allocator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.RigAllocator;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.AllocateResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ErrorType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
 
 /**
- * Tests the {@link Allocator} class.
+ * Tests the {@link RigAllocator} class.
  */
-public class AllocatorTester extends TestCase
+public class RigAllocatorTester extends TestCase
 {
     /** Object of class under test. */
-    private Allocator alloc;
+    private RigAllocator alloc;
     
     @Override
     @Before
     public void setUp() throws Exception
     {
         DataAccessTestSetup.setup();
-        this.alloc = new Allocator();
+        this.alloc = new RigAllocator();
     }
     
     @Test
@@ -147,7 +147,7 @@ public class AllocatorTester extends TestCase
         resp.setAllocateResponse(op);
         op.setSuccess(true);
         
-        Field f = Allocator.class.getDeclaredField("session");
+        Field f = RigAllocator.class.getDeclaredField("session");
         f.setAccessible(true);
         f.set(this.alloc, ses1);
         
@@ -248,7 +248,7 @@ public class AllocatorTester extends TestCase
         op.setSuccess(true);
         op.setWillCallback(true);
         
-        Field f = Allocator.class.getDeclaredField("session");
+        Field f = RigAllocator.class.getDeclaredField("session");
         f.setAccessible(true);
         f.set(this.alloc, ses1);
         
@@ -356,7 +356,7 @@ public class AllocatorTester extends TestCase
         err.setOperation("Alloc");
         err.setReason("Failure test.");
         
-        Field f = Allocator.class.getDeclaredField("session");
+        Field f = RigAllocator.class.getDeclaredField("session");
         f.setAccessible(true);
         f.set(this.alloc, ses1);
         
@@ -455,7 +455,7 @@ public class AllocatorTester extends TestCase
         
         db.getTransaction().commit();
         
-        Field f = Allocator.class.getDeclaredField("session");
+        Field f = RigAllocator.class.getDeclaredField("session");
         f.setAccessible(true);
         f.set(this.alloc, ses1);
         
