@@ -115,6 +115,10 @@ public class RigTypeDao extends GenericDao<RigType>
                 rigType.setLogoffGraceDuration(180);
             }
             
+            /* Add default setup and tear down times. */
+            rigType.setSetUpTime(0);
+            rigType.setTearDownTime(0);
+            
             this.logger.debug("Rig type '" + typeName + "' does not exist, creating a new rig type with parameters: " +
                     "name=" + rigType.getName() + ", code assignable=" + rigType.isCodeAssignable() + 
                     ". logoff grace=" + rigType.getLogoffGraceDuration() + " seconds.");
