@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -233,7 +234,7 @@ public class RigProvider implements RigProviderInterface
             /* Allocation failed so end the session and take the rig offline depending on error. */
             ses.setActive(false);
             ses.setReady(false);
-            ses.setRemovalReason("Allocation failure with reason '" + err.getReason() + "'.");
+            ses.setRemovalReason("Allocation failure with reason: " + err.getReason());
             ses.setRemovalTime(new Date());
         
             if (err.getCode() == 4) // Error code 4 is an existing session exists
@@ -245,8 +246,12 @@ public class RigProvider implements RigProviderInterface
             {
                 rig.setInSession(false);
                 rig.setOnline(false);
-                rig.setOfflineReason("Allocation failured with reason '" + err.getReason() + "'.");
+                rig.setOfflineReason("Allocation failed with reason: " + err.getReason());
                 rig.setSession(null);
+                
+                /* Log the rig going offline. */
+                RigLogDao logDao = new RigLogDao(dao.getSession());
+                logDao.addOfflineLog(rig, "Allocation failed with reason: " + err.getReason() + "");
             }
             
             rig.setLastUpdateTimestamp(new Date());
@@ -308,17 +313,21 @@ public class RigProvider implements RigProviderInterface
             rig.setLastUpdateTimestamp(new Date());
             rig.setOnline(false);
             
+            RigLogDao logDao = new RigLogDao(dao.getSession());
+            
             ErrorType err = request.getError();
             if (err == null)
             {
                 this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed.");
                 rig.setOfflineReason("Release failed.");
+                logDao.addOfflineLog(rig, "Release failed.");
             }
             else
             {
                 this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed with reason '" +
                         err.getReason() + "'.");
                 rig.setOfflineReason("Release failed with reason: " + err.getReason());
+                logDao.addOfflineLog(rig, "Release failed with reason: " + err.getReason());
             }
             
             /* Provide notification a new rig is offline. */

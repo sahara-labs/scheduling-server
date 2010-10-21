@@ -45,12 +45,13 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 
 /**
  * Puts rigs offline if they have not provided a status update with the
@@ -130,10 +131,11 @@ public class StatusTimeoutChecker implements Runnable
             if (db == null)
             {
                 this.logger.error("Unable to obtain a database session for the rig status time out checker. " +
-                        "Ensure the Scheduling Server data access bundle is started (ACTIVE state).");
+                        "Ensure the database is running and configured database details are correct.");
                 return;
             }
             
+            RigLogDao rigLogDao = new RigLogDao(db);
             
             /* Get all the rigs that have timed out. */
             List<Rig> timedOut = db.createCriteria(Rig.class)
@@ -155,7 +157,9 @@ public class StatusTimeoutChecker implements Runnable
                 
                 rig.setActive(false);
                 rig.setOnline(false);
-                rig.setOfflineReason("Timed out");
+                rig.setOfflineReason("Timed out.");
+                
+                rigLogDao.addUnRegisteredLog(rig, "Timed out.");
                 
                 db.beginTransaction();
                 db.flush();

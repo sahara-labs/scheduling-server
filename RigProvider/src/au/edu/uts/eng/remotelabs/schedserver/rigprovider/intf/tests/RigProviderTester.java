@@ -133,8 +133,13 @@ public class RigProviderTester extends TestCase
         RegisterRigResponse resp = this.provider.registerRig(reg);
         assertNotNull(resp);
         
+        Rig rig = new RigDao(ses).findByName(name);
         ses.beginTransaction();
-        ses.delete(new RigDao(ses).findByName(name));
+        ses.createQuery("DELETE RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();        
+        ses.delete(rig);
         ses.delete(typeRecord);
         ses.delete(capsRecord);
         ses.getTransaction().commit();
@@ -248,10 +253,15 @@ public class RigProviderTester extends TestCase
         st.setIsOnline(true);
     
         UpdateRigStatusResponse resp = this.provider.updateRigStatus(up);
-        assertNotNull(resp);
+        assertNotNull(resp); 
+        
+        Rig rig = new RigDao(ses).findByName(name);
+        ses.beginTransaction();
+        ses.createQuery("DELETE RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
         
         ses.beginTransaction();
-        ses.delete(new RigDao(ses).findByName(name));
+        ses.delete(rig);
         ses.delete(typeRecord);
         ses.delete(capsRecord);
         ses.getTransaction().commit();
@@ -337,8 +347,13 @@ public class RigProviderTester extends TestCase
         RemoveRigResponse resp = this.provider.removeRig(rm);
         assertNotNull(resp);
         
+        Rig rig = new RigDao(ses).findByName(name);
         ses.beginTransaction();
-        ses.delete(new RigDao(ses).findByName(name));
+        ses.createQuery("DELETE RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
+        ses.delete(rig);
         ses.delete(typeRecord);
         ses.delete(capsRecord);
         ses.getTransaction().commit();
@@ -474,6 +489,10 @@ public class RigProviderTester extends TestCase
         assertTrue(ses.isReady());
         assertTrue(ses.isActive());
         assertNull(ses.getRemovalReason());
+
+        db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
         
         db.beginTransaction();
         r.setSession(null);
@@ -588,6 +607,10 @@ public class RigProviderTester extends TestCase
         assertNull(r.getSession());
         
         db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
         r.setSession(null);
         db.delete(ses);
         db.delete(rp);
@@ -666,6 +689,10 @@ public class RigProviderTester extends TestCase
         assertFalse(r.isInSession());
         assertTrue(r.isOnline());
         assertNull(r.getSession());
+        
+        db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
         
         db.beginTransaction();
         r.setSession(null);
@@ -764,6 +791,10 @@ public class RigProviderTester extends TestCase
         assertFalse(r.isInSession());
         assertNull(r.getSession());
         assertNull(r.getOfflineReason());
+        
+        db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
         
         db.beginTransaction();
         r.setSession(null);
@@ -870,6 +901,10 @@ public class RigProviderTester extends TestCase
         assertFalse(r.isInSession());
         assertNull(r.getSession());
         assertNotNull(r.getOfflineReason());
+        
+        db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
         
         db.beginTransaction();
         r.setSession(null);

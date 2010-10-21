@@ -96,6 +96,10 @@ public class UpdateLocalRigStatusTester extends TestCase
         assertTrue(new Date(System.currentTimeMillis() - 50000).before(ts));
         
         ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
         ses.delete(rig);
         ses.delete(type);
         ses.delete(caps);
@@ -132,6 +136,10 @@ public class UpdateLocalRigStatusTester extends TestCase
         assertTrue(new Date(System.currentTimeMillis() - 5000).before(ts));
         
         ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
         ses.delete(rig);
         ses.delete(type);
         ses.delete(caps);
@@ -165,6 +173,10 @@ public class UpdateLocalRigStatusTester extends TestCase
         assertNotNull(ts);
         assertTrue(new Date().after(ts));
         assertTrue(new Date(System.currentTimeMillis() - 5000).before(ts));
+        
+        ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
         
         ses.beginTransaction();
         ses.delete(rig);
@@ -204,6 +216,10 @@ public class UpdateLocalRigStatusTester extends TestCase
         assertTrue(new Date(System.currentTimeMillis() - 5000).before(ts));
         
         ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
         ses.delete(rig);
         ses.delete(type);
         ses.delete(caps);
@@ -240,6 +256,10 @@ public class UpdateLocalRigStatusTester extends TestCase
         assertTrue(new Date(System.currentTimeMillis() - 5000).before(ts));
         
         ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
         ses.delete(rig);
         ses.delete(type);
         ses.delete(caps);
@@ -270,6 +290,10 @@ public class UpdateLocalRigStatusTester extends TestCase
         assertFalse(rig.isActive());
         assertFalse(rig.isOnline());
         assertNotNull(rig.getOfflineReason());
+        
+        ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
         
         ses.beginTransaction();
         ses.delete(rig);

@@ -41,6 +41,7 @@ import java.util.Date;
 import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -58,6 +59,9 @@ public class RemoveLocalRig
     /** Rig DAO. */
     private final RigDao rigDao;
     
+    /** Rig log DAO. */
+    private final RigLogDao rigLogDao;
+    
     /** Reason removing a rig failed. */
     private String failedReason;
     
@@ -68,12 +72,14 @@ public class RemoveLocalRig
     {
         this.logger = LoggerActivator.getLogger();
         this.rigDao = new RigDao();
+        this.rigLogDao = new RigLogDao(this.rigDao.getSession());
     }
     
     public RemoveLocalRig(Session ses)
     {
         this.logger = LoggerActivator.getLogger();
         this.rigDao = new RigDao(ses);
+        this.rigLogDao = new RigLogDao(ses);
     }
     
     /**
@@ -108,6 +114,9 @@ public class RemoveLocalRig
         
         /* Remove the stored identity token. */
         IdentityTokenRegister.getInstance().removeIdentityToken(rig.getName());
+        
+        /* Log the rig was removed. */
+        this.rigLogDao.addUnRegisteredLog(rig, "Rig removed its registration.");
         
         /* Provide notification a rig has been removed. */
         for (RigEventListener list : RigProviderActivator.getRigEventListeners())

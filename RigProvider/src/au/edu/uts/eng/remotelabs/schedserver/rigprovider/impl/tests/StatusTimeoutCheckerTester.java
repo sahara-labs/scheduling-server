@@ -93,9 +93,13 @@ public class StatusTimeoutCheckerTester extends TestCase
         
         ses.refresh(tmdOut);
         assertFalse(tmdOut.isOnline());
-        assertEquals("Timed out", tmdOut.getOfflineReason());
+        assertEquals("Timed out.", tmdOut.getOfflineReason());
         assertFalse(tmdOut.isActive());
         assertTrue(tmdOut.isManaged());
+        
+        ses.beginTransaction();
+        ses.createQuery("DELETE RigLog WHERE rig='" + tmdOut.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
         
         ses.beginTransaction();
         ses.delete(tmdOut);
@@ -173,15 +177,20 @@ public class StatusTimeoutCheckerTester extends TestCase
         
         ses.refresh(tmdOut1);
         assertFalse(tmdOut1.isOnline());
-        assertEquals("Timed out", tmdOut1.getOfflineReason());
+        assertEquals("Timed out.", tmdOut1.getOfflineReason());
         assertFalse(tmdOut1.isActive());
         assertTrue(tmdOut1.isManaged());
         
         ses.refresh(tmdOut2);
         assertFalse(tmdOut2.isOnline());
-        assertEquals("Timed out", tmdOut2.getOfflineReason());
+        assertEquals("Timed out.", tmdOut2.getOfflineReason());
         assertFalse(tmdOut2.isActive());
         assertTrue(tmdOut2.isManaged());
+        
+        ses.beginTransaction();
+        ses.createQuery("DELETE RigLog WHERE rig='" + tmdOut1.getId() + "'").executeUpdate();
+        ses.createQuery("DELETE RigLog WHERE rig='" + tmdOut2.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
         
         ses.beginTransaction();
         ses.delete(tmdOut1);
@@ -284,9 +293,13 @@ public class StatusTimeoutCheckerTester extends TestCase
         
         ses.refresh(tmdOut2);
         assertFalse(tmdOut2.isOnline());
-        assertEquals("Timed out", tmdOut2.getOfflineReason());
+        assertEquals("Timed out.", tmdOut2.getOfflineReason());
         assertFalse(tmdOut2.isActive());
         assertTrue(tmdOut2.isManaged());
+        
+        ses.beginTransaction();
+        ses.createQuery("DELETE RigLog WHERE rig='" + tmdOut2.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
         
         ses.beginTransaction();
         ses.delete(tmdOut1);
@@ -339,9 +352,13 @@ public class StatusTimeoutCheckerTester extends TestCase
         
         ses.refresh(tmdOut2);
         assertFalse(tmdOut2.isOnline());
-        assertEquals("Timed out", tmdOut2.getOfflineReason());
+        assertEquals("Timed out.", tmdOut2.getOfflineReason());
         assertFalse(tmdOut2.isActive());
         assertTrue(tmdOut2.isManaged());
+        
+        ses.beginTransaction();
+        ses.createQuery("DELETE RigLog WHERE rig='" + tmdOut2.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
         
         ses.beginTransaction();
         ses.delete(tmdOut1);

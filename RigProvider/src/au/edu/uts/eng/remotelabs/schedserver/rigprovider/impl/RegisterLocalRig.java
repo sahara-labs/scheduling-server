@@ -41,15 +41,16 @@ import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 
 /**
@@ -69,6 +70,9 @@ public class RegisterLocalRig
     /** Rig Capabilities data access object. */
     private final RigCapabilitiesDao capsDao;
     
+    /** Log data access object. */
+    private final RigLogDao logDao;
+    
     /** Reason adding the rig failed. */
     private String failedReason;
     
@@ -82,6 +86,7 @@ public class RegisterLocalRig
         this.rigDao = new RigDao();
         this.typeDao = new RigTypeDao(this.rigDao.getSession());
         this.capsDao = new RigCapabilitiesDao(this.rigDao.getSession());
+        this.logDao = new RigLogDao(this.rigDao.getSession());
     }
 
     /** 
@@ -103,7 +108,7 @@ public class RegisterLocalRig
     public boolean registerRig(final String name, final String type, final String capabilities,
             final String contactUrl)
     {
-        this.logger.debug("Attempting to add a new rig with name '" + name + "', of type '" + type + "' with " +
+        this.logger.debug("Attempting to register rig with name '" + name + "', of type '" + type + "' with " +
         		"capabilities '" + capabilities + "'.");
         
         this.rig = this.rigDao.findByName(name);
@@ -117,14 +122,14 @@ public class RegisterLocalRig
         }
         else if (this.rig != null)
         {
-            /* Case 2: Rig exists, but does not exist, so the new RC is free to take it. */
+            /* Case 2: Rig exists, but is not active, so the new RC is free to take it. */
             this.logger.info("Registering an inactive existing rig with name '" + name + "' and existing " +
             		"record identifier '" + this.rig.getId() + "'.");
         }
         else
         {
             /* Case 3: Rig does not exist. */
-            this.logger.debug("Registering a new rig with name '" + name + "'.");
+            this.logger.info("Registering a new rig with name '" + name + "'.");
             this.rig = new Rig();
             this.rig.setName(name);
         }
@@ -158,6 +163,9 @@ public class RegisterLocalRig
         /* Generate an identity token, before firing events in case subsequent 
          * authenticated calls need to be made. */
         IdentityTokenRegister.getInstance().generateIdentityToken(this.rig.getName());
+        
+        /* Log the rig was registered. */
+        this.logDao.addRegisteredLog(this.rig, "Rig was registered.");
         
         /* Provide notification a new rig is registered. */
         for (RigEventListener list : RigProviderActivator.getRigEventListeners())

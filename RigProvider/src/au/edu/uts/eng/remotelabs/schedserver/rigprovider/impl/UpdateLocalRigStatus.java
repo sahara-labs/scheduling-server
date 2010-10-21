@@ -41,12 +41,13 @@ import java.util.Date;
 import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 
 /**
  * Updates the status of an exist rig. The rig status is composed of a
@@ -57,6 +58,9 @@ public class UpdateLocalRigStatus
 {
     /** Rig data access object. */
     private final RigDao rigDao;
+    
+    /** Rig log data access object. */
+    private final RigLogDao rigLogDao;
     
     /** Reason updating a rigs status failed. */
     private String failedReason;
@@ -69,12 +73,14 @@ public class UpdateLocalRigStatus
     {
         this.logger = LoggerActivator.getLogger();
         this.rigDao = new RigDao();
+        this.rigLogDao = new RigLogDao(this.rigDao.getSession());
     }
     
     public UpdateLocalRigStatus(Session ses)
     {
         this.logger = LoggerActivator.getLogger();
         this.rigDao = new RigDao(ses);
+        this.rigLogDao = new RigLogDao(ses);
     }
     
     /**
@@ -130,6 +136,9 @@ public class UpdateLocalRigStatus
             rig.setLastUpdateTimestamp(new Date());
             this.rigDao.flush();
             
+            /* Log rig came online. */
+            this.rigLogDao.addOnlineLog(rig, "Rig came online.");
+            
             /* Fire online rig event. */
             for (RigEventListener list : RigProviderActivator.getRigEventListeners())
             {
@@ -145,6 +154,16 @@ public class UpdateLocalRigStatus
             rig.setLastUpdateTimestamp(new Date());
             this.rigDao.flush();
             
+            /* Log offline reason. */
+            if (offlineReason == null)
+            {
+                this.rigLogDao.addOfflineLog(rig, "Rig has gone offline.");
+            }
+            else
+            {
+                this.rigLogDao.addOfflineLog(rig, offlineReason);
+            }
+            
             /* Fire offline rig event. */
             for (RigEventListener list : RigProviderActivator.getRigEventListeners())
             {
@@ -153,6 +172,12 @@ public class UpdateLocalRigStatus
         }
         else
         {
+            /* Log the offline reason if it has changed. */
+            if (offlineReason != null && !offlineReason.equalsIgnoreCase(rig.getOfflineReason()))
+            {
+                this.rigLogDao.addOfflineLog(rig, offlineReason);
+            }
+            
             /* Nothing interesting happened, just update the heart beat. */
             rig.setLastUpdateTimestamp(new Date());
             rig.setOfflineReason(offlineReason);

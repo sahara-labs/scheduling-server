@@ -138,8 +138,11 @@ public class RegisterLocalRigTester extends TestCase
         assertTrue(new Date(System.currentTimeMillis()).after(rig.getLastUpdateTimestamp()));
         assertTrue(new Date(System.currentTimeMillis() - 10000).before(rig.getLastUpdateTimestamp()));
         
-        /* Cleanup. */
         ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();        
         ses.delete(rigRec);
         ses.delete(capsRec);
         ses.delete(typeRec);
@@ -221,6 +224,10 @@ public class RegisterLocalRigTester extends TestCase
         assertTrue(new Date(System.currentTimeMillis() - 10000).before(rigRec.getLastUpdateTimestamp()));
         
         /* Cleanup. */
+        ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
         ses.beginTransaction();
         ses.delete(rigRec);
         ses.delete(capsRec);
@@ -307,6 +314,10 @@ public class RegisterLocalRigTester extends TestCase
         
         /* Cleanup. */
         ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();    
         ses.delete(rigRec);
         ses.delete(capsRec);
         ses.delete(typeRec);
@@ -398,7 +409,12 @@ public class RegisterLocalRigTester extends TestCase
         assertTrue(new Date(System.currentTimeMillis()).after(rigRec.getLastUpdateTimestamp()));
         assertTrue(new Date(System.currentTimeMillis() - 10000).before(rigRec.getLastUpdateTimestamp()));
         
+
         /* Cleanup. */
+        ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rig.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
         ses.beginTransaction();
         ses.delete(rigRec);
         ses.delete(capsRec);
@@ -442,7 +458,13 @@ public class RegisterLocalRigTester extends TestCase
         RigCapabilities capsRec = new RigCapabilitiesDao(ses).findCapabilites(caps);
         RigType typeRec = new RigTypeDao(ses).findByName(type);
         Rig rigRec = new RigDao(ses).findByName(name);
+
+        /* Cleanup. */
         ses.beginTransaction();
+        ses.createQuery("DELETE FROM RigLog WHERE rig='" + rigRec.getId() + "'").executeUpdate();
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();        
         ses.delete(rigRec);
         ses.delete(capsRec);
         ses.delete(typeRec);
