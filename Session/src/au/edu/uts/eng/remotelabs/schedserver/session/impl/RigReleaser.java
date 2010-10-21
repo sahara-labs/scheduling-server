@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.session.impl;
 import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -86,11 +87,15 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             /* Put the rig offline. */
             this.rig.setInSession(false);
             this.rig.setOnline(false);
-            this.rig.setOfflineReason("Release failed for session " + ses.getId() + ".");
+            this.rig.setOfflineReason("Release failed with error: " + e.getMessage());
             this.rig.setSession(null);
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
+            
+            /* Log when the rig is offline. */
+            RigLogDao rigLogDao = new RigLogDao(db);
+            rigLogDao.addOfflineLog(this.rig, "Release failed with error: " + e.getMessage());
         }
     }
     
@@ -126,10 +131,14 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         {
             /* Failed release so take rig offline. */
             this.rig.setOnline(false);
-            this.rig.setOfflineReason("Release failed with reason " + op.getError().getReason() + '.');
+            this.rig.setOfflineReason("Release failed with reason: " + op.getError().getReason());
             this.rig.setInSession(false);
             this.rig.setSession(null);
             dao.flush();
+            
+            /* Log when the rig is offline. */
+            RigLogDao rigLogDao = new RigLogDao(dao.getSession());
+            rigLogDao.addOfflineLog(this.rig, "Release failed with reason: " + op.getError().getReason());
         }
         
         dao.closeSession();
@@ -150,6 +159,10 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         this.rig.setSession(null);
         this.rig.setInSession(false);
         dao.flush();
+        
+        /* Log when the rig is offline. */
+        RigLogDao rigLogDao = new RigLogDao(dao.getSession());
+        rigLogDao.addOfflineLog(this.rig, "Release failed with error: " + e.getMessage());
         
         dao.closeSession();
     }

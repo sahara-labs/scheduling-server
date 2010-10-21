@@ -192,6 +192,10 @@ public class RigReleaserTester extends TestCase
         db.refresh(ses);
         
         db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
         db.delete(ses);
         db.delete(p1);
         db.delete(r);
@@ -305,6 +309,10 @@ public class RigReleaserTester extends TestCase
         db.refresh(ses);
         
         db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
         db.delete(ses);
         db.delete(p1);
         db.delete(r);
@@ -367,6 +375,10 @@ public class RigReleaserTester extends TestCase
         db.refresh(r);
         
         db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
         db.delete(r);
         db.delete(rt);
         db.delete(caps);
@@ -413,6 +425,10 @@ public class RigReleaserTester extends TestCase
         this.releaser.releaseErrorCallback(new Exception("Error"));
         
         db.refresh(r);
+        
+        db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
         
         db.beginTransaction();
         db.delete(r);

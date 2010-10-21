@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.session.impl;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -83,6 +84,10 @@ public class RigNotifier extends RigClientAsyncServiceCallbackHandler
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
+            
+            /* Log when the rig is offline. */
+            RigLogDao rigLogDao = new RigLogDao(db);
+            rigLogDao.addOfflineLog(this.rig, "Notify failed with error: " + e.getMessage());
         }
     }
     
@@ -99,6 +104,10 @@ public class RigNotifier extends RigClientAsyncServiceCallbackHandler
             this.rig.setOnline(false);
             this.rig.setOfflineReason("Notify failed with reason " + op.getError().getReason() + '.');
             dao.flush();
+            
+            /* Log when the rig is offline. */
+            RigLogDao rigLogDao = new RigLogDao(dao.getSession());
+            rigLogDao.addOfflineLog(this.rig, "Notify failed with reason: " + op.getError().getReason());
         }
         
         dao.closeSession();
@@ -115,8 +124,12 @@ public class RigNotifier extends RigClientAsyncServiceCallbackHandler
         
         /* Release failed so take the rig offline. */
         this.rig.setOnline(false);
-        this.rig.setOfflineReason("Notify failed with reason " + e.getMessage() + '.');
+        this.rig.setOfflineReason("Notify failed with error: " + e.getMessage());
         dao.flush();
+        
+        /* Log when the rig is offline. */
+        RigLogDao rigLogDao = new RigLogDao(dao.getSession());
+        rigLogDao.addOfflineLog(this.rig, "Notify failed with error: " + e.getMessage());
         
         dao.closeSession();
     }
