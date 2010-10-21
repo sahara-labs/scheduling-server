@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
 
 import java.util.Date;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -108,6 +109,10 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
+            
+            /* Log when the rig is offline. */
+            RigLogDao rigLogDao = new RigLogDao(db);
+            rigLogDao.addOfflineLog(rig, "Allocation failed with error: " + e.getMessage());
 
         }
     }
@@ -151,7 +156,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
             /* Allocation failed so end the session and take the rig off line depending on error. */
             this.session.setActive(false);
             this.session.setReady(false);
-            this.session.setRemovalReason("Allocation failure with reason '" + err.getReason() + "'.");
+            this.session.setRemovalReason("Allocation failure with reason: " + err.getReason());
             this.session.setRemovalTime(new Date());
             dao.flush();
             
@@ -165,9 +170,13 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
                 Rig rig = this.session.getRig();
                 rig.setInSession(false);
                 rig.setOnline(false);
-                rig.setOfflineReason("Allocation failured with reason '" + err.getReason() + "'.");
+                rig.setOfflineReason("Allocation failed with reason: '" + err.getReason() + "'.");
                 rig.setSession(null);
                 dao.flush();
+                
+                /* Log when the rig is offline. */
+                RigLogDao rigLogDao = new RigLogDao(dao.getSession());
+                rigLogDao.addOfflineLog(rig, "Allocation failed with reason: " + err.getReason());
             }
         }
         
@@ -197,6 +206,10 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
         rig.setOfflineReason("Allocation failed with SOAP error '" + e.getMessage() + "'.");
         rig.setSession(null);
         dao.flush();
+        
+        /* Log when the rig is offline. */
+        RigLogDao rigLogDao = new RigLogDao(dao.getSession());
+        rigLogDao.addOfflineLog(rig, "Allocation failed with error: " + e.getMessage());
         
         dao.closeSession();
     }

@@ -157,6 +157,10 @@ public class RigAllocatorTester extends TestCase
         db.refresh(r);
         
         db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
         db.delete(ses1);
         db.delete(p1);
         db.delete(r);
@@ -256,6 +260,10 @@ public class RigAllocatorTester extends TestCase
         
         db.refresh(ses1);
         db.refresh(r);
+        
+        db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
         
         db.beginTransaction();
         db.delete(ses1);
@@ -366,6 +374,10 @@ public class RigAllocatorTester extends TestCase
         db.refresh(r);
         
         db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
+        
+        db.beginTransaction();
         db.delete(ses1);
         db.delete(p1);
         db.delete(r);
@@ -463,6 +475,10 @@ public class RigAllocatorTester extends TestCase
         
         db.refresh(ses1);
         db.refresh(r);
+        
+        db.beginTransaction();
+        db.createQuery("DELETE RigLog WHERE rig='" + r.getId() + "'").executeUpdate();
+        db.getTransaction().commit();
         
         db.beginTransaction();
         db.delete(ses1);
