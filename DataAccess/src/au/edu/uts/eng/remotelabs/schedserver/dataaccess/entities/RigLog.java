@@ -73,7 +73,7 @@ public class RigLog implements Serializable
     public static final String OFFLINE = "OFFLINE";
     
     /** Not registered (inactive). */
-    public static final String NOT_REGISTERED = "NOT_Registered";
+    public static final String NOT_REGISTERED = "NOT_REGISTERED";
 
     /** Record primary key. */
     private Long id;

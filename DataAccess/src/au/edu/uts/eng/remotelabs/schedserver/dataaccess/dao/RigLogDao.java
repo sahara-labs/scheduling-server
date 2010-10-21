@@ -36,6 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog.NOT_REGISTERED;
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog.ONLINE;
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog.OFFLINE;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +47,7 @@ import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -78,8 +83,103 @@ public class RigLogDao extends GenericDao<RigLog>
     }
     
     /**
+     * Adds a log message that specifies a rig has been registered.
+     * 
+     * @param rig the rig that has been registered
+     * @param reason registration reason
+     * @return log added
+     */
+    public RigLog addRegisteredLog(Rig rig, String reason)
+    {
+        RigLog log = new RigLog();
+        log.setOldState(NOT_REGISTERED);
+        
+        if (rig.isOnline())
+        {
+            log.setNewState(ONLINE);
+        }
+        else
+        {
+            log.setNewState(OFFLINE);
+        }
+        
+        log.setRig(rig);
+        log.setReason(reason);
+        log.setTimeStamp(new Date());
+        
+        return this.persist(log);
+    }
+    
+    /**
+     * Adds a log message that specifies a rig has been put online.
+     * 
+     * @param rig the rig that is going online
+     * @param reason online reason
+     * @return log added
+     */
+    public RigLog addOnlineLog(Rig rig, String reason)
+    {
+        RigLog log = new RigLog();
+        log.setOldState(OFFLINE);
+        log.setNewState(ONLINE);
+        log.setRig(rig);
+        log.setReason(reason);
+        log.setTimeStamp(new Date());
+        
+        return this.persist(log);
+    }
+    
+    /**
+     * Adds a log message that specifies a rig has been put offline.
+     * 
+     * @param rig the rig that is going offline
+     * @param reason offline reason
+     * @return log added
+     */
+    public RigLog addOfflineLog(Rig rig, String reason)
+    {
+        RigLog log = new RigLog();
+        log.setOldState(ONLINE);
+        log.setNewState(OFFLINE);
+        log.setRig(rig);
+        log.setReason(reason);
+        log.setTimeStamp(new Date());
+        
+        return this.persist(log);
+    }
+    
+    /**
+     * Adds a log message that specifies a rig has been unregistered.
+     * 
+     * @param rig the rig that is going online
+     * @param reason unregister reason
+     * @return log added
+     */
+    public RigLog addUnRegisteredLog(Rig rig, String reason)
+    {
+        RigLog log = new RigLog();
+        
+        if (rig.isOnline())
+        {
+            log.setOldState(ONLINE);
+        }
+        else
+        {
+            log.setOldState(OFFLINE);
+        }
+        
+        log.setNewState(NOT_REGISTERED);
+        log.setRig(rig);
+        log.setReason(reason);
+        log.setTimeStamp(new Date());
+        
+        return this.persist(log);
+    }
+    
+    /**
      * Finds all the stored logs for the specified period for a specific
-     * rig.
+     * rig. The logs are ordered by their time stamp with the earliest log 
+     * first.
      * 
      * @param rig rig to find the logs for
      * @param begin beginning of a period
@@ -91,15 +191,16 @@ public class RigLogDao extends GenericDao<RigLog>
     {
         Criteria cri = this.session.createCriteria(RigLog.class);
         cri.add(Restrictions.eq("rig", rig));
-        cri.add(Restrictions.lt("timeStamp", begin));
-        cri.add(Restrictions.gt("timeStamp", end));
-        
+        cri.add(Restrictions.gt("timeStamp", begin));
+        cri.add(Restrictions.lt("timeStamp", end));
+        cri.addOrder(Order.asc("timeStamp"));
         return cri.list();
     }
     
     /**
      * Finds all the stored logs for the specified period for a specific
-     * rig, filtered for a specific state.
+     * rig, filtered for a specific state. The logs are ordered by their
+     * time stamp with the earliest log first.
      * 
      * @param rig rig to find the logs for
      * @param begin beginning of a period
@@ -111,10 +212,10 @@ public class RigLogDao extends GenericDao<RigLog>
     {
         Criteria cri = this.session.createCriteria(RigLog.class);
         cri.add(Restrictions.eq("rig", rig));
-        cri.add(Restrictions.lt("timeStamp", begin));
-        cri.add(Restrictions.gt("timeStamp", end));
+        cri.add(Restrictions.gt("timeStamp", begin));
+        cri.add(Restrictions.lt("timeStamp", end));
         cri.add(Restrictions.eq("newState", state));
-        
+        cri.addOrder(Order.asc("timeStamp"));
         return cri.list();
     }
     

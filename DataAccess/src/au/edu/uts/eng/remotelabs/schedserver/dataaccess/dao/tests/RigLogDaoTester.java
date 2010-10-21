@@ -36,13 +36,24 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import junit.framework.TestCase;
 
+import org.hibernate.Session;
 import org.junit.Before;
 import org.junit.Test;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 
 /**
@@ -60,6 +71,222 @@ public class RigLogDaoTester extends TestCase
         DataAccessTestSetup.setup();
         this.dao = new RigLogDao();
     }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#addRegisteredLog()}
+     */
+    @Test
+    public void testAddRegisteredLog()
+    {
+        Date now = new Date();
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType type = new RigType();
+        type.setName("rig_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+
+        Rig rig = new Rig();
+        rig.setName("rig_name_test");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(now);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOnline(true);
+        ses.save(rig);
+        ses.getTransaction().commit();
+        
+        RigLogDao dao = new RigLogDao(ses);
+        RigLog log = dao.addRegisteredLog(rig, "Newly registered");
+        assertNotNull(log);
+        
+        Session ses2 = DataAccessActivator.getNewSession();
+        RigLog loaded = (RigLog) ses2.load(RigLog.class, log.getId());
+        assertNotNull(loaded);
+        
+        assertEquals(RigLog.NOT_REGISTERED, loaded.getOldState());
+        assertEquals(RigLog.ONLINE, loaded.getNewState());
+        assertEquals("Newly registered", loaded.getReason());
+        assertEquals(Math.floor(now.getTime() / 1000), Math.floor(loaded.getTimeStamp().getTime() / 1000));
+        assertEquals(rig.getId().longValue(), loaded.getRig().getId().longValue());
+        
+        ses.beginTransaction();
+        ses.delete(log);
+        ses.delete(rig);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        ses2.close();
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#addOnlineLog()}
+     */
+    @Test
+    public void testAddOnlineLog()
+    {
+        Date now = new Date();
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType type = new RigType();
+        type.setName("rig_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+
+        Rig rig = new Rig();
+        rig.setName("rig_name_test");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(now);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOnline(true);
+        ses.save(rig);
+        ses.getTransaction().commit();
+        
+        RigLogDao dao = new RigLogDao(ses);
+        RigLog log = dao.addOnlineLog(rig, "Fixed");
+        assertNotNull(log);
+        
+        Session ses2 = DataAccessActivator.getNewSession();
+        RigLog loaded = (RigLog) ses2.load(RigLog.class, log.getId());
+        assertNotNull(loaded);
+        
+        assertEquals(RigLog.OFFLINE, loaded.getOldState());
+        assertEquals(RigLog.ONLINE, loaded.getNewState());
+        assertEquals("Fixed", loaded.getReason());
+        assertEquals(Math.floor(now.getTime() / 1000), Math.floor(loaded.getTimeStamp().getTime() / 1000));
+        assertEquals(rig.getId().longValue(), loaded.getRig().getId().longValue());
+        
+        ses.beginTransaction();
+        ses.delete(log);
+        ses.delete(rig);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        ses2.close();
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#addOfflineLog()}
+     */
+    @Test
+    public void testAddOfflineLog()
+    {
+        Date now = new Date();
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType type = new RigType();
+        type.setName("rig_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+
+        Rig rig = new Rig();
+        rig.setName("rig_name_test");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(now);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOnline(true);
+        ses.save(rig);
+        ses.getTransaction().commit();
+        
+        RigLogDao dao = new RigLogDao(ses);
+        RigLog log = dao.addOfflineLog(rig, "Broken");
+        assertNotNull(log);
+        
+        Session ses2 = DataAccessActivator.getNewSession();
+        RigLog loaded = (RigLog) ses2.load(RigLog.class, log.getId());
+        assertNotNull(loaded);
+        
+        assertEquals(RigLog.ONLINE, loaded.getOldState());
+        assertEquals(RigLog.OFFLINE, loaded.getNewState());
+        assertEquals("Broken", loaded.getReason());
+        assertEquals(Math.floor(now.getTime() / 1000), Math.floor(loaded.getTimeStamp().getTime() / 1000));
+        assertEquals(rig.getId().longValue(), loaded.getRig().getId().longValue());
+        
+        ses.beginTransaction();
+        ses.delete(log);
+        ses.delete(rig);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        ses2.close();
+    }
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#addUnRegisteredLog()}
+     */
+    @Test
+    public void testAddUnRegisteredLog()
+    {
+        Date now = new Date();
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType type = new RigType();
+        type.setName("rig_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+
+        Rig rig = new Rig();
+        rig.setName("rig_name_test");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(now);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOnline(false);
+        ses.save(rig);
+        ses.getTransaction().commit();
+        
+        RigLogDao dao = new RigLogDao(ses);
+        RigLog log = dao.addUnRegisteredLog(rig, "Un registered");
+        assertNotNull(log);
+        
+        Session ses2 = DataAccessActivator.getNewSession();
+        RigLog loaded = (RigLog) ses2.load(RigLog.class, log.getId());
+        assertNotNull(loaded);
+        
+        assertEquals(RigLog.OFFLINE, loaded.getOldState());
+        assertEquals(RigLog.NOT_REGISTERED, loaded.getNewState());
+        assertEquals("Un registered", loaded.getReason());
+        assertEquals(Math.floor(now.getTime() / 1000), Math.floor(loaded.getTimeStamp().getTime() / 1000));
+        assertEquals(rig.getId().longValue(), loaded.getRig().getId().longValue());
+        
+        ses.beginTransaction();
+        ses.delete(log);
+        ses.delete(rig);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        ses2.close();
+    }
 
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao#findLogs(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig, java.util.Date, java.util.Date)}.
@@ -67,8 +294,71 @@ public class RigLogDaoTester extends TestCase
     @Test
     public void testFindLogsRigDateDate()
     {
-        this.dao.flush();
-        fail("Not yet implemented");
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date now = new Date();
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType type = new RigType();
+        type.setName("rig_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+
+        Rig rig = new Rig();
+        rig.setName("rig_name_test");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(after);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOfflineReason("Tomorrows problem");
+        ses.save(rig);
+
+        RigLog online = new RigLog();
+        online.setOldState(RigLog.NOT_REGISTERED);
+        online.setNewState(RigLog.ONLINE);
+        online.setReason("First registration");
+        online.setTimeStamp(before);
+        online.setRig(rig);
+        ses.save(online);
+
+        RigLog offline = new RigLog();
+        offline.setOldState(RigLog.OFFLINE);
+        offline.setNewState(RigLog.ONLINE);
+        offline.setReason("Offline");
+        offline.setTimeStamp(now);
+        offline.setRig(rig);
+        ses.save(offline);
+        
+        RigLog notreg = new RigLog();
+        notreg.setOldState(RigLog.OFFLINE);
+        notreg.setNewState(RigLog.NOT_REGISTERED);
+        notreg.setReason("Not reg");
+        notreg.setTimeStamp(after);
+        notreg.setRig(rig);
+        ses.save(notreg);
+        ses.getTransaction().commit();
+        
+        List<RigLog> logs = this.dao.findLogs(rig, new Date(now.getTime() - 1000), new Date(after.getTime() + 1000));
+        
+        ses.beginTransaction();
+        ses.delete(notreg);
+        ses.delete(offline);
+        ses.delete(online);
+        ses.delete(rig);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        
+        assertEquals(2, logs.size());
+        assertEquals(offline.getId().longValue(), logs.get(0).getId().longValue());
+        assertEquals(notreg.getId().longValue(), logs.get(1).getId().longValue());
     }
 
     /**
@@ -77,7 +367,71 @@ public class RigLogDaoTester extends TestCase
     @Test
     public void testFindLogsOfStateRigStringDateDate()
     {
-        fail("Not yet implemented");
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date now = new Date();
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType type = new RigType();
+        type.setName("rig_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+
+        Rig rig = new Rig();
+        rig.setName("rig_name_test");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(after);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOfflineReason("Tomorrows problem");
+        ses.save(rig);
+
+        RigLog online = new RigLog();
+        online.setOldState(RigLog.NOT_REGISTERED);
+        online.setNewState(RigLog.ONLINE);
+        online.setReason("First registration");
+        online.setTimeStamp(before);
+        online.setRig(rig);
+        ses.save(online);
+
+        RigLog offline = new RigLog();
+        offline.setOldState(RigLog.ONLINE);
+        offline.setNewState(RigLog.OFFLINE);
+        offline.setReason("Offline");
+        offline.setTimeStamp(now);
+        offline.setRig(rig);
+        ses.save(offline);
+        
+        RigLog notreg = new RigLog();
+        notreg.setOldState(RigLog.OFFLINE);
+        notreg.setNewState(RigLog.NOT_REGISTERED);
+        notreg.setReason("Not reg");
+        notreg.setTimeStamp(after);
+        notreg.setRig(rig);
+        ses.save(notreg);
+        ses.getTransaction().commit();
+        
+        List<RigLog> logs = this.dao.findLogsOfState(rig, RigLog.OFFLINE, new Date(now.getTime() - 1000), 
+                new Date(after.getTime() + 1000));
+        
+        ses.beginTransaction();
+        ses.delete(notreg);
+        ses.delete(offline);
+        ses.delete(online);
+        ses.delete(rig);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        
+        assertEquals(1, logs.size());
+        assertEquals(offline.getId().longValue(), logs.get(0).getId().longValue());
     }
 
     /**
@@ -86,7 +440,117 @@ public class RigLogDaoTester extends TestCase
     @Test
     public void testFindLogsRigTypeDateDate()
     {
-        fail("Not yet implemented");
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date now = new Date();
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        
+        RigType type = new RigType();
+        type.setName("log_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+        
+        Rig rig = new Rig();
+        rig.setName("log_name_test1");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(after);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOfflineReason("Tomorrows problem");
+        ses.save(rig);
+
+        Rig rig2 = new Rig();
+        rig2.setName("log_name_test2");
+        rig2.setRigType(type);
+        rig2.setContactUrl("http://url");
+        rig2.setRigCapabilities(caps);
+        rig2.setLastUpdateTimestamp(after);
+        rig2.setManaged(false);
+        rig2.setMeta("iLabs");
+        rig2.setOfflineReason("Tomorrows problem");
+        ses.save(rig2);
+
+        RigLog online = new RigLog();
+        online.setOldState(RigLog.NOT_REGISTERED);
+        online.setNewState(RigLog.ONLINE);
+        online.setReason("First registration");
+        online.setTimeStamp(before);
+        online.setRig(rig);
+        ses.save(online);
+
+        RigLog offline = new RigLog();
+        offline.setOldState(RigLog.ONLINE);
+        offline.setNewState(RigLog.OFFLINE);
+        offline.setReason("Offline");
+        offline.setTimeStamp(now);
+        offline.setRig(rig2);
+        ses.save(offline);
+        
+        RigLog off2 = new RigLog();
+        off2.setOldState(RigLog.ONLINE);
+        off2.setNewState(RigLog.OFFLINE);
+        off2.setReason("One Offline");
+        off2.setTimeStamp(now);
+        off2.setRig(rig);
+        ses.save(off2);
+        
+        
+        RigLog notreg = new RigLog();
+        notreg.setOldState(RigLog.OFFLINE);
+        notreg.setNewState(RigLog.NOT_REGISTERED);
+        notreg.setReason("Not reg");
+        notreg.setTimeStamp(after);
+        notreg.setRig(rig2);
+        ses.save(notreg);
+        ses.getTransaction().commit();
+        
+        ses.refresh(type);
+        System.out.println(type.getRigs().size());
+        Map<Rig, List<RigLog>> logs = this.dao.findLogs(type, new Date(before.getTime() - 1000), 
+                 new Date(after.getTime() + 1000));
+        
+        ses.beginTransaction();
+        ses.delete(notreg);
+        ses.delete(offline);
+        ses.delete(off2);
+        ses.delete(online);
+        ses.delete(rig);
+        ses.delete(rig2);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        
+        assertEquals(2, logs.size());
+        for (Entry<Rig, List<RigLog>> rlogs : logs.entrySet())
+        {
+            assertEquals(2, rlogs.getValue().size());
+            if (rig.getId().longValue() == rlogs.getKey().getId().longValue())
+            {
+                assertEquals(online.getId().longValue(), rlogs.getValue().get(0).getId().longValue());
+                assertEquals(off2.getId().longValue(), rlogs.getValue().get(1).getId().longValue());
+                assertEquals("First registration", rlogs.getValue().get(0).getReason());
+                assertEquals("One Offline", rlogs.getValue().get(1).getReason());
+            }
+            else if (rig2.getId().longValue() == rlogs.getKey().getId().longValue())
+            {
+                assertEquals(offline.getId().longValue(), rlogs.getValue().get(0).getId().longValue());
+                assertEquals(notreg.getId().longValue(), rlogs.getValue().get(1).getId().longValue());
+                assertEquals("Offline", rlogs.getValue().get(0).getReason());
+                assertEquals("Not reg", rlogs.getValue().get(1).getReason());
+            }
+            else
+            {
+                fail("Impossible rig.");
+            }
+        }
     }
 
     /**
@@ -95,7 +559,113 @@ public class RigLogDaoTester extends TestCase
     @Test
     public void testFindLogsOfStateRigTypeStringDateDate()
     {
-        fail("Not yet implemented");
+        Date before = new Date(System.currentTimeMillis() - 1000000);
+        Date now = new Date();
+        Date after = new Date(System.currentTimeMillis() + 1000000);
+
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        
+        RigType type = new RigType();
+        type.setName("log_test");
+        type.setLogoffGraceDuration(600);
+        ses.save(type);
+
+        RigCapabilities caps = new RigCapabilities("a,b,c,d,e,f");
+        ses.save(caps);
+        
+        Rig rig = new Rig();
+        rig.setName("log_name_test1");
+        rig.setRigType(type);
+        rig.setContactUrl("http://url");
+        rig.setRigCapabilities(caps);
+        rig.setLastUpdateTimestamp(after);
+        rig.setManaged(false);
+        rig.setMeta("iLabs");
+        rig.setOfflineReason("Tomorrows problem");
+        ses.save(rig);
+
+        Rig rig2 = new Rig();
+        rig2.setName("log_name_test2");
+        rig2.setRigType(type);
+        rig2.setContactUrl("http://url");
+        rig2.setRigCapabilities(caps);
+        rig2.setLastUpdateTimestamp(after);
+        rig2.setManaged(false);
+        rig2.setMeta("iLabs");
+        rig2.setOfflineReason("Tomorrows problem");
+        ses.save(rig2);
+
+        RigLog online = new RigLog();
+        online.setOldState(RigLog.NOT_REGISTERED);
+        online.setNewState(RigLog.ONLINE);
+        online.setReason("First registration");
+        online.setTimeStamp(before);
+        online.setRig(rig);
+        ses.save(online);
+
+        RigLog offline = new RigLog();
+        offline.setOldState(RigLog.ONLINE);
+        offline.setNewState(RigLog.OFFLINE);
+        offline.setReason("Offline");
+        offline.setTimeStamp(now);
+        offline.setRig(rig2);
+        ses.save(offline);
+        
+        RigLog off2 = new RigLog();
+        off2.setOldState(RigLog.ONLINE);
+        off2.setNewState(RigLog.OFFLINE);
+        off2.setReason("One Offline");
+        off2.setTimeStamp(now);
+        off2.setRig(rig);
+        ses.save(off2);
+        
+        
+        RigLog notreg = new RigLog();
+        notreg.setOldState(RigLog.OFFLINE);
+        notreg.setNewState(RigLog.NOT_REGISTERED);
+        notreg.setReason("Not reg");
+        notreg.setTimeStamp(after);
+        notreg.setRig(rig2);
+        ses.save(notreg);
+        ses.getTransaction().commit();
+        
+        ses.refresh(type);
+        System.out.println(type.getRigs().size());
+        Map<Rig, List<RigLog>> logs = this.dao.findLogsOfState(type, RigLog.OFFLINE, new Date(before.getTime() - 1000), 
+                 new Date(after.getTime() + 1000));
+        
+        ses.beginTransaction();
+        ses.delete(notreg);
+        ses.delete(offline);
+        ses.delete(off2);
+        ses.delete(online);
+        ses.delete(rig);
+        ses.delete(rig2);
+        ses.delete(type);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        ses.close();
+        
+        assertEquals(2, logs.size());
+        for (Entry<Rig, List<RigLog>> rlogs : logs.entrySet())
+        {
+            assertEquals(1, rlogs.getValue().size());
+            if (rig.getId().longValue() == rlogs.getKey().getId().longValue())
+            {
+                assertEquals(off2.getId().longValue(), rlogs.getValue().get(0).getId().longValue());
+                assertEquals("One Offline", rlogs.getValue().get(0).getReason());
+            }
+            else if (rig2.getId().longValue() == rlogs.getKey().getId().longValue())
+            {
+                assertEquals(offline.getId().longValue(), rlogs.getValue().get(0).getId().longValue());
+                assertEquals("Offline", rlogs.getValue().get(0).getReason());
+            }
+            else
+            {
+                fail("Impossible rig.");
+            }
+        }
     }
 
 }
