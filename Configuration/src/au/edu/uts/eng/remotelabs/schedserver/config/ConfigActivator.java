@@ -47,7 +47,7 @@ import au.edu.uts.eng.remotelabs.schedserver.config.impl.PropertiesConfigService
 /**
  * Bundle activator for the configuration bundle. 
  */
-public class Activator implements BundleActivator
+public class ConfigActivator implements BundleActivator
 {
     /** Configuration service loader. */
     private ConfigServiceLoaderImpl loader;
