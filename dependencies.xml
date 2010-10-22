@@ -118,5 +118,10 @@ Date: 28th December 2009
 	<target name="sessionBundle" if="missing.session">
 		<buildRequiredBundle bundle="SchedulingServer-Session.jar" bundleProject="Session" />
 	</target>
-
+	
+	<!-- ### Bookings Bundle. -->
+	<detectIfBundlePresent property="missing.bookings" bundle="SchedulingServer-Bookings.jar" />
+	<target name="bookingsBundle" if="missing.bookings">
+		<buildRequiredBundle bundle="SchedulingServer-Bookings.jar" bundleProject="Bookings" />
+	</target>
 </project>
