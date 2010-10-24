@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:bok="http://remotelabs.eng.uts.edu.au/schedserver/bookings" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Bookings" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/bookings">
+      <xsd:element name="createBooking">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="in" type="xsd:string" />
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createBookingResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="out" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="viewBooking">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="in" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="viewBookingResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="out" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelBooking">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="in" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelBookingResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="out" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="createBookingRequest">
+    <wsdl:part element="bok:createBooking" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createBookingResponse">
+    <wsdl:part element="bok:createBookingResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="viewBookingRequest">
+  	<wsdl:part name="parameters" element="bok:viewBooking"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="viewBookingResponse">
+  	<wsdl:part name="parameters" element="bok:viewBookingResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingRequest">
+  	<wsdl:part name="parameters" element="bok:cancelBooking"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingResponse">
+  	<wsdl:part name="parameters" element="bok:cancelBookingResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="Bookings">
+    <wsdl:operation name="createBooking">
+      <wsdl:input message="bok:createBookingRequest"/>
+      <wsdl:output message="bok:createBookingResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="viewBooking">
+    	<wsdl:input message="bok:viewBookingRequest"></wsdl:input>
+    	<wsdl:output message="bok:viewBookingResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelBooking">
+    	<wsdl:input message="bok:cancelBookingRequest"></wsdl:input>
+    	<wsdl:output message="bok:cancelBookingResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BookingsSOAP" type="bok:Bookings">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="createBooking">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/bookings/NewOperation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Bookings">
+    <wsdl:port binding="bok:BookingsSOAP" name="BookingsSOAP">
+      <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-Bookings/services/Bookings"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
