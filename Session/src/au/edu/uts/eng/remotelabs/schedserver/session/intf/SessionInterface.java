@@ -158,6 +158,7 @@ public class SessionInterface implements SessionSkeletonInterface
                     perm.getExtensionDuration() - time;
             info.setTimeLeft(remainingTime);
             info.setExtensions(ses.getExtensions());
+            info.setIsReady(ses.isReady());
             
             /* Warning messages. */
             if (ses.isInGrace())
@@ -166,7 +167,7 @@ public class SessionInterface implements SessionSkeletonInterface
                         "Your session will expire in " + remainingTime + " seconds." :
                         "Your session is being terminated.");
             }
-            else if (ses.getResourcePermission().isActivityDetected())
+            else if (ses.isReady() && ses.getResourcePermission().isActivityDetected())
             {
                 /* Find out about activity, if not ignored. */
                 try
