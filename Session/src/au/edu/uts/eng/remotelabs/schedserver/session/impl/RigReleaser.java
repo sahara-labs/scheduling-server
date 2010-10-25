@@ -102,9 +102,6 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
     @Override
     public void releaseResponseCallback(final ReleaseResponse response)
     {
-        RigDao dao = new RigDao();
-        this.rig = dao.merge(this.rig);
-            
         OperationResponseType op = response.getReleaseResponse();
         
         if (op.getWillCallback())
@@ -115,6 +112,9 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             return;
         }
         
+        RigDao dao = new RigDao();
+        this.rig = dao.merge(this.rig);
+
         if (op.getSuccess())
         {
             this.logger.debug("Received release callback, releasing " + this.rig.getName() + " was successful.");
