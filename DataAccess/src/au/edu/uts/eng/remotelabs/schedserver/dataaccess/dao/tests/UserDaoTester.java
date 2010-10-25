@@ -104,7 +104,13 @@ public class UserDaoTester extends TestCase
         Session ses = DataAccessActivator.getNewSession();
         
         ses.beginTransaction();
-        UserClass uc = new UserClass("test1", (short) 10, true, true, true, true);
+        UserClass uc = new UserClass();
+        uc.setName("test1");
+        uc.setPriority((short)10);
+        uc.setActive(true);
+        uc.setBookable(true);
+        uc.setQueuable(true);
+        uc.setUsersLockable(true);
         ses.save(uc);
         User us = new User("del1", "ns1", "ACADEMIC");
         ses.save(us);

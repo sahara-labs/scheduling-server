@@ -62,10 +62,13 @@ import javax.persistence.UniqueConstraint;
  * <ul>
  *  <li>Resource permissions - the resources a user may be access.</li>
  *  <li>Priority - Queue priority.<li>
- *  <li>Queueable - Whether a use may queue for a resource.</li>
+ *  <li>Queueable - Whether a user may queue for a resource.</li>
+ *  <li>Bookable - Whether a user may book for a resource.</li>
  *  <li>Kickable - Whether a user may be forcibly removed for a resource before
  *  their guaranteed time has elapsed.</li>
  *  <li>Lockable - Whether a user may be locked from using a resource.</li>
+ *  <li>Time Horizon - The offset from which a booking can be made. That is, 
+ *  from now until this time is elapsed, no bookings can be made.</li>
  * </ul>
  */
 @Entity
@@ -89,6 +92,10 @@ public class UserClass implements java.io.Serializable
      *  to a free resource or the request fails. */
     private boolean queuable;
     
+    /** Whether a user may book for resources. If not, they must queue for the 
+     * resources. */
+    private boolean bookable;
+    
     /** Whether a user may be kicked from a resource. */
     private boolean kickable;
     
@@ -99,6 +106,9 @@ public class UserClass implements java.io.Serializable
     /** Whether the user class is active. */
     private boolean active;
     
+    /** The time offset from a booking can be made. */
+    private int timeHorizon;
+    
     private Set<UserAssociation> userAssociations = new HashSet<UserAssociation>(0);
     private Set<AcademicPermission> academicPermissions = new HashSet<AcademicPermission>(0);
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
@@ -106,36 +116,6 @@ public class UserClass implements java.io.Serializable
     public UserClass()
     {
         /* Bean style class. */
-    }
-
-    public UserClass(final String name, final short priority,
-            final boolean queuable, final boolean kickable,
-            final boolean usersLockable, final boolean active)
-    {
-        this.name = name;
-        this.priority = priority;
-        this.queuable = queuable;
-        this.kickable = kickable;
-        this.usersLockable = usersLockable;
-        this.active = active;
-    }
-
-    public UserClass(final String name, final short priority,
-            final boolean queuable, final boolean kickable,
-            final boolean usersLockable, final boolean active,
-            final Set<UserAssociation> userAssociations,
-            final Set<AcademicPermission> academicPermissions,
-            final Set<ResourcePermission> resourcePermissions)
-    {
-        this.name = name;
-        this.priority = priority;
-        this.queuable = queuable;
-        this.kickable = kickable;
-        this.usersLockable = usersLockable;
-        this.active = active;
-        this.userAssociations = userAssociations;
-        this.academicPermissions = academicPermissions;
-        this.resourcePermissions = resourcePermissions;
     }
 
     @Id
@@ -183,6 +163,17 @@ public class UserClass implements java.io.Serializable
     {
         this.queuable = queuable;
     }
+    
+    @Column(name = "bookable", nullable = false)
+    public boolean isBookable()
+    {
+        return this.bookable;
+    }
+    
+    public void setBookable(final boolean bookable)
+    {
+        this.bookable = bookable;
+    }
 
     @Column(name = "kickable", nullable = false)
     public boolean isKickable()
@@ -215,6 +206,17 @@ public class UserClass implements java.io.Serializable
     public void setActive(final boolean active)
     {
         this.active = active;
+    }
+    
+    @Column(name = "time_horizon", columnDefinition="int default '0'")
+    public int getTimeHorizon()
+    {
+        return this.timeHorizon;
+    }
+    
+    public void setTimeHorizon(int horizon)
+    {
+        this.timeHorizon = horizon;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userClass")

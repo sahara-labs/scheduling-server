@@ -107,7 +107,14 @@ public class UserClassDaoTester extends TestCase
         
         User us = new User("user", "userns", "ADMIN");
         ses.save(us);
-        UserClass uc = new UserClass("clazz", (short) 10, true, true, true, true);
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short) 10);
+        uc.setActive(true);
+        uc.setKickable(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(true);
         ses.save(uc);
         ResourcePermission perm = new ResourcePermission(uc, "RIG", 3600, 300, (short) 5, 300, 300);
         perm.setExpiryTime(new Date());
@@ -149,7 +156,14 @@ public class UserClassDaoTester extends TestCase
         
         User us = new User("user", "userns", "ADMIN");
         ses.save(us);
-        UserClass uc = new UserClass("clazz", (short) 10, true, true, true, true);
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short) 10);
+        uc.setActive(true);
+        uc.setKickable(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(true);
         ses.save(uc);
         ResourcePermission perm = new ResourcePermission(uc, "RIG", 3600, 300, (short) 5, 300, 300);
         perm.setExpiryTime(new Date());
