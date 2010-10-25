@@ -120,14 +120,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
     @Override
     public void allocateResponseCallback(final AllocateResponse response)
     {
-        OperationResponseType op = response.getAllocateResponse();
-        
-        try
-        {
-            Thread.sleep(500);
-        }
-        catch (InterruptedException ex) { /* Embrassing timing jiffy, which empircally works. */ }
-        
+        OperationResponseType op = response.getAllocateResponse();        
         if (op.getWillCallback())
         {
             /* The response will come in a callback request so no work required now. */
