@@ -159,9 +159,6 @@ public class SessionInterface implements SessionSkeletonInterface
             info.setTimeLeft(remainingTime);
             info.setExtensions(ses.getExtensions());
             
-            /* DODGY This is a hack for some callbacks not correctly updating the ready flag. */
-            info.setIsReady(ses.isReady() || time > 60);
-            
             /* Warning messages. */
             if (ses.isInGrace())
             {
