@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Rig Provider
 Bundle-SymbolicName: SchedulingServer-RigProvider
-Bundle-Version: 1.0.0.alpha
-Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-Version: 3.0.0.beta
+Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.config,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,
