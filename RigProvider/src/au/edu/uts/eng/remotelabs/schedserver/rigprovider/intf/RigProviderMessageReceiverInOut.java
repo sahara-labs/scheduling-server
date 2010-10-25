@@ -256,6 +256,26 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
             {
                 return RegisterRigResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
+            
+            if (AllocateCallback.class.equals(type))
+            {
+                return AllocateCallback.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (AllocateCallbackResponse.class.equals(type))
+            {
+                return AllocateCallbackResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (ReleaseCallback.class.equals(type))
+            {
+                return ReleaseCallback.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (ReleaseCallbackResponse.class.equals(type))
+            {
+                return ReleaseCallbackResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
         }
         catch (final Exception e)
         {
