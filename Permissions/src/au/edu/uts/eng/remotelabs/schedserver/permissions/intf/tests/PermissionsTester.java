@@ -1654,7 +1654,14 @@ public class PermissionsTester extends TestCase
     public void testGetUserClass() throws Exception
     {
         UserClassDao dao = new UserClassDao();
-        UserClass cls = new UserClass("ucTest", (short) 50, true, false, true, false);
+        UserClass cls = new UserClass();
+        cls.setName("ucTest");
+        cls.setPriority((short)50);
+        cls.setActive(true);
+        cls.setQueuable(true);
+        cls.setBookable(true);
+        cls.setUsersLockable(false);
+        cls.setKickable(true);
         dao.persist(cls);
         
         GetUserClass req = new GetUserClass();
@@ -1691,7 +1698,15 @@ public class PermissionsTester extends TestCase
     public void testGetUserClassName() throws Exception
     {
         UserClassDao dao = new UserClassDao();
-        UserClass cls = new UserClass("ucTest", (short) 50, true, false, true, false);
+        UserClass cls = new UserClass();
+        cls.setName("ucTest");
+        cls.setPriority((short)50);
+        cls.setActive(true);
+        cls.setQueuable(false);
+        cls.setBookable(true);
+        cls.setUsersLockable(false);
+        cls.setKickable(true);
+        dao.persist(cls);
         dao.persist(cls);
         
         GetUserClass req = new GetUserClass();

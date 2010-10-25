@@ -115,7 +115,13 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testAddUserExists()
     {
-        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short)50);
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(false);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -130,7 +136,14 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testEditUser()
     {
-        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short)50);
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(false);
+        uc.setKickable(true);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -154,7 +167,14 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testEditUserId()
     {
-        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short)50);
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(false);
+        uc.setKickable(true);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -184,7 +204,14 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testDeleteUserClass()
     {
-        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short)50);
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(false);
+        uc.setKickable(true);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
@@ -200,7 +227,14 @@ public class UserClassAdminTester extends TestCase
     @Test
     public void testDeleteUserClassId()
     {
-        UserClass uc = new UserClass("clazz", (short) 50, true, true, false, false);
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short)50);
+        uc.setActive(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(false);
+        uc.setKickable(true);
         Session ses = this.dao.getSession();
         ses.beginTransaction();
         ses.save(uc);
