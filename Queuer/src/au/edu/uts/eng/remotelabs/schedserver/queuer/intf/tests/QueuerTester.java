@@ -118,6 +118,10 @@ public class QueuerTester extends TestCase
         f = Queue.class.getDeclaredField("notTest");
         f.setAccessible(true);
         f.set(q, Boolean.FALSE);
+        
+        f = Queuer.class.getDeclaredField("notTest");
+        f.setAccessible(true);
+        f.set(this.queuer, Boolean.FALSE);
     }
 
     /**

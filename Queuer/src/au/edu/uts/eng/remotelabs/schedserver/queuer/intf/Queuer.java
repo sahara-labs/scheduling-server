@@ -76,6 +76,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQue
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserQueueType;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 /**
  * Queuer SOAP interface implementation.
@@ -84,6 +85,9 @@ public class Queuer implements QueuerSkeletonInterface
 {
     /** Logger. */
     private Logger logger;
+    
+    /** Flag for unit testing to disable rig client communication. */ 
+    private boolean notTest = true;
     
     public Queuer()
     {
@@ -233,6 +237,9 @@ public class Queuer implements QueuerSkeletonInterface
             ses.setRemovalReason("User request.");
             dao.flush();
             inQueue.setQueueSuccessful(true);
+            
+            /* If the user is assigned to a rig, free the rig. */
+            if (this.notTest) new RigReleaser().release(ses, dao.getSession());            
         }
         
         dao.closeSession();
