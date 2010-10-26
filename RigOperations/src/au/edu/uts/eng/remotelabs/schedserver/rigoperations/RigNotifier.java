@@ -42,6 +42,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncServiceCallbackHandler;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.NotifyResponse;
@@ -88,6 +90,13 @@ public class RigNotifier extends RigClientAsyncServiceCallbackHandler
             /* Log when the rig is offline. */
             RigLogDao rigLogDao = new RigLogDao(db);
             rigLogDao.addOfflineLog(this.rig, "Notify failed with error: " + e.getMessage());
+            
+            /* Fire event the rig is offline. */
+            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
+            for (RigEventListener evt : evts)
+            {
+                evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, db);
+            }
         }
     }
     
@@ -108,6 +117,13 @@ public class RigNotifier extends RigClientAsyncServiceCallbackHandler
             /* Log when the rig is offline. */
             RigLogDao rigLogDao = new RigLogDao(dao.getSession());
             rigLogDao.addOfflineLog(this.rig, "Notify failed with reason: " + op.getError().getReason());
+            
+            /* Fire event the rig is offline. */
+            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
+            for (RigEventListener evt : evts)
+            {
+                evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, dao.getSession());
+            }
         }
         
         dao.closeSession();
@@ -130,6 +146,13 @@ public class RigNotifier extends RigClientAsyncServiceCallbackHandler
         /* Log when the rig is offline. */
         RigLogDao rigLogDao = new RigLogDao(dao.getSession());
         rigLogDao.addOfflineLog(this.rig, "Notify failed with error: " + e.getMessage());
+        /* Fire event the rig is offline. */
+        RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
+        for (RigEventListener evt : evts)
+        {
+            evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, dao.getSession());
+        }
+        
         
         dao.closeSession();
     }

@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2009, University of Technology, Sydney
+ * Copyright (c) 2010, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,80 +32,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 26th October 2010
+ * @date 6th April 2010
  */
+package au.edu.uts.eng.remotelabs.schedserver.rigoperations.impl;
 
-package au.edu.uts.eng.remotelabs.schedserver.rigoperations;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.impl.RigEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
 /**
- * Activator for the Rig Operations bundle.
+ * Listener for rig event listener services.
  */
-public class RigOperationsActivator implements BundleActivator 
+public class RigEventServiceListener implements ServiceListener
 {
-    /** Rig event listeners list. */
-    private static List<RigEventListener> listenerList;
+    /** List of rig event listeners. */
+    private List<RigEventListener> listenerList;
     
-    /** Loger. */
+    /** Local rig provider bundle context. */
+    private BundleContext context;
+    
+    /** Logger. */
     private Logger logger;
+        
+    public RigEventServiceListener(List<RigEventListener> listeners, BundleContext context)
+    {
+        this.listenerList = listeners;
+        this.context = context;
+        
+        this.logger = LoggerActivator.getLogger();
+    }
     
     @Override
-	public void start(BundleContext context) throws Exception 
-	{
-        this.logger = LoggerActivator.getLogger();
-        this.logger.info("Started the Rig Operations bundle.");
-        
-        /* Add service listener to add and remove registered rig event listeners. */
-        listenerList = new ArrayList<RigEventListener>();
-        RigEventServiceListener listener = new RigEventServiceListener(listenerList, context);
-        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
-        
-        /* Fire pseudo events for all registered services. */
-        ServiceReference refs[] = context.getServiceReferences(RigEventListener.class.getName(), null);
-        if (refs != null)
-        {
-            for (ServiceReference ref : refs)
-            {
-                listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-            }
-        }
-	}
-
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Stopping the Rig Operations bundle.");
-		listenerList = null;
-	}
-
-	/**
-     * Returns the list of registered rig state change event listeners.
-     * 
-     * @return list of event listeners
-     */
-    public static RigEventListener[] getRigEventListeners()
+    public void serviceChanged(ServiceEvent evt)
     {
-        if (listenerList == null)
+        ServiceReference ref = evt.getServiceReference();
+        switch (evt.getType())
         {
-            return new RigEventListener[0];
-        }
-        
-        synchronized (listenerList)
-        {
-            return listenerList.toArray(new RigEventListener[listenerList.size()]);
+            case ServiceEvent.REGISTERED:
+                this.logger.debug("Added rig event listener from bundle " + ref.getBundle().getSymbolicName() + " to " +
+                		"rig operations.");
+                synchronized (this.listenerList)
+                {
+                    this.listenerList.add((RigEventListener)this.context.getService(ref));
+                }
+                break;
+            case ServiceEvent.UNREGISTERING:
+                this.logger.debug("Removing rig event listener from bundle " + ref.getBundle().getSymbolicName() + 
+                        " to rig operations.");
+                synchronized (this.listenerList)
+                {
+                    this.listenerList.remove(this.context.getService(ref));
+                }
+                break;
         }
     }
 }
