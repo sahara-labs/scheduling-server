@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 6th April 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.session.impl.tests;
+package au.edu.uts.eng.remotelabs.schedserver.rigoperations.tests;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -60,7 +60,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ErrorType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ReleaseResponse;
-import au.edu.uts.eng.remotelabs.schedserver.session.impl.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 /**
  * Tests the {@link RigReleaser} class.

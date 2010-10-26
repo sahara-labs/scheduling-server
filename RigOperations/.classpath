@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-DataAccess"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Queuer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-RigProvider"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-RigProxy"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

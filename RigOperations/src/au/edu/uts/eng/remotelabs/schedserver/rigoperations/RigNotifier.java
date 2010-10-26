@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 9th April 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.session.impl;
+package au.edu.uts.eng.remotelabs.schedserver.rigoperations;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;

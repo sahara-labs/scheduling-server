@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 4th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
+package au.edu.uts.eng.remotelabs.schedserver.rigoperations;
 
 import java.util.Date;
 

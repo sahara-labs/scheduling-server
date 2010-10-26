@@ -100,6 +100,12 @@ Date: 28th December 2009
 	<target name="queuerBundle" if="missing.queuer">
 		<buildRequiredBundle bundle="SchedulingServer-Queuer.jar" bundleProject="Queuer" />
 	</target>
+	
+	<!-- ### Rig Operations Bundle. -->
+	<detectIfBundlePresent property="missing.rigoperations" bundle="SchedulingServer-RigOperations.jar" />
+	<target name="rigOperationsBundle" if="missing.rigoperations">
+		<buildRequiredBundle bundle="SchedulingServer-RigOperations.jar" bundleProject="RigOperations" />
+	</target>
 
 	<!-- ### Rig Provider Bundle. -->
 	<detectIfBundlePresent property="missing.rigprovider" bundle="SchedulingServer-RigProvider.jar" />

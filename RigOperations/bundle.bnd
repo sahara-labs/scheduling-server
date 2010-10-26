@@ -1,0 +1,11 @@
+Bundle-Name: RigOperations
+Bundle-SymbolicName: SchedulingServer-RigOperations
+Bundle-Version: 3.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigOperationsActivator
+Bundle-Vendor: University of Technology, Sydney
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: *
+Include-Resource: lib/=lib/;-donotcopy=.svn
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigoperations
+Bundle-ClassPath: ., \
+${findpath;lib/.*.jar}

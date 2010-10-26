@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 4th January 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.queuer.impl.tests;
+package au.edu.uts.eng.remotelabs.schedserver.rigoperations.tests;
 
 
 import java.lang.reflect.Field;
@@ -56,7 +56,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.RigAllocator;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.AllocateResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ErrorType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.OperationResponseType;
