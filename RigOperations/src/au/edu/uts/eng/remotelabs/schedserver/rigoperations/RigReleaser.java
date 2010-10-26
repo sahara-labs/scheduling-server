@@ -44,7 +44,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueRun;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncServiceCallbackHandler;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigProxyActivator;
@@ -123,9 +122,8 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             this.rig.setInSession(false);
             this.rig.setSession(null);
             dao.flush();
-            
-            /* Give the rig to the queue to attempt allocation. */
-            QueueRun.attemptAssignment(this.rig, dao.getSession());
+
+            // TODO broadcast free.
         }
         else
         {
