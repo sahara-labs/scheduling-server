@@ -55,6 +55,8 @@ public class QueueListenerRun implements RigEventListener
             case REGISTERED:
                 /* Falls through. */
             case ONLINE:
+                /* Falls through. */
+            case FREE:
                 QueueRun.attemptAssignment(rig, db);
                 break;
             default:
