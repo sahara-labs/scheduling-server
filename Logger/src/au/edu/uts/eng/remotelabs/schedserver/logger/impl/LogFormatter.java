@@ -109,7 +109,6 @@ public class LogFormatter
      * @param fmt format string
      * @param msg log message
      * @param lvl log level
-     * @param stackPos stack position to the log message came from
      * @return formatted log message
      */
     public String formatLog(final String fmt, final String msg, final String lvl)
