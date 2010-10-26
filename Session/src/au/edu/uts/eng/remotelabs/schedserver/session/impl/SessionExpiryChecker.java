@@ -49,6 +49,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueInfo;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigNotifier;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 /**
  * Either expires or extends the time of all sessions which are close to 
