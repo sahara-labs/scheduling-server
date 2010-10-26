@@ -54,10 +54,7 @@ abstract class AbstractLogger implements Logger
     
     /** Format strings for each log type. */
     private final Map<Integer, String> formatStrings;
-    
-    /** The level in the stack of the calling method. */
-    protected int stackLevel;
-    
+
     /**
      * Constructor - loads the logging level.
      */
@@ -66,9 +63,6 @@ abstract class AbstractLogger implements Logger
         this.logLevel = LoggerActivator.getLoggingLevel();
         this.formatStrings = LoggerActivator.getFormatStrings();
         this.formatter = new LogFormatter();
-        
-        /** Most loggers have 3 as their stack level. */
-        this.stackLevel = 3;
      }
 
     @Override
@@ -77,7 +71,7 @@ abstract class AbstractLogger implements Logger
         if (Logger.DEBUG <= this.logLevel)
         {
             this.log(Logger.DEBUG, 
-                    this.formatter.formatLog(this.formatStrings.get(Logger.DEBUG), message, "DEBUG", this.stackLevel));
+                    this.formatter.formatLog(this.formatStrings.get(Logger.DEBUG), message, "DEBUG"));
         }
     }
 
@@ -85,14 +79,14 @@ abstract class AbstractLogger implements Logger
     public void error(final String message)
     {
         this.log(Logger.ERROR, 
-                this.formatter.formatLog(this.formatStrings.get(Logger.ERROR), message, "ERROR", this.stackLevel));
+                this.formatter.formatLog(this.formatStrings.get(Logger.ERROR), message, "ERROR"));
     }
 
     @Override
     public void fatal(final String message)
     {
         this.log(Logger.FATAL, 
-                this.formatter.formatLog(this.formatStrings.get(Logger.FATAL), message, "FATAL", this.stackLevel));        
+                this.formatter.formatLog(this.formatStrings.get(Logger.FATAL), message, "FATAL"));        
     }
 
     @Override
@@ -101,7 +95,7 @@ abstract class AbstractLogger implements Logger
         if (Logger.INFO <= this.logLevel)
         {
             this.log(Logger.INFO, 
-                    this.formatter.formatLog(this.formatStrings.get(Logger.INFO), message, "INFO", this.stackLevel));
+                    this.formatter.formatLog(this.formatStrings.get(Logger.INFO), message, "INFO"));
         }
     }
 
@@ -109,7 +103,7 @@ abstract class AbstractLogger implements Logger
     public void priority(final String message)
     {
         this.log(Logger.PRIORITY, 
-                this.formatter.formatLog(this.formatStrings.get(Logger.PRIORITY), message, "PRIORITY", this.stackLevel)); 
+                this.formatter.formatLog(this.formatStrings.get(Logger.PRIORITY), message, "PRIORITY")); 
     }
 
     @Override
@@ -118,7 +112,7 @@ abstract class AbstractLogger implements Logger
         if (Logger.WARN <= this.logLevel)
         {
             this.log(Logger.WARN, 
-                    this.formatter.formatLog(this.formatStrings.get(Logger.WARN), message, "WARN", this.stackLevel));
+                    this.formatter.formatLog(this.formatStrings.get(Logger.WARN), message, "WARN"));
         }
     }
 }
