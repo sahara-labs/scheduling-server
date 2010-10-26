@@ -48,6 +48,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
  * <ul>
  *  <li>Registered - The rig has been registered.</li>
  *  <li>Online - An off line rig has come online.</li>
+ *  <li>Free - The rig has become free, so the previous session is finished.</li>
  *  <li>Off line - An online rig has gone off line.</li>
  *  <li>Removal - A registered rig is being removed.</li>
  * </ul>
@@ -58,7 +59,8 @@ public interface RigEventListener
     {
         /** The rig being registered. */
         REGISTERED, /** The rig has come online. */
-        ONLINE, /** The rig has gone off line. */
+        ONLINE, /** The rig has become free. */
+        FREE, /** The rig has gone off line. */
         OFFLINE, /** The rig is being removed. */
         REMOVED
     }

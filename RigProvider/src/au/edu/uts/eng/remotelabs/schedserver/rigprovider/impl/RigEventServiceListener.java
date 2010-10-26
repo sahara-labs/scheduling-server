@@ -77,7 +77,7 @@ public class RigEventServiceListener implements ServiceListener
         {
             case ServiceEvent.REGISTERED:
                 this.logger.debug("Added rig event listener from bundle " + ref.getBundle().getSymbolicName() + " to " +
-                		"the local rig provider.");
+                		"the rig provider.");
                 synchronized (this.listenerList)
                 {
                     this.listenerList.add((RigEventListener)this.context.getService(ref));
@@ -85,7 +85,7 @@ public class RigEventServiceListener implements ServiceListener
                 break;
             case ServiceEvent.UNREGISTERING:
                 this.logger.debug("Removing rig event listener from bundle " + ref.getBundle().getSymbolicName() + 
-                        " from the local rig provider.");
+                        " from the rig provider.");
                 synchronized (this.listenerList)
                 {
                     this.listenerList.remove(this.context.getService(ref));
