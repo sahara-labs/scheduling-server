@@ -121,6 +121,8 @@ Var SchemaStatus
 Var SampleDataStatus
 Var DBSetupLog
 Var DBDirText
+Var DBType
+Var DBTypeStr
 
 Page custom confirmDB confirmDBPost
 Page custom dbSetup
@@ -132,7 +134,7 @@ PageEx directory
 PageExEnd
 Page custom getDBDetails getDetails
 Page custom createDB
-Page custom printSummary
+Page custom printSummary revertBack
 ; End Custom pages
 ;-------------------------------------------------------------
 
@@ -226,6 +228,8 @@ Function .onInit
 		Abort 
 	${EndIf}
     StrCpy $DBPageNumber "7" ; Number of pages to jump forward from 'getInstallChoice' page
+    StrCpy $DBTypeStr "-- Select database --"
+    StrCpy $DBType $DBTypeStr
 FunctionEnd
 
 Function checkJREVersion
@@ -536,7 +540,7 @@ Function writeToFile
     Var /GLOBAL MinuteVar
     Var /GLOBAL SecondsVar
     Pop $textToWrite ;text to write
-    ${GetTime} "" "LS" $DateVar $MonthVar $YearVar $DayVar $HourVar $MinuteVar $SecondsVar 
+    ${GetTime} "" "L" $DateVar $MonthVar $YearVar $DayVar $HourVar $MinuteVar $SecondsVar 
     StrCpy $textToWrite "$\n[DBSetup $DateVar-$MonthVar-$YearVar $HourVar:$MinuteVar:$SecondsVar] $textToWrite" 
     FileOpen $DBSetupLog "$INSTDIR\DatabaseSetup.log" a
     FileSeek $DBSetupLog 0 END 
@@ -554,7 +558,6 @@ FunctionEnd
 Function setupDatabase
     Var /GLOBAL ComboBox
     Var /GLOBAL GenericControl
-    Var /GLOBAL DBType
     Var /GLOBAL DBAdmin
     Var /GLOBAL DBAdminPass
     Var /GLOBAL DBServer
@@ -608,17 +611,26 @@ FunctionEnd
 ; Function to check and get the values entered by user for setupDatabase
 Function setupDatabasePost
     ${NSD_GetText} $ComboBox $DBType
-    ${If} $DBType S== ""
-        MessageBox MB_OK "Database not selected"
+    ${If} $DBType S== "$DBTypeStr"
+        MessageBox MB_OK|MB_ICONEXCLAMATION "Database not selected"
         Abort
-    ${Else}
-        ${NSD_GetText} $DBUserTemp $DBAdmin
-        ${NSD_GetText} $DBPassTemp $DBAdminPass
-        ${NSD_GetText} $DBServerTemp $DBServer
-        ${NSD_GetText} $DBInstanceTemp $DBInstance
-    ${EndIf} 
+    ${EndIf}
+    ${If} $DBType S!= "MySQL"
+    ${AndIf} $DBType S!= "Microsoft SQL"
+        MessageBox MB_OK|MB_ICONEXCLAMATION 'Invalid database selected.$\nOnly "MySQL" and "Microsoft SQL" databases are supported'
+        Abort
+    ${EndIf}
+    ${NSD_GetText} $DBUserTemp $DBAdmin
+    ${NSD_GetText} $DBPassTemp $DBAdminPass
+    ${NSD_GetText} $DBServerTemp $DBServer
+    ${NSD_GetText} $DBInstanceTemp $DBInstance
+ 
     ${If} $DBServer S== ""
-        MessageBox MB_OK "Please enter database server"
+        MessageBox MB_OK|MB_ICONEXCLAMATION "Please enter database server"
+        Abort
+    ${EndIf}
+    ${If} $DBAdmin S== ""
+        MessageBox MB_OK|MB_ICONEXCLAMATION "Please enter database administrator login details"
         Abort
     ${EndIf}
 FunctionEnd
@@ -643,7 +655,7 @@ Function checkDB
     ${If} $DBType S== "MySQL"
         ${IfNot} ${FileExists} $DBDir\mysql.exe
             !insertmacro writeToLog "The executable mysql.exe could not be found in $DBDir."
-            MessageBox MB_OK "The executable mysql.exe could not be found in $DBDir."
+            MessageBox MB_OK|MB_ICONEXCLAMATION "The executable mysql.exe could not be found in $DBDir."
             Abort
         ${Else}
             StrCpy $DBExec "$DBDir\mysql.exe"
@@ -653,7 +665,7 @@ Function checkDB
             ${IfNot} $0 S== "0"
                 !insertmacro writeToLog "Error in connecting to the database. Ensure that the connection are correct - \
                 $\n$1" 
-                MessageBox MB_OK "Error in connecting to the database. Ensure that the connection details are correct - \
+                MessageBox MB_OK|MB_ICONEXCLAMATION "Error in connecting to the database. Ensure that the connection details are correct - \
                 $\n$1" 
                 Abort
             ${EndIf}
@@ -661,7 +673,7 @@ Function checkDB
     ${ElseIf} $DBType S== "Microsoft SQL"
         ${IfNot} ${FileExists} $DBDir\sqlcmd.exe
             !insertmacro writeToLog "The executable sqlcmd.exe could not be found in $DBDir. Please select the correct location"
-            MessageBox MB_OK "The executable sqlcmd.exe could not be found in $DBDir. Please select the correct location"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "The executable sqlcmd.exe could not be found in $DBDir. Please select the correct location"
             Abort
         ${Else}
             ${If} $DBInstance S!= ""
@@ -674,7 +686,7 @@ Function checkDB
             ${IfNot} $0 S== "0"
                 !insertmacro writeToLog "Error in connecting to the database. Ensure that the connection details are correct - \
                 $\n$1" 
-                MessageBox MB_OK "Error in connecting to the database. Ensure that the connection are correct - \
+                MessageBox MB_OK|MB_ICONEXCLAMATION "Error in connecting to the database. Ensure that the connection details are correct - \
                 $\n$1" 
                 Abort
             ${EndIf}
@@ -745,7 +757,7 @@ Function createDatabase
         ${If} $0 S!= "0"
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
             !insertmacro writeToLog "Error in creating database $DBName. Skipping further setup actions - $\n$1"
-            MessageBox MB_OK "Error in creating database $DBName. Skipping further setup actions. - $\n$\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating database $DBName. Skipping further setup actions - $\n$\n$1"
             StrCpy $DBStatus "-1"
         ${Else}
             StrCpy $DBStatus ""
@@ -758,7 +770,7 @@ Function createDatabase
         ${If} $0 S!= "0" 
             ${OrIf} $1 S!= ""
             !insertmacro writeToLog "Error in creating database $DBName. Skipping further setup actions - $\n$1"
-            MessageBox MB_OK "Error in creating database $DBName. Skipping further setup actions. $\n$\nThe error message is  - $1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating database $DBName. Skipping further setup actions - $1"
             StrCpy $DBStatus "-1"
         ${Else}
             StrCpy $DBStatus ""
@@ -776,20 +788,21 @@ Function createUser
         ${If} $0 S!= "0"
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
             !insertmacro writeToLog "Error in creating user $DBUser. Skipping user creation - $\n$1"
-            MessageBox MB_OK "Error in creating user $DBUser. Skipping user creation - $\n$\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating user $DBUser. Skipping user creation - $\n$\n$1"
             StrCpy $UserStatus "-1"
         ${Else}
             StrCpy $UserStatus ""
         ${EndIf}
    ${ElseIf} $DBType S== "Microsoft SQL"
         ; create login
-        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBAdmin -P $DBAdminPass -Q "CREATE LOGIN $DBUser WITH PASSWORD=$\'$DBUserPass$\'"'
+        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBAdmin -P $DBAdminPass -d $DBName -Q "CREATE LOGIN $DBUser WITH PASSWORD=$\'$DBUserPass$\';\
+        CREATE USER $DBUser from LOGIN $DBUser"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
             ${OrIf} $1 S!= ""
-            !insertmacro writeToLog "Error in creating user $DBUser. Skipping user creation - $\n$1"
-            MessageBox MB_OK "Error in creating user $DBUser. Skipping user creation - $\n$\n$1"
+            !insertmacro writeToLog "Error in creating database user/login $DBUser. Skipping user creation - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating database user/login $DBUser. Skipping user creation - $\n$\n$1"
             StrCpy $UserStatus "-1"
         ${Else}
             StrCpy $UserStatus ""            
@@ -809,20 +822,21 @@ Function grantPrivileges
         ${If} $0 S!= "0" 
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
             !insertmacro writeToLog "Error in granting privileges to user $DBUser on database $DBName - $\n$1"
-            MessageBox MB_OK "Error in granting privileges to user $DBUser on database $DBName - $\n$\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in granting privileges to user $DBUser on database $DBName - $\n$\n$1"
             StrCpy $PrivilegesStatus "-1"
         ${Else}
             StrCpy $PrivilegesStatus ""            
         ${Endif}
     ${ElseIf} $DBType S== "Microsoft SQL"
-        ; change the database ownership to the new user
-        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBAdmin -P $DBAdminPass -Q "ALTER AUTHORIZATION ON DATABASE::$DBName TO $DBUser"'
+        ; assign database roles to the user
+        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBAdmin -P $DBAdminPass -d $DBName -Q "EXEC sp_addrolemember $\'db_ddladmin$\', $\'$DBUser$\';\
+        EXEC sp_addrolemember $\'db_datareader$\', $\'$DBUser$\'; EXEC sp_addrolemember $\'db_datawriter$\', $\'$DBUser$\'"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0" 
         ${OrIf} $1 S!= ""
-            !insertmacro writeToLog "Error in changing ownership of database $DBName to $DBUser - $\n$1"
-            MessageBox MB_OK "Error in changing ownership of database $DBName to $DBUser - $\n$\n$1"
+            !insertmacro writeToLog "Error in adding $DBUser to the database roles - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in adding $DBUser to the database roles - $\n$\n$1"
             StrCpy $PrivilegesStatus "-1"
         ${Else}
             StrCpy $PrivilegesStatus ""               
@@ -841,7 +855,7 @@ Function createSchema
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
             !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mysql-schema.sql manually.\
             $\nThe error message is - $1"
-            MessageBox MB_OK "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mysql-schema.sql manually.\
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mysql-schema.sql manually.\
              $\n$\nThe error message is - $1"
             StrCpy $SchemaStatus "-1"
         ${Else}
@@ -856,7 +870,7 @@ Function createSchema
         ${OrIf} $1 S!= ""
             !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mssql-schema.sql manually.\
             $\nThe error message is - $1"
-            MessageBox MB_OK "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mssql-schema.sql manually.\
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mssql-schema.sql manually.\
             $\n$\nThe error message is - $1"
             StrCpy $SchemaStatus "-1"
         ${Else}
@@ -874,7 +888,7 @@ Function addDataUsingFile
         ${If} $0 S!= "0"
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
             !insertmacro writeToLog "Error in adding sample data to database $DBName - $\n$1"
-            MessageBox MB_OK "Error in adding sample data to database $DBName - $\n$\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in adding sample data to database $DBName - $\n$\n$1"
             StrCpy $SampleDataStatus "-1"
         ${Else}
             StrCpy $SampleDataStatus ""               
@@ -886,7 +900,7 @@ Function addDataUsingFile
         ${IfNot} $0 S== "0" 
         ${OrIf} $1 S!= ""
             !insertmacro writeToLog "Error in adding sample data to database $DBName - $\n$1"
-            MessageBox MB_OK "Error in adding sample data to database $DBName - $\n$\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in adding sample data to database $DBName - $\n$\n$1"
             StrCpy $SampleDataStatus "-1"
         ${Else}
             StrCpy $SampleDataStatus ""               
@@ -915,6 +929,83 @@ Function createDB
         ${EndIf}
         ${If} $SchemaStatus S== ""
             call addDataUsingFile
+        ${EndIf}
+    ${EndIf}
+FunctionEnd
+
+Function revertBackPrivileges
+    ; MessageBox MB_OK "Reverting back privileges"
+    Var /GLOBAL revertStatus
+    ${If} $DBType S== "MySQL"
+        nsExec::ExecToStack /OEM '"$DBExec" -u $DBAdmin --password=$DBAdminPass -e "revoke all on $DBName.* from $DBUser"'
+        Pop $0
+        Pop $1
+        ${If} $0 S!= "0"
+        ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
+            !insertmacro writeToLog "Error in revoking the privileges from $DBUser on $DBName - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in revoking the privileges from $DBUser on $DBName - $\n$\n$1"
+            StrCpy $revertStatus "-1"
+        ${EndIf}
+    ${ElseIf} $DBType S== "Microsoft SQL"
+        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBAdmin -P $DBAdminPass -d $DBName -Q "EXEC sp_droprolemember $\'db_ddladmin$\', $\'$DBUser$\';\
+        EXEC sp_droprolemember $\'db_datareader$\', $\'$DBUser$\'; EXEC sp_droprolemember $\'db_datawriter$\', $\'$DBUser$\'"'
+        Pop $0
+        Pop $1
+        ${If} $0 S!= "0" 
+        ${OrIf} $1 S!= ""
+            !insertmacro writeToLog "Error in removing $DBUser from the database roles - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in removing $DBUser from the database roles - $\n$\n$1"
+            StrCpy $revertStatus "-1"
+        ${EndIf}    
+    ${EndIf}
+FunctionEnd
+
+Function revertBackUser
+    ; MessageBox MB_OK "Reverting back user creation"
+    ${If} $DBType S== "MySQL"
+        nsExec::ExecToStack /OEM '"$DBExec" -u $DBAdmin --password=$DBAdminPass -e "drop user $DBUser"'
+        Pop $0
+        Pop $1
+        ${If} $0 S!= "0"
+        ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
+            !insertmacro writeToLog "Error in deleteing the user $DBUser - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in deleteing the user $DBUser - $\n$\n$1"
+            StrCpy $revertStatus "-1"
+        ${EndIf}
+    ${ElseIf} $DBType S== "Microsoft SQL"
+        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBAdmin -P $DBAdminPass -d $DBName -Q "DROP USER $DBUser; DROP LOGIN $DBUser;"'
+        Pop $0
+        Pop $1
+        ${If} $0 S!= "0"
+            ${OrIf} $1 S!= ""
+            !insertmacro writeToLog "Error in deleting database user/login $DBUser - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in deleting database user/login $DBUser - $\n$\n$1"
+            StrCpy $revertStatus "-1"
+        ${EndIf}
+    ${EndIf}
+FunctionEnd
+
+Function revertBackDB
+    ; MessageBox MB_OK "Reverting back database"
+    ${If} $DBType S== "MySQL"
+        nsExec::ExecToStack /OEM '"$DBExec" -u $DBAdmin --password=$DBAdminPass -e "DROP DATABASE $DBName"'
+        Pop $0
+        Pop $1
+        ${If} $0 S!= "0"
+        ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
+            !insertmacro writeToLog "Error in dropping the database $DBName - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in dropping database $DBName - $\n$\n$1"
+            StrCpy $revertStatus "-1"
+        ${EndIf}
+    ${ElseIf} $DBType S== "Microsoft SQL"
+        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBAdmin -P $DBAdminPass -Q "DROP DATABASE $DBName"'
+        Pop $0
+        Pop $1
+        ${If} $0 S!= "0" 
+            ${OrIf} $1 S!= ""
+            !insertmacro writeToLog "Error in dropping database $DBName - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in dropping database $DBName - $1"
+            StrCpy $revertStatus "-1"
         ${EndIf}
     ${EndIf}
 FunctionEnd
@@ -1000,7 +1091,48 @@ Function printSummary
     
     ${NSD_FreeImage} $ImageHandle
   
-FunctionEnd
+FunctionEnd       
+
+Function revertBack
+    ${If} $ErrorFlag S== "1" 
+    ${AndIf} $DBStatus S== "" ; No steps to revert back if database creation has failed  
+        MessageBox MB_YESNO|MB_ICONEXCLAMATION "Some of the database setup steps could not be completed successfully. \
+        The log $\nfile contains more details about the problems.$\n$\nThe installer can now revert back the successfully executed \
+        database setup steps $\nand you can re-run the installer after resolving the problems$\n- OR -$\nYou can execute \
+        the failed steps manually without reverting back the executed $\nsteps.$\n$\nDo you want to revert back the changes?" IDNO FinishSetup
+        ; revert back the changes
+        ; DB creation failed - no action as no further steps would be executed
+        ; User creation failed - no action as there could be valid reasons for failure
+        ;                        (like user already existing)
+        ; Granting privileges failed - revert back DB creation and optionally user creation
+        StrCpy $revertStatus "0"
+        ${If} $PrivilegesStatus S!= ""
+            ${If} $UserStatus S== "" ; User creation succeeded
+                call revertBackUser
+            ${EndIf}
+            call revertBackDB
+            Goto FinishSetup
+        ${EndIf}
+        ; Schema creation failed - revert back DB creation and 
+        ; optionally user creation and granting privileges
+        ${If} $SchemaStatus S!= "" 
+        ${OrIf} $SampleDataStatus S!= ""
+            call revertBackPrivileges
+            ${If} $UserStatus S== "" ; User creation succeeded
+                call revertBackUser
+            ${EndIf}
+            call revertBackDB
+        ${EndIf}
+        ${If} $revertStatus S== "-1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in reverting back the steps.\
+            $\nPlease check the log file $INSTDIR\DatabaseSetup.log for errors"
+        ${Else}
+            MessageBox MB_OK|MB_ICONINFORMATION "Successfully reverted back the setps"
+        ${EndIf}
+    ${EndIf}    
+FinishSetup:
+FunctionEnd 
+
 ; End functions added for database setup functionality
 ; --------------------------------------------------
 

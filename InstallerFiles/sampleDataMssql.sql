@@ -1,7 +1,7 @@
 SET NOCOUNT ON;
-INSERT INTO users VALUES('test1','UTS','USERS');
-INSERT INTO users VALUES('test2','UTS','USERS');
-INSERT INTO user_class VALUES (1, 0, 'TestClass', 1, 1, 1);
+INSERT INTO users VALUES('test1','UTS','USER');
+INSERT INTO users VALUES('test2','UTS','USER');
+INSERT INTO user_class VALUES (1, 1, 0, 'TestClass', 1, 1, 0, 1);
 INSERT INTO user_association VALUES (1,1);
 INSERT INTO user_association VALUES (1,2);
 INSERT INTO request_capabilities VALUES ('tag1');
