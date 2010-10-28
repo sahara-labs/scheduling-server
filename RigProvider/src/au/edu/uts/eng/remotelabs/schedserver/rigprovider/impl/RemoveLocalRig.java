@@ -104,6 +104,9 @@ public class RemoveLocalRig
             return false;
         }
         
+        /* Log the rig was removed. */
+        this.rigLogDao.addUnRegisteredLog(rig, "Rig removed its registration.");
+        
         rig.setActive(false);
         rig.setOnline(false);
         rig.setOfflineReason(reason);
@@ -115,9 +118,7 @@ public class RemoveLocalRig
         /* Remove the stored identity token. */
         IdentityTokenRegister.getInstance().removeIdentityToken(rig.getName());
         
-        /* Log the rig was removed. */
-        this.rigLogDao.addUnRegisteredLog(rig, "Rig removed its registration.");
-        
+       
         /* Provide notification a rig has been removed. */
         for (RigEventListener list : RigProviderActivator.getRigEventListeners())
         {
