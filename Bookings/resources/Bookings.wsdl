@@ -116,10 +116,6 @@
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
-      <xsd:element name="getNextBooking" type="bok:CreateBookingType">
-      </xsd:element>
-      <xsd:element name="getNextBookingResponse" type="bok:NextBookingType">
-      </xsd:element>
 
       <xsd:complexType name="CreateBookingType">
       	<xsd:sequence>
@@ -135,12 +131,6 @@
       <xsd:element name="getBookingResponse" type="bok:BookingType">
       </xsd:element>
 
-      <xsd:complexType name="NextBookingType">
-      	<xsd:sequence>
-      		<xsd:element name="booking" type="bok:BookingType"/>
-      		<xsd:element name="startIn" type="xsd:int"/>
-      	</xsd:sequence>
-      </xsd:complexType>
     
       <xsd:complexType name="BookingSlotListType">
       	<xsd:sequence>
@@ -167,29 +157,6 @@
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
-      <xsd:element name="getBookingsByPermission">
-      	<xsd:complexType>
-      		<xsd:sequence>
-      			<xsd:element name="in" type="xsd:string"/>
-      		</xsd:sequence>
-      	</xsd:complexType>
-      </xsd:element>
-      <xsd:element name="getBookingsByPermissionResponse" type="bok:BookingListType">
-      </xsd:element>
-      <xsd:element name="getBookingsByResource">
-      	<xsd:complexType>
-      		<xsd:sequence>
-      			<xsd:element name="in" type="xsd:string"/>
-      		</xsd:sequence>
-      	</xsd:complexType>
-      </xsd:element>
-      <xsd:element name="getBookingsByResourceResponse">
-      	<xsd:complexType>
-      		<xsd:sequence>
-      			<xsd:element name="out" type="xsd:string"/>
-      		</xsd:sequence>
-      	</xsd:complexType>
-      </xsd:element>
     
       <xsd:complexType name="DeleteBookingType">
       	<xsd:sequence>
@@ -220,14 +187,7 @@
       </xsd:complexType>
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="getBookingsByResourceRequest">
-    <wsdl:part name="parameters" element="bok:getBookingsByResource">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingsByResourceResponse">
-    <wsdl:part name="parameters" element="bok:getBookingsByResourceResponse">
-    </wsdl:part>
-  </wsdl:message>
+  
   <wsdl:message name="getBookingHistoryRequest">
     <wsdl:part name="parameters" element="bok:getBookingHistory">
     </wsdl:part>
@@ -248,20 +208,12 @@
     <wsdl:part name="parameters" element="bok:findBookingSlots">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getBookingsByPermissionRequest">
-    <wsdl:part name="parameters" element="bok:getBookingsByPermission">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="getBookingRequest">
     <wsdl:part name="parameters" element="bok:getBooking">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getBookingsRequest">
     <wsdl:part name="parameters" element="bok:getBookings">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getNextBookingRequest">
-    <wsdl:part name="parameters" element="bok:getNextBooking">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="findFreeBookingsResponse">
@@ -274,14 +226,6 @@
   </wsdl:message>
   <wsdl:message name="deleteBookingsResponse">
     <wsdl:part name="parameters" element="bok:deleteBookingsResponse">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingsByPermissionResponse">
-    <wsdl:part name="parameters" element="bok:getBookingsByPermissionResponse">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getNextBookingResponse">
-    <wsdl:part name="parameters" element="bok:getNextBookingResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createBookingRequest">
