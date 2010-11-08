@@ -32,9 +32,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 8th November 2010
+ * @date 9th November 2010
  */
-
 package au.edu.uts.eng.remotelabs.schedserver.bookings.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
@@ -49,38 +48,44 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResponse;
 
 /**
- * Bookings skeleton interface.
+ * Bookings interface implementation.
  */
-public class BookingsSkeleton implements BookingsInterface
-{   
+public class Bookings implements BookingsInterface
+{
+
+    @Override
+    public CreateBookingResponse createBooking(CreateBooking createBooking)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     @Override
     public DeleteBookingsResponse deleteBookings(DeleteBookings deleteBookings)
     {
-        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deleteBookings");
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public FindFreeBookingsResponse findFreeBookings(FindBookingSlots findBookingSlots)
     {
-        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#findFreeBookings");
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public GetBookingResponse getBooking(GetBooking getBooking)
     {
-        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getBooking");
-    }
-
-    @Override
-    public CreateBookingResponse createBooking(CreateBooking createBooking)
-    {
-        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#createBooking");
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public GetBookingsResponse getBookings(GetBookings getBookings)
     {
-        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getBookings");
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

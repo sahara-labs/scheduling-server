@@ -1,472 +1,333 @@
+                                                                /**
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2010, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 8th November 2010
+ */
+
+package au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types;
+
+import java.util.HashMap;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReader;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * SlotState.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:25:17 EDT)
+ * SlotState bean class.
  */
-            
-                package au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types;
-            
+public class SlotState implements ADBBean
+{
+    private static final long serialVersionUID = -6995488888151478602L;
 
-            /**
-            *  SlotState bean class
-            */
-        
-        public  class SlotState
-        implements org.apache.axis2.databinding.ADBBean{
-        
-                public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://remotelabs.eng.uts.edu.au/schedserver/bookings",
-                "state_type1",
-                "ns1");
+    public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings",
+            "state_type1", "ns1");
 
-            
-
-        private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/bookings")){
-                return "ns1";
-            }
-            return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+    private static String generatePrefix(final String namespace)
+    {
+        if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/bookings"))
+        {
+            return "ns1";
         }
+        return BeanUtil.getUniquePrefix();
+    }
 
-        
+    protected String slotState;
 
-                        /**
-                        * field for State_type0
-                        */
+    private static HashMap<String, SlotState> _table_ = new HashMap<String, SlotState>();
 
-                        
-                                    protected java.lang.String localState_type0 ;
-                                
-                            private static java.util.HashMap _table_ = new java.util.HashMap();
+    protected SlotState(final String value, final boolean isRegisterValue)
+    {
+        this.slotState = value;
+        if (isRegisterValue)
+        {
+            SlotState._table_.put(this.slotState, this);
+        }
+    }
 
-                            // Constructor
-                            
-                                protected SlotState(java.lang.String value, boolean isRegisterValue) {
-                                    localState_type0 = value;
-                                    if (isRegisterValue){
-                                        
-                                               _table_.put(localState_type0, this);
-                                           
-                                    }
+    public static final String _FREE = ConverterUtil.convertToString("FREE");
+    public static final String _BOOKED = ConverterUtil.convertToString("BOOKED");
+    public static final String _NOPERMISSION = ConverterUtil.convertToString("NOPERMISSION");
+    
+    public static final SlotState FREE = new SlotState(SlotState._FREE, true);
+    public static final SlotState BOOKED = new SlotState(SlotState._BOOKED, true);
+    public static final SlotState NOPERMISSION = new SlotState(SlotState._NOPERMISSION, true);
 
-                                }
-                            
-                                    public static final java.lang.String _FREE =
-                                        org.apache.axis2.databinding.utils.ConverterUtil.convertToString("FREE");
-                                
-                                    public static final java.lang.String _BOOKED =
-                                        org.apache.axis2.databinding.utils.ConverterUtil.convertToString("BOOKED");
-                                
-                                    public static final java.lang.String _NOPERMISSION =
-                                        org.apache.axis2.databinding.utils.ConverterUtil.convertToString("NOPERMISSION");
-                                
-                                public static final SlotState FREE =
-                                    new SlotState(_FREE,true);
-                            
-                                public static final SlotState BOOKED =
-                                    new SlotState(_BOOKED,true);
-                            
-                                public static final SlotState NOPERMISSION =
-                                    new SlotState(_NOPERMISSION,true);
-                            
+    public String getValue()
+    {
+        return this.slotState;
+    }
 
-                                public java.lang.String getValue() { return localState_type0;}
+    @Override
+    public boolean equals(final Object obj)
+    {
+        return (obj == this);
+    }
 
-                                public boolean equals(java.lang.Object obj) {return (obj == this);}
-                                public int hashCode() { return toString().hashCode();}
-                                public java.lang.String toString() {
-                                
-                                        return localState_type0.toString();
-                                    
+    @Override
+    public int hashCode()
+    {
+        return this.toString().hashCode();
+    }
 
-                                }
+    @Override
+    public String toString()
+    {
+        return this.slotState.toString();
+    }
 
-                        
-
-     /**
-     * isReaderMTOMAware
-     * @return true if the reader supports MTOM
-     */
-   public static boolean isReaderMTOMAware(javax.xml.stream.XMLStreamReader reader) {
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
+    {
         boolean isReaderMTOMAware = false;
-        
-        try{
-          isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-        }catch(java.lang.IllegalArgumentException e){
-          isReaderMTOMAware = false;
+        try
+        {
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
+        }
+        catch (final IllegalArgumentException e)
+        {
+            isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
-   }
-     
-     
-        /**
-        *
-        * @param parentQName
-        * @param factory
-        * @return org.apache.axiom.om.OMElement
-        */
-       public org.apache.axiom.om.OMElement getOMElement (
-               final javax.xml.namespace.QName parentQName,
-               final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException{
+    }
 
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
+    {
+        final OMDataSource dataSource = new ADBDataSource(this, SlotState.MY_QNAME)
+        {
+            @Override
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
+            {
+                SlotState.this.serialize(SlotState.MY_QNAME, factory, xmlWriter);
+            }
+        };
+        return new OMSourcedElementImpl(SlotState.MY_QNAME, factory, dataSource);
+    }
 
-        
-                org.apache.axiom.om.OMDataSource dataSource =
-                       new org.apache.axis2.databinding.ADBDataSource(this,MY_QNAME){
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
+    {
+        this.serialize(parentQName, factory, xmlWriter, false);
+    }
 
-                 public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-                       SlotState.this.serialize(MY_QNAME,factory,xmlWriter);
-                 }
-               };
-               return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(
-               MY_QNAME,factory,dataSource);
-            
-       }
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
+    {
+        final String namespace = parentQName.getNamespaceURI();
+        final String localName = parentQName.getLocalPart();
 
-         public void serialize(final javax.xml.namespace.QName parentQName,
-                                       final org.apache.axiom.om.OMFactory factory,
-                                       org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                                throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-                           serialize(parentQName,factory,xmlWriter,false);
-         }
-
-         public void serialize(final javax.xml.namespace.QName parentQName,
-                               final org.apache.axiom.om.OMFactory factory,
-                               org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-                               boolean serializeType)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-            
-                
-                //We can safely assume an element has only one type associated with it
-                
-                            java.lang.String namespace = parentQName.getNamespaceURI();
-                            java.lang.String localName = parentQName.getLocalPart();
-                        
-                            if (! namespace.equals("")) {
-                                java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
-                                if (prefix == null) {
-                                    prefix = generatePrefix(namespace);
-
-                                    xmlWriter.writeStartElement(prefix, localName, namespace);
-                                    xmlWriter.writeNamespace(prefix, namespace);
-                                    xmlWriter.setPrefix(prefix, namespace);
-
-                                } else {
-                                    xmlWriter.writeStartElement(namespace, localName);
-                                }
-
-                            } else {
-                                xmlWriter.writeStartElement(localName);
-                            }
-
-                            // add the type details if this is used in a simple type
-                               if (serializeType){
-                                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://remotelabs.eng.uts.edu.au/schedserver/bookings");
-                                   if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
-                                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                                           namespacePrefix+":state_type1",
-                                           xmlWriter);
-                                   } else {
-                                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                                           "state_type1",
-                                           xmlWriter);
-                                   }
-                               }
-                            
-                                          if (localState_type0==null){
-                                            
-                                                     throw new org.apache.axis2.databinding.ADBException("Value cannot be null !!");
-                                                
-                                         }else{
-                                        
-                                                       xmlWriter.writeCharacters(localState_type0);
-                                            
-                                         }
-                                    
-                            xmlWriter.writeEndElement();
-
-                    
-
+        if (!namespace.equals(""))
+        {
+            String prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = SlotState.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, localName, namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, localName);
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement(localName);
         }
 
-         /**
-          * Util method to write an attribute with the ns prefix
-          */
-          private void writeAttribute(java.lang.String prefix,java.lang.String namespace,java.lang.String attName,
-                                      java.lang.String attValue,javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException{
-              if (xmlWriter.getPrefix(namespace) == null) {
-                       xmlWriter.writeNamespace(prefix, namespace);
-                       xmlWriter.setPrefix(prefix, namespace);
-
-              }
-
-              xmlWriter.writeAttribute(namespace,attName,attValue);
-
-         }
-
-        /**
-          * Util method to write an attribute without the ns prefix
-          */
-          private void writeAttribute(java.lang.String namespace,java.lang.String attName,
-                                      java.lang.String attValue,javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException{
-                if (namespace.equals(""))
-              {
-                  xmlWriter.writeAttribute(attName,attValue);
-              }
-              else
-              {
-                  registerPrefix(xmlWriter, namespace);
-                  xmlWriter.writeAttribute(namespace,attName,attValue);
-              }
-          }
-
-
-           /**
-             * Util method to write an attribute without the ns prefix
-             */
-            private void writeQNameAttribute(java.lang.String namespace, java.lang.String attName,
-                                             javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-
-                java.lang.String attributeNamespace = qname.getNamespaceURI();
-                java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
-                if (attributePrefix == null) {
-                    attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
-                }
-                java.lang.String attributeValue;
-                if (attributePrefix.trim().length() > 0) {
-                    attributeValue = attributePrefix + ":" + qname.getLocalPart();
-                } else {
-                    attributeValue = qname.getLocalPart();
-                }
-
-                if (namespace.equals("")) {
-                    xmlWriter.writeAttribute(attName, attributeValue);
-                } else {
-                    registerPrefix(xmlWriter, namespace);
-                    xmlWriter.writeAttribute(namespace, attName, attributeValue);
-                }
+        if (serializeType)
+        {
+            final String namespacePrefix = this.registerPrefix(xmlWriter,
+                    "http://remotelabs.eng.uts.edu.au/schedserver/bookings");
+            if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
+            {
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
+                        + ":state_type1", xmlWriter);
             }
-        /**
-         *  method to handle Qnames
-         */
-
-        private void writeQName(javax.xml.namespace.QName qname,
-                                javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-            java.lang.String namespaceURI = qname.getNamespaceURI();
-            if (namespaceURI != null) {
-                java.lang.String prefix = xmlWriter.getPrefix(namespaceURI);
-                if (prefix == null) {
-                    prefix = generatePrefix(namespaceURI);
-                    xmlWriter.writeNamespace(prefix, namespaceURI);
-                    xmlWriter.setPrefix(prefix,namespaceURI);
-                }
-
-                if (prefix.trim().length() > 0){
-                    xmlWriter.writeCharacters(prefix + ":" + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-                } else {
-                    // i.e this is the default namespace
-                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-                }
-
-            } else {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
+            else
+            {
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "state_type1",
+                        xmlWriter);
             }
         }
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
-                                 javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-
-            if (qnames != null) {
-                // we have to store this data until last moment since it is not possible to write any
-                // namespace data after writing the charactor data
-                java.lang.StringBuffer stringToWrite = new java.lang.StringBuffer();
-                java.lang.String namespaceURI = null;
-                java.lang.String prefix = null;
-
-                for (int i = 0; i < qnames.length; i++) {
-                    if (i > 0) {
-                        stringToWrite.append(" ");
-                    }
-                    namespaceURI = qnames[i].getNamespaceURI();
-                    if (namespaceURI != null) {
-                        prefix = xmlWriter.getPrefix(namespaceURI);
-                        if ((prefix == null) || (prefix.length() == 0)) {
-                            prefix = generatePrefix(namespaceURI);
-                            xmlWriter.writeNamespace(prefix, namespaceURI);
-                            xmlWriter.setPrefix(prefix,namespaceURI);
-                        }
-
-                        if (prefix.trim().length() > 0){
-                            stringToWrite.append(prefix).append(":").append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                        } else {
-                            stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                        }
-                    } else {
-                        stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                    }
-                }
-                xmlWriter.writeCharacters(stringToWrite.toString());
-            }
-
+        if (this.slotState == null)
+        {
+            throw new ADBException("Value cannot be null !!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(this.slotState);
         }
 
+        xmlWriter.writeEndElement();
+    }
 
-         /**
-         * Register a namespace prefix
-         */
-         private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace) throws javax.xml.stream.XMLStreamException {
-                java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
-                if (prefix == null) {
-                    prefix = generatePrefix(namespace);
-
-                    while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null) {
-                        prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-                    }
-
-                    xmlWriter.writeNamespace(prefix, namespace);
-                    xmlWriter.setPrefix(prefix, namespace);
-                }
-
-                return prefix;
-            }
-
-
-  
-        /**
-        * databinding method to get an XML representation of this object
-        *
-        */
-        public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
-                    throws org.apache.axis2.databinding.ADBException{
-
-
-        
-                
-                //We can safely assume an element has only one type associated with it
-                 return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(MY_QNAME,
-                            new java.lang.Object[]{
-                            org.apache.axis2.databinding.utils.reader.ADBXMLStreamReader.ELEMENT_TEXT,
-                            org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localState_type0)
-                            },
-                            null);
-
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
+    {
+        if (xmlWriter.getPrefix(namespace) == null)
+        {
+            xmlWriter.writeNamespace(prefix, namespace);
+            xmlWriter.setPrefix(prefix, namespace);
         }
 
-  
+        xmlWriter.writeAttribute(namespace, attName, attValue);
+    }
 
-     /**
-      *  Factory class that keeps the parse method
-      */
-    public static class Factory{
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
+    {
+        String prefix = xmlWriter.getPrefix(namespace);
+        if (prefix == null)
+        {
+            prefix = SlotState.generatePrefix(namespace);
+            while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
+            {
+                prefix = BeanUtil.getUniquePrefix();
+            }
 
-        
-        
-                public static SlotState fromValue(java.lang.String value)
-                      throws java.lang.IllegalArgumentException {
-                    SlotState enumeration = (SlotState)
-                       
-                               _table_.get(value);
-                           
+            xmlWriter.writeNamespace(prefix, namespace);
+            xmlWriter.setPrefix(prefix, namespace);
+        }
 
-                    if (enumeration==null) throw new java.lang.IllegalArgumentException();
-                    return enumeration;
-                }
-                public static SlotState fromString(java.lang.String value,java.lang.String namespaceURI)
-                      throws java.lang.IllegalArgumentException {
-                    try {
-                       
-                                       return fromValue(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(value));
-                                   
+        return prefix;
+    }
 
-                    } catch (java.lang.Exception e) {
-                        throw new java.lang.IllegalArgumentException();
-                    }
-                }
+    @Override
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
+    {
 
-                public static SlotState fromString(javax.xml.stream.XMLStreamReader xmlStreamReader,
-                                                                    java.lang.String content) {
-                    if (content.indexOf(":") > -1){
-                        java.lang.String prefix = content.substring(0,content.indexOf(":"));
-                        java.lang.String namespaceUri = xmlStreamReader.getNamespaceContext().getNamespaceURI(prefix);
-                        return SlotState.Factory.fromString(content,namespaceUri);
-                    } else {
-                       return SlotState.Factory.fromString(content,"");
-                    }
-                }
-            
+        return new ADBXMLStreamReaderImpl(SlotState.MY_QNAME, new Object[] { ADBXMLStreamReader.ELEMENT_TEXT,
+                ConverterUtil.convertToString(this.slotState) }, null);
+    }
 
-        /**
-        * static method to create the object
-        * Precondition:  If this object is an element, the current or next start element starts this object and any intervening reader events are ignorable
-        *                If this object is not an element, it is a complex type and the reader is at the event just after the outer start element
-        * Postcondition: If this object is an element, the reader is positioned at its end element
-        *                If this object is a complex type, the reader is positioned at the end element of its outer element
-        */
-        public static SlotState parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
+    public static class Factory
+    {
+        public static SlotState fromValue(final String value) throws IllegalArgumentException
+        {
+            final SlotState enumeration = SlotState._table_.get(value);
+            if (enumeration == null)
+            {
+                throw new IllegalArgumentException();
+            }
+            return enumeration;
+        }
+
+        public static SlotState fromString(final String value, final String namespaceURI)
+                throws IllegalArgumentException
+        {
+            try
+            {
+                return Factory.fromValue(ConverterUtil.convertToString(value));
+            }
+            catch (final Exception e)
+            {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        public static SlotState fromString(final XMLStreamReader xmlStreamReader, final String content)
+        {
+            if (content.indexOf(":") > -1)
+            {
+                final String prefix = content.substring(0, content.indexOf(":"));
+                final String namespaceUri = xmlStreamReader.getNamespaceContext().getNamespaceURI(prefix);
+                return SlotState.Factory.fromString(content, namespaceUri);
+            }
+            else
+            {
+                return SlotState.Factory.fromString(content, "");
+            }
+        }
+
+        public static SlotState parse(final XMLStreamReader reader) throws Exception
+        {
             SlotState object = null;
-                // initialize a hash map to keep values
-                java.util.Map attributeMap = new java.util.HashMap();
-                java.util.List extraAttributeList = new java.util.ArrayList();
-            
 
-            int event;
-            java.lang.String nillableValue = null;
-            java.lang.String prefix ="";
-            java.lang.String namespaceuri ="";
-            try {
-                
+            String prefix = "";
+            String namespaceuri = "";
+            try
+            {
                 while (!reader.isStartElement() && !reader.isEndElement())
+                {
                     reader.next();
+                }
 
-                
-
-                
-                // Note all attributes that were handled. Used to differ normal attributes
-                // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
-                
-
-                    
-                while(!reader.isEndElement()) {
-                    if (reader.isStartElement()  || reader.hasText()){
-                
-                                    java.lang.String content = reader.getElementText();
-                                    
-                                        if (content.indexOf(":") > 0) {
-                                            // this seems to be a Qname so find the namespace and send
-                                            prefix = content.substring(0, content.indexOf(":"));
-                                            namespaceuri = reader.getNamespaceURI(prefix);
-                                            object = SlotState.Factory.fromString(content,namespaceuri);
-                                        } else {
-                                            // this seems to be not a qname send and empty namespace incase of it is
-                                            // check is done in fromString method
-                                            object = SlotState.Factory.fromString(content,"");
-                                        }
-                                        
-                                        
-                             } else {
-                                reader.next();
-                             }  
-                           }  // end of while loop
-                        
-
-
-
-            } catch (javax.xml.stream.XMLStreamException e) {
-                throw new java.lang.Exception(e);
+                while (!reader.isEndElement())
+                {
+                    if (reader.isStartElement() || reader.hasText())
+                    {
+                        final String content = reader.getElementText();
+                        if (content.indexOf(":") > 0)
+                        {
+                            prefix = content.substring(0, content.indexOf(":"));
+                            namespaceuri = reader.getNamespaceURI(prefix);
+                            object = SlotState.Factory.fromString(content, namespaceuri);
+                        }
+                        else
+                        {
+                            object = SlotState.Factory.fromString(content, "");
+                        }
+                    }
+                    else
+                    {
+                        reader.next();
+                    }
+                }
+            }
+            catch (final XMLStreamException e)
+            {
+                throw new Exception(e);
             }
 
             return object;
         }
-
-        }//end of factory class
-
-        
-
-        }
-           
-          
+    }
+}
