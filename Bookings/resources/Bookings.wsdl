@@ -328,16 +328,58 @@
   </wsdl:portType>
   
   <wsdl:binding name="BookingsSOAP" type="bok:Bookings">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="getBookings">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/NewOperation"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="getBookings">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/NewOperation" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="createBooking">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/createBooking" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteBookings">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/deleteBookings" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="findFreeBookings">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/findFreeBookings" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getBooking">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/getBooking" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="Bookings">
     <wsdl:port binding="bok:BookingsSOAP" name="BookingsSOAP">
