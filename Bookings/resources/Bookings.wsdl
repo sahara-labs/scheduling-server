@@ -1,43 +1,38 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<wsdl:definitions xmlns:bok="http://remotelabs.eng.uts.edu.au/schedserver/bookings" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Bookings" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="Bookings" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:bok="http://remotelabs.eng.uts.edu.au/schedserver/bookings" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
     <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
       <xsd:element name="getBookings" type="bok:BookingsRequestType">
       </xsd:element>
-      <xsd:element name="getBookingsResponse"
-      	type="bok:BookingListType">
+      <xsd:element name="getBookingsResponse" type="bok:BookingListType">
       </xsd:element>
       <xsd:element name="createBooking" type="bok:CreateBookingType">
       </xsd:element>
-      <xsd:element name="createBookingResponse"
-      	type="bok:BookingResponseType">
+      <xsd:element name="createBookingResponse" type="bok:BookingResponseType">
       </xsd:element>
       <xsd:element name="deleteBookings" type="bok:DeleteBookingType">
       </xsd:element>
-      <xsd:element name="deleteBookingsResponse"
-      	type="bok:BookingResponseType">
+      <xsd:element name="deleteBookingsResponse" type="bok:BookingResponseType">
       </xsd:element>
       <xsd:element name="findBookingSlots" type="bok:FindBookingSlotType">
       </xsd:element>
-      <xsd:element name="findFreeBookingsResponse"
-      	type="bok:BookingSlotListType">
+      <xsd:element name="findFreeBookingsResponse" type="bok:BookingSlotListType">
       </xsd:element>
 
       <xsd:complexType name="UserIDType">
       	<xsd:sequence>
-      		<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="userID" type="xsd:string"/>
       		<xsd:sequence maxOccurs="1" minOccurs="0">
-      			<xsd:element name="userName" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      			<xsd:element name="userNamespace" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      			<xsd:element maxOccurs="1" minOccurs="0" name="userName" type="xsd:string"/>
+      			<xsd:element maxOccurs="1" minOccurs="0" name="userNamespace" type="xsd:string"/>
       		</xsd:sequence>
-      		<xsd:element name="userQName" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="userQName" type="xsd:string"/>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="BookingListType">
       	<xsd:sequence>
-      		<xsd:element name="bookings" type="bok:BookingType"
-      			maxOccurs="unbounded" minOccurs="0">
+      		<xsd:element maxOccurs="unbounded" minOccurs="0" name="bookings" type="bok:BookingType">
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
@@ -46,28 +41,21 @@
       	<xsd:complexContent>
       		<xsd:extension base="bok:BookingIDType">
       			<xsd:sequence>
-      				<xsd:element name="bookedResource"
-      					type="bok:ResourceIDType">
+      				<xsd:element name="bookedResource" type="bok:ResourceIDType">
       				</xsd:element>
-      				<xsd:element name="permissionID"
-      					type="bok:PermissionIDType">
+      				<xsd:element name="permissionID" type="bok:PermissionIDType">
       				</xsd:element>
-      				<xsd:element name="startTime"
-      					type="xsd:dateTime">
+      				<xsd:element name="startTime" type="xsd:dateTime">
       				</xsd:element>
       				<xsd:element name="duration" type="xsd:int">
       				</xsd:element>
-      				<xsd:element name="isFinished" type="xsd:boolean"
-      					maxOccurs="1" minOccurs="0">
+      				<xsd:element maxOccurs="1" minOccurs="0" name="isFinished" type="xsd:boolean">
       				</xsd:element>
-      				<xsd:element name="isCancelled" type="xsd:boolean"
-      					maxOccurs="1" minOccurs="0">
+      				<xsd:element maxOccurs="1" minOccurs="0" name="isCancelled" type="xsd:boolean">
       				</xsd:element>
-      				<xsd:element name="cancelReason" type="xsd:string"
-      					maxOccurs="1" minOccurs="0">
+      				<xsd:element maxOccurs="1" minOccurs="0" name="cancelReason" type="xsd:string">
       				</xsd:element>
-      				<xsd:element name="codeReference"
-      					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				<xsd:element maxOccurs="1" minOccurs="0" name="codeReference" type="xsd:string">
       				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>
@@ -76,79 +64,69 @@
 
       <xsd:complexType name="ResourceIDType">
       	<xsd:sequence>
-      		<xsd:element name="type" type="xsd:string"></xsd:element>
-      		<xsd:element name="resourceID" type="xsd:int" maxOccurs="1" minOccurs="0"></xsd:element>
-      		<xsd:element name="resourceName" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      		<xsd:element name="type" type="xsd:string"/>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="resourceID" type="xsd:int"/>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="resourceName" type="xsd:string"/>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="FindBookingSlotType">
       	<xsd:sequence>
-      		<xsd:element name="userID" type="bok:UserIDType"></xsd:element>
-      		<xsd:element name="permissionID"
-      			type="bok:PermissionIDType" maxOccurs="1" minOccurs="0">
+      		<xsd:element name="userID" type="bok:UserIDType"/>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="permissionID" type="bok:PermissionIDType">
       		</xsd:element>
-      		<xsd:element name="resourceID" type="bok:ResourceIDType"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element maxOccurs="1" minOccurs="0" name="resourceID" type="bok:ResourceIDType">
       		</xsd:element>
-      		<xsd:element name="period" type="bok:TimePeriodType"></xsd:element>
+      		<xsd:element name="period" type="bok:TimePeriodType"/>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="PermissionIDType">
       	<xsd:sequence>
-      		<xsd:element name="permissionID" type="xsd:int"></xsd:element>
+      		<xsd:element name="permissionID" type="xsd:int"/>
       	</xsd:sequence>
       </xsd:complexType>
-      <xsd:element name="getBookingHistory"
-      	type="bok:TimePeriodType">
+      <xsd:element name="getBookingHistory" type="bok:TimePeriodType">
       </xsd:element>
-      <xsd:element name="getBookingHistoryResponse"
-      	type="bok:BookingListType">
+      <xsd:element name="getBookingHistoryResponse" type="bok:BookingListType">
       </xsd:element>
 
       <xsd:complexType name="TimePeriodType">
       	<xsd:sequence>
-      		<xsd:element name="startTime" type="xsd:dateTime"></xsd:element>
-      		<xsd:element name="endTime" type="xsd:dateTime"></xsd:element>
+      		<xsd:element name="startTime" type="xsd:dateTime"/>
+      		<xsd:element name="endTime" type="xsd:dateTime"/>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="BookingIDType">
       	<xsd:sequence>
-      		<xsd:element name="bookingID" type="xsd:int"></xsd:element>
+      		<xsd:element name="bookingID" type="xsd:int"/>
       	</xsd:sequence>
       </xsd:complexType>
     
     
       <xsd:complexType name="BookingResponseType">
       	<xsd:sequence>
-      		<xsd:element name="success" type="xsd:boolean"></xsd:element>
-      		<xsd:element name="bestFits" type="bok:BookingListType"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element name="success" type="xsd:boolean"/>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="bestFits" type="bok:BookingListType">
       		</xsd:element>
-      		<xsd:element name="failureReason" type="xsd:string"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element maxOccurs="1" minOccurs="0" name="failureReason" type="xsd:string">
       		</xsd:element>
-      		<xsd:element name="bookingID" type="bok:BookingIDType"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element maxOccurs="1" minOccurs="0" name="bookingID" type="bok:BookingIDType">
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
-      <xsd:element name="getNextBooking"
-      	type="bok:CreateBookingType">
+      <xsd:element name="getNextBooking" type="bok:CreateBookingType">
       </xsd:element>
-      <xsd:element name="getNextBookingResponse"
-      	type="bok:NextBookingType">
+      <xsd:element name="getNextBookingResponse" type="bok:NextBookingType">
       </xsd:element>
 
       <xsd:complexType name="CreateBookingType">
       	<xsd:sequence>
-      		<xsd:element name="userID" type="bok:UserIDType"></xsd:element>
-      		<xsd:element name="booking" type="bok:BookingType"></xsd:element>
-                    <xsd:element name="sendNotification" type="xsd:boolean" maxOccurs="1" minOccurs="0"></xsd:element>
-                    <xsd:element name="code" type="xsd:base64Binary"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element name="userID" type="bok:UserIDType"/>
+      		<xsd:element name="booking" type="bok:BookingType"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="sendNotification" type="xsd:boolean"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="code" type="xsd:base64Binary">
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
@@ -159,34 +137,31 @@
 
       <xsd:complexType name="NextBookingType">
       	<xsd:sequence>
-      		<xsd:element name="booking" type="bok:BookingType"></xsd:element>
-      		<xsd:element name="startIn" type="xsd:int"></xsd:element>
+      		<xsd:element name="booking" type="bok:BookingType"/>
+      		<xsd:element name="startIn" type="xsd:int"/>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="BookingSlotListType">
       	<xsd:sequence>
-      		<xsd:element name="bookingSlot" type="bok:BookingSlotType"
-      			maxOccurs="unbounded" minOccurs="0">
+      		<xsd:element maxOccurs="unbounded" minOccurs="0" name="bookingSlot" type="bok:BookingSlotType">
       		</xsd:element>
-      		<xsd:element name="resourceID"
-      			type="bok:ResourceIDType">
+      		<xsd:element name="resourceID" type="bok:ResourceIDType">
       		</xsd:element>
-      		<xsd:element name="permissionID"
-      			type="bok:PermissionIDType">
+      		<xsd:element name="permissionID" type="bok:PermissionIDType">
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="BookingSlotType">
       	<xsd:sequence>
-      		<xsd:element name="slot" type="bok:TimePeriodType"></xsd:element>
+      		<xsd:element name="slot" type="bok:TimePeriodType"/>
       		<xsd:element name="state">
       			<xsd:simpleType>
       				<xsd:restriction base="xsd:string">
-      					<xsd:enumeration value="FREE"></xsd:enumeration>
-      					<xsd:enumeration value="BOOKED"></xsd:enumeration>
-      					<xsd:enumeration value="NOPERMISSION"></xsd:enumeration>
+      					<xsd:enumeration value="FREE"/>
+      					<xsd:enumeration value="BOOKED"/>
+      					<xsd:enumeration value="NOPERMISSION"/>
       				</xsd:restriction>
       			</xsd:simpleType>
       		</xsd:element>
@@ -195,194 +170,210 @@
       <xsd:element name="getBookingsByPermission">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="in" type="xsd:string"></xsd:element>
+      			<xsd:element name="in" type="xsd:string"/>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
-      <xsd:element name="getBookingsByPermissionResponse"
-      	type="bok:BookingListType">
+      <xsd:element name="getBookingsByPermissionResponse" type="bok:BookingListType">
       </xsd:element>
       <xsd:element name="getBookingsByResource">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="in" type="xsd:string"></xsd:element>
+      			<xsd:element name="in" type="xsd:string"/>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
       <xsd:element name="getBookingsByResourceResponse">
       	<xsd:complexType>
       		<xsd:sequence>
-      			<xsd:element name="out" type="xsd:string"></xsd:element>
+      			<xsd:element name="out" type="xsd:string"/>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
     
       <xsd:complexType name="DeleteBookingType">
       	<xsd:sequence>
-      		<xsd:element name="userID" type="bok:UserIDType"></xsd:element>
-      		<xsd:element name="bookingID" type="bok:BookingIDType"></xsd:element>
-      		<xsd:element name="reason" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      		<xsd:element name="userID" type="bok:UserIDType"/>
+      		<xsd:element name="bookingID" type="bok:BookingIDType"/>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="reason" type="xsd:string"/>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="BookingRequestType">
       	<xsd:sequence>
-      		<xsd:element name="userID" type="bok:UserIDType"></xsd:element>
-      		<xsd:element name="bookingID" type="bok:BookingType"></xsd:element>
+      		<xsd:element name="userID" type="bok:UserIDType"/>
+      		<xsd:element name="bookingID" type="bok:BookingType"/>
       	</xsd:sequence>
       </xsd:complexType>
     
       <xsd:complexType name="BookingsRequestType">
       	<xsd:sequence>
-      		<xsd:element name="userID" type="bok:UserIDType"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element maxOccurs="1" minOccurs="0" name="userID" type="bok:UserIDType">
       		</xsd:element>
-      		<xsd:element name="resourceID" type="bok:ResourceIDType"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element maxOccurs="1" minOccurs="0" name="resourceID" type="bok:ResourceIDType">
       		</xsd:element>
-      		<xsd:element name="permissionID"
-      			type="bok:PermissionIDType" maxOccurs="1" minOccurs="0">
+      		<xsd:element maxOccurs="1" minOccurs="0" name="permissionID" type="bok:PermissionIDType">
       		</xsd:element>
-      		<xsd:element name="showCancelled" type="xsd:boolean"></xsd:element>
-      		<xsd:element name="showFinished" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="showCancelled" type="xsd:boolean"/>
+      		<xsd:element name="showFinished" type="xsd:boolean"/>
       	</xsd:sequence>
       </xsd:complexType>
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="getBookingsRequest">
-    <wsdl:part element="bok:getBookings" name="parameters"/>
-  </wsdl:message>
-  <wsdl:message name="getBookingsResponse">
-    <wsdl:part element="bok:getBookingsResponse" name="parameters"/>
-  </wsdl:message>
-  <wsdl:message name="createBookingRequest">
-  	<wsdl:part name="parameters" element="bok:createBooking"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="createBookingResponse">
-  	<wsdl:part name="parameters" element="bok:createBookingResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="deleteBookingsRequest">
-  	<wsdl:part name="parameters" element="bok:deleteBookings"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="deleteBookingsResponse">
-  	<wsdl:part name="parameters" element="bok:deleteBookingsResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="findFreeBookingsRequest">
-  	<wsdl:part name="parameters" element="bok:findBookingSlots"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="findFreeBookingsResponse">
-  	<wsdl:part name="parameters" element="bok:findFreeBookingsResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingHistoryRequest">
-  	<wsdl:part name="parameters" element="bok:getBookingHistory"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingHistoryResponse">
-  	<wsdl:part name="parameters" element="bok:getBookingHistoryResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getNextBookingRequest">
-  	<wsdl:part name="parameters" element="bok:getNextBooking"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getNextBookingResponse">
-  	<wsdl:part name="parameters" element="bok:getNextBookingResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingRequest">
-  	<wsdl:part name="parameters" element="bok:getBooking"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingResponse">
-  	<wsdl:part name="parameters" element="bok:getBookingResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingsByPermissionRequest">
-  	<wsdl:part name="parameters" element="bok:getBookingsByPermission"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getBookingsByPermissionResponse">
-  	<wsdl:part name="parameters" element="bok:getBookingsByPermissionResponse"></wsdl:part>
-  </wsdl:message>
   <wsdl:message name="getBookingsByResourceRequest">
-  	<wsdl:part name="parameters" element="bok:getBookingsByResource"></wsdl:part>
+    <wsdl:part name="parameters" element="bok:getBookingsByResource">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getBookingsByResourceResponse">
-  	<wsdl:part name="parameters" element="bok:getBookingsByResourceResponse"></wsdl:part>
+    <wsdl:part name="parameters" element="bok:getBookingsByResourceResponse">
+    </wsdl:part>
   </wsdl:message>
-  
+  <wsdl:message name="getBookingHistoryRequest">
+    <wsdl:part name="parameters" element="bok:getBookingHistory">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteBookingsRequest">
+    <wsdl:part name="parameters" element="bok:deleteBookings">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createBookingResponse">
+    <wsdl:part name="parameters" element="bok:createBookingResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getBookingResponse">
+    <wsdl:part name="parameters" element="bok:getBookingResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="findFreeBookingsRequest">
+    <wsdl:part name="parameters" element="bok:findBookingSlots">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getBookingsByPermissionRequest">
+    <wsdl:part name="parameters" element="bok:getBookingsByPermission">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getBookingRequest">
+    <wsdl:part name="parameters" element="bok:getBooking">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getBookingsRequest">
+    <wsdl:part name="parameters" element="bok:getBookings">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getNextBookingRequest">
+    <wsdl:part name="parameters" element="bok:getNextBooking">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="findFreeBookingsResponse">
+    <wsdl:part name="parameters" element="bok:findFreeBookingsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getBookingsResponse">
+    <wsdl:part name="parameters" element="bok:getBookingsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteBookingsResponse">
+    <wsdl:part name="parameters" element="bok:deleteBookingsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getBookingsByPermissionResponse">
+    <wsdl:part name="parameters" element="bok:getBookingsByPermissionResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getNextBookingResponse">
+    <wsdl:part name="parameters" element="bok:getNextBookingResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createBookingRequest">
+    <wsdl:part name="parameters" element="bok:createBooking">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getBookingHistoryResponse">
+    <wsdl:part name="parameters" element="bok:getBookingHistoryResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="Bookings">
-  	<wsdl:operation name="createBooking">
-    	<wsdl:input message="bok:createBookingRequest"></wsdl:input>
-    	<wsdl:output message="bok:createBookingResponse"></wsdl:output>
+    <wsdl:operation name="createBooking">
+      <wsdl:input message="bok:createBookingRequest">
+    </wsdl:input>
+      <wsdl:output message="bok:createBookingResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="deleteBookings">
-    	<wsdl:input message="bok:deleteBookingsRequest"></wsdl:input>
-    	<wsdl:output message="bok:deleteBookingsResponse"></wsdl:output>
+      <wsdl:input message="bok:deleteBookingsRequest">
+    </wsdl:input>
+      <wsdl:output message="bok:deleteBookingsResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="findFreeBookings">
-    	<wsdl:input message="bok:findFreeBookingsRequest"></wsdl:input>
-    	<wsdl:output message="bok:findFreeBookingsResponse"></wsdl:output>
+      <wsdl:input message="bok:findFreeBookingsRequest">
+    </wsdl:input>
+      <wsdl:output message="bok:findFreeBookingsResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getBooking">
-    	<wsdl:input message="bok:getBookingRequest"></wsdl:input>
-    	<wsdl:output message="bok:getBookingResponse"></wsdl:output>
+      <wsdl:input message="bok:getBookingRequest">
+    </wsdl:input>
+      <wsdl:output message="bok:getBookingResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getBookings">
-      <wsdl:input message="bok:getBookingsRequest"/>
-      <wsdl:output message="bok:getBookingsResponse"/>
+      <wsdl:input message="bok:getBookingsRequest">
+    </wsdl:input>
+      <wsdl:output message="bok:getBookingsResponse">
+    </wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
-  
   <wsdl:binding name="BookingsSOAP" type="bok:Bookings">
-  	<soap:binding style="document"
-  		transport="http://schemas.xmlsoap.org/soap/http" />
-  	<wsdl:operation name="getBookings">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/NewOperation" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="createBooking">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/createBooking" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="deleteBookings">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/deleteBookings" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="findFreeBookings">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/findFreeBookings" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="getBooking">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/getBooking" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getBookings">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/NewOperation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createBooking">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/createBooking"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteBookings">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/deleteBookings"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="findFreeBookings">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/findFreeBookings"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getBooking">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/getBooking"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="Bookings">
-    <wsdl:port binding="bok:BookingsSOAP" name="BookingsSOAP">
+    <wsdl:port name="BookingsSOAP" binding="bok:BookingsSOAP">
       <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-Bookings/Bookings"/>
     </wsdl:port>
   </wsdl:service>
