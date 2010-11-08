@@ -124,6 +124,13 @@ public class ResourcePermission implements java.io.Serializable
     /** The time at which the resource permission is no longer valid. */
     private Date expiryTime;
     
+    /** The maximum number of concurrent bookings that can be made. */
+    private int maximumBookings;
+    
+    /** Offset specifying how long from now a booking may be made. This is a
+     * sliding window. */
+    private int bookingOffset;
+    
     /** The name of the permission. */
     private String displayName;
     
@@ -136,42 +143,6 @@ public class ResourcePermission implements java.io.Serializable
     public ResourcePermission()
     {
         /* Bean style constructor. */
-    }
-
-    public ResourcePermission(final UserClass userClass, final String type,
-            final int sessionDuration, final int extensionDuration,
-            final short allowedExtensions, final int queueActivityTimeout,
-            final int sessionActivityTimeout)
-    {
-        this.userClass = userClass;
-        this.type = type;
-        this.sessionDuration = sessionDuration;
-        this.extensionDuration = extensionDuration;
-        this.allowedExtensions = allowedExtensions;
-        this.queueActivityTimeout = queueActivityTimeout;
-        this.sessionActivityTimeout = sessionActivityTimeout;
-    }
-
-    public ResourcePermission(final RigType rigType, final UserClass userClass,
-            final Rig rig, final RequestCapabilities requestCapabilities,
-            final String type, final int sessionDuration,
-            final int extensionDuration, final short allowedExtensions,
-            final int queueActivityTimeout, final int sessionActivityTimeout,
-            final Set<UserLock> userLocks,
-            final Set<Session> sessionsForResourcePermissionId)
-    {
-        this.rigType = rigType;
-        this.userClass = userClass;
-        this.rig = rig;
-        this.requestCapabilities = requestCapabilities;
-        this.type = type;
-        this.sessionDuration = sessionDuration;
-        this.extensionDuration = extensionDuration;
-        this.allowedExtensions = allowedExtensions;
-        this.queueActivityTimeout = queueActivityTimeout;
-        this.sessionActivityTimeout = sessionActivityTimeout;
-        this.userLocks = userLocks;
-        this.sessionsForResourcePermission = sessionsForResourcePermissionId;
     }
 
     @Id
@@ -322,6 +293,28 @@ public class ResourcePermission implements java.io.Serializable
     public void setExpiryTime(final Date expiryTime)
     {
         this.expiryTime = expiryTime;
+    }
+    
+    @Column(name = "maximum_bookings", columnDefinition = "int default '0'")
+    public int getMaximumBookings()
+    {
+        return this.maximumBookings;
+    }
+
+    public void setMaximumBookings(final int maximumBookings)
+    {
+        this.maximumBookings = maximumBookings;
+    }
+
+    @Column(name = "booking_offset", columnDefinition = "int default '0'")
+    public int getBookingOffset()
+    {
+        return this.bookingOffset;
+    }
+
+    public void setBookingOffset(int bookingOffset)
+    {
+        this.bookingOffset = bookingOffset;
     }
     
     @Column(name = "display_name", nullable = true, length = 255)
