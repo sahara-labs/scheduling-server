@@ -90,7 +90,9 @@ public class SessionExpiryChecker implements Runnable
             
             Criteria query = db.createCriteria(Session.class);
             query.add(Restrictions.eq("active", Boolean.TRUE))
-                 .add(Restrictions.isNotNull("assignmentTime"));
+                 .add(Restrictions.isNotNull("assignmentTime"))
+                 .add(Restrictions.gt("ready", Boolean.TRUE));
+            
             
             Date now = new Date();
             
