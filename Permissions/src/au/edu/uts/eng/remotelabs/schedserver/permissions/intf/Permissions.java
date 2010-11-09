@@ -787,7 +787,7 @@ public class Permissions implements PermissionsSkeletonInterface
         /* Response paramters. */
         GetPermissionResponse response = new GetPermissionResponse();
         PermissionType permission = new PermissionType();
-        permission.setPermissionID(pid);
+        permission.setPermissionID(0);
         
         UserClassIDType userClass = new UserClassIDType();
         permission.setUserClass(userClass);
@@ -811,6 +811,8 @@ public class Permissions implements PermissionsSkeletonInterface
                 this.logger.info("Resource permission with identifer '" + pid + "' not found.");
                 return response;
             }
+            
+            permission.setPermissionID(rp.getId().intValue());
             
             /* User class details . */
             UserClass uc = rp.getUserClass();
