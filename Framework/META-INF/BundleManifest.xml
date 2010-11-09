@@ -14,8 +14,9 @@
 	<entry key="B5">SchedulingServer-RigProvider</entry>
 	<entry key="B6">SchedulingServer-RigProxy</entry>
 	<entry key="B7">SchedulingServer-RigOperations</entry>
-	<entry key="B8">SchedulingServer-Queuer</entry>
-	<entry key="B9">SchedulingServer-Session</entry>
-	<entry key="B10">SchedulingServer-Permissions</entry>
-	<entry key="B11">SchedulingServer-Server</entry>
+	<entry key="B8">SchedulingServer-Permissions</entry>
+	<entry key="B9">SchedulingServer-Queuer</entry>
+	<entry key="B10">SchedulingServer-Session</entry>
+	<entry key="B11">SchedulingServer-Bookings</entry>
+	<entry key="B12">SchedulingServer-Server</entry>
 </properties>
