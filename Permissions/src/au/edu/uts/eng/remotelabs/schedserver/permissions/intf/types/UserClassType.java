@@ -78,12 +78,16 @@ public class UserClassType extends UserClassIDType
     protected boolean priorityTracker = false;
     protected boolean isQueuable;
     protected boolean isQueuableTracker = false;
+    protected boolean isBookable;
+    protected boolean isBookableTracker = false;
     protected boolean isKickable;
     protected boolean isKickableTracker = false;
     protected boolean isUserLockable;
     protected boolean isUserLockableTracker = false;
     protected boolean isActive;
     protected boolean isActiveTracker = false;
+    protected int timeHorizon;
+    protected boolean timeHorizonTracker = false;
 
     public int getPriority()
     {
@@ -113,6 +117,17 @@ public class UserClassType extends UserClassIDType
     {
         this.isQueuableTracker = true;
         this.isQueuable = param;
+    }
+    
+    public boolean getIsBookable()
+    {
+        return this.isBookable;
+    }
+    
+    public void setIsBookable(final boolean param)
+    {
+        this.isBookableTracker = true;
+        this.isBookable = param;
     }
 
     public boolean getIsKickable()
@@ -146,6 +161,24 @@ public class UserClassType extends UserClassIDType
     {
         this.isActiveTracker = true;
         this.isActive = param;
+    }
+    
+    public int getTimeHorizon()
+    {
+        return this.timeHorizon;
+    }
+    
+    public void setTimeHorizon(final int param)
+    {
+        if (param == Integer.MIN_VALUE)
+        {
+            this.timeHorizonTracker = false;
+        }
+        else
+        {
+            this.timeHorizonTracker = true;
+            this.timeHorizon = param;
+        }
     }
 
     private static String generatePrefix(final String namespace)
@@ -449,6 +482,32 @@ public class UserClassType extends UserClassIDType
             xmlWriter.writeEndElement();
         }
         
+        if (this.isBookableTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = UserClassType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "isBookable", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "isBookable");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("isBookable");
+            }
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isBookable));
+            xmlWriter.writeEndElement();
+        }
+        
         if (this.isKickableTracker)
         {
             namespace = "";
@@ -528,6 +587,40 @@ public class UserClassType extends UserClassIDType
                 xmlWriter.writeStartElement("isActive");
             }
             xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isActive));
+            xmlWriter.writeEndElement();
+        }
+        
+        if (this.timeHorizonTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = UserClassType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "timeHorizon", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "timeHorizon");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("timeHorizon");
+            }
+
+            if (this.priority == Integer.MIN_VALUE)
+            {
+                throw new ADBException("timeHorzon cannot be null");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.timeHorizon));
+            }
             xmlWriter.writeEndElement();
         }
         
@@ -634,6 +727,12 @@ public class UserClassType extends UserClassIDType
             elementList.add(ConverterUtil.convertToString(this.isQueuable));
         }
         
+        if (this.isBookableTracker)
+        {
+            elementList.add(new QName("", "isBookable"));
+            elementList.add(ConverterUtil.convertToString(this.isBookable));
+        }
+        
         if (this.isKickableTracker)
         {
             elementList.add(new QName("", "isKickable"));
@@ -650,6 +749,12 @@ public class UserClassType extends UserClassIDType
         {
             elementList.add(new QName("", "isActive"));
             elementList.add(ConverterUtil.convertToString(this.isActive));
+        }
+        
+        if (this.timeHorizonTracker)
+        {
+            elementList.add(new QName("", "timeHorizon"));
+            elementList.add(ConverterUtil.convertToString(this.timeHorizon));
         }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
@@ -784,6 +889,17 @@ public class UserClassType extends UserClassIDType
                     object.setIsQueuable(ConverterUtil.convertToBoolean(content));
                     reader.next();
                 }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "isBookable").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setIsBookable(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
@@ -816,6 +932,21 @@ public class UserClassType extends UserClassIDType
                     final String content = reader.getElementText();
                     object.setIsActive(ConverterUtil.convertToBoolean(content));
                     reader.next();
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "timeHorizon").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setTimeHorizon(ConverterUtil.convertToInt(content));
+                    reader.next();
+                }
+                else
+                {
+                    object.setTimeHorizon(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

@@ -37,17 +37,23 @@
 							<xsd:element name="priority" type="xsd:int"
 								maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="isQueuable" type="xsd:boolean"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="isQueuable"
+								type="xsd:boolean" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="isKickable" type="xsd:boolean"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="isBookable"
+								type="xsd:boolean" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="isUserLockable" type="xsd:boolean"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="isKickable"
+								type="xsd:boolean" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="isActive" type="xsd:boolean"
-								maxOccurs="1" minOccurs="0">
+							<xsd:element name="isUserLockable"
+								type="xsd:boolean" maxOccurs="1" minOccurs="0">
+							</xsd:element>
+							<xsd:element name="isActive"
+								type="xsd:boolean" maxOccurs="1" minOccurs="0">
+							</xsd:element>
+							<xsd:element name="timeHorizon"
+								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>
@@ -130,7 +136,11 @@
 								type="pm:ResourceIDType">
 							</xsd:element>
 
-							<xsd:element name="sessionDuration"
+                            <xsd:element name="canQueue" type="xsd:boolean">
+							</xsd:element>
+                            <xsd:element name="canBook" type="xsd:boolean">
+							</xsd:element>
+                            <xsd:element name="sessionDuration"
 								type="xsd:int" maxOccurs="1" minOccurs="0">
 								<xsd:annotation>
 									<xsd:documentation>

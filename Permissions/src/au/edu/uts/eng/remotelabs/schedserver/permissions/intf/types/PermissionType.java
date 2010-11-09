@@ -76,6 +76,10 @@ public class PermissionType extends PermissionIDType implements ADBBean
     protected UserClassIDType userClass;
     protected ResourceClass localResourceClass;
     protected ResourceIDType resource;
+    
+    protected boolean canBook;
+    protected boolean canQueue;
+    
     protected int sessionDuration;
     protected boolean sessionDurationTracker = false;
     protected int extensionDuration;
@@ -132,6 +136,26 @@ public class PermissionType extends PermissionIDType implements ADBBean
 
         this.resource = param;
 
+    }
+    
+    public boolean canBook()
+    {
+        return this.canBook;
+    }
+    
+    public void setCanBook(final boolean param)
+    {
+        this.canBook = param;
+    }
+    
+    public boolean canQueue()
+    {
+        return this.canQueue;
+    }
+    
+    public void setCanQueue(final boolean param)
+    {
+        this.canQueue = param;
     }
 
     public int getSessionDuration()
@@ -496,6 +520,52 @@ public class PermissionType extends PermissionIDType implements ADBBean
             throw new ADBException("resource cannot be null!!");
         }
         this.resource.serialize(new QName("", "resource"), factory, xmlWriter);
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = PermissionType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "canQueue", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "canQueue");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("canQueue");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.canQueue));
+        xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = PermissionType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "canBook", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "canBook");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("canBook");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.canBook));
+        xmlWriter.writeEndElement();
         
         if (this.sessionDurationTracker)
         {
@@ -873,6 +943,12 @@ public class PermissionType extends PermissionIDType implements ADBBean
         }
         elementList.add(this.resource);
         
+        elementList.add(new QName("", "canQueue"));
+        elementList.add(ConverterUtil.convertToString(this.canQueue));
+        
+        elementList.add(new QName("", "canBook"));
+        elementList.add(ConverterUtil.convertToString(this.canBook));
+        
         if (this.sessionDurationTracker)
         {
             elementList.add(new QName("", "sessionDuration"));
@@ -1072,6 +1148,34 @@ public class PermissionType extends PermissionIDType implements ADBBean
                 if (reader.isStartElement() && new QName("", "resource").equals(reader.getName()))
                 {
                     object.setResource(ResourceIDType.Factory.parse(reader));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "canQueue").equals(reader.getName()))
+                {
+                    object.setCanQueue(ConverterUtil.convertToBoolean(reader.getElementText()));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "canBook").equals(reader.getName()))
+                {
+                    object.setCanBook(ConverterUtil.convertToBoolean(reader.getElementText()));
                     reader.next();
                 }
                 else

@@ -363,10 +363,12 @@ public class Permissions implements PermissionsSkeletonInterface
             uc.setUserClassID(cls.getId().intValue());
             uc.setUserClassName(cls.getName());
             uc.setIsActive(cls.isActive());
+            uc.setIsBookable(cls.isBookable());
             uc.setIsKickable(cls.isKickable());
             uc.setIsQueuable(cls.isQueuable());
             uc.setIsUserLockable(cls.isUsersLockable());
             uc.setPriority(cls.getPriority());
+            uc.setTimeHorizon(cls.getTimeHorizon());
         }
             
         dao.closeSession();
@@ -890,11 +892,14 @@ public class Permissions implements PermissionsSkeletonInterface
                 }
 
                 /* Add information about permission. */
+                perm.setCanBook(userClass.isBookable());
+                perm.setCanQueue(userClass.isQueuable());
                 perm.setSessionDuration(resPerm.getSessionDuration());
                 perm.setExtensionDuration(resPerm.getExtensionDuration());
                 perm.setAllowedExtensions(resPerm.getAllowedExtensions());
                 perm.setQueueActivityTmOut(resPerm.getQueueActivityTimeout());
                 perm.setSessionActivityTmOut(resPerm.getSessionActivityTimeout());
+                
                 Calendar start = Calendar.getInstance();
                 start.setTime(resPerm.getStartTime());
                 perm.setStart(start);

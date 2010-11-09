@@ -455,9 +455,11 @@ public class PermissionsTester extends TestCase
         
         cls.setUserClassName("newClass");
         cls.setPriority(10);
+        cls.setTimeHorizon(15);
         cls.setIsActive(true);
         cls.setIsKickable(true);
         cls.setIsQueuable(true);
+        cls.setIsBookable(true);
         cls.setIsUserLockable(true);
         cls.setRequestorQName("TESTNS:mdiponio");
         
@@ -476,9 +478,11 @@ public class PermissionsTester extends TestCase
         
         assertEquals("newClass", uc.getName());
         assertEquals(10, uc.getPriority());
+        assertEquals(15, uc.getTimeHorizon());
         assertTrue(uc.isActive());
         assertTrue(uc.isKickable());
         assertTrue(uc.isQueuable());
+        assertTrue(uc.isBookable());
         assertTrue(uc.isUsersLockable());
         
         dao.delete(uc);
@@ -503,6 +507,7 @@ public class PermissionsTester extends TestCase
         
         cls.setUserClassName("newClass");
         cls.setPriority(100);
+        cls.setTimeHorizon(1000);
         cls.setIsActive(false);
         cls.setIsKickable(false);
         cls.setIsQueuable(false);
@@ -528,6 +533,8 @@ public class PermissionsTester extends TestCase
         assertFalse(uc.isKickable());
         assertFalse(uc.isQueuable());
         assertFalse(uc.isUsersLockable());
+        assertFalse(uc.isBookable());
+        assertEquals(1000, uc.getTimeHorizon());
         
         dao.delete(uc);
         dao.closeSession();
@@ -1094,6 +1101,8 @@ public class PermissionsTester extends TestCase
         UserClass uclass3 = new UserClass();
         uclass3.setName("permTestClass3");
         uclass3.setActive(true);
+        uclass3.setQueuable(true);
+        uclass3.setBookable(true);
         ses.save(uclass3);
         
         /* User is a member of two. */
@@ -1342,6 +1351,8 @@ public class PermissionsTester extends TestCase
         UserClass uclass1 = new UserClass();
         uclass1.setName("permTestClass1");
         uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
         ses.save(uclass1);
         UserAssociation assoc1 = new UserAssociation(new UserAssociationId(user.getId(), uclass1.getId()), uclass1, user);
         ses.save(assoc1);
@@ -1406,6 +1417,8 @@ public class PermissionsTester extends TestCase
         
         PermissionType p = perm.getPermission();
         assertNotNull(p);
+        assertTrue(p.canBook());
+        assertFalse(p.canQueue());
         assertEquals(perm1.getAllowedExtensions(), p.getAllowedExtensions());
         assertEquals(perm1.getExtensionDuration(), p.getExtensionDuration());
         assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
@@ -1435,6 +1448,8 @@ public class PermissionsTester extends TestCase
         UserClass uclass1 = new UserClass();
         uclass1.setName("permTestClass1");
         uclass1.setActive(true);
+        uclass1.setBookable(false);
+        uclass1.setQueuable(true);
         ses.save(uclass1);
         UserAssociation assoc1 = new UserAssociation(new UserAssociationId(user.getId(), uclass1.getId()), uclass1, user);
         ses.save(assoc1);
@@ -1498,6 +1513,8 @@ public class PermissionsTester extends TestCase
         
         PermissionType p = perm.getPermission();
         assertNotNull(p);
+        assertFalse(p.canBook());
+        assertTrue(p.canQueue());
         assertEquals(perm1.getAllowedExtensions(), p.getAllowedExtensions());
         assertEquals(perm1.getExtensionDuration(), p.getExtensionDuration());
         assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
@@ -1734,6 +1751,7 @@ public class PermissionsTester extends TestCase
         UserClass cls = new UserClass();
         cls.setName("ucTest");
         cls.setPriority((short)50);
+        cls.setTimeHorizon(10000);
         cls.setActive(true);
         cls.setQueuable(true);
         cls.setBookable(true);
@@ -1757,7 +1775,9 @@ public class PermissionsTester extends TestCase
         assertEquals(cls.isActive(), uc.getIsActive());
         assertEquals(cls.isKickable(), uc.getIsKickable());
         assertEquals(cls.isQueuable(), uc.getIsQueuable());
+        assertEquals(cls.isBookable(), uc.getIsBookable());
         assertEquals(cls.isUsersLockable(), uc.getIsUserLockable());
+        assertEquals(cls.getTimeHorizon(), uc.getTimeHorizon());
         
         dao.delete(cls);
         dao.closeSession();
@@ -1778,6 +1798,7 @@ public class PermissionsTester extends TestCase
         UserClass cls = new UserClass();
         cls.setName("ucTest");
         cls.setPriority((short)50);
+        cls.setTimeHorizon(100);
         cls.setActive(true);
         cls.setQueuable(false);
         cls.setBookable(true);
@@ -1799,10 +1820,12 @@ public class PermissionsTester extends TestCase
         
         assertEquals(cls.getId().intValue(), uc.getUserClassID());
         assertEquals(cls.getName(), uc.getUserClassName());
+        assertEquals(cls.isBookable(), uc.getIsBookable());
         assertEquals(cls.isActive(), uc.getIsActive());
         assertEquals(cls.isKickable(), uc.getIsKickable());
         assertEquals(cls.isQueuable(), uc.getIsQueuable());
         assertEquals(cls.isUsersLockable(), uc.getIsUserLockable());
+        assertEquals(cls.getTimeHorizon(), uc.getTimeHorizon());
         
         dao.delete(cls);
         dao.closeSession();
