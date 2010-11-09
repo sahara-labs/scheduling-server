@@ -777,14 +777,125 @@ public class Permissions implements PermissionsSkeletonInterface
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSkeletonInterface#getPermission(au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission)
-     */
     @Override
     public GetPermissionResponse getPermission(GetPermission request)
     {
-        // TODO Auto-generated method stub
-        return null;
+        /* Request parameters. */
+        int pid = request.getGetPermission().getPermissionID();
+        this.logger.debug("Received get permission request for permission id=" + pid + '.');
+        
+        /* Response paramters. */
+        GetPermissionResponse response = new GetPermissionResponse();
+        PermissionType permission = new PermissionType();
+        permission.setPermissionID(pid);
+        
+        UserClassIDType userClass = new UserClassIDType();
+        permission.setUserClass(userClass);
+        
+        permission.setResourceClass(ResourceClass.RIG);
+        ResourceIDType resource = new ResourceIDType();
+        permission.setResource(resource);
+        
+        permission.setCanBook(false);
+        permission.setCanQueue(false);
+        
+        response.setGetPermissionResponse(permission);
+        
+        /* Load the permission. */
+        ResourcePermissionDao dao = new ResourcePermissionDao();
+        try
+        {
+            ResourcePermission rp = dao.get((long)pid);
+            if (rp == null)
+            {
+                this.logger.info("Resource permission with identifer '" + pid + "' not found.");
+                return response;
+            }
+            
+            /* User class details . */
+            UserClass uc = rp.getUserClass();
+            userClass.setUserClassID(uc.getId().intValue());
+            userClass.setUserClassName(uc.getName());
+            permission.setCanBook(uc.isBookable());
+            permission.setCanQueue(uc.isQueuable());
+            permission.setTimeHorizon(uc.getTimeHorizon());
+            
+            /* Resource details. */
+            if (ResourcePermission.RIG_PERMISSION.equals(rp.getType()))
+            {
+                Rig rig = rp.getRig();
+                if (rig == null)
+                {
+                    this.logger.warn("Incorrect configuration of a rig resource permission with id " + rp.getId() + 
+                            ", as no rig is set.");
+                }
+                else
+                {
+                    permission.setResourceClass(ResourceClass.RIG);
+                    resource.setResourceID(rig.getId().intValue());
+                    resource.setResourceName(rig.getName());
+                }
+            }
+            else if (ResourcePermission.TYPE_PERMISSION.equals(rp.getType()))
+            {
+                RigType rigType = rp.getRigType();
+                if (rigType == null)
+                {
+                    this.logger.warn("Incorrect configuration of a rig type resource permission with id " + 
+                            rp.getId() + ", as no rig type is set.");                    
+                }
+                else
+                {
+                    permission.setResourceClass(ResourceClass.TYPE);
+                    resource.setResourceID(rigType.getId().intValue());
+                    resource.setResourceName(rigType.getName());
+                }
+            }
+            else if (ResourcePermission.CAPS_PERMISSION.equals(rp.getType()))
+            {
+                RequestCapabilities caps = rp.getRequestCapabilities();
+                if (caps == null)
+                {
+                    this.logger.warn("Incorrect configuration of a request capabilities resource permission with id " +
+                            rp.getId() + ", as no request capabilities are set.");
+                }
+                else
+                {
+                    permission.setResourceClass(ResourceClass.CAPABILITY);
+                    resource.setResourceID(caps.getId().intValue());
+                    resource.setResourceName(caps.getCapabilities());
+                }
+            }
+            else
+            {
+                this.logger.warn("Incorrect configuration of a resource permission with id " + rp.getId() + 
+                        ". It has an unknown resource type " + rp.getType() + ". It should be one of " +
+                        "'RIG', 'TYPE' or 'CAPABILITY'.");
+            }
+            
+            /* Other resource permission details. */
+            permission.setMaxBookings(rp.getMaximumBookings());
+            permission.setSessionDuration(rp.getSessionDuration());
+            permission.setExtensionDuration(rp.getExtensionDuration());
+            permission.setAllowedExtensions(rp.getAllowedExtensions());
+            permission.setQueueActivityTmOut(rp.getQueueActivityTimeout());
+            permission.setSessionActivityTmOut(rp.getSessionActivityTimeout());
+            permission.setDisplayName(rp.getDisplayName());
+            
+            Calendar start = Calendar.getInstance();
+            start.setTime(rp.getStartTime());
+            permission.setStart(start);
+            
+            Calendar expiry = Calendar.getInstance();
+            expiry.setTime(rp.getExpiryTime());
+            permission.setExpiry(expiry);
+            
+            return response;
+        }
+        finally
+        {
+            dao.closeSession();
+        }
     }
 
     @Override
@@ -794,7 +905,7 @@ public class Permissions implements PermissionsSkeletonInterface
         UserIDType uid = request.getGetPermissionsForUser();
         String ns = uid.getUserNamespace(), nm = uid.getUserName();
         long id = this.getIdentifier(uid.getUserID());
-        this.logger.debug("Received get permissions for user with id=" + id + ", namespace=" + ns + ", name=" + nm + '.');
+        this.logger.debug("Received get permissions request for user with id=" + id + ", namespace=" + ns + ", name=" + nm + '.');
         
         /* Response parameters. */
         GetPermissionsForUserResponse resp = new GetPermissionsForUserResponse();
@@ -894,6 +1005,8 @@ public class Permissions implements PermissionsSkeletonInterface
                 /* Add information about permission. */
                 perm.setCanBook(userClass.isBookable());
                 perm.setCanQueue(userClass.isQueuable());
+                perm.setTimeHorizon(userClass.getTimeHorizon());
+                perm.setMaxBookings(resPerm.getMaximumBookings());
                 perm.setSessionDuration(resPerm.getSessionDuration());
                 perm.setExtensionDuration(resPerm.getExtensionDuration());
                 perm.setAllowedExtensions(resPerm.getAllowedExtensions());

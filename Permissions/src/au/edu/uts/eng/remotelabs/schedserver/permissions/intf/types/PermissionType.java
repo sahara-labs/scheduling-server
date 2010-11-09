@@ -79,6 +79,10 @@ public class PermissionType extends PermissionIDType implements ADBBean
     
     protected boolean canBook;
     protected boolean canQueue;
+    protected int timeHorizon;
+    protected boolean timeHorizonTracker = false;
+    protected int maxBookings;
+    protected boolean maxBookingsTracker = false;
     
     protected int sessionDuration;
     protected boolean sessionDurationTracker = false;
@@ -156,6 +160,42 @@ public class PermissionType extends PermissionIDType implements ADBBean
     public void setCanQueue(final boolean param)
     {
         this.canQueue = param;
+    }
+    
+    public int getTimeHorizon()
+    {
+        return this.timeHorizon;
+    }
+    
+    public void setTimeHorizon(final int param)
+    {
+        if (param == Integer.MIN_VALUE)
+        {
+            this.timeHorizonTracker = false;
+        }
+        else
+        {
+            this.timeHorizonTracker = true;
+            this.timeHorizon = param;
+        }
+    }
+    
+    public int getMaxBookings()
+    {
+        return this.maxBookings;
+    }
+    
+    public void setMaxBookings(final int param)
+    {
+        if (param == Integer.MIN_VALUE)
+        {
+            this.maxBookingsTracker = false;
+        }
+        else
+        {
+            this.maxBookingsTracker = true;
+            this.maxBookings = param;
+        }
     }
 
     public int getSessionDuration()
@@ -567,6 +607,58 @@ public class PermissionType extends PermissionIDType implements ADBBean
         xmlWriter.writeCharacters(ConverterUtil.convertToString(this.canBook));
         xmlWriter.writeEndElement();
         
+        if (this.timeHorizonTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = PermissionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "timeHorizon", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "timeHorizon");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("timeHorizon");
+            }
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.timeHorizon));
+            xmlWriter.writeEndElement();
+        }
+        
+        if (this.maxBookingsTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = PermissionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "maxBookings", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "maxBookings");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("maxBookings");
+            }
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.maxBookings));
+            xmlWriter.writeEndElement();
+        }
+        
         if (this.sessionDurationTracker)
         {
             namespace = "";
@@ -949,6 +1041,18 @@ public class PermissionType extends PermissionIDType implements ADBBean
         elementList.add(new QName("", "canBook"));
         elementList.add(ConverterUtil.convertToString(this.canBook));
         
+        if (this.timeHorizonTracker)
+        {
+            elementList.add(new QName("", "timeHorizon"));
+            elementList.add(ConverterUtil.convertToString(this.timeHorizon));
+        }
+        
+        if (this.maxBookingsTracker)
+        {
+            elementList.add(new QName("", "maxBookings"));
+            elementList.add(ConverterUtil.convertToString(this.maxBookings));
+        }
+        
         if (this.sessionDurationTracker)
         {
             elementList.add(new QName("", "sessionDuration"));
@@ -1181,6 +1285,35 @@ public class PermissionType extends PermissionIDType implements ADBBean
                 else
                 {
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "timeHorizon").equals(reader.getName()))
+                {
+                    object.setTimeHorizon(ConverterUtil.convertToInt(reader.getElementText()));
+                    reader.next();
+                }
+                else
+                {
+                   object.setTimeHorizon(Integer.MIN_VALUE);
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                
+                if (reader.isStartElement() && new QName("", "maxBookings").equals(reader.getName()))
+                {
+                    object.setMaxBookings(ConverterUtil.convertToInt(reader.getElementText()));
+                    reader.next();
+                }
+                else
+                {
+                    object.setMaxBookings(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

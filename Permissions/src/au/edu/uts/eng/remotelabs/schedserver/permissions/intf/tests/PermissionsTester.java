@@ -92,6 +92,7 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicP
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUserResponse;
@@ -108,6 +109,7 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionTy
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockListType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
@@ -1071,7 +1073,238 @@ public class PermissionsTester extends TestCase
     @Test
     public void testGetPermission()
     {
-        fail("Not yet implemented");
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("permTestClass2");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        RigType rigType1 = new RigType("interRigType1", 300, false);
+        ses.save(rigType1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("display_name1");
+        ses.save(perm1);
+        ses.getTransaction().commit();
+        
+        GetPermission request = new GetPermission();
+        PermissionIDType pid = new PermissionIDType();
+        pid.setPermissionID(perm1.getId().intValue());
+        request.setGetPermission(pid);
+        
+        GetPermissionResponse response = this.permissions.getPermission(request);
+        
+        ses.beginTransaction();
+        ses.delete(perm1);
+        ses.delete(rigType1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        PermissionType p = response.getGetPermissionResponse();
+        assertNotNull(p);
+        
+        /* User class. */
+        UserClassIDType ucid = p.getUserClass();
+        assertNotNull(ucid);
+        assertEquals(uclass1.getId().intValue(), ucid.getUserClassID());
+        assertEquals(uclass1.getName(), ucid.getUserClassName());
+        
+        assertEquals(ResourceClass._TYPE, p.getResourceClass().toString());
+        ResourceIDType rid = p.getResource();
+        assertNotNull(rid);
+        assertEquals(rigType1.getId().intValue(), rid.getResourceID());
+        assertEquals(rigType1.getName(), rid.getResourceName());
+        
+        assertFalse(p.canQueue());
+        assertTrue(p.canBook());
+        
+        assertEquals(uclass1.getTimeHorizon(), p.getTimeHorizon());
+        assertEquals(perm1.getMaximumBookings(), p.getMaxBookings());
+        assertEquals(perm1.getSessionDuration(), p.getSessionDuration());
+        assertEquals(perm1.getExtensionDuration(), p.getExtensionDuration());
+        assertEquals(perm1.getAllowedExtensions(), p.getAllowedExtensions());
+        assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
+        assertEquals(perm1.getSessionActivityTimeout(), p.getSessionActivityTmOut());
+        assertEquals(perm1.getDisplayName(), p.getDisplayName());
+        
+        assertEquals(perm1.getStartTime().getTime() / 1000, p.getStart().getTimeInMillis() / 1000);
+        assertEquals(perm1.getExpiryTime().getTime() / 1000, p.getExpiry().getTimeInMillis() / 1000);
+    }
+    
+    /**
+     * Test method for {@link Permissions#getPermission(GetPermission)}.
+     */
+    @Test
+    public void testGetPermissionRig()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("permTestClass2");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        RigType rigType1 = new RigType("interRigType1", 300, false);
+        ses.save(rigType1);
+        RigCapabilities rigCaps = new RigCapabilities("not,important");
+        ses.save(rigCaps);
+        Rig rig1 = new Rig(rigType1, rigCaps, "interRig1", "http://contact", new Date(), true, null, false, true, true);
+        ses.save(rig1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(rig1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("display_name1");
+        ses.save(perm1);
+        ses.getTransaction().commit();
+        
+        GetPermission request = new GetPermission();
+        PermissionIDType pid = new PermissionIDType();
+        pid.setPermissionID(perm1.getId().intValue());
+        request.setGetPermission(pid);
+        
+        GetPermissionResponse response = this.permissions.getPermission(request);
+        
+        ses.beginTransaction();
+        ses.delete(perm1);
+        ses.delete(rig1);
+        ses.delete(rigCaps);
+        ses.delete(rigType1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        PermissionType p = response.getGetPermissionResponse();
+        assertNotNull(p);
+        
+        /* User class. */
+        UserClassIDType ucid = p.getUserClass();
+        assertNotNull(ucid);
+        assertEquals(uclass1.getId().intValue(), ucid.getUserClassID());
+        assertEquals(uclass1.getName(), ucid.getUserClassName());
+        
+        assertEquals(ResourceClass._RIG, p.getResourceClass().toString());
+        ResourceIDType rid = p.getResource();
+        assertNotNull(rid);
+        assertEquals(rig1.getId().intValue(), rid.getResourceID());
+        assertEquals(rig1.getName(), rid.getResourceName());
+        
+        assertFalse(p.canQueue());
+        assertTrue(p.canBook());
+        
+        assertEquals(uclass1.getTimeHorizon(), p.getTimeHorizon());
+        assertEquals(perm1.getMaximumBookings(), p.getMaxBookings());
+        assertEquals(perm1.getSessionDuration(), p.getSessionDuration());
+        assertEquals(perm1.getExtensionDuration(), p.getExtensionDuration());
+        assertEquals(perm1.getAllowedExtensions(), p.getAllowedExtensions());
+        assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
+        assertEquals(perm1.getSessionActivityTimeout(), p.getSessionActivityTmOut());
+        assertEquals(perm1.getDisplayName(), p.getDisplayName());
+        
+        assertEquals(perm1.getStartTime().getTime() / 1000, p.getStart().getTimeInMillis() / 1000);
+        assertEquals(perm1.getExpiryTime().getTime() / 1000, p.getExpiry().getTimeInMillis() / 1000);
+    }
+    
+    /**
+     * Test method for {@link Permissions#getPermission(GetPermission)}.
+     */
+    @Test
+    public void testGetPermissionCaps()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("permTestClass2");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        RequestCapabilities reqCaps = new RequestCapabilities("not,important");
+        ses.save(reqCaps);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("CAPABILITY");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRequestCapabilities(reqCaps);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("display_name1");
+        ses.save(perm1);
+        ses.getTransaction().commit();
+        
+        GetPermission request = new GetPermission();
+        PermissionIDType pid = new PermissionIDType();
+        pid.setPermissionID(perm1.getId().intValue());
+        request.setGetPermission(pid);
+        
+        GetPermissionResponse response = this.permissions.getPermission(request);
+        
+        ses.beginTransaction();
+        ses.delete(perm1);
+        ses.delete(reqCaps);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        PermissionType p = response.getGetPermissionResponse();
+        assertNotNull(p);
+        
+        /* User class. */
+        UserClassIDType ucid = p.getUserClass();
+        assertNotNull(ucid);
+        assertEquals(uclass1.getId().intValue(), ucid.getUserClassID());
+        assertEquals(uclass1.getName(), ucid.getUserClassName());
+        
+        assertEquals(ResourceClass._CAPABILITY, p.getResourceClass().toString());
+        ResourceIDType rid = p.getResource();
+        assertNotNull(rid);
+        assertEquals(reqCaps.getId().intValue(), rid.getResourceID());
+        assertEquals(reqCaps.getCapabilities(), rid.getResourceName());
+        
+        assertFalse(p.canQueue());
+        assertTrue(p.canBook());
+        
+        assertEquals(uclass1.getTimeHorizon(), p.getTimeHorizon());
+        assertEquals(perm1.getMaximumBookings(), p.getMaxBookings());
+        assertEquals(perm1.getSessionDuration(), p.getSessionDuration());
+        assertEquals(perm1.getExtensionDuration(), p.getExtensionDuration());
+        assertEquals(perm1.getAllowedExtensions(), p.getAllowedExtensions());
+        assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
+        assertEquals(perm1.getSessionActivityTimeout(), p.getSessionActivityTmOut());
+        assertEquals(perm1.getDisplayName(), p.getDisplayName());
+        
+        assertEquals(perm1.getStartTime().getTime() / 1000, p.getStart().getTimeInMillis() / 1000);
+        assertEquals(perm1.getExpiryTime().getTime() / 1000, p.getExpiry().getTimeInMillis() / 1000);
     }
 
     /**
@@ -1353,6 +1586,7 @@ public class PermissionsTester extends TestCase
         uclass1.setActive(true);
         uclass1.setQueuable(false);
         uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
         ses.save(uclass1);
         UserAssociation assoc1 = new UserAssociation(new UserAssociationId(user.getId(), uclass1.getId()), uclass1, user);
         ses.save(assoc1);
@@ -1370,6 +1604,7 @@ public class PermissionsTester extends TestCase
         perm1.setAllowedExtensions((short)10);
         perm1.setSessionActivityTimeout(300);
         perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
         perm1.setRigType(rigType1);
         perm1.setStartTime(new Date());
         perm1.setExpiryTime(new Date());
@@ -1424,6 +1659,8 @@ public class PermissionsTester extends TestCase
         assertEquals(perm1.getQueueActivityTimeout(), p.getQueueActivityTmOut());
         assertEquals(perm1.getSessionActivityTimeout(), p.getSessionActivityTmOut());
         assertEquals(perm1.getSessionDuration(), p.getSessionDuration());
+        assertEquals(perm1.getMaximumBookings(), p.getMaxBookings());
+        assertEquals(uclass1.getTimeHorizon(), p.getTimeHorizon());
         assertEquals("TYPE", p.getResourceClass().getValue());
         assertEquals(perm1.getDisplayName(), p.getDisplayName());
         
