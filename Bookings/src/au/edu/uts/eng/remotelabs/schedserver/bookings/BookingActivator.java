@@ -37,25 +37,43 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.bookings;
 
-
+import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * Bookings bundle activator.
  */
-public class BookingActivator implements BundleActivator {
+public class BookingActivator implements BundleActivator 
+{
+    /** SOAP interface hosting server service registration. */
+    private ServiceRegistration soapReg;
+    
+    /** Logger. */
+    private Logger logger;
 
 	@Override
 	public void start(BundleContext context) throws Exception 
 	{
-		System.out.println("Hello World!!");
+		this.logger = LoggerActivator.getLogger();
+		this.logger.info("Starting bookings bundle...");
+		
+		this.logger.debug("Registering the Bookings SOAP service.");
+		ServletContainerService soapService = new ServletContainerService();
+	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
+	    this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
 	}
 	
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
-		System.out.println("Goodbye World!!");
+	    this.logger.info("Shutting down bookings bundle.");
+		this.soapReg.unregister();
 	}
-
 }
