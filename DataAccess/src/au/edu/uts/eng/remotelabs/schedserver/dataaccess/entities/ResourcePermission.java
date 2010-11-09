@@ -127,10 +127,6 @@ public class ResourcePermission implements java.io.Serializable
     /** The maximum number of concurrent bookings that can be made. */
     private int maximumBookings;
     
-    /** Offset specifying how long from now a booking may be made. This is a
-     * sliding window. */
-    private int bookingOffset;
-    
     /** The name of the permission. */
     private String displayName;
     
@@ -304,17 +300,6 @@ public class ResourcePermission implements java.io.Serializable
     public void setMaximumBookings(final int maximumBookings)
     {
         this.maximumBookings = maximumBookings;
-    }
-
-    @Column(name = "booking_offset", columnDefinition = "int default '0'")
-    public int getBookingOffset()
-    {
-        return this.bookingOffset;
-    }
-
-    public void setBookingOffset(int bookingOffset)
-    {
-        this.bookingOffset = bookingOffset;
     }
     
     @Column(name = "display_name", nullable = true, length = 255)
