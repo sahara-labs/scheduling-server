@@ -136,9 +136,16 @@
 								type="pm:ResourceIDType">
 							</xsd:element>
 
-                            <xsd:element name="canQueue" type="xsd:boolean">
+							<xsd:element name="canQueue"
+								type="xsd:boolean">
 							</xsd:element>
-                            <xsd:element name="canBook" type="xsd:boolean">
+							<xsd:element name="canBook"
+								type="xsd:boolean">
+							</xsd:element>
+							<xsd:element name="timeHorizion"
+								type="xsd:int" maxOccurs="1" minOccurs="0">
+							</xsd:element>
+                            <xsd:element name="maxBookings" type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
                             <xsd:element name="sessionDuration"
 								type="xsd:int" maxOccurs="1" minOccurs="0">
