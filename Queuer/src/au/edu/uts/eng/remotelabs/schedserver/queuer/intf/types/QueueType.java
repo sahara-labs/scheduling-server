@@ -76,6 +76,7 @@ public class QueueType implements ADBBean
     protected boolean viable;
     protected boolean hasFree;
     protected boolean isQueueable;
+    protected boolean isBookable;
     protected boolean isCodeAssignable;
     protected ResourceIDType queuedResource;
     protected QueueTargetType[] queueTarget;
@@ -118,6 +119,16 @@ public class QueueType implements ADBBean
     public void setIsQueuable(final boolean param)
     {
         this.isQueueable = param;
+    }
+    
+    public boolean getIsBookable()
+    {
+        return this.isBookable;
+    }
+    
+    public void setIsBookable(final boolean param)
+    {
+        this.isBookable = param;
     }
     
     public boolean getIsCodeAssignable()
@@ -330,6 +341,29 @@ public class QueueType implements ADBBean
             if (prefix == null)
             {
                 prefix = QueueType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "isBookable", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "isBookable");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("isBookable");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isBookable));
+        xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = QueueType.generatePrefix(namespace);
                 xmlWriter.writeStartElement(prefix, "isCodeAssignable", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
@@ -412,6 +446,9 @@ public class QueueType implements ADBBean
         
         elementList.add(new QName("", "isQueueable"));
         elementList.add(ConverterUtil.convertToString(this.isQueueable));
+        
+        elementList.add(new QName("", "isBookable"));
+        elementList.add(ConverterUtil.convertToString(this.isBookable));
         
         elementList.add(new QName("", "isCodeAssignable"));
         elementList.add(ConverterUtil.convertToString(this.isCodeAssignable));
@@ -519,6 +556,21 @@ public class QueueType implements ADBBean
                 {
                     final String content = reader.getElementText();
                     object.setIsQueuable(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "isBookable").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setIsBookable(ConverterUtil.convertToBoolean(content));
                     reader.next();
                 }
                 else

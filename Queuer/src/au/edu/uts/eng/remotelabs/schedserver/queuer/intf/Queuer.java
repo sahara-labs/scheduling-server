@@ -381,7 +381,6 @@ public class Queuer implements QueuerSkeletonInterface
         /* Response parameters. */
         CheckPermissionAvailabilityResponse resp = new CheckPermissionAvailabilityResponse();
         
-        
         if (!this.checkPermission(permResp))
         {
             this.logger.warn("Unable to check the resource permission because of invalid permission.");
@@ -423,6 +422,7 @@ public class Queuer implements QueuerSkeletonInterface
         
         /* Queuable is based on the resource class. */
         queue.setIsQueuable(perm.getUserClass().isQueuable());
+        queue.setIsBookable(perm.getUserClass().isBookable());
         
         String type = perm.getType();
         resource.setType(type);
@@ -532,10 +532,11 @@ public class Queuer implements QueuerSkeletonInterface
         queue.setHasFree(false);
         queue.setIsCodeAssignable(false);
         
-        /* This is always true because queueable is stored as a user class
-         * permission. There isn't enough information to determine this
+        /* This is always true because queueable/bookab;e is stored as a user 
+         * class permission. There isn't enough information to determine this
          * so the best case is assumed. */
         queue.setIsQueuable(true);
+        queue.setIsBookable(true);
         
         ResourceIDType resource = new ResourceIDType();
         queue.setQueuedResource(resource);

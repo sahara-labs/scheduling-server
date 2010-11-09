@@ -164,9 +164,10 @@
       	<xsd:sequence>
       		<xsd:element name="viable" type="xsd:boolean"></xsd:element>
       		<xsd:element name="hasFree" type="xsd:boolean"></xsd:element>
-                    <xsd:element name="isQueueable" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="isQueueable" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="isBookable" type="xsd:boolean"></xsd:element>
                     <xsd:element name="isCodeAssignable" type="xsd:boolean"></xsd:element>
-                    <xsd:element name="queuedResource"
+      		<xsd:element name="queuedResource"
       			type="qu:ResourceIDType">
       		</xsd:element>
       		<xsd:element name="queueTarget" type="qu:QueueTargetType"
