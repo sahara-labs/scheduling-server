@@ -18,7 +18,7 @@
  *    documentation and/or other materials provided with the distribution.
  *  * Neither the name of the University of Technology, Sydney nor the names 
  *    of its contributors may be used to endorse or promote products derived from 
- *    this software without specific prior written permission.
+ *    this software without specific prior written resourcePermission.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
@@ -67,8 +67,8 @@ public class Bookings implements Serializable
      *  completed or canceled. */
     private boolean active;
     
-    /** The resoruce permission this booking was created from. */
-    private ResourcePermission permission;
+    /** The resoruce resourcePermission this booking was created from. */
+    private ResourcePermission resourcePermission;
     
     /** The start time of the booking. */
     private Date startTime;
@@ -103,6 +103,9 @@ public class Bookings implements Serializable
     
     /** The reason this booking was canceled. */
     private String cancelReason;
+    
+    /** A file system reference to batch code to run on assignment. */
+    private String codeReference;
 
     /**
      * @return the id
@@ -141,20 +144,21 @@ public class Bookings implements Serializable
     }
 
     /**
-     * @return the permission
+     * @return the resourcePermission
      */
-    @Column(name = "resource_permission_id", nullable = false)
-    public ResourcePermission getPermission()
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "resource_permission_id")
+    public ResourcePermission getResourcePermission()
     {
-        return this.permission;
+        return this.resourcePermission;
     }
 
     /**
-     * @param permission the permission to set
+     * @param resourcePermission the resourcePermission to set
      */
-    public void setPermission(ResourcePermission permission)
+    public void setResourcePermission(ResourcePermission permission)
     {
-        this.permission = permission;
+        this.resourcePermission = permission;
     }
 
     /**
@@ -344,6 +348,23 @@ public class Bookings implements Serializable
     public void setCancelReason(String cancelReason)
     {
         this.cancelReason = cancelReason;
+    }
+
+    /**
+     * @return the codeReference
+     */
+    @Column(name = "code_reference", nullable = true, length = 1024)
+    public String getCodeReference()
+    {
+        return this.codeReference;
+    }
+
+    /**
+     * @param codeReference the codeReference to set
+     */
+    public void setCodeReference(String codeReference)
+    {
+        this.codeReference = codeReference;
     }
 
 }
