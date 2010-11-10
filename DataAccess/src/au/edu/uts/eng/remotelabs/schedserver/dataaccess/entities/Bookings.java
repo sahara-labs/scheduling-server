@@ -147,7 +147,7 @@ public class Bookings implements Serializable
      * @return the resourcePermission
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "resource_permission_id")
+    @JoinColumn(name = "resource_permission_id", nullable = false)
     public ResourcePermission getResourcePermission()
     {
         return this.resourcePermission;
@@ -216,7 +216,7 @@ public class Bookings implements Serializable
      * @return the user
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id", nullable = false)
     public User getUser()
     {
         return this.user;
