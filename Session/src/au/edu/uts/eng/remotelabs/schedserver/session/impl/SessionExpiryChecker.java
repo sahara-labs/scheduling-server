@@ -90,8 +90,7 @@ public class SessionExpiryChecker implements Runnable
             
             Criteria query = db.createCriteria(Session.class);
             query.add(Restrictions.eq("active", Boolean.TRUE))
-                 .add(Restrictions.isNotNull("assignmentTime"))
-                 .add(Restrictions.gt("ready", Boolean.TRUE));
+                 .add(Restrictions.isNotNull("assignmentTime"));
             
             
             Date now = new Date();
@@ -199,9 +198,10 @@ public class SessionExpiryChecker implements Runnable
                 }
                 /******************************************************************
                  * Finally, for sessions with time still remaining, check         *
-                 * session activity timeout - if it is not ignored.               * 
+                 * session activity timeout - if it is not ignored and is ready   *
+                 * for use.                                                       * 
                  ******************************************************************/
-                else if (ses.getResourcePermission().isActivityDetected() &&
+                else if (ses.isReady() && ses.getResourcePermission().isActivityDetected() &&
                         (System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000 > perm.getSessionActivityTimeout())
                 {
                     /* Check activity. */
