@@ -4,7 +4,7 @@
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.bookings.intf.BookingsMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.bookings.intf.Bookings</parameter>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.bookings.intf.BookingsService</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="deleteBookings" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">

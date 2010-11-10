@@ -117,6 +117,18 @@ public class BookingType extends BookingIDType implements ADBBean
     {
         this.startTime = param;
     }
+    
+    protected Calendar endTime;
+    
+    public Calendar getEndTime()
+    {
+        return this.endTime;
+    }
+    
+    public void setEndTime(final Calendar param)
+    {
+        this.endTime = param;
+    }
 
     protected int duration;
 
@@ -355,6 +367,37 @@ public class BookingType extends BookingIDType implements ADBBean
             xmlWriter.writeCharacters(ConverterUtil.convertToString(this.startTime));
         }
         xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = BookingType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "endTime", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "endTime");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("endTime");
+        }
+
+        if (this.endTime == null)
+        {
+            throw new ADBException("endTime cannot be null!!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.endTime));
+        }
+        xmlWriter.writeEndElement();
 
         namespace = "";
         if (!namespace.equals(""))
@@ -580,6 +623,16 @@ public class BookingType extends BookingIDType implements ADBBean
         {
             throw new ADBException("startTime cannot be null!!");
         }
+        
+        elementList.add(new QName("", "endTime"));
+        if (this.endTime != null)
+        {
+            elementList.add(ConverterUtil.convertToString(this.endTime));
+        }
+        else
+        {
+            throw new ADBException("endTime cannot be null");
+        }
 
         elementList.add(new QName("", "duration"));
         elementList.add(ConverterUtil.convertToString(this.duration));
@@ -723,7 +776,22 @@ public class BookingType extends BookingIDType implements ADBBean
                 {
                     reader.next();
                 }
+                if (reader.isStartElement() && new QName("", "endTime").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setEndTime(ConverterUtil.convertToDateTime(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
 
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                
                 if (reader.isStartElement() && new QName("", "duration").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();

@@ -41,21 +41,30 @@
       	<xsd:complexContent>
       		<xsd:extension base="bok:BookingIDType">
       			<xsd:sequence>
-      				<xsd:element name="bookedResource" type="bok:ResourceIDType">
+      				<xsd:element name="bookedResource"
+      					type="bok:ResourceIDType">
       				</xsd:element>
-      				<xsd:element name="permissionID" type="bok:PermissionIDType">
+      				<xsd:element name="permissionID"
+      					type="bok:PermissionIDType">
       				</xsd:element>
-      				<xsd:element name="startTime" type="xsd:dateTime">
+      				<xsd:element name="startTime"
+      					type="xsd:dateTime">
       				</xsd:element>
-      				<xsd:element name="duration" type="xsd:int">
+                            <xsd:element name="endTime" type="xsd:dateTime">
       				</xsd:element>
-      				<xsd:element maxOccurs="1" minOccurs="0" name="isFinished" type="xsd:boolean">
+                            <xsd:element name="duration" type="xsd:int">
       				</xsd:element>
-      				<xsd:element maxOccurs="1" minOccurs="0" name="isCancelled" type="xsd:boolean">
+      				<xsd:element maxOccurs="1" minOccurs="0"
+      					name="isFinished" type="xsd:boolean">
       				</xsd:element>
-      				<xsd:element maxOccurs="1" minOccurs="0" name="cancelReason" type="xsd:string">
+      				<xsd:element maxOccurs="1" minOccurs="0"
+      					name="isCancelled" type="xsd:boolean">
       				</xsd:element>
-      				<xsd:element maxOccurs="1" minOccurs="0" name="codeReference" type="xsd:string">
+      				<xsd:element maxOccurs="1" minOccurs="0"
+      					name="cancelReason" type="xsd:string">
+      				</xsd:element>
+      				<xsd:element maxOccurs="1" minOccurs="0"
+      					name="codeReference" type="xsd:string">
       				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>

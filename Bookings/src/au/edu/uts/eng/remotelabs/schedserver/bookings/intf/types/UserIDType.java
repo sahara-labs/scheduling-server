@@ -69,6 +69,8 @@ public class UserIDType implements ADBBean
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/bookings
      * Namespace Prefix = ns1
      */
+    
+    public static final String QNAME_DELIM = ":";
 
     private static final long serialVersionUID = 5850150335647423598L;
 
@@ -101,6 +103,41 @@ public class UserIDType implements ADBBean
         }
 
         this.userID = param;
+    }
+    
+     public String getUserName()
+    {
+        if (this.nsNameSequence != null && this.nsNameSequence.getUserName() != null)
+        {
+            return this.nsNameSequence.getUserName();
+        }
+        
+        if (this.userQName != null)
+        {
+            String idParts[] = this.userQName.split(UserIDType.QNAME_DELIM, 2);
+            if (idParts.length == 2)
+            {
+                return idParts[1];
+            }
+        }
+        
+        return null;
+    }
+    
+    public String getUserNamespace()
+    {
+        if (this.nsNameSequence != null && this.nsNameSequence.getUserNamespace() != null)
+        {
+            return this.nsNameSequence.getUserNamespace();
+        }
+        
+        if (this.userQName != null)
+        {
+            String idParts[] = this.userQName.split(UserIDType.QNAME_DELIM, 2);
+            return idParts[0];
+        }
+        
+        return null;
     }
 
     protected UserNSNameSequence nsNameSequence;
