@@ -81,6 +81,7 @@ public class BookingRequestType implements ADBBean
     }
 
     protected UserIDType userID;
+    protected boolean userIDTracker;
 
     public UserIDType getUserID()
     {
@@ -89,7 +90,15 @@ public class BookingRequestType implements ADBBean
 
     public void setUserID(final UserIDType param)
     {
-        this.userID = param;
+        if (param == null)
+        {
+            this.userIDTracker = false;
+        }
+        else
+        {
+            this.userIDTracker = true;
+            this.userID = param;
+        }
     }
 
     protected BookingType bookingID;
@@ -185,11 +194,14 @@ public class BookingRequestType implements ADBBean
             }
         }
 
-        if (this.userID == null)
+        if (this.userIDTracker)
         {
-            throw new ADBException("userID cannot be null!!");
+            if (this.userID == null)
+            {
+                throw new ADBException("userID cannot be null!!");
+            }
+            this.userID.serialize(new QName("", "userID"), factory, xmlWriter);
         }
-        this.userID.serialize(new QName("", "userID"), factory, xmlWriter);
 
         if (this.bookingID == null)
         {
@@ -233,12 +245,15 @@ public class BookingRequestType implements ADBBean
     {
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        elementList.add(new QName("", "userID"));
-        if (this.userID == null)
+        if (this.userIDTracker)
         {
-            throw new ADBException("userID cannot be null!!");
+            elementList.add(new QName("", "userID"));
+            if (this.userID == null)
+            {
+                throw new ADBException("userID cannot be null!!");
+            }
+            elementList.add(this.userID);
         }
-        elementList.add(this.userID);
 
         elementList.add(new QName("", "bookingID"));
         if (this.bookingID == null)
@@ -293,10 +308,6 @@ public class BookingRequestType implements ADBBean
                 {
                     object.setUserID(UserIDType.Factory.parse(reader));
                     reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

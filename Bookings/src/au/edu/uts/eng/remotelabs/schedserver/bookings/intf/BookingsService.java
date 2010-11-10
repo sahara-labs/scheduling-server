@@ -44,6 +44,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
@@ -63,7 +64,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -105,7 +105,10 @@ public class BookingsService implements BookingsInterface
     @Override
     public GetBookingResponse getBooking(GetBooking getBooking)
     {
-        // TODO Auto-generated method stub
+        BookingRequestType request = getBooking.getGetBooking();
+        
+        
+        
         return null;
     }
 
