@@ -90,6 +90,7 @@ public class RigType implements java.io.Serializable
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Rig> rigs = new HashSet<Rig>(0);
     private Set<RigTypeMedia> media = new HashSet<RigTypeMedia>(0); 
+    private Set<Bookings> bookings = new HashSet<Bookings>(0);
     
     public RigType()
     {
@@ -217,5 +218,16 @@ public class RigType implements java.io.Serializable
     public void setMedia(Set<RigTypeMedia> media)
     {
         this.media = media;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rigType")
+    public Set<Bookings> getBookings()
+    {
+        return this.bookings;
+    }
+
+    public void setBookings(Set<Bookings> bookings)
+    {
+        this.bookings = bookings;
     }
 }

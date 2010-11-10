@@ -92,11 +92,14 @@ public class Bookings implements Serializable
      *  'CAPABILITY'. */
     private String resourceType;
     
-    /** The identifier of the resource. */
-    private Long resourceId;
+    /** The booked rig, if it is a rig booking. */
+    private Rig rig;
     
-    /** The name of the resource. */
-    private String resourceName;
+    /** The booked rig type, if it is a rig type booking. */
+    private RigType rigType;
+    
+    /** The booking request capabilities, if it is a rig capability booking. */
+    private RequestCapabilities requestCapabilities;
     
     /** The session that was started from this booking. */
     private Session session;
@@ -280,39 +283,59 @@ public class Bookings implements Serializable
     {
         this.resourceType = resourceType;
     }
-
+    
     /**
-     * @return the resourceId
+     * @return the rig
      */
-    @Column(name = "resource_id", length = 20)
-    public Long getResourceId()
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rig_id", nullable = true)
+    public Rig getRig()
     {
-        return this.resourceId;
+        return this.rig;
     }
 
     /**
-     * @param resourceId the resourceId to set
+     * @param rig the rig to set
      */
-    public void setResourceId(Long resourceId)
+    public void setRig(Rig rig)
     {
-        this.resourceId = resourceId;
+        this.rig = rig;
     }
 
     /**
-     * @return the resourceName
+     * @return the rigType
      */
-    @Column(name = "resource_name", length = 1024)
-    public String getResourceName()
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rig_type_id", nullable = true)
+    public RigType getRigType()
     {
-        return this.resourceName;
+        return this.rigType;
     }
 
     /**
-     * @param resourceName the resourceName to set
+     * @param rigType the rigType to set
      */
-    public void setResourceName(String resourceName)
+    public void setRigType(RigType rigType)
     {
-        this.resourceName = resourceName;
+        this.rigType = rigType;
+    }
+
+    /**
+     * @return the requestCapabilities
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "request_caps_id", nullable = true)
+    public RequestCapabilities getRequestCapabilities()
+    {
+        return this.requestCapabilities;
+    }
+
+    /**
+     * @param requestCapabilities the requestCapabilities to set
+     */
+    public void setRequestCapabilities(RequestCapabilities requestCapability)
+    {
+        this.requestCapabilities = requestCapability;
     }
 
     /**

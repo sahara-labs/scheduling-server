@@ -115,6 +115,7 @@ public class Rig implements java.io.Serializable
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Session> sessions = new HashSet<Session>(0);
     private Set<RigLog> rigLogs = new HashSet<RigLog>(0);
+    private Set<Bookings> bookings = new HashSet<Bookings>(0);
 
     public Rig()
     {
@@ -343,5 +344,16 @@ public class Rig implements java.io.Serializable
     public void  setRigLogs(final Set<RigLog> rigLogs)
     {
         this.rigLogs = rigLogs;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "rig")
+    public Set<Bookings> getBookings()
+    {
+        return this.bookings;
+    }
+
+    public void setBookings(Set<Bookings> bookings)
+    {
+        this.bookings = bookings;
     }
 }

@@ -73,6 +73,7 @@ public class RequestCapabilities implements java.io.Serializable
     
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<MatchingCapabilities> matchingCapabilitieses = new HashSet<MatchingCapabilities>(0);
+    private Set<Bookings> bookings = new HashSet<Bookings>(0);
 
     public RequestCapabilities()
     {
@@ -137,5 +138,19 @@ public class RequestCapabilities implements java.io.Serializable
     public void setMatchingCapabilitieses(final Set<MatchingCapabilities> matchingCapabilitieses)
     {
         this.matchingCapabilitieses = matchingCapabilitieses;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requestCapabilities")
+    public Set<Bookings> getBookings()
+    {
+        return this.bookings;
+    }
+
+    /**
+     * @param bookings the bookings to set
+     */
+    public void setBookings(Set<Bookings> bookings)
+    {
+        this.bookings = bookings;
     }
 }
