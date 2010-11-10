@@ -81,8 +81,8 @@ public class SessionInterface implements SessionSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uID = request.getFinishSession();
-        this.logger.debug("Received finish session request for user with id=" + uID.getUserID() + ", namespace="
-                + uID.getUserNamespace() + ", name=" + uID.getUserName() + '.');
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#finishSession request for user with id=" 
+                + uID.getUserID() + ", namespace=" + uID.getUserNamespace() + ", name=" + uID.getUserName() + '.');
         
         /* Response parameters. */
         FinishSessionResponse resp = new FinishSessionResponse();
@@ -121,8 +121,9 @@ public class SessionInterface implements SessionSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uID = request.getGetSessionInformation();
-        this.logger.debug("Received session information request for user with id=" + uID.getUserID() + ", namespace="
-                + uID.getUserNamespace() + ", name=" + uID.getUserName() + '.');
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getSessionInformation request for user " +
+        		"with id=" + uID.getUserID() + ", namespace=" + uID.getUserNamespace() + ", name=" + 
+        		uID.getUserName() + '.');
         
         /* Response parameters. */
         GetSessionInformationResponse resp = new GetSessionInformationResponse();
