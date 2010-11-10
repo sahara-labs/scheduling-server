@@ -89,7 +89,7 @@ public class RigProvider implements RigProviderInterface
         RegisterRigType rig = request.getRegisterRig();
         StatusType status = rig.getStatus();
         
-        this.logger.debug("Received " + this.getClass().getName() + "#registerRig with parameters: name=" + rig.getName()
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#registerRig with parameters: name=" + rig.getName()
                 + ", type=" + rig.getType() + ", capabilities=" + rig.getCapabilities() + 
                 ", contact URL=" + rig.getContactUrl().toString() + ", isOnline=" + 
                 status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + ".");
@@ -133,7 +133,7 @@ public class RigProvider implements RigProviderInterface
     {
         /* Request parameters. */
         RemoveRigType remRig = request.getRemoveRig();
-        this.logger.debug("Received " + this.getClass().getName() + "#removeRig with parameters: name=" + remRig.getName() 
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#removeRig with parameters: name=" + remRig.getName() 
                 + ", removal " + "reason=" + remRig.getRemovalReason() + '.');
         
         /* Response parameters. */
@@ -162,7 +162,7 @@ public class RigProvider implements RigProviderInterface
         /* Request parameters. */
         UpdateRigType upRig = request.getUpdateRigStatus();
         StatusType status = upRig.getStatus();
-        this.logger.debug("Received " + this.getClass().getName() + "#updateRigStatus with parameters: name=" + upRig.getName()
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#updateRigStatus with parameters: name=" + upRig.getName()
                 + ", isOnline=" + status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + '.');
         
         /* Response parameters. */
@@ -191,7 +191,7 @@ public class RigProvider implements RigProviderInterface
     public AllocateCallbackResponse allocateCallback(AllocateCallback allocateCallback)
     {
         CallbackRequestType request = allocateCallback.getAllocateCallback();
-        this.logger.debug("Received allocate callback with params: rigname=" + request.getName() + ", success=" +
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#allocateCallback with params: rigname=" + request.getName() + ", success=" +
                 request.getSuccess() + '.');
         
         AllocateCallbackResponse response = new AllocateCallbackResponse();
@@ -269,8 +269,8 @@ public class RigProvider implements RigProviderInterface
     public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback)
     {
         CallbackRequestType request = releaseCallback.getReleaseCallback();
-        this.logger.debug("Received release callback with params: rigname=" + request.getName() + ", success=" +
-                request.getSuccess());
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#releaseCallback with params: rigname=" + 
+                request.getName() + ", success=" + request.getSuccess());
 
         ReleaseCallbackResponse response = new ReleaseCallbackResponse();
         ProviderResponse status = new ProviderResponse();
