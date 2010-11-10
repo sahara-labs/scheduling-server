@@ -67,8 +67,14 @@ public class Bookings implements Serializable
      *  completed or canceled. */
     private boolean active;
     
+    /** The resoruce permission this booking was created from. */
+    private ResourcePermission permission;
+    
     /** The start time of the booking. */
     private Date startTime;
+    
+    /** The end time of the booking. */
+    private Date endTime;
     
     /** The booking duration. */
     private int duration;
@@ -135,6 +141,23 @@ public class Bookings implements Serializable
     }
 
     /**
+     * @return the permission
+     */
+    @Column(name = "resource_permission_id", nullable = false)
+    public ResourcePermission getPermission()
+    {
+        return this.permission;
+    }
+
+    /**
+     * @param permission the permission to set
+     */
+    public void setPermission(ResourcePermission permission)
+    {
+        this.permission = permission;
+    }
+
+    /**
      * @return the startTime
      */
     @Column(name = "start_time", nullable = false)
@@ -149,6 +172,23 @@ public class Bookings implements Serializable
     public void setStartTime(Date startTime)
     {
         this.startTime = startTime;
+    }
+
+    /**
+     * @return the end time
+     */
+    @Column(name = "end_time", nullable = false)
+    public Date getEndTime()
+    {
+        return this.endTime;
+    }
+
+    /**
+     * @param the end time
+     */
+    public void setEndTime(Date endTime)
+    {
+        this.endTime = endTime;
     }
 
     /**
