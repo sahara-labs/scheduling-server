@@ -101,8 +101,8 @@ public class Queuer implements QueuerSkeletonInterface
         UserIDType uId = request.getAddUserToQueue().getUserID();
         PermissionIDType pId = request.getAddUserToQueue().getPermissionID();
         ResourceIDType rId = request.getAddUserToQueue().getResourceID();
-        this.logger.debug("Received queue request from user (id=" + uId.getUserID() + ", namespace=" + 
-                uId.getUserNamespace() + ", name=" + uId.getUserName() + ") for " +
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#addUserToQueue from user (id=" + 
+                uId.getUserID() + ", namespace=" + uId.getUserNamespace() + ", name=" + uId.getUserName() + ") for " +
                 (pId != null ? "permission with identifier " + pId.getPermissionID() : (rId != null ? 
                 "resource with identifer " + rId.getResourceID() + " and name " + rId.getResourceName() :
                 "neither a permission or a resource (this will invalid and will fail)")) + '.');
@@ -199,8 +199,8 @@ public class Queuer implements QueuerSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uId = request.getRemoveUserFromQueue();
-        this.logger.debug("Received remove user from queue request with user id=" + uId.getUserID() + ", user namespace " +
-        		uId.getUserNamespace() + ", user name=" + uId.getUserName() + '.');
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#removeUserFromQueue request with user id=" + 
+                uId.getUserID() + ", user namespace " + uId.getUserNamespace() + ", user name=" + uId.getUserName() + '.');
         
         /* Response parameters. */
         RemoveUserFromQueueResponse resp = new RemoveUserFromQueueResponse();
@@ -251,8 +251,9 @@ public class Queuer implements QueuerSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uid = request.getGetUserQueuePosition();
-        this.logger.debug("Received user queue position request with user id=" + uid.getUserID() + ", user namespace=" +
-                uid.getUserNamespace() + ", user name=" + uid.getUserName() + '.');
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getUserQueuePosition queue position " +
+        		"request with user id=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + 
+        		", user name=" + uid.getUserName() + '.');
         
         /* Response parameters. */
         GetUserQueuePositionResponse resp = new GetUserQueuePositionResponse();
@@ -317,8 +318,9 @@ public class Queuer implements QueuerSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uid = request.getIsUserInQueue();
-        this.logger.debug("Received is user in queue request with user id=" + uid.getUserID() + ", user namespace=" +
-                uid.getUserNamespace() + ", user name=" + uid.getUserName() + '.');
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "is user in queue request with user id=" + 
+                uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + uid.getUserName() + 
+                '.');
         
         /* Response parameters. */
         IsUserInQueueResponse resp = new IsUserInQueueResponse();
@@ -376,8 +378,9 @@ public class Queuer implements QueuerSkeletonInterface
         /* Request parameters. */
         PermissionIDType permResp = request.getCheckPermissionAvailability();
         long pId = permResp.getPermissionID();
-        this.logger.debug("Received permission availability request with permission identifier=" + pId + '.');
-        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getCheckPermissionAvailability request " +
+        		"with permission identifier=" + pId + '.');
+         
         /* Response parameters. */
         CheckPermissionAvailabilityResponse resp = new CheckPermissionAvailabilityResponse();
         
@@ -521,8 +524,8 @@ public class Queuer implements QueuerSkeletonInterface
         ResourceIDType resReq = request.getCheckResourceAvailability();
         long rId = resReq.getResourceID();
         String type = resReq.getType(), name = resReq.getResourceName();
-        this.logger.debug("Received resource availability request with resource type=" + type +", resource identifier=" +
-                rId + ", resource name=" + name + '.');
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#checkResourceAvailability request with " +
+        		"resource type=" + type +", resource identifier=" + rId + ", resource name=" + name + '.');
         
         /* Response parameters. */
         CheckResourceAvailabilityResponse resp = new CheckResourceAvailabilityResponse();
