@@ -110,9 +110,6 @@ public class Bookings implements Serializable
     /** A file system reference to batch code to run on assignment. */
     private String codeReference;
 
-    /**
-     * @return the id
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -121,34 +118,23 @@ public class Bookings implements Serializable
         return this.id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(Long id)
     {
         this.id = id;
     }
 
-    /**
-     * @return the active
-     */
     @Column(name = "active", nullable = false)
     public boolean isActive()
     {
         return this.active;
     }
 
-    /**
-     * @param active the active to set
-     */
     public void setActive(boolean active)
     {
         this.active = active;
     }
 
-    /**
-     * @return the resourcePermission
-     */
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_permission_id", nullable = false)
     public ResourcePermission getResourcePermission()
@@ -156,68 +142,44 @@ public class Bookings implements Serializable
         return this.resourcePermission;
     }
 
-    /**
-     * @param resourcePermission the resourcePermission to set
-     */
     public void setResourcePermission(ResourcePermission permission)
     {
         this.resourcePermission = permission;
     }
 
-    /**
-     * @return the startTime
-     */
     @Column(name = "start_time", nullable = false)
     public Date getStartTime()
     {
         return this.startTime;
     }
 
-    /**
-     * @param startTime the startTime to set
-     */
     public void setStartTime(Date startTime)
     {
         this.startTime = startTime;
     }
 
-    /**
-     * @return the end time
-     */
     @Column(name = "end_time", nullable = false)
     public Date getEndTime()
     {
         return this.endTime;
     }
 
-    /**
-     * @param the end time
-     */
     public void setEndTime(Date endTime)
     {
         this.endTime = endTime;
     }
 
-    /**
-     * @return the duration
-     */
     @Column(name = "duration", nullable = false)
     public int getDuration()
     {
         return this.duration;
     }
 
-    /**
-     * @param duration the duration to set
-     */
     public void setDuration(int duration)
     {
         this.duration = duration;
     }
 
-    /**
-     * @return the user
-     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     public User getUser()
@@ -225,68 +187,44 @@ public class Bookings implements Serializable
         return this.user;
     }
 
-    /**
-     * @param user the user to set
-     */
     public void setUser(User user)
     {
         this.user = user;
     }
 
-    /**
-     * @return the userName
-     */
     @Column(name = "user_name", nullable = false, length = 50)
     public String getUserName()
     {
         return this.userName;
     }
 
-    /**
-     * @param userName the userName to set
-     */
     public void setUserName(String userName)
     {
         this.userName = userName;
     }
 
-    /** 
-     * @return the userNamespace
-     */
     @Column(name = "user_namespace", nullable = false, length = 50)
     public String getUserNamespace()
     {
         return this.userNamespace;
     }
 
-    /**
-     * @param userNamespace the userNamespace to set
-     */
     public void setUserNamespace(String userNamespace)
     {
         this.userNamespace = userNamespace;
     }
 
-    /**
-     * @return the resourceType
-     */
     @Column(name = "resource_type", nullable = false, length = 10) 
     public String getResourceType()
     {
         return this.resourceType;
     }
 
-    /**
-     * @param resourceType the resourceType to set
-     */
     public void setResourceType(String resourceType)
     {
         this.resourceType = resourceType;
     }
     
-    /**
-     * @return the rig
-     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rig_id", nullable = true)
     public Rig getRig()
@@ -294,17 +232,11 @@ public class Bookings implements Serializable
         return this.rig;
     }
 
-    /**
-     * @param rig the rig to set
-     */
     public void setRig(Rig rig)
     {
         this.rig = rig;
     }
 
-    /**
-     * @return the rigType
-     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rig_type_id", nullable = true)
     public RigType getRigType()
@@ -312,17 +244,11 @@ public class Bookings implements Serializable
         return this.rigType;
     }
 
-    /**
-     * @param rigType the rigType to set
-     */
     public void setRigType(RigType rigType)
     {
         this.rigType = rigType;
     }
 
-    /**
-     * @return the requestCapabilities
-     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "request_caps_id", nullable = true)
     public RequestCapabilities getRequestCapabilities()
@@ -330,17 +256,11 @@ public class Bookings implements Serializable
         return this.requestCapabilities;
     }
 
-    /**
-     * @param requestCapabilities the requestCapabilities to set
-     */
     public void setRequestCapabilities(RequestCapabilities requestCapability)
     {
         this.requestCapabilities = requestCapability;
     }
 
-    /**
-     * @return the session
-     */
     @OneToOne(optional = true)
     @JoinColumn(name = "session_id", nullable = true)
     public Session getSession()
@@ -348,46 +268,30 @@ public class Bookings implements Serializable
         return this.session;
     }
 
-    /**
-     * @param session the session to set
-     */
     public void setSession(Session session)
     {
         this.session = session;
     }
 
-    /**
-     * @return the cancelReason
-     */
     @Column(name = "cancel_reason", nullable = true, length = 1024)
     public String getCancelReason()
     {
         return this.cancelReason;
     }
 
-    /**
-     * @param cancelReason the cancelReason to set
-     */
     public void setCancelReason(String cancelReason)
     {
         this.cancelReason = cancelReason;
     }
 
-    /**
-     * @return the codeReference
-     */
     @Column(name = "code_reference", nullable = true, length = 1024)
     public String getCodeReference()
     {
         return this.codeReference;
     }
 
-    /**
-     * @param codeReference the codeReference to set
-     */
     public void setCodeReference(String codeReference)
     {
         this.codeReference = codeReference;
     }
-
 }
