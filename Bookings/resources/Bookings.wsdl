@@ -178,7 +178,7 @@
       <xsd:complexType name="BookingRequestType">
       	<xsd:sequence>
       		<xsd:element name="userID" type="bok:UserIDType" maxOccurs="1" minOccurs="0"/>
-      		<xsd:element name="bookingID" type="bok:BookingType"/>
+      		<xsd:element name="bookingID" type="bok:BookingIDType" />
       	</xsd:sequence>
       </xsd:complexType>
     

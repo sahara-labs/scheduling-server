@@ -101,14 +101,14 @@ public class BookingRequestType implements ADBBean
         }
     }
 
-    protected BookingType bookingID;
+    protected BookingIDType bookingID;
 
-    public BookingType getBookingID()
+    public BookingIDType getBookingID()
     {
         return this.bookingID;
     }
 
-    public void setBookingID(final BookingType param)
+    public void setBookingID(final BookingIDType param)
     {
         this.bookingID = param;
     }
@@ -316,7 +316,7 @@ public class BookingRequestType implements ADBBean
                 }
                 if (reader.isStartElement() && new QName("", "bookingID").equals(reader.getName()))
                 {
-                    object.setBookingID(BookingType.Factory.parse(reader));
+                    object.setBookingID(BookingIDType.Factory.parse(reader));
                     reader.next();
                 }
                 else

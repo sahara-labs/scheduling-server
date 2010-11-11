@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
@@ -107,10 +108,45 @@ public class BookingsService implements BookingsInterface
     {
         BookingRequestType request = getBooking.getGetBooking();
         
+        int bid = request.getBookingID().getBookingID();
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getBooking with params: booking ID=" + bid);
+
+        GetBookingResponse response = new GetBookingResponse();
+        BookingType booking = new BookingType();
+        booking.setBookingID(-1);
+        ResourceIDType resource = new ResourceIDType();
+        resource.setType(ResourcePermission.RIG_PERMISSION);
+        booking.setBookedResource(resource);
+        PermissionIDType permission = new PermissionIDType();
+        booking.setPermissionID(permission);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        booking.setStartTime(cal);
+        booking.setEndTime(cal);
+        response.setGetBookingResponse(booking);
+        
+        BookingsDao dao = new BookingsDao();
+        try
+        {
+            Bookings b = dao.get(Long.valueOf(bid));
+            if (b == null)
+            {
+                this.logger.warn("Booking with identifier '" + bid + "' was not found.");
+                return response;
+            }
+            
+            this.populateBookingType(booking, b);
+        }
+        finally
+        {
+            dao.closeSession();
+        }
         
         
-        return null;
+        return response;
     }
+
+    
 
     @Override
     public GetBookingsResponse getBookings(GetBookings getBookings)
@@ -158,13 +194,19 @@ public class BookingsService implements BookingsInterface
                 {
                     cri.add(Restrictions.eq("resourceType", ResourcePermission.RIG_PERMISSION));
                     if (rid.getResourceID() > 0) cri.add(Restrictions.eq("rig.id", Long.valueOf(rid.getResourceID())));
-                    if (rid.getResourceName() != null) cri.add(Restrictions.eq("rig.name", rid.getResourceName()));
+                    if (rid.getResourceName() != null)
+                    {
+                        cri.createCriteria("rig").add(Restrictions.eq("name", rid.getResourceName()));
+                    }
                 }
                 else if (ResourcePermission.TYPE_PERMISSION.equals(rid.getType()))
                 {
                     cri.add(Restrictions.eq("resourceType", ResourcePermission.TYPE_PERMISSION));
                     if (rid.getResourceID() > 0) cri.add(Restrictions.eq("rigType.id", Long.valueOf(rid.getResourceID())));
-                    if (rid.getResourceName() != null) cri.add(Restrictions.eq("rigType.name", rid.getResourceName()));
+                    if (rid.getResourceName() != null)
+                    {
+                        cri.createCriteria("rigType").add(Restrictions.eq("name", rid.getResourceName()));
+                    }
                 }
                 else if (ResourcePermission.CAPS_PERMISSION.equals(rid.getType()))
                 {
@@ -175,7 +217,8 @@ public class BookingsService implements BookingsInterface
                     }
                     if (rid.getResourceName() != null)
                     {
-                        cri.add(Restrictions.eq("requestCapabilities.capabilities", rid.getResourceName()));
+                        cri.createCriteria("requestCapabilities")
+                            .add(Restrictions.eq("capabilities", rid.getResourceName()));
                     }
                 }
                 else
@@ -201,61 +244,14 @@ public class BookingsService implements BookingsInterface
                 cri.add(Restrictions.isNull("cancelReason"));
             }
             
+            /* Order the results be booking start time. */
+            cri.addOrder(Order.asc("startTime"));
+            
             @SuppressWarnings("unchecked")
             List<Bookings> list = cri.list();
-            for (Bookings b : list)
+            for (Bookings booking : list)
             {
-                BookingType bt = new BookingType();
-                bt.setBookingID(b.getId().intValue());
-                
-                ResourceIDType resource = new ResourceIDType();
-                resource.setType(b.getResourceType());
-                if (ResourcePermission.RIG_PERMISSION.equals(b.getResourceType()))
-                {
-                    resource.setResourceID(b.getRig().getId().intValue());
-                    resource.setResourceName(b.getRig().getName());
-                }
-                else if (ResourcePermission.TYPE_PERMISSION.equals(b.getResourceType()))
-                {
-                    resource.setResourceID(b.getRigType().getId().intValue());
-                    resource.setResourceName(b.getRigType().getName());
-                }
-                else if (ResourcePermission.CAPS_PERMISSION.equals(b.getResourceType()))
-                {
-                    resource.setResourceID(b.getRequestCapabilities().getId().intValue());
-                    resource.setResourceName(b.getRequestCapabilities().getCapabilities());
-                }
-                bt.setBookedResource(resource);
-                
-                PermissionIDType perm = new PermissionIDType();
-                perm.setPermissionID(b.getResourcePermission().getId().intValue());
-                bt.setPermissionID(perm);
-                
-                Calendar start = Calendar.getInstance();
-                start.setTime(b.getStartTime());
-                bt.setStartTime(start);
-                Calendar end = Calendar.getInstance();
-                end.setTime(b.getEndTime());
-                bt.setEndTime(end);
-                bt.setDuration(b.getDuration());
-                
-                bt.setIsFinished(!b.isActive());
-                if (b.getCancelReason() == null)
-                {
-                    bt.setIsCancelled(false);
-                }
-                else
-                {
-                    bt.setIsCancelled(true);
-                    bt.setCancelReason(b.getCancelReason());
-                }
-                
-                if (b.getCodeReference() == null)
-                {
-                    bt.setCodeReference(b.getCodeReference());
-                }
-                
-                bookings.addBookings(bt);
+                bookings.addBookings(this.populateBookingType(new BookingType(), booking));
             }
         }
         finally
@@ -264,6 +260,75 @@ public class BookingsService implements BookingsInterface
         }
         
         return response;
+    }
+    
+    /**
+     * Populates an interface booking type with information from a booking.
+     * 
+     * @param bookingType booking type
+     * @param bookingRecord booking record
+     */
+    private BookingType populateBookingType(BookingType bookingType, Bookings bookingRecord)
+    {
+        bookingType.setBookingID(bookingRecord.getId().intValue());
+        
+        ResourceIDType resource = bookingType.getBookedResource();
+        if (resource == null)
+        {
+            resource = new ResourceIDType();
+            bookingType.setBookedResource(resource);
+        }
+        
+        resource.setType(bookingRecord.getResourceType());
+        if (ResourcePermission.RIG_PERMISSION.equals(bookingRecord.getResourceType()))
+        {
+            resource.setResourceID(bookingRecord.getRig().getId().intValue());
+            resource.setResourceName(bookingRecord.getRig().getName());
+        }
+        else if (ResourcePermission.TYPE_PERMISSION.equals(bookingRecord.getResourceType()))
+        {
+            resource.setResourceID(bookingRecord.getRigType().getId().intValue());
+            resource.setResourceName(bookingRecord.getRigType().getName());
+        }
+        else if (ResourcePermission.CAPS_PERMISSION.equals(bookingRecord.getResourceType()))
+        {
+            resource.setResourceID(bookingRecord.getRequestCapabilities().getId().intValue());
+            resource.setResourceName(bookingRecord.getRequestCapabilities().getCapabilities());
+        }
+        
+        PermissionIDType permission = bookingType.getPermissionID();
+        if (permission == null) 
+        {
+            permission = new PermissionIDType();
+            bookingType.setPermissionID(permission);
+        }
+        permission.setPermissionID(bookingRecord.getResourcePermission().getId().intValue());
+        
+        Calendar start = Calendar.getInstance();
+        start.setTime(bookingRecord.getStartTime());
+        bookingType.setStartTime(start);
+        Calendar end = Calendar.getInstance();
+        end.setTime(bookingRecord.getEndTime());
+        bookingType.setEndTime(end);
+        bookingType.setDuration(bookingRecord.getDuration());
+        
+        bookingType.setIsFinished(!bookingRecord.isActive());
+        if (bookingRecord.getCancelReason() == null)
+        {
+            bookingType.setIsCancelled(false);
+        }
+        else
+        {
+            bookingType.setIsCancelled(true);
+            bookingType.setCancelReason(bookingRecord.getCancelReason());
+        }
+        
+        if (bookingRecord.getCodeReference() != null)
+        {
+            bookingType.setCodeReference(bookingRecord.getCodeReference());
+        }
+        
+        return bookingType;
     }
 
     /**
