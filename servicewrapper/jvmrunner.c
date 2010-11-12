@@ -231,68 +231,6 @@ int generateClassPath(void)
 		strcat(classPath, classPathExt);
 	}
 
-#ifdef WIN32
-	{
-		HANDLE fileHandle;
-		WIN32_FIND_DATA fileData;
-		DWORD size = strlen(classPath), oldSize;
-
-		if ((fileHandle = FindFirstFile("lib/*.jar", &fileData)) != INVALID_HANDLE_VALUE)
-		{
-			do
-			{
-				oldSize = strlen(classPath);
-				size += 7 + strlen(currentDir) + strlen(fileData.cFileName);
-				if ((classPath = (char *)realloc(classPath, size)) == NULL)
-				{
-					logMessage("Reallocation of classpath memory failed. Perhaps out of memory.\n");
-					return 0;
-				}
-				classPath[oldSize] = '\0';
-
-				strcat(classPath, CLASS_PATH_DELIM);
-				strcat(classPath, currentDir);
-				strcat(classPath, "/lib/");
-				strcat(classPath, fileData.cFileName);
-			}
-			while (FindNextFile(fileHandle, &fileData));
-			FindClose(fileHandle);
-		}
-	}
-#else
-	{
-		DIR *dir;
-		struct dirent *dp;
-		size_t size = strlen(classPath), oldSize;
-
-		if (!(dir = opendir("lib/")))
-		{
-			logMessage("Unable to open directory '%s/lib'. Not adding JARs in that directory.\n", currentDir);
-			perror("Unable to open 'lib/'");
-		}
-		else
-		{
-			while (dp = readdir(dir))
-			{
-				if (strstr(dp->d_name, ".jar") == (dp->d_name + strlen(dp->d_name) - 4))
-				{
-					logMessage("Adding JAR with path %s.\n", dp->d_name);
-
-					oldSize = strlen(classPath);
-					size += 7 + strlen(currentDir) + strlen(dp->d_name);
-					classPath = (char *)realloc(classPath, size);
-					classPath[oldSize] = '\0';
-
-					strcat(classPath, CLASS_PATH_DELIM);
-					strcat(classPath, currentDir);
-					strcat(classPath, "/lib/");
-					strcat(classPath, dp->d_name);
-				}
-			}
-		}
-	}
-#endif
-
 	logMessage("Class path argument for Java virtual machine is '%s'.\n", classPath);
 	return 1;
 }
