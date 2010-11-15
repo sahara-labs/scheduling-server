@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2009, University of Technology, Sydney
+ * Copyright (c) 2010, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,51 +32,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 22nd October 2010
+ * @date 15th November 2010
  */
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 
-package au.edu.uts.eng.remotelabs.schedserver.bookings;
-
-import org.apache.axis2.transport.http.AxisServlet;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Bookings bundle activator.
+ * The booking engine.
  */
-public class BookingActivator implements BundleActivator 
+public class BookingEngine
 {
-    /** The length of each booking slot in seconds. */
-    public static final int TIME_QUANTUM = 15 * 60; 
-        
-    /** SOAP interface hosting server service registration. */
-    private ServiceRegistration soapReg;
+    /** The number of days to keep loaded in memory. */
+    public static final int HOT_DAYS = 30;
     
-    /** Logger. */
-    private Logger logger;
-
-	@Override
-	public void start(BundleContext context) throws Exception 
-	{
-		this.logger = LoggerActivator.getLogger();
-		this.logger.info("Starting bookings bundle...");
-		
-		this.logger.debug("Registering the Bookings SOAP service.");
-		ServletContainerService soapService = new ServletContainerService();
-	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
-	}
-	
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Shutting down bookings bundle.");
-		this.soapReg.unregister();
-	}
+    /** The list of day bookings. */
+    private List<DayBookings> bookings;
+    
+    public BookingEngine()
+    {
+        this.bookings = new ArrayList<DayBookings>();
+    }
+    
+    /**
+     * Load from now till the end of hot days into memory.
+     */
+    public void init()
+    {
+        
+    }
 }

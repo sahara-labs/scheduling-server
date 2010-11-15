@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2009, University of Technology, Sydney
+ * Copyright (c) 2010, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,51 +32,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 22nd October 2010
+ * @date 15th November 2010
  */
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 
-package au.edu.uts.eng.remotelabs.schedserver.bookings;
+import java.util.Map;
 
-import org.apache.axis2.transport.http.AxisServlet;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 
 /**
- * Bookings bundle activator.
+ * The bookings for a day.
  */
-public class BookingActivator implements BundleActivator 
+public class DayBookings
 {
-    /** The length of each booking slot in seconds. */
-    public static final int TIME_QUANTUM = 15 * 60; 
-        
-    /** SOAP interface hosting server service registration. */
-    private ServiceRegistration soapReg;
+    private Map<Rig, RigBookings> rigBookings;
     
-    /** Logger. */
-    private Logger logger;
 
-	@Override
-	public void start(BundleContext context) throws Exception 
-	{
-		this.logger = LoggerActivator.getLogger();
-		this.logger.info("Starting bookings bundle...");
-		
-		this.logger.debug("Registering the Bookings SOAP service.");
-		ServletContainerService soapService = new ServletContainerService();
-	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
-	}
-	
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Shutting down bookings bundle.");
-		this.soapReg.unregister();
-	}
 }
