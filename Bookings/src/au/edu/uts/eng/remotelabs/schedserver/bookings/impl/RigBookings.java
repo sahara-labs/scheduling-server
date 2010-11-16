@@ -63,6 +63,12 @@ public class RigBookings
     /** The list of booking slots of this rig. */
     private MBooking[] slots;
     
+    /** The position of the first in use slot. */
+    private int startSlot;
+    
+    /** The position of the last in use slot. */
+    private int endSlot;
+    
     /** Next rig to attempt load balancing to. */
     private RigBookings typeNext;
     
@@ -80,8 +86,9 @@ public class RigBookings
         this.dayKey = day;
         
         this.slots = new MBooking[(24 * 60 * 60) / BookingActivator.TIME_QUANTUM];
+        this.startSlot = 0;
+        this.endSlot = 0;
     }
-    
     
     /** 
      * Returns true if the number of rig slots free.
@@ -92,7 +99,10 @@ public class RigBookings
      */
     public boolean areSlotsFree(int start, int num)
     {
+        start = start > this.startSlot ? start : this.startSlot;
         int end = start + num;
+        end = end < this.endSlot ? end : this.endSlot;
+        
         List<RigBookings> checked = new ArrayList<RigBookings>();
         
         for ( ; start < end; start++)
@@ -125,9 +135,11 @@ public class RigBookings
                         nextType = nextType.getTypeNext();
                     }
                     
+                    /* Can't put the type booking anywhere else. */
                     if (!canBalance) return false;
                         
                     break;
+                    
                 case CAPABILITY:
                     /* If a booking is a capability booking, it may be moved
                      * to another matching rig, so circle through the capability
@@ -143,6 +155,9 @@ public class RigBookings
                         }
                         nextCaps = nextCaps.getCapsNext(mb.getRequestCaps());
                     }
+                    
+                    /* Can't put the capabilities booking on another rig. */
+                    if (!canBalance) return false;
             }
             
             start = mb.getEndSlot() + 1;
