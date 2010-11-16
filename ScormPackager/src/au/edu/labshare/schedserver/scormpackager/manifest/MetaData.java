@@ -62,8 +62,8 @@ public class MetaData
 	{
 		schema = new HashMap<String, String>();
 		schema.put("version", Manifest.SCHEMA_VERSION);
-		schema.put("xmlns", XSI_ADLCP_SCHEMALOC);
-		schema.put("xmlns:adlcp", XMLNS_IMSCP);
+		schema.put("xmlns", XMLNS_IMSCP);
+		schema.put("xmlns:adlcp", XMLNS_ADLCP);
 		schema.put("xmlns:xsi", XMLNS_XSI);
 		schema.put("xsi:schemalocation", XSI_IMSCP_SCHEMALOC	
 										+ "        " + XSI_IMSMD_SCHEMALOC  
