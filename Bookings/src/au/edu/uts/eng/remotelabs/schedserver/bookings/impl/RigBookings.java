@@ -36,19 +36,18 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 
+import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking.BType.RIG;
+import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking.BType.TYPE;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
  * Contains the bookings for a rig on a single day in terms of slots.
@@ -70,51 +69,146 @@ public class RigBookings
     /** Next request capabilities to load balance. */
     private Map<RequestCapabilities, RigBookings> capsNext;
     
+    /** Logger. */
+    private Logger logger;
     
-    public RigBookings(Rig rig, String day, Session ses)
+    public RigBookings(Rig rig, String day)
     {
+        this.logger = LoggerActivator.getLogger();
+        
         this.rig = rig;
         this.dayKey = day;
         
         this.slots = new MBooking[(24 * 60 * 60) / BookingActivator.TIME_QUANTUM];
-        
-        /* Load the rig bookings. */
-        Criteria cri = ses.createCriteria(Bookings.class)
-            .add(Restrictions.eq("active", Boolean.TRUE))
-            .add(Restrictions.eq("resourceType", ResourcePermission.RIG_PERMISSION))
-            .add(Restrictions.eq("rig", this.rig))
-            .add(Restrictions.gt("endTime", TimeUtil.getDayBegin(this.dayKey)))
-            .add(Restrictions.lt("startTime", TimeUtil.getDayEnd(this.dayKey)))
-            .addOrder(Order.asc("id"));
-        
-        @SuppressWarnings("unchecked")
-        List<Bookings> rigBookings = cri.list();
-        for (Bookings b : rigBookings)
-        {
-            MBooking mb = new MBooking(b);
-            
-            /* Sanity check to ensure we are not over allocated. */
-            if (this.areSlotsFree(mb.getStartSlot(), mb.getNumSlots()))
-            {
-                for (int i = mb.getStartSlot(); i <= mb.getEndSlot(); i++) this.slots[i] = mb;
-            }
-            else
-            {
-                /* We are somehow over-allocated, so terminate the booking. */
-                b.setActive(false);
-                b.setCancelReason("Rig over allocated.");
-                ses.beginTransaction();
-                ses.flush();
-                ses.getTransaction().commit();
-                
-                // TODO Broadcast cancellation
-            }
-        }
     }
     
-    public boolean commitBooking(MBooking booking)
+    
+    /** 
+     * Returns true if the number of rig slots free.
+     * 
+     * @param start the start slot
+     * @param num number of slots
+     * @return true if slots are free
+     */
+    public boolean areSlotsFree(int start, int num)
     {
-        return false;
+        int end = start + num;
+        List<RigBookings> checked = new ArrayList<RigBookings>();
+        
+        for ( ; start < end; start++)
+        {
+            /* Free slot. */
+            if (this.slots[start] == null) continue;
+            
+            checked.add(this);
+            
+            MBooking mb = this.slots[start];
+            boolean canBalance = false;
+            switch (mb.getType())
+            {
+                case RIG:
+                    /* If booking is a rig booking, it cannot be moved. */
+                    return false;
+                    
+                case TYPE:
+                    /* If a booking is a type booking, it may be moved to 
+                     * another type rig, so circle through the type rigs to
+                     * try and load balance. */
+                    RigBookings nextType = this.typeNext;
+                    while (nextType != this)
+                    {
+                        if (nextType.canBalanceTypeSlots(mb.getStartSlot(), mb.getNumSlots(), checked))
+                        {
+                            canBalance = true;
+                            break;
+                        }
+                        nextType = nextType.getTypeNext();
+                    }
+                    
+                    if (!canBalance) return false;
+                        
+                    break;
+                case CAPABILITY:
+                    /* If a booking is a capability booking, it may be moved
+                     * to another matching rig, so circle through the capability
+                     * rigs to try and free up some space. */
+                    RigBookings nextCaps = this.capsNext.get(mb.getRequestCaps());
+                    while (nextCaps != this)
+                    {
+                        if (nextCaps.canBalanceCapabilitySlots(mb.getRequestCaps(), mb.getStartSlot(), mb.getNumSlots()
+                                , checked))
+                        {
+                            canBalance = true;
+                            break;
+                        }
+                        nextCaps = nextCaps.getCapsNext(mb.getRequestCaps());
+                    }
+            }
+            
+            start = mb.getEndSlot() + 1;
+            checked.clear();
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Returns true if a type booking can be balanced to this rig. 
+     * 
+     * @param start start slot
+     * @param num number of slots
+     * @param checked rigs that have already been excluding for satisfying these slots
+     * @return true if can balance
+     */
+    public boolean canBalanceTypeSlots(int start, int num, List<RigBookings> checked)
+    {
+        if (checked.contains(this)) return false;
+        checked.add(this);
+        
+        int end = start + num;
+        for ( ; start < end ; start++)
+        {
+            /* Free slot. */
+            if (this.slots[start] == null) continue;
+            
+            MBooking mb = this.slots[start];
+            if (mb.getType() == RIG || mb.getType() == TYPE) 
+            {
+                /* In the context of load balancing a type booking, a type
+                 * cannot be moved. */
+                return false;
+            }
+            else if (!this.canBalanceCapabilitySlots(mb.getRequestCaps(), start, num, checked))
+            {
+                /* Can't move the capability booking so all in use. */
+                return false;
+            }
+            start = mb.getEndSlot() + 1;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Returns true if a capability booking can be balanced to this rig.
+     * 
+     * @param caps request capabilities
+     * @param start slot start
+     * @param num number of slots
+     * @return true if it can be balanced
+     */
+    public boolean canBalanceCapabilitySlots(RequestCapabilities caps, int start, int num, List<RigBookings> checked)
+    {   
+        if (checked.contains(this)) return false;
+        checked.add(this);
+        
+        int end = start + num;
+        for ( ; start < end; start++)
+        {
+            if (this.slots[start] != null) return false;
+        }
+        
+        return true;
     }
     
     /**
@@ -126,26 +220,67 @@ public class RigBookings
         return null;
     }
     
-    /** 
-     * Returns true if the number of slots free.
+    /**
      * 
-     * @param start the start slot
-     * @param num number of slots
-     * @return true if slots are free
+     * 
+     * @param booking
+     * @return
      */
-    public boolean areSlotsFree(int start, int num)
+    public boolean commitBooking(MBooking booking)
     {
         return false;
     }
     
     /**
+     * Removes a booking from a rig.
      * 
-     * 
-     * @param caps
-     * @param next
+     * @return
      */
-    public void addCapsNext(RequestCapabilities caps, RigBookings next)
+    public boolean removeBooking(MBooking booking)
     {
         
+        
+        return false;
+    }
+    
+    /**
+     * 
+     * @param caps request capabilities
+     * @return caps next 
+     */
+    public RigBookings getCapsNext(RequestCapabilities caps)
+    {
+        return this.capsNext.get(caps);
+    }
+    
+    /**
+     * Puts the next hop in a request capabilities resource circle.
+     * 
+     * @param caps request capabilities.
+     * @param next next circle hop
+     */
+    public void putCapsNext(RequestCapabilities caps, RigBookings next)
+    {
+        this.capsNext.put(caps, next);
+    }
+    
+    /**
+     * Gets the next hop in the rig type resource circle.
+     * 
+     * @return type next 
+     */
+    public RigBookings getTypeNext()
+    {
+        return this.typeNext;
+    }
+    
+    /** 
+     * Sets the next hop in the rig type resource circle.
+     * 
+     * @param next next hop in hop
+     */
+    public void setTypeNext(RigBookings next)
+    {
+        this.typeNext = next;
     }
 }   

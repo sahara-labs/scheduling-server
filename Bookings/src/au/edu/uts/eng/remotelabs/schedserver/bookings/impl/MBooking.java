@@ -36,10 +36,12 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 
+import static au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator.TIME_QUANTUM;
+
 import java.util.Calendar;
 
-import static au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator.*;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 
 /**
@@ -73,11 +75,19 @@ public class MBooking
     /** The number of slots this booking uses. */
     private int numSlots;
     
+    /** The request capabilities of this booking, if it is a request capabilities 
+     * booking. */
+    private RequestCapabilities reqCaps;
+    
     public MBooking(Bookings b)
     {
         this.booking = b;
         
-        if (ResourcePermission.CAPS_PERMISSION.endsWith(b.getResourceType())) this.bType = BType.CAPABILITY;
+        if (ResourcePermission.CAPS_PERMISSION.endsWith(b.getResourceType()))
+        {
+            this.bType = BType.CAPABILITY;
+            this.reqCaps = b.getRequestCapabilities();
+        }
         else if (ResourcePermission.TYPE_PERMISSION.endsWith(b.getResourceType())) this.bType = BType.TYPE;
         else this.bType = BType.RIG;
         
@@ -124,5 +134,25 @@ public class MBooking
     public int getNumSlots()
     {
         return this.numSlots;
+    }
+
+    public RequestCapabilities getRequestCaps()
+    {
+        return this.reqCaps;
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null) return false;
+        if (!(o instanceof MBooking)) return false;
+        
+        return ((MBooking)o).getBooking().getId().equals(this.booking.getId());
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        return this.booking.getId().hashCode();
     }
 }

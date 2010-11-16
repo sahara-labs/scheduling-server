@@ -48,17 +48,49 @@ public class BookingEngine
     public static final int HOT_DAYS = 30;
     
     /** The list of day bookings. */
-    private List<DayBookings> bookings;
+    private List<DayBookings> days;
     
     public BookingEngine()
     {
-        this.bookings = new ArrayList<DayBookings>();
+        this.days = new ArrayList<DayBookings>();
     }
     
     /**
      * Load from now till the end of hot days into memory.
      */
     public void init()
+    {
+        
+    }
+    
+    /* --- CRUD Booking OPS --- */
+    public boolean addBooking()
+    {
+        return false;
+    }
+    
+    public boolean cancelBooking()
+    {
+        return false;
+    }
+    
+    public void getRedemptions()
+    {
+        
+    }
+    
+    /* --- Resource OPS --- */
+    public void addRig()
+    {
+        
+    }
+    
+    public void removeRig()
+    {
+        
+    }
+    
+    public void canQueue()
     {
         
     }
