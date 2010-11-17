@@ -54,5 +54,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-DataAccess"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Logger"/>
+	<classpathentry kind="lib" path="/SchedServer-Logger/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

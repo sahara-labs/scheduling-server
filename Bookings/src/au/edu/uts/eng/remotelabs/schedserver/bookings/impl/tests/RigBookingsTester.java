@@ -44,9 +44,10 @@ import junit.framework.TestCase;
 import org.junit.Before;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking.BType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigBookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
 /**
  * Tests the {@link RigBookings} class.
@@ -61,11 +62,19 @@ public class RigBookingsTester extends TestCase
     public void setUp() throws Exception
     {
         this.bookings = new RigBookings(new Rig(), "11-12-2010");
+        Field f = RigBookings.class.getDeclaredField("logger");
+        f.setAccessible(true);
+        f.set(this.bookings, new SystemErrLogger());
     }
     
-    public void testAreSlotsFree()
+    public void testAreSlotsFree() throws Exception
     {
         assertTrue(this.bookings.areSlotsFree(0, 96));
+        
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[])f.get(this.bookings);
+        assertEquals(96, slots.length);
     }
 
     public void testAreSlotsFreeOneBookings() throws Throwable
@@ -152,8 +161,69 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         assertEquals(1, f.getInt(this.bookings));
         
-        assertNull(slots[4]);
-        assertNotNull(slots[5]);
+        int i = 0;
+        for ( ; i <= 4; i++)
+        {
+            assertNull(slots[i]);
+        }
+        
+        for ( ; i <= 10 ; i++)
+        {
+            assertNotNull(slots[i]);
+            assertTrue(m == slots[i]);
+        }
+        
+        for ( ; i < slots.length ; i++)
+        {
+            assertNull(slots[i]);
+        }
+        
+        assertEquals(1, this.bookings.getNumBookings());
+        assertTrue(this.bookings.areSlotsFree(0, 4));
+        assertFalse(this.bookings.areSlotsFree(5, 10));
+        assertTrue(this.bookings.areSlotsFree(11, 96));
+        
+        m = new MBooking(10, 15, BType.RIG);
+        assertFalse(this.bookings.commitBooking(m));
+        
+        m = new MBooking(1, 3, BType.RIG);
+        assertTrue(this.bookings.commitBooking(m));
+        assertEquals(2, this.bookings.getNumBookings());
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        assertEquals(1, f.getInt(this.bookings));
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        assertEquals(10, f.getInt(this.bookings));
+        
+        m = new MBooking(15, 20, BType.RIG);
+        assertTrue(this.bookings.commitBooking(m));
+        assertEquals(3, this.bookings.getNumBookings());
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        assertEquals(1, f.getInt(this.bookings));
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        assertEquals(20, f.getInt(this.bookings));
     }
     
+    public void testCommitTwo() throws Exception
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        for (int i = 0; i < 24; i++)
+        {
+            MBooking m = new MBooking(i * 4, i * 4 + 3, BType.RIG);
+            assertTrue(this.bookings.commitBooking(m));
+        }
+        
+        for (int i = 0; i < slots.length; i++)
+        {
+            assertNotNull(slots[i]);
+        }
+    }
 }

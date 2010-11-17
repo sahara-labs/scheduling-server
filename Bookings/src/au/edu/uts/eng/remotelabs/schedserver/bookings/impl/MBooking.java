@@ -123,6 +123,7 @@ public class MBooking
     {
         this.startSlot = start;
         this.endSlot = end;
+        this.numSlots = this.endSlot - this.startSlot + 1;
         this.bType = type;
     }
 
