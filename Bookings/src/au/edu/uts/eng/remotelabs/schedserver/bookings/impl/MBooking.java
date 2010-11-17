@@ -118,10 +118,32 @@ public class MBooking
         /* The number of slots between start and end inclusive. */
         this.numSlots = this.endSlot - this.startSlot + 1;  
     }
+    
+    public MBooking(int start, int end, BType type)
+    {
+        this.startSlot = start;
+        this.endSlot = end;
+        this.bType = type;
+    }
 
     public Bookings getBooking()
     {
         return this.booking;
+    }
+    
+    public void setBooking(Bookings b)
+    {
+        this.booking = b;
+        
+        if (this.bType == BType.TYPE)
+        {
+            this.rigType = b.getRigType();
+        }
+        
+        if (this.bType == BType.CAPABILITY)
+        {
+            this.reqCaps = b.getRequestCapabilities();
+        }
     }
 
     public BType getType()

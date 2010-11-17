@@ -37,11 +37,15 @@
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.tests;
 
 
+import java.lang.reflect.Field;
+
 import junit.framework.TestCase;
 
 import org.junit.Before;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigBookings;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 
 /**
@@ -52,10 +56,104 @@ public class RigBookingsTester extends TestCase
     /** Object of class under test. */
     private RigBookings bookings;
 
+    @Override
     @Before
     public void setUp() throws Exception
     {
         this.bookings = new RigBookings(new Rig(), "11-12-2010");
     }
+    
+    public void testAreSlotsFree()
+    {
+        assertTrue(this.bookings.areSlotsFree(0, 96));
+    }
 
+    public void testAreSlotsFreeOneBookings() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(0, 48, BType.RIG);
+        for (int i = 0; i <= 48; i++)
+        {
+           slots[i] = m;
+        }
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 0);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 48);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 1);
+        
+        assertFalse(this.bookings.areSlotsFree(0, 48));
+        assertFalse(this.bookings.areSlotsFree(47, 47));
+        assertFalse(this.bookings.areSlotsFree(0, 10));
+        assertFalse(this.bookings.areSlotsFree(0, 96));
+        assertTrue(this.bookings.areSlotsFree(49, 96));
+    }
+    
+    public void testAreSlotsFreeTwoBookings() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(5, 10, BType.RIG);
+        for (int i = 5; i <= 10; i++)
+        {
+           slots[i] = m;
+        }
+        
+        m = new MBooking(15, 25, BType.RIG);
+        for (int i = 15; i <= 25; i++)
+        {
+            slots[i] = m;
+        }
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 5);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 25);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 2);
+        
+        assertTrue(this.bookings.areSlotsFree(0, 4));
+        assertFalse(this.bookings.areSlotsFree(5, 10));
+        assertTrue(this.bookings.areSlotsFree(11, 14));
+        assertFalse(this.bookings.areSlotsFree(15, 25));
+        assertFalse(this.bookings.areSlotsFree(0, 96));
+        assertTrue(this.bookings.areSlotsFree(26, 96));
+    }
+    
+    public void testCommit() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(5, 10, BType.RIG);
+        assertTrue(this.bookings.commitBooking(m));
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        assertEquals(5, f.getInt(this.bookings));
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        assertEquals(10, f.getInt(this.bookings));
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        assertEquals(1, f.getInt(this.bookings));
+        
+        assertNull(slots[4]);
+        assertNotNull(slots[5]);
+    }
+    
 }
