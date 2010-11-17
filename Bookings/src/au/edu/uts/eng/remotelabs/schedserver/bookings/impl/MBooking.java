@@ -43,6 +43,7 @@ import java.util.Calendar;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 
 /**
  * In-memory representation of a booking.
@@ -50,12 +51,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 public class MBooking
 {
     /**
-     * Booking type.
+     * Booking rigType.
      */
     public enum BType
     {
         /** Specific rig booking. */
-        RIG, /** Rig type booking. */
+        RIG, /** Rig rigType booking. */
         TYPE, /** Request capabilities booking. */
         CAPABILITY
     }
@@ -63,7 +64,7 @@ public class MBooking
     /** The transient booking of this rig. */
     private Bookings booking;
     
-    /** The booking type. */
+    /** The booking rigType. */
     private BType bType;
     
     /** The index of this bookings start slot. */
@@ -74,6 +75,9 @@ public class MBooking
     
     /** The number of slots this booking uses. */
     private int numSlots;
+    
+    /** The rig rigType of this booking, if it is a rigType booking. */
+    private RigType rigType;
     
     /** The request capabilities of this booking, if it is a request capabilities 
      * booking. */
@@ -88,7 +92,11 @@ public class MBooking
             this.bType = BType.CAPABILITY;
             this.reqCaps = b.getRequestCapabilities();
         }
-        else if (ResourcePermission.TYPE_PERMISSION.endsWith(b.getResourceType())) this.bType = BType.TYPE;
+        else if (ResourcePermission.TYPE_PERMISSION.endsWith(b.getResourceType()))
+        {
+            this.bType = BType.TYPE;
+            this.rigType = b.getRigType();
+        }
         else this.bType = BType.RIG;
         
         /* The start slot is always the slot where the time lies in. */
@@ -135,8 +143,13 @@ public class MBooking
     {
         return this.numSlots;
     }
+    
+    public RigType getRigType()
+    {
+        return this.rigType;
+    }
 
-    public RequestCapabilities getRequestCaps()
+    public RequestCapabilities getRequestCapabilities()
     {
         return this.reqCaps;
     }
