@@ -183,12 +183,21 @@ public class MBooking
         if (o == null) return false;
         if (!(o instanceof MBooking)) return false;
         
+        if (this.booking == null)
+        {
+            return o == this;
+        }
+        
         return ((MBooking)o).getBooking().getId().equals(this.booking.getId());
     }
     
     @Override
     public int hashCode()
     {
+        if (this.booking == null)
+        {
+            return super.hashCode();
+        }
         return this.booking.getId().hashCode();
     }
 }

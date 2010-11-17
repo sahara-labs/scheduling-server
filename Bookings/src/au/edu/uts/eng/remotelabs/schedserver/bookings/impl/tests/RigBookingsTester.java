@@ -46,6 +46,7 @@ import org.junit.Before;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigBookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
@@ -224,6 +225,45 @@ public class RigBookingsTester extends TestCase
         for (int i = 0; i < slots.length; i++)
         {
             assertNotNull(slots[i]);
+        }
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testRemove() throws Exception
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        Bookings b = new Bookings();
+        b.setId(1L);
+        
+        
+        MBooking m = new MBooking(5, 10, BType.RIG);
+        m.setBooking(b);
+        
+        for (int i = 5; i <= 10; i++)
+        {
+            slots[i] = m;
+        }
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 5);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 1);
+        
+        assertTrue(this.bookings.removeBooking(m));
+        assertEquals(0, this.bookings.getNumBookings());
+        for (int i = 0; i < slots.length; i++)
+        {
+            assertNull(slots[i]);
         }
     }
 }
