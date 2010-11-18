@@ -170,7 +170,17 @@ public class ManifestXMLDecorator
 				
 		eventFactory = XMLEventFactory.newInstance();
 
-		StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME);
+		// Create manifest node name open tag with relevant attributes	
+		attributeList = new ArrayList<Attribute>();
+		namespaceList = new ArrayList<Namespace>();
+		attributeList.add(eventFactory.createAttribute("version", manifest.getMetaData().getSchemaValue("version")));
+		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", manifest.getMetaData().getSchemaValue("xmlns:adlcp")));
+		attributeList.add(eventFactory.createAttribute("xmlns:xsi",manifest.getMetaData().getSchemaValue("xmlns:xsi")));
+		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", manifest.getMetaData().getSchemaValue("xsi:schemalocation")));
+		attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
+		namespaceList.add(eventFactory.createNamespace( manifest.getMetaData().getSchemaValue("xmlns")));
+		
+		StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
 			eventWriter.add(manifestStartElem);
@@ -181,27 +191,6 @@ public class ManifestXMLDecorator
 	    	//Log any exception output
             this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
-		
-		// Create manifest node name open tag with relevant attributes	
-		attributeList = new ArrayList<Attribute>();
-		namespaceList = new ArrayList<Namespace>();
-		//attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
-
-		try 
-		{
-			eventWriter.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
-		} 
-		catch (XMLStreamException e) 
-		{
-			//Log any exception output
-            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
-		}
-		
-		attributeList.add(eventFactory.createAttribute("version", manifest.getMetaData().getSchemaValue("version")));
-		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", manifest.getMetaData().getSchemaValue("xmlns:adlcp")));
-		attributeList.add(eventFactory.createAttribute("xmlns:xsi",manifest.getMetaData().getSchemaValue("xmlns:xsi")));
-		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", manifest.getMetaData().getSchemaValue("xsi:schemalocation")));
-		namespaceList.add(eventFactory.createNamespace( manifest.getMetaData().getSchemaValue("xmlns"))); 
 	}
 	
 	private void decorateOrganizations(Manifest manifest, XMLEventWriter eventWriter)
@@ -218,7 +207,7 @@ public class ManifestXMLDecorator
 		attributeList = new ArrayList<Attribute>();
 		namespaceList = new ArrayList<Namespace>();
 		attributeList.add(eventFactory.createAttribute("default", SCO_INSTITUTION));
-		//namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
+		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
 		StartElement organizationsStartElem = eventFactory.createStartElement("", "",  MANIFEST_ORG_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
 	    try 
 	    {
@@ -326,12 +315,12 @@ public class ManifestXMLDecorator
 		XMLEventFactory eventFactory = null;
 		
 		eventFactory = XMLEventFactory.newInstance();
+		
+		namespaceList = new ArrayList<Namespace>();
+		namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
 				
 		//Create the resources node
-		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME);
-		
-		//namespaceList = new ArrayList<Namespace>();
-		//namespaceList.add(eventFactory.createNamespace(Manifest.NAMESPACE));
+		StartElement resourcesStartElem = eventFactory.createStartElement("", "",  MANIFEST_RESOURCES_NODE_NAME, null, namespaceList.iterator());
 		
 		try 
 	    {
