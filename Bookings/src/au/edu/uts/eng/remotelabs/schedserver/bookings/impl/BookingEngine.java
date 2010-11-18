@@ -101,7 +101,7 @@ public interface BookingEngine
         public TimePeriod(Calendar start, Calendar end)
         {
             this.startTime = start;
-            this.endTime = start;
+            this.endTime = end;
         }
 
         public Calendar getStartTime()

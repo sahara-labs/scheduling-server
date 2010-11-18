@@ -220,7 +220,6 @@ public class TimeUtil
             Math.ceil((cal.get(Calendar.MINUTE) * 60) + cal.get(Calendar.SECOND)) / BookingActivator.TIME_QUANTUM);
     }
     
-    
     /**
      * Gets a date generated from a date string and a slot index.
      * 

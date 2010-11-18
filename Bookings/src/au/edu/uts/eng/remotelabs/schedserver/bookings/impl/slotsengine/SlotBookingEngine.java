@@ -38,8 +38,11 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -54,8 +57,8 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class SlotBookingEngine implements BookingEngine
 {    
-    /** The list of day bookings. */
-    private List<DayBookings> days;
+    /** The loaded of day bookings. */
+    private Map<String, DayBookings> days;
     
     /** Logger. */
     private Logger logger;
@@ -63,12 +66,13 @@ public class SlotBookingEngine implements BookingEngine
     public SlotBookingEngine()
     {
         this.logger = LoggerActivator.getLogger();
-        this.days = new ArrayList<DayBookings>();
+        this.days = new HashMap<String, DayBookings>();
     }
     
     /**
      * Load from now till the end of hot days into memory.
      */
+    @Override
     public void init()
     {
         this.logger.debug("Initalising the slot booking engine.");
@@ -77,8 +81,12 @@ public class SlotBookingEngine implements BookingEngine
     @Override
     public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration)
     {
-        List<String> days = this.getDayKeys(period);
-        
+        /* Work out the slots that the minimum duration requires. */
+        int slots = (int)Math.ceil(minDuration / BookingActivator.TIME_QUANTUM);
+        for (String day : this.getDayKeys(period))
+        {
+            DayBookings dayBookings = this.getDayBookings(day);
+        }
         
         return null;
     }
@@ -95,6 +103,44 @@ public class SlotBookingEngine implements BookingEngine
     {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    /**
+     * Gets the slot index for the specified date/time with the following
+     * conditions:
+     * <ul>
+     *  <li>If the date/time is on a specified day, the time slot index is returned.</li>
+     *  <li>If the date/time is on a earlier day, 0 is returned.</li>
+     *  <li>If the date/time is on a later day, the last slot index is returned.</li> 
+     * </ul>
+     * 
+     * @param cal date/time
+     * @param dayKey day 
+     * @return slot index
+     */
+    private int getDaySlotIndex(Calendar cal, String dayKey)
+    {
+       return 0; 
+    }
+    
+    /**
+     * Returns the bookings for that day. If that day isn't loaded, it is 
+     * loaded.
+     * 
+     * @param dayKey day key
+     * @return bookings
+     */
+    private DayBookings getDayBookings(String dayKey)
+    {
+        if (!this.days.containsKey(dayKey))
+        {
+            synchronized (this.days)
+            {
+                this.days.put(dayKey, new DayBookings(dayKey));
+            }
+        }
+        
+        return this.days.get(dayKey);
     }
     
     /**

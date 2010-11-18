@@ -36,56 +36,117 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.tests;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
+import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
 /**
  * Tests the {@link SlotBookingEngine} class.
  */
-public class SlotBookingEngineTester
+public class SlotBookingEngineTester extends TestCase
 {
     /** Object of class under test. */
     private SlotBookingEngine engine;
 
-    /**
-     * @throws java.lang.Exception
-     */
+    @Override
     @Before
     public void setUp() throws Exception
     {
-        this.engine = new SlotBookingEngine();
+        this.engine = new SlotBookingEngine(); 
+        Field f = SlotBookingEngine.class.getDeclaredField("logger");
+        f.setAccessible(true);
+        f.set(this.engine, new SystemErrLogger());
         this.engine.init();
     }
 
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine#getFreeTimes(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig, au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod, int)}.
-     */
     @Test
     public void testGetFreeTimesRigTimePeriodInt()
     {
         fail("Not yet implemented"); // TODO
     }
 
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine#getFreeTimes(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType, au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod, int)}.
-     */
     @Test
     public void testGetFreeTimesRigTypeTimePeriodInt()
     {
         fail("Not yet implemented"); // TODO
     }
 
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine#getFreeTimes(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities, au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod, int)}.
-     */
     @Test
     public void testGetFreeTimesRequestCapabilitiesTimePeriodInt()
     {
         fail("Not yet implemented"); // TODO
     }
 
+    @SuppressWarnings("unchecked")
+    public void testGetDayKeys() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        TimePeriod period = new TimePeriod(cal, cal);
+        
+        Method m = SlotBookingEngine.class.getDeclaredMethod("getDayKeys", TimePeriod.class);
+        m.setAccessible(true);
+        List<String> keys = (List<String>) m.invoke(this.engine, period);
+        assertNotNull(keys);
+        assertEquals(1, keys.size());
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void testGetDayKeysTwoDays() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        Calendar next = Calendar.getInstance();
+        next.add(Calendar.DAY_OF_MONTH, 1);
+        next.set(Calendar.HOUR_OF_DAY, 23);
+        next.set(Calendar.MINUTE, 59);
+        next.set(Calendar.SECOND, 59);
+        TimePeriod period = new TimePeriod(cal, next);
+        
+        Method m = SlotBookingEngine.class.getDeclaredMethod("getDayKeys", TimePeriod.class);
+        m.setAccessible(true);
+        List<String> keys = (List<String>) m.invoke(this.engine, period);
+        assertNotNull(keys);
+        assertEquals(2, keys.size());
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void testGetDayKeysFiveDays() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        Calendar next = Calendar.getInstance();
+        next.add(Calendar.DAY_OF_MONTH, 4);
+        TimePeriod period = new TimePeriod(cal, next);
+        
+        Method m = SlotBookingEngine.class.getDeclaredMethod("getDayKeys", TimePeriod.class);
+        m.setAccessible(true);
+        List<String> keys = (List<String>) m.invoke(this.engine, period);
+        assertNotNull(keys);
+        assertEquals(5, keys.size());
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(2));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(3));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(4));
+    }
 }

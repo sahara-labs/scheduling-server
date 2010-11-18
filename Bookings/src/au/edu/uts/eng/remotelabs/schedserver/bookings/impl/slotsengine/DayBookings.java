@@ -54,7 +54,7 @@ public class DayBookings
     /** Logger. */
     private Logger logger;
     
-    public DayBookings()
+    public DayBookings(String day)
     {
         this.logger = LoggerActivator.getLogger();
         this.rigBookings = new HashMap<Rig, RigBookings>();
