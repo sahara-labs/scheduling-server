@@ -66,5 +66,6 @@ Bundle-ClassPath: .,
  lib/xml-resolver-1.2.jar,
  lib/xmlbeans-2.3.0.jar,
  lib/XmlSchema-1.4.3.jar,
- lib/miniTemplator.jar
+ lib/miniTemplator.jar,
+ lib/stax-utils.jar
 
