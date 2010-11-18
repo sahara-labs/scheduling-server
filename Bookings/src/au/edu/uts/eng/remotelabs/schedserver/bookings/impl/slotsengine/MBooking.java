@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 15th November 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import static au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator.TIME_QUANTUM;
 

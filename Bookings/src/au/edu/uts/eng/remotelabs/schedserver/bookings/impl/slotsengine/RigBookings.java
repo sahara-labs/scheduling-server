@@ -34,9 +34,14 @@
  * @author Michael Diponio (mdiponio)
  * @date 11th November 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -63,6 +68,12 @@ public class RigBookings
     
     /** The number of bookings this rig has. */
     private int numBookings;
+    
+    /** Next matching type bookings in resource loop. */
+    private RigBookings typeNext;
+    
+    /** Next mapping caps bookings in resource loop. */
+    private Map<RequestCapabilities, RigBookings> capsNext;
     
     /** Logger. */
     private Logger logger;
@@ -103,14 +114,73 @@ public class RigBookings
     }
     
     /**
-     * Returns the free slots for this rig. The response is in the form of 2D
+     * Returns true if the range is free.
+     * 
+     * @param range slots range
+     * @return true if free
+     */
+    public boolean areSlotsFree(MRange range)
+    {
+        return this.areSlotsFree(range.getStartSlot(), range.getEndSlot());
+    }
+    
+    /**
+     * Gets the free slots of this rig. The response is in the form of 2D
      * array containing [slot start][number free].
      * 
      * @return free slots
      */
-    public int[][] getFreeSlots()
+    public List<MRange> getFreeSlots()
     {
-        return null;
+        return this.getFreeSlots(1);
+    }
+    
+    /**
+     * Gets the free booking holes for this rig. A hole is the threshold number of 
+     * free slots. The minimum threshold is 1 (i.e. just free slots).
+     * 
+     * @return thres threshold for a hole
+     * @return free slots
+     */
+    public List<MRange> getFreeSlots(int thres)
+    {
+        List<MRange> free = new ArrayList<MRange>();
+        
+        if (this.numBookings == 0)
+        {
+            free.add(new MRange(0, this.slots.length - 1, this.dayKey));
+            return free;
+        }
+        
+        if (thres < 1) thres = 1;
+        
+        if (this.startSlot - 1 >= thres)
+        {
+            free.add(new MRange(0, this.startSlot - 1, this.dayKey));
+        }
+        
+        int num = this.numBookings - 1;
+        int fs = this.slots[this.startSlot].getEndSlot() + 1;
+        int ef;
+        while (num > 0)
+        {
+            ef = fs;
+            while (ef < this.endSlot && this.slots[++ef] == null);
+            
+            /* We have reached the end of the slots. */
+            if (ef == this.slots.length) break;
+ 
+            num--;
+            if (ef - fs >= thres) free.add(new MRange(fs, ef - 1, this.dayKey));
+            fs = this.slots[ef].getEndSlot() + 1;
+        }
+        
+        if (this.slots.length - this.endSlot > thres)
+        {
+            free.add(new MRange(this.endSlot + 1, this.slots.length - 1, this.dayKey));
+        }
+
+        return free;
     }
     
     /**
@@ -214,5 +284,25 @@ public class RigBookings
     public String getDayKey()
     {
         return this.dayKey;
+    }
+
+    public RigBookings getTypeLoopNext()
+    {
+        return this.typeNext;
+    }
+
+    public void setTypeLoopNext(RigBookings next)
+    {
+        this.typeNext = next;
+    }
+
+    public RigBookings getCapsLoopNext(RequestCapabilities caps)
+    {
+        return this.capsNext.get(caps);
+    }
+
+    public void setCapsLoopNext(RequestCapabilities caps, RigBookings next)
+    {
+        this.capsNext.put(caps, next);
     }
 }   

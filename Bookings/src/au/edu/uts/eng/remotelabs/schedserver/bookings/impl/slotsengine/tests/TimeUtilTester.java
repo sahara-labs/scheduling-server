@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 15th November 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.tests;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.tests;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -45,7 +45,7 @@ import org.junit.Test;
 
 import static java.util.Calendar.*;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.TimeUtil;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 
 /**
  * Tests the {@link TimeUtil} class.
@@ -185,4 +185,94 @@ public class TimeUtilTester extends TestCase
         cal.set(Calendar.SECOND, 59);
         assertEquals(95, TimeUtil.getSlotIndex(cal.getTime()));
     }
+    
+    public void testGetCalendarFromSlot()
+    {
+        Calendar cal = Calendar.getInstance();
+        String ds = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + '-' + cal.get(Calendar.DAY_OF_MONTH);
+        
+        Calendar tm = TimeUtil.getCalendarFromSlot(ds, 0);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(0, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 1);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(0, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(15, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 2);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(0, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 4);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(1, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 10);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(2, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 20);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(5, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 49);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(12, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(15, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 90);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(22, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 92);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(23, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(00, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+        tm = TimeUtil.getCalendarFromSlot(ds, 96);
+        cal.add(Calendar.HOUR, 24);
+        assertEquals(cal.get(Calendar.YEAR), tm.get(Calendar.YEAR));
+        assertEquals(cal.get(Calendar.MONTH), tm.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), tm.get(Calendar.DAY_OF_MONTH));
+        assertEquals(0, tm.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, tm.get(Calendar.MINUTE));
+        assertEquals(0, tm.get(Calendar.SECOND));
+        
+    }
+    
 }

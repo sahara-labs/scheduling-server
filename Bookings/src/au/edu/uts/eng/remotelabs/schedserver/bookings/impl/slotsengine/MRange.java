@@ -34,66 +34,85 @@
  * @author Michael Diponio (mdiponio)
  * @date 15th November 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.DayBookings;
+import java.util.Calendar;
 
 /**
- * The booking engine.
+ * Slot range.
  */
-public class BookingEngine
+public class MRange
 {
-    /** The number of days to keep loaded in memory. */
-    public static final int HOT_DAYS = 30;
+    /** Date key. */
+    private String dateKey;
     
-    /** The list of day bookings. */
-    private List<DayBookings> days;
+    /** The start slot of this range. */
+    private int startSlot;
     
-    public BookingEngine()
+    /** The end slot of this range. */
+    private int endSlot;
+    
+    /** The number of slots in this range. */
+    private int numSlots;
+    
+    public MRange(int start, int end, String date)
     {
-        this.days = new ArrayList<DayBookings>();
+        this.startSlot = start;
+        this.endSlot = end;
+        this.numSlots = end - start + 1;
+        this.dateKey = date;
+    }
+
+    public int getStartSlot()
+    {
+        return this.startSlot;
     }
     
-    /**
-     * Load from now till the end of hot days into memory.
-     */
-    public void init()
+    public Calendar getStart()
     {
+        return TimeUtil.getCalendarFromSlot(this.dateKey, this.startSlot);
+    }
+
+    public int getEndSlot()
+    {
+        return this.endSlot;
+    }
+    
+    public Calendar getEnd()
+    {
+        /* Bookings finish at the end of their slot. */
+        return TimeUtil.getCalendarFromSlot(this.dateKey, this.endSlot + 1);
+    }
+
+    public int getNumSlots()
+    {
+        return this.numSlots;
+    }
+    
+    public String getDayKey()
+    {
+        return this.dateKey;
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
         
-    }
-    
-    /* --- CRUD Booking OPS --- */
-    public boolean addBooking()
-    {
-        return false;
-    }
-    
-    public boolean cancelBooking()
-    {
-        return false;
-    }
-    
-    public void getRedemptions()
-    {
+        if (!(o instanceof MRange)) return false;
         
+        MRange mr = (MRange)o;
+        return mr.getStartSlot() == this.getStartSlot() && mr.getEndSlot() == this.endSlot && 
+                this.dateKey.equals(this.dateKey);
     }
     
-    /* --- Resource OPS --- */
-    public void addRig()
+    @Override
+    public int hashCode()
     {
-        
-    }
-    
-    public void removeRig()
-    {
-        
-    }
-    
-    public void canQueue()
-    {
-        
+        int hash = 23;
+        hash = hash * 17 + this.startSlot;
+        hash = hash * 17 + this.endSlot;
+        hash = hash * 17 + this.dateKey.hashCode();
+        return hash;
     }
 }

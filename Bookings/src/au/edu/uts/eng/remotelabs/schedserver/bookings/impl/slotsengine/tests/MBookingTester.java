@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 11th November 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.tests;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.tests;
 
 import java.util.Calendar;
 
@@ -42,8 +42,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.MBooking.BType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 
 /**

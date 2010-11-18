@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 15th November 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -218,5 +218,36 @@ public class TimeUtil
     {
         return (int) (cal.get(Calendar.HOUR_OF_DAY) * (3600 / BookingActivator.TIME_QUANTUM) + 
             Math.ceil((cal.get(Calendar.MINUTE) * 60) + cal.get(Calendar.SECOND)) / BookingActivator.TIME_QUANTUM);
+    }
+    
+    
+    /**
+     * Gets a date generated from a date string and a slot index.
+     * 
+     * @param dateStr date
+     * @param slot quantum slot
+     * @return date
+     */
+    public static Calendar getCalendarFromSlot(String dateStr, int slot)
+    {
+        String parts[] = dateStr.split("-");
+        Calendar cal = Calendar.getInstance();
+        
+        cal.set(Calendar.YEAR, Integer.parseInt(parts[0]));
+        cal.set(Calendar.MONTH, Integer.parseInt(parts[1]));
+        cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(parts[2]));
+        
+        /* Hours. */
+        int t = slot * BookingActivator.TIME_QUANTUM / 3600; 
+        cal.set(Calendar.HOUR_OF_DAY, t);
+        
+        /* Minutes. */
+        int m = (slot - t * 3600 / BookingActivator.TIME_QUANTUM) * BookingActivator.TIME_QUANTUM / 60;
+        cal.set(Calendar.MINUTE, m);
+        
+        int s = (t - m) / BookingActivator.TIME_QUANTUM;
+        cal.set(Calendar.SECOND, s);
+        
+        return cal;
     }
 }
