@@ -34,6 +34,10 @@
  *
  * @author Herber Yeung
  * @date 4th November 2010
+ * 
+ * Modification: Added staxutils IndentingXMLEventWriter for pretty printing of imsmanifest.xml
+ * @author Herbert Yeung
+ * @date 18th November 2010
  */
 package au.edu.labshare.schedserver.scormpackager.lila;
 
@@ -45,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 //Needed for XML generation
+import javanet.staxutils.IndentingXMLEventWriter;
+
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
@@ -118,6 +124,7 @@ public class ManifestXMLDecorator
 			
 			// Create XMLEventWriter
 			eventWriter = outputFactory.createXMLEventWriter(new FileOutputStream(outputFilePath + MANFEST_NAME));
+			eventWriter = new IndentingXMLEventWriter(eventWriter); /* Pretty printing using stax-utils */
 			
 			// Create a EventFactory
 			eventFactory = XMLEventFactory.newInstance();
@@ -125,7 +132,7 @@ public class ManifestXMLDecorator
 			// Create and write Start Tag
 			StartDocument startDocument = eventFactory.createStartDocument();
 			eventWriter.add(startDocument);
-			
+				
 			//Invoke the following to generate the imsmanifest.xml file:
 			//1. decorateManifestHeader()
 			//2. decorateOrganizations()
@@ -133,7 +140,7 @@ public class ManifestXMLDecorator
 			decorateManifestHeader(manifest, eventWriter);
 			decorateOrganizations(manifest, eventWriter);
 			decorateResources(manifest, eventWriter);
-			
+
 			//Close off the XML Manifest node
 			eventWriter.add(eventFactory.createEndElement("", "", MANIFEST_NODE_NAME));
 			eventWriter.flush();
@@ -142,8 +149,9 @@ public class ManifestXMLDecorator
 		}
 		catch(XMLStreamException e)
 		{
+			e.printStackTrace();
 			//Log any exception output
-            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
+            //this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -162,16 +170,7 @@ public class ManifestXMLDecorator
 				
 		eventFactory = XMLEventFactory.newInstance();
 
-		// Create manifest node name open tag with relevant attributes	
-		attributeList = new ArrayList<Attribute>();
-		namespaceList = new ArrayList<Namespace>();
-		attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
-		attributeList.add(eventFactory.createAttribute("version", manifest.getMetaData().getSchemaValue("version")));
-		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", manifest.getMetaData().getSchemaValue("xmlns:adlcp")));
-		attributeList.add(eventFactory.createAttribute("xmlns:xsi",manifest.getMetaData().getSchemaValue("xmlns:xsi")));
-		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", manifest.getMetaData().getSchemaValue("xsi:schemalocation")));
-		namespaceList.add(eventFactory.createNamespace( manifest.getMetaData().getSchemaValue("xmlns")));
-	    StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME, attributeList.iterator(), namespaceList.iterator());
+		StartElement manifestStartElem = eventFactory.createStartElement("", "",  MANIFEST_NODE_NAME);
 	    try 
 	    {
 			eventWriter.add(manifestStartElem);
@@ -182,6 +181,27 @@ public class ManifestXMLDecorator
 	    	//Log any exception output
             this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
 		}
+		
+		// Create manifest node name open tag with relevant attributes	
+		attributeList = new ArrayList<Attribute>();
+		namespaceList = new ArrayList<Namespace>();
+		//attributeList.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
+
+		try 
+		{
+			eventWriter.add(eventFactory.createAttribute("identifier", manifest.getMetaData().getSchemaValue("identifier")));
+		} 
+		catch (XMLStreamException e) 
+		{
+			//Log any exception output
+            this.saharaLogger.debug("Received " + this.getClass().getName() + e.toString());
+		}
+		
+		attributeList.add(eventFactory.createAttribute("version", manifest.getMetaData().getSchemaValue("version")));
+		attributeList.add(eventFactory.createAttribute("xmlns:adlcp", manifest.getMetaData().getSchemaValue("xmlns:adlcp")));
+		attributeList.add(eventFactory.createAttribute("xmlns:xsi",manifest.getMetaData().getSchemaValue("xmlns:xsi")));
+		attributeList.add(eventFactory.createAttribute("xsi:schemalocation", manifest.getMetaData().getSchemaValue("xsi:schemalocation")));
+		namespaceList.add(eventFactory.createNamespace( manifest.getMetaData().getSchemaValue("xmlns"))); 
 	}
 	
 	private void decorateOrganizations(Manifest manifest, XMLEventWriter eventWriter)
