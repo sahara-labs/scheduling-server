@@ -32,86 +32,92 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 18th November 2010
+ * @date 15th November 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 
 /**
- * Booking engine interface. 
+ * The slot booking engine. This is an in-memory booking engine with uses 
+ * aligned booking time.
  */
-public interface BookingEngine
-{
-    /** 
-     * Initialise the booking engine.
-     */
-    void init();
+public class SlotBookingEngine implements BookingEngine
+{    
+    /** The list of day bookings. */
+    private List<DayBookings> days;
     
-    /**
-     * Gets free time periods for the rig in the requested time period. Each 
-     * of the returned time periods needs to be at least as long as the 
-     * specified duration.
-     * 
-     * @param rig rig to find free durations of
-     * @param period the time period to find the free periods in
-     * @param minDuration minimum time of period in seconds
-     * @return list of time periods
-     */
-    public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration);
+    /** Logger. */
+    private Logger logger;
     
-    /**
-     * Gets free time periods for the rig type in the requested time period.
-     * Each of the returned time periods needs to be at least as long as 
-     * the specified duration.
-     * 
-     * @param rigType rig type to find free durations of
-     * @param period the time period to find the free periods in
-     * @param minDuration minimum time of period in seconds
-     * @return list of time periods
-     */
-    public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration);
-    
-    /**
-     * Gets free time periods for the request capabilities in the requested 
-     * time period. Each of the returned time periods needs to be at least as 
-     * long as the specified duration.
-     * 
-     * @param caps request capabilities to find free durations of
-     * @param period the time period to find the free periods in
-     * @param minDuration minimum time of period in seconds
-     * @return list of time periods
-     */
-    public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration);
-    
-    public class TimePeriod
+    public SlotBookingEngine()
     {
-        /** Period start. */
-        private Calendar startTime;
-        
-        /** Period end. */
-        private Calendar endTime;
-        
-        public TimePeriod(Calendar start, Calendar end)
-        {
-            this.startTime = start;
-            this.endTime = start;
-        }
+        this.logger = LoggerActivator.getLogger();
+        this.days = new ArrayList<DayBookings>();
+    }
+    
+    /**
+     * Load from now till the end of hot days into memory.
+     */
+    public void init()
+    {
+        this.logger.debug("Initalising the slot booking engine.");
+    }
 
-        public Calendar getStartTime()
-        {
-            return this.startTime;
-        }
+    @Override
+    public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration)
+    {
+        List<String> days = this.getDayKeys(period);
+        
+        
+        return null;
+    }
 
-        public Calendar getEndTime()
+    @Override
+    public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /**
+     * Returns the days in the specified day period.
+     * 
+     * @param period time period
+     * @return list of day keys
+     */
+    private List<String> getDayKeys(TimePeriod period)
+    {
+        List<String> days = new ArrayList<String>();
+        
+        Calendar start = Calendar.getInstance();
+        start.setTimeInMillis(period.getStartTime().getTimeInMillis());
+        Calendar end = period.getEndTime();
+        
+        days.add(TimeUtil.getDateStr(start));
+        while (end.compareTo(start) < 86.4e6 && start.get(Calendar.DAY_OF_YEAR) != end.get(Calendar.DAY_OF_YEAR))
         {
-            return this.endTime;
+            start.add(Calendar.DAY_OF_MONTH, 1);
+            days.add(TimeUtil.getDateStr(start));
         }
+        
+        return days;
     }
 }

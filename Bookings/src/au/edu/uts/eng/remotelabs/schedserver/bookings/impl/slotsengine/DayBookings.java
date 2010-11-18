@@ -36,16 +36,29 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
  * The bookings for a day.
  */
 public class DayBookings
 {
+    /** Loaded rig bookings. */
     private Map<Rig, RigBookings> rigBookings;
     
-
+    /** Logger. */
+    private Logger logger;
+    
+    public DayBookings()
+    {
+        this.logger = LoggerActivator.getLogger();
+        this.rigBookings = new HashMap<Rig, RigBookings>();
+    }
+    
+    
 }
