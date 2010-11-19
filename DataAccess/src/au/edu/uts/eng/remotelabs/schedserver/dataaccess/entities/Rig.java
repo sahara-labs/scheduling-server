@@ -140,30 +140,6 @@ public class Rig implements java.io.Serializable
         this.managed = managed;
     }
 
-    public Rig(final RigType rigType, final Session session,
-            final RigCapabilities rigCapabilities, final String name,
-            final String contactUrl, final Date lastUpdateTimestamp,
-            final boolean online, final String offlineReason, 
-            final boolean inSession, final boolean managed, 
-            final boolean active,
-            final Set<ResourcePermission> resourcePermissions,
-            final Set<Session> sessions)
-    {
-        this.rigType = rigType;
-        this.session = session;
-        this.rigCapabilities = rigCapabilities;
-        this.name = name;
-        this.contactUrl = contactUrl;
-        this.lastUpdateTimestamp = lastUpdateTimestamp;
-        this.online = online;
-        this.offlineReason = offlineReason;
-        this.inSession = inSession;
-        this.managed = managed;
-        this.active = active;
-        this.resourcePermissions = resourcePermissions;
-        this.sessions = sessions;
-    }
-
     @Id
     @GeneratedValue(strategy = AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -355,5 +331,35 @@ public class Rig implements java.io.Serializable
     public void setBookings(Set<Bookings> bookings)
     {
         this.bookings = bookings;
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (!(o instanceof Rig)) return false;
+        
+        Rig r = (Rig)o;
+        if (this.name != null)
+        {
+            return this.name.equals(r.getName());       
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public int hashCode()
+    {   
+        if (this.name != null)
+        {
+            int result = 23;
+            result = result * 17 + this.name.hashCode();
+            return result;
+        }
+        else
+        {
+            return super.hashCode();
+        }
     }
 }
