@@ -36,7 +36,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
-import static au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator.TIME_QUANTUM;
+import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.TIME_QUANTUM;
 
 import java.util.Calendar;
 

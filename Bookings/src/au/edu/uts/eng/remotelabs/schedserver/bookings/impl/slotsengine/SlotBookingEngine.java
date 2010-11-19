@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -56,7 +55,10 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  * aligned booking time.
  */
 public class SlotBookingEngine implements BookingEngine
-{    
+{
+    /** The length of each booking slot in seconds. */
+    public static final int TIME_QUANTUM = 15 * 60;
+    
     /** The loaded of day bookings. */
     private Map<String, DayBookings> days;
     
@@ -82,10 +84,13 @@ public class SlotBookingEngine implements BookingEngine
     public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration)
     {
         /* Work out the slots that the minimum duration requires. */
-        int slots = (int)Math.ceil(minDuration / BookingActivator.TIME_QUANTUM);
+        int slots = (int)Math.ceil(minDuration / TIME_QUANTUM);
         for (String day : this.getDayKeys(period))
         {
             DayBookings dayBookings = this.getDayBookings(day);
+            int dayStart = TimeUtil.getDaySlotIndex(period.getStartTime(), day);
+            int dayEnd = TimeUtil.getDaySlotIndex(period.getEndTime(), day);
+            
         }
         
         return null;
@@ -103,24 +108,6 @@ public class SlotBookingEngine implements BookingEngine
     {
         // TODO Auto-generated method stub
         return null;
-    }
-    
-    /**
-     * Gets the slot index for the specified date/time with the following
-     * conditions:
-     * <ul>
-     *  <li>If the date/time is on a specified day, the time slot index is returned.</li>
-     *  <li>If the date/time is on a earlier day, 0 is returned.</li>
-     *  <li>If the date/time is on a later day, the last slot index is returned.</li> 
-     * </ul>
-     * 
-     * @param cal date/time
-     * @param dayKey day 
-     * @return slot index
-     */
-    private int getDaySlotIndex(Calendar cal, String dayKey)
-    {
-       return 0; 
     }
     
     /**

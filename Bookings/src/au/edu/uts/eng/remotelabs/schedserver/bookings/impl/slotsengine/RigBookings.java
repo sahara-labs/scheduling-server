@@ -36,11 +36,12 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
+import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.TIME_QUANTUM;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -85,7 +86,7 @@ public class RigBookings
         this.rig = rig;
         this.dayKey = day;
         
-        this.slots = new MBooking[(24 * 60 * 60) / BookingActivator.TIME_QUANTUM];
+        this.slots = new MBooking[(24 * 60 * 60) / TIME_QUANTUM];
         this.startSlot = 0;
         this.endSlot = 0;
         this.numBookings = 0;

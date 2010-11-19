@@ -36,10 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
+import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.TIME_QUANTUM;
+
 import java.util.Calendar;
 import java.util.Date;
-
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 
 /**
  * Date / Time utility to convert dates between different formats.
@@ -85,7 +85,7 @@ public class TimeUtil
      * @param dateStr day key
      * @return start date
      */
-    public static Date getDayBegin(String dateStr)
+    public static Calendar getDayBegin(String dateStr)
     {
         String parts[] = dateStr.split("-");
         
@@ -98,7 +98,7 @@ public class TimeUtil
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         
-        return cal.getTime();
+        return cal;
     }
     
     /**
@@ -107,7 +107,7 @@ public class TimeUtil
      * @param dateStr day key
      * @return start date
      */
-    public static Date getDayBegin(Date date)
+    public static Calendar getDayBegin(Date date)
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -116,7 +116,7 @@ public class TimeUtil
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         
-        return cal.getTime();
+        return cal;
     }
     
     /**
@@ -125,7 +125,7 @@ public class TimeUtil
      * @param dateStr day key
      * @return start date
      */
-    public static Date getDayBegin(Calendar date)
+    public static Calendar getDayBegin(Calendar date)
     {   
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(date.getTimeInMillis());
@@ -134,7 +134,7 @@ public class TimeUtil
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         
-        return cal.getTime();
+        return cal;
     }
     
     /**
@@ -143,7 +143,7 @@ public class TimeUtil
      * @param dateStr day key
      * @return end date
      */
-    public static Date getDayEnd(String dateStr)
+    public static Calendar getDayEnd(String dateStr)
     {
         String parts[] = dateStr.split("-");
         
@@ -156,7 +156,7 @@ public class TimeUtil
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MILLISECOND, 999);
         
-        return cal.getTime();
+        return cal;
     }
     
     /**
@@ -165,7 +165,7 @@ public class TimeUtil
      * @param dateStr day key
      * @return end date
      */
-    public static Date getDayEnd(Date date)
+    public static Calendar getDayEnd(Date date)
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -174,7 +174,7 @@ public class TimeUtil
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MILLISECOND, 999);
         
-        return cal.getTime();
+        return cal;
     }
     
     /**
@@ -183,7 +183,7 @@ public class TimeUtil
      * @param dateStr day key
      * @return end date
      */
-    public static Date getDayEnd(Calendar date)
+    public static Calendar getDayEnd(Calendar date)
     {   
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(date.getTimeInMillis());
@@ -192,7 +192,7 @@ public class TimeUtil
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MILLISECOND, 999);
         
-        return cal.getTime();
+        return cal;
     }
     
     /**
@@ -216,8 +216,37 @@ public class TimeUtil
      */
     public static int getSlotIndex(Calendar cal)
     {
-        return (int) (cal.get(Calendar.HOUR_OF_DAY) * (3600 / BookingActivator.TIME_QUANTUM) + 
-            Math.ceil((cal.get(Calendar.MINUTE) * 60) + cal.get(Calendar.SECOND)) / BookingActivator.TIME_QUANTUM);
+        return (int) (cal.get(Calendar.HOUR_OF_DAY) * (3600 / TIME_QUANTUM) + 
+            Math.ceil((cal.get(Calendar.MINUTE) * 60) + cal.get(Calendar.SECOND)) / TIME_QUANTUM);
+    }
+    
+    /**
+     * Gets the slot index for the specified date/time with the following
+     * conditions:
+     * <ul>
+     *  <li>If the date/time is on a specified day, the time slot index is returned.</li>
+     *  <li>If the date/time is on a earlier day, 0 is returned.</li>
+     *  <li>If the date/time is on a later day, the last slot index is returned.</li> 
+     * </ul>
+     * 
+     * @param cal date/time
+     * @param dayKey day 
+     * @return slot index
+     */
+    public static int getDaySlotIndex(Calendar cal, String dayKey)
+    {
+        /* Whether the calendar is before the day. */        
+        if (cal.before(TimeUtil.getDayBegin(dayKey)))
+        {
+            return 0;
+        }
+        
+        if (cal.after(TimeUtil.getDayEnd(dayKey)))
+        {
+            return 86400 / TIME_QUANTUM - 1;
+        }
+        
+        return TimeUtil.getSlotIndex(cal);
     }
     
     /**
@@ -237,14 +266,14 @@ public class TimeUtil
         cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(parts[2]));
         
         /* Hours. */
-        int t = slot * BookingActivator.TIME_QUANTUM / 3600; 
+        int t = slot * TIME_QUANTUM / 3600; 
         cal.set(Calendar.HOUR_OF_DAY, t);
         
         /* Minutes. */
-        int m = (slot - t * 3600 / BookingActivator.TIME_QUANTUM) * BookingActivator.TIME_QUANTUM / 60;
+        int m = (slot - t * 3600 / TIME_QUANTUM) * TIME_QUANTUM / 60;
         cal.set(Calendar.MINUTE, m);
         
-        int s = (t - m) / BookingActivator.TIME_QUANTUM;
+        int s = (t - m) / TIME_QUANTUM;
         cal.set(Calendar.SECOND, s);
         
         return cal;

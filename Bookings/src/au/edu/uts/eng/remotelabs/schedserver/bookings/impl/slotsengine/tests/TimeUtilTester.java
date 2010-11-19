@@ -71,12 +71,10 @@ public class TimeUtilTester extends TestCase
     @Test
     public void testGetDayBegin()
     {
-        Date d = TimeUtil.getDayBegin(new Date());
-        assertNotNull(d);
+        Calendar start = TimeUtil.getDayBegin(new Date());
+        assertNotNull(start);
         
         Calendar now = Calendar.getInstance();
-        Calendar start = Calendar.getInstance();
-        start.setTime(d);
         assertEquals(0, start.get(HOUR_OF_DAY));
         assertEquals(0, start.get(MINUTE));
         assertEquals(0, start.get(SECOND));
@@ -89,19 +87,17 @@ public class TimeUtilTester extends TestCase
     @Test
     public void testGetDayEnd()
     {
-        Date d = TimeUtil.getDayEnd(new Date());
-        assertNotNull(d);
+        Calendar end = TimeUtil.getDayEnd(new Date());
+        assertNotNull(end);
         
         Calendar now = Calendar.getInstance();
-        Calendar start = Calendar.getInstance();
-        start.setTime(d);
-        assertEquals(23, start.get(HOUR_OF_DAY));
-        assertEquals(59, start.get(MINUTE));
-        assertEquals(59, start.get(SECOND));
-        assertEquals(999, start.get(MILLISECOND));
-        assertEquals(now.get(YEAR), start.get(YEAR));
-        assertEquals(now.get(MONTH), start.get(MONTH));
-        assertEquals(now.get(DAY_OF_MONTH), start.get(DAY_OF_MONTH));
+        assertEquals(23, end.get(HOUR_OF_DAY));
+        assertEquals(59, end.get(MINUTE));
+        assertEquals(59, end.get(SECOND));
+        assertEquals(999, end.get(MILLISECOND));
+        assertEquals(now.get(YEAR), end.get(YEAR));
+        assertEquals(now.get(MONTH), end.get(MONTH));
+        assertEquals(now.get(DAY_OF_MONTH), end.get(DAY_OF_MONTH));
     }
     
     public void testGetSlotIndex()
@@ -272,7 +268,35 @@ public class TimeUtilTester extends TestCase
         assertEquals(0, tm.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, tm.get(Calendar.MINUTE));
         assertEquals(0, tm.get(Calendar.SECOND));
+    }
+    
+    public void testDaySlotEngine()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 1);
+        cal.set(Calendar.MINUTE, 35);
+        cal.set(Calendar.SECOND, 10);
+        String day = TimeUtil.getDateStr(cal);
         
+        assertEquals(6, TimeUtil.getDaySlotIndex(cal, day));
+    }
+    
+    public void testDaySlotEngineAfter()
+    {
+        Calendar cal = Calendar.getInstance();
+        String day = TimeUtil.getDateStr(cal);
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        
+        assertEquals(95, TimeUtil.getDaySlotIndex(cal, day));
+    }
+    
+    public void testDaySlotEngineBefore()
+    {
+        Calendar cal = Calendar.getInstance();
+        String day = TimeUtil.getDateStr(cal);
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        
+        assertEquals(0, TimeUtil.getDaySlotIndex(cal, day));
     }
     
 }

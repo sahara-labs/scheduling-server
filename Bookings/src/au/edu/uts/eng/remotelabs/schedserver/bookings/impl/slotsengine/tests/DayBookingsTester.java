@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2009, University of Technology, Sydney
+ * Copyright (c) 2010, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,48 +32,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 22nd October 2010
+ * @date 11th November 2010
  */
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.tests;
 
-package au.edu.uts.eng.remotelabs.schedserver.bookings;
+import static org.junit.Assert.*;
 
-import org.apache.axis2.transport.http.AxisServlet;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Bookings bundle activator.
+ * 
  */
-public class BookingActivator implements BundleActivator 
+public class DayBookingsTester
 {
-    /** SOAP interface hosting server service registration. */
-    private ServiceRegistration soapReg;
-    
-    /** Logger. */
-    private Logger logger;
 
-	@Override
-	public void start(BundleContext context) throws Exception 
-	{
-		this.logger = LoggerActivator.getLogger();
-		this.logger.info("Starting bookings bundle...");
-		
-		this.logger.debug("Registering the Bookings SOAP service.");
-		ServletContainerService soapService = new ServletContainerService();
-	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
-	}
-	
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Shutting down bookings bundle.");
-		this.soapReg.unregister();
-	}
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception
+    {
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.DayBookings#getFreeSlots(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig, int, int, org.hibernate.Session)}.
+     */
+    @Test
+    public void testGetFreeSlots()
+    {
+        fail("Not yet implemented"); // TODO
+    }
+
 }
