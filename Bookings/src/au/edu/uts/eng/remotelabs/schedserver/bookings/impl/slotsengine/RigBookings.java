@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.TIME_QUANTUM;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -90,6 +91,8 @@ public class RigBookings
         this.startSlot = 0;
         this.endSlot = 0;
         this.numBookings = 0;
+        
+        this.capsNext = new HashMap<RequestCapabilities, RigBookings>();
     }
 
     /** 
@@ -112,6 +115,17 @@ public class RigBookings
         }
         
         return true;
+    }
+    
+    /**
+     * Returns true if the booking range is free.
+     * 
+     * @param booking booking to get slots
+     * @return true if free
+     */
+    public boolean areSlotsFree(MBooking booking)
+    {
+        return this.areSlotsFree(booking.getStartSlot(), booking.getEndSlot());
     }
     
     /**

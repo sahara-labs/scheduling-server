@@ -64,6 +64,12 @@ public class MBooking
     /** The transient booking of this rig. */
     private Bookings booking;
     
+    /** The day the booking is located on. */
+    private String day;
+    
+    /** Whether this booking spans multiple day. */
+    private boolean isMultiDay;
+    
     /** The booking rigType. */
     private BType bType;
     
@@ -83,9 +89,11 @@ public class MBooking
      * booking. */
     private RequestCapabilities reqCaps;
     
-    public MBooking(Bookings b)
+    public MBooking(Bookings b, String day)
     {
         this.booking = b;
+        this.day = day;
+        this.isMultiDay = false;
         
         if (ResourcePermission.CAPS_PERMISSION.endsWith(b.getResourceType()))
         {
@@ -98,21 +106,39 @@ public class MBooking
             this.rigType = b.getRigType();
         }
         else this.bType = BType.RIG;
-        
-        /* The start slot is always the slot where the time lies in. */
-        this.startSlot = TimeUtil.getSlotIndex(b.getStartTime());
-        
-        /* The end slot may be where the time falls or the preceding slot if
-         * the booking ends exactly when the next slot starts. */
-        Calendar end = Calendar.getInstance();
-        end.setTime(b.getEndTime());
-        this.endSlot = TimeUtil.getSlotIndex(end);
-        
-        if (this.endSlot * TIME_QUANTUM == 
-            end.get(Calendar.HOUR) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
+
+        if (TimeUtil.getDayBegin(this.day).getTime().after(b.getStartTime()))
         {
-            /* Not point wasting a slot when its time isn't used. */
-            this.endSlot--;
+            /* The booking starts on the previous day and continues today. */
+            this.startSlot = 0;
+            this.isMultiDay = true;
+        }
+        else
+        {
+            /* The start slot is always the slot where the time lies in. */
+            this.startSlot = TimeUtil.getSlotIndex(b.getStartTime());
+        }
+        
+        if (TimeUtil.getDayEnd(this.day).getTime().before(b.getEndTime()))
+        {
+            /* The booking continues the following day. */
+            this.endSlot = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM - 1;
+            this.isMultiDay = true;
+        }
+        else
+        {
+            /* The end slot may be where the time falls or the preceding slot if
+             * the booking ends exactly when the next slot starts. */
+            Calendar end = Calendar.getInstance();
+            end.setTime(b.getEndTime());
+            this.endSlot = TimeUtil.getSlotIndex(end);
+            
+            if (this.endSlot * TIME_QUANTUM == 
+                end.get(Calendar.HOUR) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
+            {
+                /* Not point wasting a slot when its time isn't used. */
+                this.endSlot--;
+            }
         }
         
         /* The number of slots between start and end inclusive. */
@@ -177,27 +203,42 @@ public class MBooking
         return this.reqCaps;
     }
     
+    public String getDay()
+    {
+        return this.day;
+    }
+
+    public boolean isMultiDay()
+    {
+        return this.isMultiDay;
+    }
+
     @Override
     public boolean equals(Object o)
     {
         if (o == null) return false;
         if (!(o instanceof MBooking)) return false;
         
-        if (this.booking == null)
+        if (this.booking == null || this.day == null)
         {
             return o == this;
         }
         
-        return ((MBooking)o).getBooking().getId().equals(this.booking.getId());
+        MBooking m = (MBooking)o;
+        return m.getBooking().getId().equals(this.booking.getId()) && this.day.equals(m.getDay());
     }
     
     @Override
     public int hashCode()
     {
-        if (this.booking == null)
+        if (this.booking == null || this.day == null)
         {
             return super.hashCode();
         }
-        return this.booking.getId().hashCode();
+        
+        int result = 23;
+        result = result * 17 + this.booking.getId().hashCode();
+        result = result * 17 + this.day.hashCode();
+        return result;
     }
 }

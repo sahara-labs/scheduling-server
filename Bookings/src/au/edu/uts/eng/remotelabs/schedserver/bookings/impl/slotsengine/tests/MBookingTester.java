@@ -44,6 +44,7 @@ import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 
 /**
@@ -66,7 +67,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.HOUR, 1);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b);
+        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
@@ -91,7 +92,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.MINUTE, 30);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b);
+        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
@@ -117,7 +118,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.SECOND, 1);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b);
+        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
@@ -143,7 +144,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.SECOND, 59);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b);
+        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
