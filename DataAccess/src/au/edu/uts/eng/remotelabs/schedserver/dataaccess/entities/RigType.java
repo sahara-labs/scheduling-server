@@ -105,18 +105,6 @@ public class RigType implements java.io.Serializable
         this.codeAssignable = codeAssignable;
     }
 
-    public RigType(final String name, final int logoffGraceDuration,
-            final boolean codeAssignable,
-            final Set<ResourcePermission> resourcePermissions,
-            final Set<Rig> rigs)
-    {
-        this.name = name;
-        this.logoffGraceDuration = logoffGraceDuration;
-        this.codeAssignable = codeAssignable;
-        this.resourcePermissions = resourcePermissions;
-        this.rigs = rigs;
-    }
-
     @Id
     @GeneratedValue(strategy = AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -229,5 +217,35 @@ public class RigType implements java.io.Serializable
     public void setBookings(Set<Bookings> bookings)
     {
         this.bookings = bookings;
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (!(o instanceof RigType)) return false;
+        
+        if (this.name == null)
+        {
+            return false;
+        }
+        else
+        {
+            RigType t = (RigType)o;
+            return this.name.equals(t);
+        }
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        if (this.name == null)
+        {
+            return super.hashCode();
+        }
+        else
+        {
+            return this.name.hashCode();
+        }
     }
 }

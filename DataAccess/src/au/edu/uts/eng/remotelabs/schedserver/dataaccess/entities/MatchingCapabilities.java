@@ -77,6 +77,13 @@ public class MatchingCapabilities implements java.io.Serializable
     {
         /* Bean style constructor. */
     }
+    
+    public MatchingCapabilities(final RequestCapabilities requestCapabilities, final RigCapabilities rigCapabilities)
+    {
+        this.id = new MatchingCapabilitiesId(rigCapabilities.getId(), requestCapabilities.getId());
+        this.requestCapabilities = requestCapabilities;
+        this.rigCapabilities = rigCapabilities;
+    }
 
     public MatchingCapabilities(final MatchingCapabilitiesId id,
             final RequestCapabilities requestCapabilities,

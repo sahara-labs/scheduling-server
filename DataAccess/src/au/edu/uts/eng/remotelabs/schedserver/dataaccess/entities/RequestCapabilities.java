@@ -85,15 +85,6 @@ public class RequestCapabilities implements java.io.Serializable
         this.capabilities = capabilities;
     }
 
-    public RequestCapabilities(final String capabilities,
-            final Set<ResourcePermission> resourcePermissions,
-            final Set<MatchingCapabilities> matchingCapabilitieses)
-    {
-        this.capabilities = capabilities;
-        this.resourcePermissions = resourcePermissions;
-        this.matchingCapabilitieses = matchingCapabilitieses;
-    }
-
     @Id
     @GeneratedValue(strategy = AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -152,5 +143,35 @@ public class RequestCapabilities implements java.io.Serializable
     public void setBookings(Set<Bookings> bookings)
     {
         this.bookings = bookings;
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (!(o instanceof RequestCapabilities)) return false;
+        
+        RequestCapabilities r = (RequestCapabilities)o;
+        if (this.capabilities == null)
+        {
+            return false;
+        }
+        else
+        {
+            return this.capabilities.equals(r.getCapabilities());
+        }
+    }
+   
+    @Override
+    public int hashCode()
+    {
+        if (this.capabilities == null)
+        {
+            return super.hashCode();
+        }
+        else
+        {
+            return this.capabilities.hashCode();
+        }
     }
 }

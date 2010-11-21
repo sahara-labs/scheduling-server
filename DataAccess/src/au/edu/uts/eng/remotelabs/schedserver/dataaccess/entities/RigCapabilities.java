@@ -142,4 +142,34 @@ public class RigCapabilities implements java.io.Serializable
     {
         this.rigs = rigs;
     }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (!(o instanceof RigCapabilities)) return false;
+        
+        RigCapabilities r = (RigCapabilities)o;
+        if (this.capabilities == null)
+        {
+            return false;
+        }
+        else
+        {
+            return this.capabilities.equals(r.getCapabilities());
+        }
+    }
+   
+    @Override
+    public int hashCode()
+    {
+        if (this.capabilities == null)
+        {
+            return super.hashCode();
+        }
+        else
+        {
+            return this.capabilities.hashCode();
+        }
+    }
 }
