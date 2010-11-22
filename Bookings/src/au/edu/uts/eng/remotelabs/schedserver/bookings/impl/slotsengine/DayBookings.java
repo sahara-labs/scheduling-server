@@ -107,7 +107,68 @@ public class DayBookings
      */
     public List<MRange> getFreeSlots(Rig rig, int start, int end, Session ses)
     {
-        RigBookings rb = this.getRigBookings(rig, ses);
+        RigBookings rigBookings = this.getRigBookings(rig, ses);
+        
+        List<MRange> actualFree = rigBookings.getFreeSlots();
+        List<MRange> balancedFree = new ArrayList<MRange>();
+        
+        /* For the other free times, attempt to load balance the bookings off the rig. */
+        int fs = start;
+        while (fs < end)
+        {
+            MBooking membooking = rigBookings.getNextBooking(fs);
+            if (membooking == null)
+            {
+                break;
+            }
+            
+            /* If multi-day booking, we can't load balance in this perspective
+             * as this could leave the rig in a inconsistent state. */
+            if (membooking.isMultiDay())
+            {
+                fs = membooking.getEndSlot() + 1;
+                continue;
+            }
+            
+            RigBookings next;
+            switch (membooking.getType())
+            {
+                /* Rig bookings can't be loaded balanced. */
+                case RIG:
+                    break;
+                    
+                case TYPE:
+                    next = rigBookings.getTypeLoopNext();
+                    do
+                    {
+                        if (this.loadBalance(next, membooking, false))
+                        {
+                            balancedFree.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
+                            break;
+                        }
+                    }
+                    while (next != rigBookings);
+                    break;
+                    
+                case CAPABILITY:
+                    next = rigBookings.getCapsLoopNext(membooking.getRequestCapabilities());
+                    do
+                    {
+                        if (this.loadBalance(next, membooking, false))
+                        {
+                            balancedFree.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
+                            break;
+                        }
+                    }
+                    while (next != rigBookings);
+                    break;
+            }
+            
+            fs = membooking.getEndSlot() + 1;
+        }
+        
+        /* Collapse ranges to a single range period. */
+
         
         return null;
     }

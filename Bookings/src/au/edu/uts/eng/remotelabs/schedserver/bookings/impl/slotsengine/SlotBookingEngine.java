@@ -71,9 +71,6 @@ public class SlotBookingEngine implements BookingEngine
         this.days = new HashMap<String, DayBookings>();
     }
     
-    /**
-     * Load from now till the end of hot days into memory.
-     */
     @Override
     public void init()
     {
