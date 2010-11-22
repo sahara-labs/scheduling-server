@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -54,7 +55,6 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -121,15 +121,15 @@ public class DayBookingsTester extends TestCase
         RigType rigType2 = new RigType("booktestrigtype2", 300, false);
         ses.save(rigType2);
         
-        RigCapabilities caps = new RigCapabilities("book,test,foo");
-        ses.save(caps);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
         RigCapabilities caps2 = new RigCapabilities("book,test,bar");
         ses.save(caps2);
         RigCapabilities caps3 = new RigCapabilities("book,baz,foo");
         ses.save(caps3);
         
-        RequestCapabilities rcaps = new RequestCapabilities("book");
-        ses.save(rcaps);
+        RequestCapabilities rcaps1 = new RequestCapabilities("book");
+        ses.save(rcaps1);
         RequestCapabilities rcaps2 = new RequestCapabilities("foo");
         ses.save(rcaps2);
         RequestCapabilities rcaps3 = new RequestCapabilities("bar");
@@ -139,47 +139,30 @@ public class DayBookingsTester extends TestCase
         r1.setName("bkrig1");
         r1.setRigType(rigType1);
         r1.setLastUpdateTimestamp(new Date());
-        r1.setRigCapabilities(caps);
+        r1.setRigCapabilities(caps1);
         ses.save(r1);
         Rig r2 = new Rig();
         r2.setName("bkrig2");
         r2.setRigType(rigType1);
         r2.setLastUpdateTimestamp(new Date());
-        r2.setRigCapabilities(caps);
+        r2.setRigCapabilities(caps2);
         ses.save(r2);Rig r3 = new Rig();
         r3.setName("bkrig3");
-        r3.setRigType(rigType1);
+        r3.setRigType(rigType2);
         r3.setLastUpdateTimestamp(new Date());
-        r3.setRigCapabilities(caps);
+        r3.setRigCapabilities(caps3);
         ses.save(r3);
-        Rig r4 = new Rig();
-        r4.setName("bkrig4");
-        r4.setRigType(rigType1);
-        r4.setLastUpdateTimestamp(new Date());
-        r4.setRigCapabilities(caps);
-        ses.save(r4);
-        Rig r5 = new Rig();
-        r5.setName("bkrig5");
-        r5.setRigType(rigType1);
-        r5.setLastUpdateTimestamp(new Date());
-        r5.setRigCapabilities(caps);
-        ses.save(r5);
-        Rig r6 = new Rig();
-        r6.setName("bkrig6");
-        r6.setRigType(rigType2);
-        r6.setLastUpdateTimestamp(new Date());
-        r6.setRigCapabilities(caps);
-        ses.save(r6);
+       
         ResourcePermission perm1 = new ResourcePermission();
         perm1.setUserClass(uclass1);
-        perm1.setType("TYPE");
+        perm1.setType("CAPABIlITY");
         perm1.setSessionDuration(3600);
         perm1.setQueueActivityTimeout(300);
         perm1.setAllowedExtensions((short)10);
         perm1.setSessionActivityTimeout(300);
         perm1.setExtensionDuration(300);
         perm1.setMaximumBookings(10);
-        perm1.setRigType(rigType1);
+        perm1.setRequestCapabilities(rcaps1);
         perm1.setStartTime(new Date());
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
@@ -190,8 +173,8 @@ public class DayBookingsTester extends TestCase
         bk1.setStartTime(begin.getTime());
         bk1.setEndTime(end.getTime());
         bk1.setResourcePermission(perm1);
-        bk1.setResourceType("TYPE");
-        bk1.setRigType(rigType1);
+        bk1.setResourceType("CAPABILITY");
+        bk1.setRequestCapabilities(rcaps1);
         bk1.setUser(us1);
         bk1.setUserName(us1.getName());
         bk1.setUserNamespace(us1.getNamespace());
@@ -203,8 +186,8 @@ public class DayBookingsTester extends TestCase
         bk2.setStartTime(begin.getTime());
         bk2.setEndTime(end.getTime());
         bk2.setResourcePermission(perm1);
-        bk2.setResourceType("TYPE");
-        bk2.setRigType(rigType1);
+        bk2.setResourceType("CAPABILITY");
+        bk2.setRequestCapabilities(rcaps2);
         bk2.setUser(us1);
         bk2.setUserName(us1.getName());
         bk2.setUserNamespace(us1.getNamespace());
@@ -215,72 +198,23 @@ public class DayBookingsTester extends TestCase
         bk3.setStartTime(begin.getTime());
         bk3.setEndTime(end.getTime());
         bk3.setResourcePermission(perm1);
-        bk3.setResourceType("TYPE");
-        bk3.setRigType(rigType1);
+        bk3.setResourceType("CAPABILITY");
+        bk3.setRequestCapabilities(rcaps3);
         bk3.setUser(us1);
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        Bookings bk4 = new Bookings();
-        bk4.setActive(true);
-        bk4.setDuration(3600);
-        bk4.setStartTime(begin.getTime());
-        bk4.setEndTime(end.getTime());
-        bk4.setResourcePermission(perm1);
-        bk4.setResourceType("TYPE");
-        bk4.setRigType(rigType1);
-        bk4.setUser(us1);
-        bk4.setUserName(us1.getName());
-        bk4.setUserNamespace(us1.getNamespace());
-        ses.save(bk4);
-        Bookings bk5 = new Bookings();
-        bk5.setActive(true);
-        bk5.setDuration(7200);
-        bk5.setStartTime(begin.getTime());
-        bk5.setEndTime(end.getTime());
-        bk5.setResourcePermission(perm1);
-        bk5.setResourceType("TYPE");
-        bk5.setRigType(rigType1);
-        bk5.setUser(us1);
-        bk5.setUserName(us1.getName());
-        bk5.setUserNamespace(us1.getNamespace());
-        ses.save(bk5);
-        /* Overbook. */
-        Bookings bk6 = new Bookings();
-        bk6.setActive(true);
-        bk6.setDuration(1800);
-        bk6.setStartTime(begin.getTime());
-        bk6.setEndTime(end.getTime());
-        bk6.setResourcePermission(perm1);
-        bk6.setResourceType("TYPE");
-        bk6.setRigType(rigType1);
-        bk6.setUser(us1);
-        bk6.setUserName(us1.getName());
-        bk6.setUserNamespace(us1.getNamespace());
-        ses.save(bk6);
-        /* Different type. */
-        Bookings bk7 = new Bookings();
-        bk7.setActive(true);
-        bk7.setDuration(1800);
-        bk7.setStartTime(begin.getTime());
-        bk7.setEndTime(end.getTime());
-        bk7.setResourcePermission(perm1);
-        bk7.setResourceType("TYPE");
-        bk7.setRigType(rigType2);
-        bk7.setUser(us1);
-        bk7.setUserName(us1.getName());
-        bk7.setUserNamespace(us1.getNamespace());
-        ses.save(bk7);
+        
         ses.getTransaction().commit();
         
         ses.beginTransaction();
-        MatchingCapabilities mc1 = new MatchingCapabilities(rcaps, caps);
+        MatchingCapabilities mc1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mc1);
-        MatchingCapabilities mc2 = new MatchingCapabilities(rcaps, caps2);
+        MatchingCapabilities mc2 = new MatchingCapabilities(rcaps1, caps2);
         ses.save(mc2);
-        MatchingCapabilities mc3 = new MatchingCapabilities(rcaps, caps3);
+        MatchingCapabilities mc3 = new MatchingCapabilities(rcaps1, caps3);
         ses.save(mc3);
-        MatchingCapabilities mc4 = new MatchingCapabilities(rcaps2, caps);
+        MatchingCapabilities mc4 = new MatchingCapabilities(rcaps2, caps1);
         ses.save(mc4);
         MatchingCapabilities mc5 = new MatchingCapabilities(rcaps2, caps3);
         ses.save(mc5);
@@ -290,22 +224,21 @@ public class DayBookingsTester extends TestCase
         
         ses.refresh(rigType1);
         ses.refresh(rigType2);
-        ses.refresh(caps);
+        ses.refresh(caps1);
         ses.refresh(caps2);
         ses.refresh(caps3);
-        ses.refresh(rcaps);
+        ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
+        ses.refresh(r1);
+        ses.refresh(r2);
+        ses.refresh(r3);
         
         Method m = DayBookings.class.getDeclaredMethod("getRigBookings", Rig.class, Session.class);
         m.setAccessible(true);
         RigBookings rb = (RigBookings)m.invoke(this.day, r1, ses);
         
         ses.beginTransaction();
-        ses.delete(bk7);
-        ses.delete(bk6);
-        ses.delete(bk5);
-        ses.delete(bk4);
         ses.delete(bk3);
         ses.delete(bk2);
         ses.delete(bk1);
@@ -313,19 +246,16 @@ public class DayBookingsTester extends TestCase
         ses.delete(r1);
         ses.delete(r2);
         ses.delete(r3);
-        ses.delete(r4);
-        ses.delete(r5);
-        ses.delete(r6);
         ses.delete(mc1);
         ses.delete(mc2);
         ses.delete(mc3);
         ses.delete(mc4);
         ses.delete(mc5);
         ses.delete(mc6);
-        ses.delete(rcaps);
+        ses.delete(rcaps1);
         ses.delete(rcaps2);
         ses.delete(rcaps3);
-        ses.delete(caps);
+        ses.delete(caps1);
         ses.delete(caps2);
         ses.delete(caps3);
         ses.delete(rigType1);
@@ -336,35 +266,58 @@ public class DayBookingsTester extends TestCase
         
         assertNotNull(rb);
         
-        int i = 0;
-        List<Rig> rigs = new ArrayList<Rig>(5);
-        rigs.add(r1);
-        rigs.add(r2);
-        rigs.add(r3);
-        rigs.add(r4);
-        rigs.add(r5);
+        RigBookings rb1 = (RigBookings)m.invoke(this.day, r1, ses);
+        assertNotNull(rb1);
+        RigBookings rb2 = (RigBookings)m.invoke(this.day, r2, ses);
+        assertNotNull(rb2);
+        RigBookings rb3 = (RigBookings)m.invoke(this.day, r3, ses);
+        assertNotNull(rb3);
         
+        /* Check type loops. */
+        assertTrue(rb1.getTypeLoopNext() == rb2);
+        assertTrue(rb2.getTypeLoopNext() == rb1);
+        assertTrue(rb3.getTypeLoopNext() == rb3);
+        
+        /* Check caps loaded. */
+        Field f = DayBookings.class.getDeclaredField("loadedCapabilites");
+        f.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Set<RequestCapabilities> reqList = (Set<RequestCapabilities>)f.get(this.day);
+        assertNotNull(reqList);
+        assertEquals(3, reqList.size());
+        
+        /* Check caps loops. */                
+        assertTrue(rb2.getCapsLoopNext(rcaps3) == rb2);
+        assertTrue(rb1.getCapsLoopNext(rcaps2) == rb3);
+        assertTrue(rb3.getCapsLoopNext(rcaps2) == rb1);
+        
+        int i = 0;
         RigBookings next = rb;
+        List<Rig> rigs = new ArrayList<Rig>(3);
         do
         {
             i++;
-            assertTrue(rigs.remove(next.getRig()));
-            assertFalse(next.areSlotsFree(0, 95));
-            assertEquals(0, next.getFreeSlots().size());
-            next = next.getTypeLoopNext();
+            rigs.add(next.getRig());
+            next = next.getCapsLoopNext(rcaps1);
         }
         while (next != rb);
         
-        assertEquals(5, i);
-        assertEquals(0, rigs.size());
+        assertEquals(3, i);
+        assertTrue(rigs.contains(r1));
+        assertTrue(rigs.contains(r2));
+        assertTrue(rigs.contains(r3));
         
+        /* Check the bookings are assigned to a rig. */
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
-        assertTrue(bk4.isActive());
-        assertTrue(bk5.isActive());
-        assertFalse(bk6.isActive());
-        assertTrue(bk7.isActive());
+        
+        assertTrue(rb2.hasBooking(new MBooking(bk3, this.dayStr)));
+        assertTrue(rb1.hasBooking(new MBooking(bk2, this.dayStr)) || 
+                   rb3.hasBooking(new MBooking(bk2, this.dayStr)));
+        assertTrue(rb1.hasBooking(new MBooking(bk1, this.dayStr)) || 
+                   rb2.hasBooking(new MBooking(bk1, this.dayStr)) || 
+                   rb3.hasBooking(new MBooking(bk1, this.dayStr)));
     }
     
     public void testGetRigBookingsTestTypeLoopOne() throws Exception

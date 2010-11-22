@@ -285,6 +285,26 @@ public class RigBookings
         
         return true;
     }
+
+    /**
+     * Gets the booking that is on the slot or immediately proceeds the
+     * slot. If there is booking then <tt>null</tt> is returned.
+     * 
+     * @param slot start slot
+     * @return booking or null if not found
+     */
+    public MBooking getNextBooking(int slot)
+    {   
+        /* No point seeking if there isn't a booking the slot following range. */
+        if (slot > this.endSlot) return null;
+        
+        for ( ; slot < this.slots.length; slot++)
+        {
+            if (this.slots[slot] != null) return this.slots[slot];
+        }
+        
+        return null;
+    }
     
     public int getNumBookings()
     {

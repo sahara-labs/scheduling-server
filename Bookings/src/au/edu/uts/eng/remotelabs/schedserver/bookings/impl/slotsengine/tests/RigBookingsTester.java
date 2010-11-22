@@ -81,6 +81,7 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[])f.get(this.bookings);
         assertEquals(96, slots.length);
+        assertNull(this.bookings.getNextBooking(10));
     }
 
     public void testAreSlotsFreeOneBookings() throws Throwable
@@ -371,7 +372,8 @@ public class RigBookingsTester extends TestCase
         
         List<MRange> range = this.bookings.getFreeSlots();
         assertNotNull(range);
-        assertEquals(0, range.size());    
+        assertEquals(0, range.size());
+        assertNotNull(this.bookings.getNextBooking(95));
     }
     
     public void testGetFreeTwoBookings() throws Exception
@@ -410,6 +412,7 @@ public class RigBookingsTester extends TestCase
         MRange r = range.get(0);
         assertEquals(0, r.getStartSlot());
         assertEquals(9, r.getEndSlot());
+        assertEquals(10, this.bookings.getNextBooking(0).getStartSlot());
         
         r = range.get(1);
         assertEquals(21, r.getStartSlot());

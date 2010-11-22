@@ -48,6 +48,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -154,6 +155,115 @@ public class DayBookings
         
         return this.rigBookings.get(rig);
     }
+    
+    /**
+     * Runs load balancing of a rig. Load balancing attempts to free the slots
+     * for the memory booking, w
+     * 
+     * @param rb the rig bookings to free the slots
+     * @param bk bookings to try and fit it
+     * @param doCommit whether the load balancing will actually be committed 
+     * @return true if successfully able to load balance
+     */
+    private boolean loadBalance(RigBookings br, MBooking bk, boolean doCommit)
+    {
+        int start = bk.getStartSlot();
+        
+        while (start < bk.getEndSlot())
+        {
+            MBooking ex = br.getNextBooking(bk.getStartSlot());
+            if (ex == null || ex.getStartSlot() > bk.getEndSlot())
+            {
+                /* We have already finished balancing all the required bookings,
+                 * so no more work to do. */
+                return true;
+            }
+            
+            boolean hasBalanced = false;
+            RigBookings next;
+            switch (ex.getType())
+            {
+                case RIG:
+                    /* Unable to move rig bookings. They are fixed to the 
+                     * booked rig. */
+                    return false;
+                    
+                case TYPE:
+                    /* There isn't any advantage to balancing a type booking 
+                     * when the new booking is a type booking. Getting to this,
+                     * with a type booking implies the type loop is already
+                     * saturated. */
+                    if (bk.getType() == BType.TYPE) return false;
+                    
+                    /* Run through the type loop to try to balance the booking. */
+                    next = br.getTypeLoopNext();
+                    while (next != br)
+                    {
+                        if (next.areSlotsFree(ex))
+                        {
+                            /* Found free slots. */
+                            if (doCommit)
+                            {
+                                this.logger.debug("Balancing type booking from rig " + br.getRig().getName() + " to rig " +
+                                        next.getRig().getName() + ".");
+                                br.removeBooking(ex);
+                                next.commitBooking(ex);
+                            }
+                            start = ex.getEndSlot();
+                            hasBalanced = true;
+                            break;
+                        }
+                        
+                        next = next.getTypeLoopNext();
+                    }
+                    
+                    /* We weren't able to balance booking so fail load balance to
+                     * this rig. */
+                    if (!hasBalanced) return false;
+                    
+                    break;
+                    
+                case CAPABILITY:
+                    /* There isn't any advantage to balancing a capability booking 
+                     * of the same type as the new booking. Getting to this with an
+                     * capability booking of the same type implies the capability
+                     * booking loop is already saturated. */
+                    if (bk.getType() == BType.CAPABILITY && 
+                            ex.getRequestCapabilities().equals(bk.getRequestCapabilities())) return false;
+                    
+                    RequestCapabilities reqCaps = ex.getRequestCapabilities();
+                    /* Run through the capability loop to try to balance the booking. */
+                    next = br.getCapsLoopNext(reqCaps);
+                    while (next != br)
+                    {
+                        if (next.areSlotsFree(ex))
+                        {
+                            /* Found free slots. */
+                            if (doCommit)
+                            {
+                                this.logger.debug("Balancing capability booking from rig " + br.getRig().getName() + " to rig " +
+                                        next.getRig().getName() + ".");
+                                br.removeBooking(ex);
+                                next.commitBooking(ex);
+                            }
+                            start = ex.getEndSlot();
+                            hasBalanced = true;
+                            break;
+                        }
+                        
+                        next = next.getCapsLoopNext(reqCaps);
+                    }
+                    
+                    /* We weren't able to balance booking so fail load balance to
+                     * this rig. */
+                    if (!hasBalanced) return false;
+                    
+                    break;
+            }
+        }
+        
+        return true;
+    }
 
     /**
      * Loads the request capabilities.
@@ -209,7 +319,7 @@ public class DayBookings
             RigBookings prev = first;
             for (int i = 1; i < matchingRigs.size(); i++)
             {
-                RigBookings next = this.rigBookings.get(matchingRigs.get(1));
+                RigBookings next = this.rigBookings.get(matchingRigs.get(i));
                 prev.setCapsLoopNext(reqCaps, next);
                 prev = next;
             }
@@ -242,14 +352,40 @@ public class DayBookings
                 }
                 while (next != first);
                 
+                /* The assignment loop was completed and no position was found to put
+                 * the booking, so run load balance to try to free a resource. */
                 if (!next.hasBooking(membooking))
                 {
-                    /* The loop was completed and no position was found to put 
-                     * the booking, so the request capabilities was over-booked. 
-                     * The booking  will need to be canceled. */
+                    do
+                    {
+                        if (this.loadBalance(next, membooking, true))
+                        {
+                            if (next.commitBooking(membooking))
+                            {
+                                /* If there is a next booking, try load it to the next rig. */
+                                first = next.getCapsLoopNext(reqCaps);
+                                break;
+
+                            }
+                            else
+                            {
+                                this.logger.error("Failed to commit a booking to a slots that should of been empty. " +
+                                		"This is a probable race condition. Ominous, but the loading search will " +
+                                		"continue regardless.");
+                            }
+                            next = next.getCapsLoopNext(reqCaps);
+                        }
+                    }
+                    while (next != first);                    
+                }
+
+                /* The balancing loop was completed and no position was found to put
+                 * the booking, so the booking will need to be canceled. */
+                if (!next.hasBooking(membooking))
+                {
                     this.logger.error("Request capabilities '" + reqCaps.getCapabilities() + "' is over commited " +
-                    		"and has over lapping bookings. The booking for '" + booking.getUserNamespace() + ':' + 
-                    		booking.getUserName() + "' starting at " + booking.getStartTime() + " is being cancelled.");
+                            "and has over lapping bookings. The booking for '" + booking.getUserNamespace() + ':' + 
+                            booking.getUserName() + "' starting at " + booking.getStartTime() + " is being cancelled.");
                     booking.setActive(false);
                     booking.setCancelReason("Request capabilities was overbooked.");
                     ses.beginTransaction();
@@ -340,11 +476,38 @@ public class DayBookings
             }
             while (next != first);
             
+            /* The assignment loop was completed and no position was found to put
+             * the booking, so run load balance to try to free a resource. */
             if (!next.hasBooking(membooking))
             {
-                /* The loop was completed and no position was found to put 
-                 * the booking, so the type was over-booked. The booking 
-                 * will need to be canceled. */
+                do
+                {
+                    if (this.loadBalance(next, membooking, true))
+                    {
+                        if (next.commitBooking(membooking))
+                        {
+                            /* If there is a next booking, try load it to the next rig. */
+                            first = next.getTypeLoopNext();
+                            break;
+
+                        }
+                        else
+                        {
+                            this.logger.error("Failed to commit a booking to a slots that should of been empty. " +
+                                    "This is a probable race condition. Ominous, but the loading search will " +
+                                    "continue regardless.");
+                        }
+                        next = next.getTypeLoopNext();
+                    }
+                }
+                while (next != first);                    
+            }
+            
+            /* The balancing loop was completed and no position was found to put 
+             * the booking, so the type was over-booked. The booking will need to be canceled. */
+            if (!next.hasBooking(membooking))
+            {
+                
                 this.logger.error("Rig type '" + rigType.getName() + "' is over commited and has over lapping bookings. " +
                     "The booking for '" + booking.getUserNamespace() + ':' + booking.getUserName() + "' starting at " +
                     booking.getStartTime() + " is being cancelled.");
