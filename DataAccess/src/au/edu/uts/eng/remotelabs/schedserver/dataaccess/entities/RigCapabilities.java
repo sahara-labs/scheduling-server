@@ -172,4 +172,10 @@ public class RigCapabilities implements java.io.Serializable
             return this.capabilities.hashCode();
         }
     }
+    
+    @Override
+    public String toString()
+    {
+        return this.capabilities;
+    }
 }
