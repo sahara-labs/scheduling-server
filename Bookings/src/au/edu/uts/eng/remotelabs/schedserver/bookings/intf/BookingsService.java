@@ -237,7 +237,9 @@ public class BookingsService implements BookingsInterface
             }
             else if (!request.showFinished())
             {
-                cri.add(Restrictions.isNotNull("cancelReason"));
+                cri.add(Restrictions.or(
+                        Restrictions.isNotNull("cancelReason"),
+                        Restrictions.eq("active", Boolean.TRUE)));
             }
             else if (!request.showCancelled())
             {
