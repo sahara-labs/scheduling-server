@@ -154,45 +154,71 @@ public class RigBookings
      * Gets the free booking holes for this rig. A hole is the threshold number of 
      * free slots. The minimum threshold is 1 (i.e. just free slots).
      * 
-     * @return thres threshold for a hole
+     * @param thres threshold for a hole
      * @return free slots
      */
     public List<MRange> getFreeSlots(int thres)
     {
+        return this.getFreeSlots(0, this.slots.length - 1, thres);
+    }
+    
+    /**
+     * Gets the free booking holes for this rig within the start and end range.
+     * A hole is the threshold number of free slots. The minimum threshold is 
+     * 1 (i.e. just free slots).
+     * 
+     * @param start start index
+     * @param end end index
+     * @param thres threshold for a hole
+     * @return free slots
+     */
+    public List<MRange> getFreeSlots(int start, int end, int thres)
+    {
         List<MRange> free = new ArrayList<MRange>();
         
-        if (this.numBookings == 0)
+        if (this.numBookings == 0 || this.startSlot > end)
         {
-            free.add(new MRange(0, this.slots.length - 1, this.dayKey));
+            free.add(new MRange(start, end, this.dayKey));
             return free;
         }
         
+        /* Coerce the threshold to at least 1 slot. */
         if (thres < 1) thres = 1;
         
-        if (this.startSlot - 1 >= thres)
+        if (this.startSlot > start && this.startSlot - start > thres)
         {
-            free.add(new MRange(0, this.startSlot - 1, this.dayKey));
+            free.add(new MRange(start, this.startSlot - 1, this.dayKey));
         }
         
         int num = this.numBookings - 1;
-        int fs = this.slots[this.startSlot].getEndSlot() + 1;
+        int fs = start;
+        if (this.startSlot >= start) fs = this.slots[this.startSlot].getEndSlot() + 1;
+        if (this.slots[start] != null) fs = this.slots[start].getEndSlot() + 1;
+        
         int ef;
         while (num > 0)
         {
             ef = fs;
             while (ef < this.endSlot && this.slots[++ef] == null);
             
-            /* We have reached the end of the slots. */
-            if (ef == this.slots.length) break;
+            if (ef >= end)
+            {
+                if (this.slots[ef - 1] == null)
+                {
+                    /* We have reached the end of the slots. */
+                    if (ef - fs >= thres) free.add(new MRange(fs, end, this.dayKey));
+                }
+                break;
+            }
  
             num--;
             if (ef - fs >= thres) free.add(new MRange(fs, ef - 1, this.dayKey));
             fs = this.slots[ef].getEndSlot() + 1;
         }
         
-        if (this.slots.length - this.endSlot > thres)
+        if (end + 1 - this.endSlot > thres)
         {
-            free.add(new MRange(this.endSlot + 1, this.slots.length - 1, this.dayKey));
+            free.add(new MRange(this.endSlot + 1, end, this.dayKey));
         }
 
         return free;

@@ -461,6 +461,144 @@ public class RigBookingsTester extends TestCase
         assertEquals(89, r.getEndSlot());
     }
     
+    public void testGetFreeRange() throws Exception
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[])f.get(this.bookings);
+        
+        MBooking m = new MBooking(0, 20, BType.RIG);
+        for (int i = 0; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(90, 95, BType.RIG);
+        for (int i = 90; i <= 95; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 0);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 95);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 2);
+        
+        List<MRange> range = this.bookings.getFreeSlots(21, 89, 1);
+        assertNotNull(range);
+        assertEquals(1, range.size());
+        
+        MRange r = range.get(0);
+        assertEquals(21, r.getStartSlot());
+        assertEquals(89, r.getEndSlot());
+    }
+    
+    public void testGetFreeRange2() throws Exception
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[])f.get(this.bookings);
+        
+        MBooking m = new MBooking(0, 20, BType.RIG);
+        for (int i = 0; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 40, BType.RIG);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(50, 70, BType.RIG);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 0);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        List<MRange> range = this.bookings.getFreeSlots(10, 60, 1);
+        assertNotNull(range);
+        assertEquals(2, range.size());
+        
+        MRange r = range.get(0);
+        assertEquals(21, r.getStartSlot());
+        assertEquals(29, r.getEndSlot());
+        
+        r = range.get(1);
+        assertEquals(41, r.getStartSlot());
+        assertEquals(49, r.getEndSlot());
+    }
+    
+    public void testGetFreeRange3() throws Exception
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[])f.get(this.bookings);
+        
+        MBooking m = new MBooking(0, 20, BType.RIG);
+        for (int i = 0; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 40, BType.RIG);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(50, 60, BType.RIG);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 0);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 60);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        List<MRange> range = this.bookings.getFreeSlots(10, 70, 1);
+        assertNotNull(range);
+        assertEquals(3, range.size());
+        
+        MRange r = range.get(0);
+        assertEquals(21, r.getStartSlot());
+        assertEquals(29, r.getEndSlot());
+        
+        r = range.get(1);
+        assertEquals(41, r.getStartSlot());
+        assertEquals(49, r.getEndSlot());
+        
+        r = range.get(2);
+        assertEquals(61, r.getStartSlot());
+        assertEquals(70, r.getEndSlot());
+    }
+    
     public void testLots() throws Exception
     {
         Field f = RigBookings.class.getDeclaredField("slots");
