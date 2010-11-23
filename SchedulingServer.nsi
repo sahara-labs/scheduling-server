@@ -612,7 +612,7 @@ FunctionEnd
 Function setupDatabasePost
     ${NSD_GetText} $ComboBox $DBType
     ${If} $DBType S== "$DBTypeStr"
-        MessageBox MB_OK|MB_ICONEXCLAMATION "Database not selected"
+        MessageBox MB_OK|MB_ICONEXCLAMATION "Please select a database"
         Abort
     ${EndIf}
     ${If} $DBType S!= "MySQL"
@@ -654,8 +654,8 @@ FunctionEnd
 Function checkDB
     ${If} $DBType S== "MySQL"
         ${IfNot} ${FileExists} $DBDir\mysql.exe
-            !insertmacro writeToLog "The executable mysql.exe could not be found in $DBDir."
-            MessageBox MB_OK|MB_ICONEXCLAMATION "The executable mysql.exe could not be found in $DBDir."
+            !insertmacro writeToLog "The executable mysql.exe could not be found in $DBDir. Please select the correct location"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "The executable mysql.exe could not be found in $DBDir. Please select the correct location"
             Abort
         ${Else}
             StrCpy $DBExec "$DBDir\mysql.exe"
@@ -751,7 +751,7 @@ FunctionEnd
 Function createDatabase
     ${If} $DBType S== "MySQL"
         ; create database
-        nsExec::ExecToStack /OEM '"$DBExec" -u $DBAdmin --password=$DBAdminPass -e "CREATE DATABASE $DBName"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "CREATE DATABASE $DBName"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
@@ -770,7 +770,7 @@ Function createDatabase
         ${If} $0 S!= "0" 
             ${OrIf} $1 S!= ""
             !insertmacro writeToLog "Error in creating database $DBName. Skipping further setup actions - $\n$1"
-            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating database $DBName. Skipping further setup actions - $1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating database $DBName. Skipping further setup actions - $\n$\n$1"
             StrCpy $DBStatus "-1"
         ${Else}
             StrCpy $DBStatus ""
@@ -937,7 +937,7 @@ Function revertBackPrivileges
     ; MessageBox MB_OK "Reverting back privileges"
     Var /GLOBAL revertStatus
     ${If} $DBType S== "MySQL"
-        nsExec::ExecToStack /OEM '"$DBExec" -u $DBAdmin --password=$DBAdminPass -e "revoke all on $DBName.* from $DBUser"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "revoke all on $DBName.* from $DBUser"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
@@ -963,7 +963,7 @@ FunctionEnd
 Function revertBackUser
     ; MessageBox MB_OK "Reverting back user creation"
     ${If} $DBType S== "MySQL"
-        nsExec::ExecToStack /OEM '"$DBExec" -u $DBAdmin --password=$DBAdminPass -e "drop user $DBUser"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "drop user $DBUser"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
@@ -988,7 +988,7 @@ FunctionEnd
 Function revertBackDB
     ; MessageBox MB_OK "Reverting back database"
     ${If} $DBType S== "MySQL"
-        nsExec::ExecToStack /OEM '"$DBExec" -u $DBAdmin --password=$DBAdminPass -e "DROP DATABASE $DBName"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "DROP DATABASE $DBName"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
@@ -1111,7 +1111,7 @@ Function revertBack
                 call revertBackUser
             ${EndIf}
             call revertBackDB
-            Goto FinishSetup
+            Goto DisplayStatus
         ${EndIf}
         ; Schema creation failed - revert back DB creation and 
         ; optionally user creation and granting privileges
@@ -1123,6 +1123,7 @@ Function revertBack
             ${EndIf}
             call revertBackDB
         ${EndIf}
+        DisplayStatus:
         ${If} $revertStatus S== "-1"
             MessageBox MB_OK|MB_ICONEXCLAMATION "Error in reverting back the steps.\
             $\nPlease check the log file $INSTDIR\DatabaseSetup.log for errors"
