@@ -278,4 +278,47 @@ public class TimeUtil
         
         return cal;
     }
+    
+    /**
+     * Compares day strings. Returns:
+     * <ul>
+     *  <li> 0 if the two days are equal</li>
+     *  <li>-1 if d1 is less than d2</li>
+     *  <li> 1 if d1 is greater than d2</li>
+     * </ul>
+     * 
+     * @param d1 day 1
+     * @param d2 day 2
+     * @return a -1, 0, or 1 as d1 is less than, equal to, or greater d2
+     */
+    public static int compareDays(String d1, String d2)
+    {
+        if (d1.equals(d2)) return 0;
+        
+        String d1pts[] = d1.split("-", 3);
+        String d2pts[] = d2.split("-", 3);
+        
+        /* Compare years. */
+        int t1 = Integer.parseInt(d1pts[0]);
+        int t2 = Integer.parseInt(d2pts[0]);
+        
+        if (t1 < t2) return -1;
+        else if (t1 != t2) return 1;
+        
+        /* Compare months. */
+        t1 = Integer.parseInt(d1pts[1]);
+        t2 = Integer.parseInt(d2pts[1]);
+        
+        if (t1 < t2) return -1;
+        else if (t1 != t2) return 1;
+        
+        /* Compare days. */
+        t1 = Integer.parseInt(d1pts[2]);
+        t2 = Integer.parseInt(d2pts[2]);
+        
+        if (t1 < t2) return -1;
+        else if (t1 != t2) return 1;
+        
+        return 0;
+    }
 }

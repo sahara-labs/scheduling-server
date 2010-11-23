@@ -36,15 +36,18 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Slot range.
  */
-public class MRange
+public class MRange implements Comparable<MRange>
 {
-    /** Date key. */
-    private String dateKey;
+    /** Day key. */
+    private String dayKey;
     
     /** The start slot of this range. */
     private int startSlot;
@@ -55,12 +58,49 @@ public class MRange
     /** The number of slots in this range. */
     private int numSlots;
     
-    public MRange(int start, int end, String date)
+    public MRange(int start, int end, String day)
     {
         this.startSlot = start;
         this.endSlot = end;
         this.numSlots = end - start + 1;
-        this.dateKey = date;
+        this.dayKey = day;
+    }
+    
+    /**
+     * Collapse ranges by removing duplicate ranges.
+     * 
+     * @param l1 list of time ranges
+     * @param l2 list of time ranges
+     * @return collapsed ranges
+     */
+    public static List<MRange> collapseRanges(List<MRange> l1, List<MRange> l2)
+    {
+        if (l1.size() == 0) return l2;
+        if (l2.size() == 0) return l1;
+        
+        List<MRange> range = new ArrayList<MRange>(l1.size() + l2.size());
+        range.addAll(l1);
+        range.addAll(l2);
+        Collections.sort(range);
+        
+        /* Collapse all overlapping slots. */
+        for (int i = 0; i < range.size() - 1; i++)
+        {
+            MRange cur = range.get(i);
+            MRange next = range.get(i + 1);
+              
+            /* Ranges are on the same day. */
+            if (cur.getEndSlot() >= next.getStartSlot())
+            {
+                range.remove(next);
+                MRange nm = new MRange(cur.getStartSlot(), 
+                        next.getEndSlot() > cur.getEndSlot() ? next.getEndSlot() : cur.getEndSlot(), cur.getDayKey());
+                range.set(i, nm);
+                i--;
+            }
+        }
+        
+        return range;
     }
 
     public int getStartSlot()
@@ -70,7 +110,7 @@ public class MRange
     
     public Calendar getStart()
     {
-        return TimeUtil.getCalendarFromSlot(this.dateKey, this.startSlot);
+        return TimeUtil.getCalendarFromSlot(this.dayKey, this.startSlot);
     }
 
     public int getEndSlot()
@@ -81,7 +121,7 @@ public class MRange
     public Calendar getEnd()
     {
         /* Bookings finish at the end of their slot. */
-        return TimeUtil.getCalendarFromSlot(this.dateKey, this.endSlot + 1);
+        return TimeUtil.getCalendarFromSlot(this.dayKey, this.endSlot + 1);
     }
 
     public int getNumSlots()
@@ -91,7 +131,7 @@ public class MRange
     
     public String getDayKey()
     {
-        return this.dateKey;
+        return this.dayKey;
     }
     
     @Override
@@ -103,7 +143,7 @@ public class MRange
         
         MRange mr = (MRange)o;
         return mr.getStartSlot() == this.getStartSlot() && mr.getEndSlot() == this.endSlot && 
-                this.dateKey.equals(this.dateKey);
+                this.dayKey.equals(this.dayKey);
     }
     
     @Override
@@ -112,7 +152,24 @@ public class MRange
         int hash = 23;
         hash = hash * 17 + this.startSlot;
         hash = hash * 17 + this.endSlot;
-        hash = hash * 17 + this.dateKey.hashCode();
+        hash = hash * 17 + this.dayKey.hashCode();
         return hash;
+    }
+
+    @Override
+    public int compareTo(MRange o)
+    {
+        /* Checked days. */
+        int cmp = TimeUtil.compareDays(this.dayKey, o.getDayKey());
+        if (cmp != 0) return cmp;
+
+        /* Check start slot. */
+        if (this.startSlot < o.getStartSlot()) return -1;
+        else if (this.startSlot != o.getStartSlot()) return 1;
+        
+        /* Check duration of slots. */
+        if (this.numSlots < o.getNumSlots()) return -1;
+        else if (this.numSlots != o.getNumSlots()) return 1;
+        return 0;
     }
 }

@@ -103,13 +103,14 @@ public class DayBookings
      * @param rig the rig to find free slots of
      * @param start start slot
      * @param end end slot
+     * @param thres minimum number of slots required
      * @return list of free slots
      */
-    public List<MRange> getFreeSlots(Rig rig, int start, int end, Session ses)
+    public List<MRange> getFreeSlots(Rig rig, int start, int end, int thres, Session ses)
     {
         RigBookings rigBookings = this.getRigBookings(rig, ses);
         
-        List<MRange> actualFree = rigBookings.getFreeSlots();
+        List<MRange> actualFree = rigBookings.getFreeSlots(start, end, thres);
         List<MRange> balancedFree = new ArrayList<MRange>();
         
         /* For the other free times, attempt to load balance the bookings off the rig. */
@@ -167,10 +168,7 @@ public class DayBookings
             fs = membooking.getEndSlot() + 1;
         }
         
-        /* Collapse ranges to a single range period. */
-
-        
-        return null;
+        return MRange.collapseRanges(actualFree, balancedFree);
     }
     
     /**

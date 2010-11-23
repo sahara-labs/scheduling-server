@@ -299,4 +299,51 @@ public class TimeUtilTester extends TestCase
         assertEquals(0, TimeUtil.getDaySlotIndex(cal, day));
     }
     
+    public void testCompareDays()
+    {
+        String d1 = "2010-10-10";
+        assertEquals(0, TimeUtil.compareDays(d1, d1));
+    }
+    
+    public void testCompareDaysDiffYear()
+    {
+        String d1 = "2010-10-10";
+        String d2 = "2011-10-10";
+        assertEquals(-1, TimeUtil.compareDays(d1, d2));
+    }
+    
+    public void testCompareDaysDiffYear2()
+    {
+        String d1 = "2012-10-10";
+        String d2 = "2011-10-10";
+        assertEquals(1, TimeUtil.compareDays(d1, d2));
+    }
+    
+    public void testCompareDaysDiffMonth()
+    {
+        String d1 = "2010-9-10";
+        String d2 = "2010-10-10";
+        assertEquals(-1, TimeUtil.compareDays(d1, d2));
+    }
+    
+    public void testCompareDaysDiffMonth2()
+    {
+        String d1 = "2010-11-10";
+        String d2 = "2010-10-10";
+        assertEquals(1, TimeUtil.compareDays(d1, d2));
+    }
+    
+    public void testCompareDaysDiffDay()
+    {
+        String d1 = "2010-10-9";
+        String d2 = "2010-10-10";
+        assertEquals(-1, TimeUtil.compareDays(d1, d2));
+    }
+    
+    public void testCompareDaysDiffDay2()
+    {
+        String d1 = "2010-10-11";
+        String d2 = "2010-10-10";
+        assertEquals(1, TimeUtil.compareDays(d1, d2));
+    }
 }
