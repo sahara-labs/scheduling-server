@@ -191,29 +191,34 @@ public class RigBookings
         }
         
         int num = this.numBookings - 1;
+        
         int fs = start;
+        /* If the first filled slot is passed the seek time, we have already 
+         * marked it as free so start seeking at the end of the first booking. */
         if (this.startSlot >= start) fs = this.slots[this.startSlot].getEndSlot() + 1;
+        /* If the start slot is already filled, start seeking at the end of that
+         * booking. */
         if (this.slots[start] != null) fs = this.slots[start].getEndSlot() + 1;
         
-        int ef;
+        int es;
         while (num > 0)
         {
-            ef = fs;
-            while (ef < this.endSlot && this.slots[++ef] == null);
+            es = fs;
+            while (es < this.endSlot && this.slots[++es] == null);
             
-            if (ef >= end)
+            if (es >= end)
             {
-                if (this.slots[ef - 1] == null)
+                if (this.slots[es - 1] == null)
                 {
                     /* We have reached the end of the slots. */
-                    if (ef - fs >= thres) free.add(new MRange(fs, end, this.dayKey));
+                    if (es - fs >= thres) free.add(new MRange(fs, end, this.dayKey));
                 }
                 break;
             }
  
             num--;
-            if (ef - fs >= thres) free.add(new MRange(fs, ef - 1, this.dayKey));
-            fs = this.slots[ef].getEndSlot() + 1;
+            if (es - fs >= thres) free.add(new MRange(fs, es - 1, this.dayKey));
+            fs = this.slots[es].getEndSlot() + 1;
         }
         
         if (end + 1 - this.endSlot > thres)
