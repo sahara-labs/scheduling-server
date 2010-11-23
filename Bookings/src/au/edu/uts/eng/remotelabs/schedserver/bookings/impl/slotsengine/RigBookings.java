@@ -185,7 +185,7 @@ public class RigBookings
         /* Coerce the threshold to at least 1 slot. */
         if (thres < 1) thres = 1;
         
-        if (this.startSlot > start && this.startSlot - start > thres)
+        if (this.startSlot > start && this.startSlot - start >= thres)
         {
             free.add(new MRange(start, this.startSlot - 1, this.dayKey));
         }

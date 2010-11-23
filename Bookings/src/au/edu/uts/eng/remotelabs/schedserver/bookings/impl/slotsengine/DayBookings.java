@@ -98,7 +98,19 @@ public class DayBookings
     }
     
     /**
-     * Gets the free slots for the rig. 
+     * Gets the free slots for the rig during day.
+     * 
+     * @param rig the rig to find free slots of
+     * @param thres minimum number of slots required
+     * @return list of free slots
+     */
+    public List<MRange> getFreeSlots(Rig rig, int thres, Session ses)
+    {
+        return this.getFreeSlots(rig, 0, 95, thres, ses);
+    }
+    
+    /**
+     * Gets the free slots for the rig during the start and end period. 
      * 
      * @param rig the rig to find free slots of
      * @param start start slot

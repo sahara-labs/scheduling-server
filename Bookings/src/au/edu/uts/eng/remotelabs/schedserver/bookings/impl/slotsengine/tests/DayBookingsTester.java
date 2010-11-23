@@ -50,6 +50,7 @@ import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.DayBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MRange;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.RigBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -90,9 +91,457 @@ public class DayBookingsTester extends TestCase
         this.day = new DayBookings(this.dayStr);
     }
 
-    public void testGetFreeSlots()
+    public void testGetFreeSlotsRig() throws Exception
     {
-        fail("Not yet implemented"); // TODO
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps = new RigCapabilities("book,test,tar,foo");
+        ses.save(caps);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        ses.getTransaction().commit();
+        
+        ses.refresh(rigType1);
+        
+        List<MRange> range = this.day.getFreeSlots(r1, 0, 95, 1, ses);
+        
+        ses.beginTransaction();
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(range);
+        assertEquals(1, range.size());
+        
+        MRange mr = range.get(0);
+        assertEquals(0, mr.getStartSlot());
+        assertEquals(95, mr.getEndSlot());
+        assertEquals(96, mr.getNumSlots());
+        assertEquals(this.day.getDay(), mr.getDayKey());
+    }
+    
+    public void testGetFreeSlotsRigWithRigRB() throws Exception
+    {
+        Calendar tm = TimeUtil.getDayBegin(this.dayStr);
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps = new RigCapabilities("book,test,tar,foo");
+        ses.save(caps);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        /* #### RIG BOOKINGS FOR R1 ########################################### */
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+        Bookings bk2 = new Bookings();
+        bk2.setActive(true);
+        bk2.setCancelReason("Test cancel.");
+        bk2.setDuration(1800);
+        /* Slots 8 - 9. */
+        tm.add(Calendar.MINUTE, 30);
+        bk2.setStartTime(tm.getTime());
+        tm.add(Calendar.MINUTE, 30);
+        bk2.setEndTime(tm.getTime());
+        bk2.setResourcePermission(perm1);
+        bk2.setResourceType("RIG");
+        bk2.setRig(r1);
+        bk2.setUser(us1);
+        bk2.setUserName(us1.getName());
+        bk2.setUserNamespace(us1.getNamespace());
+        ses.save(bk2);
+        Bookings bk3 = new Bookings();
+        bk3.setActive(true);
+        bk3.setDuration(7200);
+        /* Slots 36 - 43. */
+        tm.add(Calendar.MINUTE, 30);
+        tm.add(Calendar.HOUR, 6);
+        bk3.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 2);
+        bk3.setEndTime(tm.getTime());
+        bk3.setResourcePermission(perm1);
+        bk3.setResourceType("RIG");
+        bk3.setRig(r1);
+        bk3.setUser(us1);
+        bk3.setUserName(us1.getName());
+        bk3.setUserNamespace(us1.getNamespace());
+        ses.save(bk3);
+        ses.getTransaction().commit();
+        
+        ses.refresh(rigType1);
+        
+        List<MRange> range = this.day.getFreeSlots(r1, 1, ses);
+        
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk2);
+        ses.delete(bk3);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(range);
+        assertEquals(4, range.size());
+        
+        MRange mr = range.get(0);
+        assertEquals(0, mr.getStartSlot());
+        assertEquals(1, mr.getEndSlot());
+        assertEquals(2, mr.getNumSlots());
+        assertEquals(this.day.getDay(), mr.getDayKey());
+        
+        mr = range.get(1);
+        assertEquals(6, mr.getStartSlot());
+        assertEquals(7, mr.getEndSlot());
+        assertEquals(2, mr.getNumSlots());
+        
+        mr = range.get(2);
+        assertEquals(10, mr.getStartSlot());
+        assertEquals(35, mr.getEndSlot());
+        assertEquals(26, mr.getNumSlots());
+        
+        mr = range.get(3);
+        assertEquals(44, mr.getStartSlot());
+        assertEquals(95, mr.getEndSlot());
+        assertEquals(52, mr.getNumSlots());
+    }
+    
+    public void testGetFreeSlotsRigWithRigRBWithThres() throws Exception
+    {
+        Calendar tm = TimeUtil.getDayBegin(this.dayStr);
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps = new RigCapabilities("book,test,tar,foo");
+        ses.save(caps);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        /* #### RIG BOOKINGS FOR R1 ########################################### */
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+        Bookings bk2 = new Bookings();
+        bk2.setActive(true);
+        bk2.setCancelReason("Test cancel.");
+        bk2.setDuration(1800);
+        /* Slots 8 - 9. */
+        tm.add(Calendar.MINUTE, 30);
+        bk2.setStartTime(tm.getTime());
+        tm.add(Calendar.MINUTE, 30);
+        bk2.setEndTime(tm.getTime());
+        bk2.setResourcePermission(perm1);
+        bk2.setResourceType("RIG");
+        bk2.setRig(r1);
+        bk2.setUser(us1);
+        bk2.setUserName(us1.getName());
+        bk2.setUserNamespace(us1.getNamespace());
+        ses.save(bk2);
+        Bookings bk3 = new Bookings();
+        bk3.setActive(true);
+        bk3.setDuration(7200);
+        /* Slots 36 - 43. */
+        tm.add(Calendar.MINUTE, 30);
+        tm.add(Calendar.HOUR, 6);
+        bk3.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 2);
+        bk3.setEndTime(tm.getTime());
+        bk3.setResourcePermission(perm1);
+        bk3.setResourceType("RIG");
+        bk3.setRig(r1);
+        bk3.setUser(us1);
+        bk3.setUserName(us1.getName());
+        bk3.setUserNamespace(us1.getNamespace());
+        ses.save(bk3);
+        ses.getTransaction().commit();
+        
+        ses.refresh(rigType1);
+        
+        List<MRange> range = this.day.getFreeSlots(r1, 2, ses);
+        
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk2);
+        ses.delete(bk3);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(range);
+        assertEquals(4, range.size());
+        
+        MRange mr = range.get(0);
+        assertEquals(0, mr.getStartSlot());
+        assertEquals(1, mr.getEndSlot());
+        assertEquals(2, mr.getNumSlots());
+        assertEquals(this.day.getDay(), mr.getDayKey());
+        
+        mr = range.get(1);
+        assertEquals(6, mr.getStartSlot());
+        assertEquals(7, mr.getEndSlot());
+        assertEquals(2, mr.getNumSlots());
+        
+        mr = range.get(2);
+        assertEquals(10, mr.getStartSlot());
+        assertEquals(35, mr.getEndSlot());
+        assertEquals(26, mr.getNumSlots());
+        
+        mr = range.get(3);
+        assertEquals(44, mr.getStartSlot());
+        assertEquals(95, mr.getEndSlot());
+        assertEquals(52, mr.getNumSlots());
+    }
+    
+    public void testGetFreeSlotsRigWithRigRBWithThres4() throws Exception
+    {
+        Calendar tm = TimeUtil.getDayBegin(this.dayStr);
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps = new RigCapabilities("book,test,tar,foo");
+        ses.save(caps);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        /* #### RIG BOOKINGS FOR R1 ########################################### */
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+        Bookings bk2 = new Bookings();
+        bk2.setActive(true);
+        bk2.setCancelReason("Test cancel.");
+        bk2.setDuration(1800);
+        /* Slots 8 - 9. */
+        tm.add(Calendar.MINUTE, 30);
+        bk2.setStartTime(tm.getTime());
+        tm.add(Calendar.MINUTE, 30);
+        bk2.setEndTime(tm.getTime());
+        bk2.setResourcePermission(perm1);
+        bk2.setResourceType("RIG");
+        bk2.setRig(r1);
+        bk2.setUser(us1);
+        bk2.setUserName(us1.getName());
+        bk2.setUserNamespace(us1.getNamespace());
+        ses.save(bk2);
+        Bookings bk3 = new Bookings();
+        bk3.setActive(true);
+        bk3.setDuration(7200);
+        /* Slots 36 - 43. */
+        tm.add(Calendar.MINUTE, 30);
+        tm.add(Calendar.HOUR, 6);
+        bk3.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 2);
+        bk3.setEndTime(tm.getTime());
+        bk3.setResourcePermission(perm1);
+        bk3.setResourceType("RIG");
+        bk3.setRig(r1);
+        bk3.setUser(us1);
+        bk3.setUserName(us1.getName());
+        bk3.setUserNamespace(us1.getNamespace());
+        ses.save(bk3);
+        ses.getTransaction().commit();
+        
+        ses.refresh(rigType1);
+        
+        List<MRange> range = this.day.getFreeSlots(r1, 4, ses);
+        
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk2);
+        ses.delete(bk3);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(range);
+        assertEquals(2, range.size());
+        
+        MRange mr = range.get(0);
+        assertEquals(10, mr.getStartSlot());
+        assertEquals(35, mr.getEndSlot());
+        assertEquals(26, mr.getNumSlots());
+        
+        mr = range.get(1);
+        assertEquals(44, mr.getStartSlot());
+        assertEquals(95, mr.getEndSlot());
+        assertEquals(52, mr.getNumSlots());
     }
     
     public void testGetRigBookingsLoadCaps() throws Exception
