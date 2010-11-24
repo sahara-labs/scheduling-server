@@ -104,6 +104,24 @@ public class MRangeTester extends TestCase
         assertEquals(new MRange(0, 95, this.day), co.get(0));
     }
     
+    public void testCollapseRangeOverlap()
+    {
+        List<MRange> l1 = new ArrayList<MRange>();        
+        l1.add(new MRange(0, 15, this.day));
+        l1.add(new MRange(12, 35, this.day));
+        l1.add(new MRange(32, 60, this.day));
+        l1.add(new MRange(40, 50, this.day));
+        l1.add(new MRange(62, 70, this.day));
+        l1.add(new MRange(55, 75, this.day));
+        l1.add(new MRange(75, 85, this.day));
+        l1.add(new MRange(84, 95, this.day));
+        
+        List<MRange> co = MRange.collapseRange(l1);
+        assertNotNull(co);
+        assertEquals(1, co.size());
+        assertEquals(new MRange(0, 95, this.day), co.get(0));
+    }
+    
     public void testCollapseRangesSequential()
     {
         List<MRange> l1 = new ArrayList<MRange>();
@@ -118,6 +136,24 @@ public class MRangeTester extends TestCase
         l2.add(new MRange(84, 95, this.day));
         
         List<MRange> co = MRange.collapseRanges(l1, l2);
+        assertNotNull(co);
+        assertEquals(1, co.size());
+        assertEquals(new MRange(0, 95, this.day), co.get(0));
+    }
+    
+    public void testCollapseRangeSequential()
+    {
+        List<MRange> l1 = new ArrayList<MRange>();
+        l1.add(new MRange(0, 15, this.day));
+        l1.add(new MRange(16, 35, this.day));
+        l1.add(new MRange(32, 60, this.day));
+        l1.add(new MRange(40, 50, this.day));
+        l1.add(new MRange(62, 70, this.day));
+        l1.add(new MRange(55, 75, this.day));
+        l1.add(new MRange(75, 85, this.day));
+        l1.add(new MRange(84, 95, this.day));
+        
+        List<MRange> co = MRange.collapseRange(l1);
         assertNotNull(co);
         assertEquals(1, co.size());
         assertEquals(new MRange(0, 95, this.day), co.get(0));

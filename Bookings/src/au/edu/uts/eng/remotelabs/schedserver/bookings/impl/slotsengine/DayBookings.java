@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,7 +67,13 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 public class DayBookings
 {
     /** Loaded rig bookings. */
-    private Map<Rig, RigBookings> rigBookings;
+    private final Map<Rig, RigBookings> rigBookings;
+    
+    /** Type rig targets. */
+    private final Map<RigType, RigBookings> typeTargets;
+    
+    /** Loaded request capabilities. */
+    private final Map<RequestCapabilities, RigBookings> capsTargets;
     
     /** The day key of this day. */
     private final String day;
@@ -76,9 +83,6 @@ public class DayBookings
     
     /** The end time of this day. */
     private final Date dayEnd;
-    
-    /** Loaded request capabilities. */
-    private Set<RequestCapabilities> loadedCapabilites;
     
     /** Logger. */
     private Logger logger;
@@ -93,7 +97,21 @@ public class DayBookings
         this.dayBegin= TimeUtil.getDayBegin(this.day).getTime();
         this.dayEnd = TimeUtil.getDayEnd(this.day).getTime();
         
-        this.loadedCapabilites = new HashSet<RequestCapabilities>();
+        this.typeTargets = new HashMap<RigType, RigBookings>();
+        this.capsTargets = new HashMap<RequestCapabilities, RigBookings>();
+    }
+    
+    /**
+     * Gets the free slots for the rig type during the day.
+     * 
+     * @param rigType the rig type to find free slots of
+     * @param thres minimum number of slots required
+     * @param ses database session
+     * @return list of free slots
+     */
+    public List<MRange> getFreeSlots(RigType rigType, int thres, Session ses)
+    {
+        return this.getFreeSlots(rigType, 0, 95, thres, ses);
     }
     
     /**
@@ -109,12 +127,61 @@ public class DayBookings
     }
     
     /**
-     * Gets the free slots for the rig during the start and end period. 
+     * Gets the free slots for the rig type between the start and end period
+     * inclusive.
+     * 
+     * @param rigType the rig type to find the free slots of
+     * @param start start slot
+     * @param end end slot
+     * @param thres minimum number of slots required
+     * @param ses database session
+     * @return list of free slots
+     */
+    public List<MRange> getFreeSlots(RigType rigType, int start, int end, int thres, Session ses)
+    {
+        RigBookings ts;
+        
+        if (!this.typeTargets.containsKey(rigType))
+        {
+            Set<Rig> rigs = rigType.getRigs();
+            if (rigs.size() == 0)
+            {
+                this.logger.info("Attempting to get the free slots of a rig type '" + rigType.getName() + "' that " +
+                		"doesn't have any rigs.");
+                /* If the type doesn't have any rigs, then it doesn't have any
+                 * free slots. */
+                return Collections.emptyList();
+            }
+            
+            ts = this.getRigBookings(rigs.iterator().next(), ses);
+        }
+        else ts = this.typeTargets.get(rigType);
+        
+        /* Navigate the type resource loop to find the actual free slots. */
+        List<MRange> actualFree = new ArrayList<MRange>();
+        RigBookings next = ts;
+        do
+        {
+            actualFree.addAll(next.getFreeSlots(start, end, thres));
+            next = next.getTypeLoopNext();
+        }
+        while (next != ts);
+        
+        
+        
+        
+        return null;
+    }
+    
+    /**
+     * Gets the free slots for the rig between the start and end period 
+     * inclusive.
      * 
      * @param rig the rig to find free slots of
      * @param start start slot
      * @param end end slot
      * @param thres minimum number of slots required
+     * @param ses database session
      * @return list of free slots
      */
     public List<MRange> getFreeSlots(Rig rig, int start, int end, int thres, Session ses)
@@ -455,7 +522,7 @@ public class DayBookings
                 }
             }
             
-            this.loadedCapabilites.add(capsList.remove(0));
+            this.capsTargets.put(capsList.remove(0), prev);
         }
     }
 
@@ -579,6 +646,8 @@ public class DayBookings
    
                 // TODO Cancel notification
             }
+            
+            this.typeTargets.put(rigType, next);
         }
     }
 

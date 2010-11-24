@@ -67,7 +67,8 @@ public class MRange implements Comparable<MRange>
     }
     
     /**
-     * Collapse ranges by removing duplicate ranges.
+     * Collapse ranges by removing collapsing overlapping or directly
+     * sequential ranges to a single range.
      * 
      * @param l1 list of time ranges
      * @param l2 list of time ranges
@@ -81,6 +82,19 @@ public class MRange implements Comparable<MRange>
         List<MRange> range = new ArrayList<MRange>(l1.size() + l2.size());
         range.addAll(l1);
         range.addAll(l2);
+        
+        return MRange.collapseRange(range);
+    }
+    
+    /**
+     * Collapse ranges by removing collapsing overlapping or directly
+     * sequential ranges to a single range.
+     * 
+     * @param range list of ranges
+     * @return collapsed ranges
+     */
+    public static List<MRange> collapseRange(List<MRange> range)
+    {
         Collections.sort(range);
         
         /* Collapse all overlapping slots. */
