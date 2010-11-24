@@ -504,7 +504,7 @@
       		<xsd:sequence>
 
       			<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
-      			<xsd:element name="experimentID" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="experimentID" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
       		</xsd:sequence>
       	</xsd:complexType>
       </xsd:element>
@@ -613,6 +613,233 @@
       		<xsd:element name="value" type="xsd:string"></xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
+      <xsd:element name="getExperimentTypeFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode"
+      				type="xsd:int" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="submitExperimentFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="releaseExperimentFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage"
+      				type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabInfoFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentResultsFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="releaseSlaveFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage"
+      				type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabIDFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentSpecsFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode"
+      				type="xsd:int" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveExperimentResultsFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int"></xsd:element>
+      			<xsd:element name="errorString" type="xsd:string">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getUserPermissionsFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setUserPermissionsFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getInteractiveExperimentSessionFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element
+      				name="errorMessage"
+      				type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentStatusFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      			<xsd:element name="errorString" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getTokenFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="scheduleBookingTimeFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelBookingTimeFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getExperimentIDFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveUserExperimentInputFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getSavedUserExperimentInputFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string" maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteSavedUserExperimentInputFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getLabStatusFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setMaintenanceTimeFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelMaintenanceTimeFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getMaintenanceTimeFault">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="errorCode" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+      			<xsd:element name="errorMessage" type="xsd:string"
+      				maxOccurs="1" minOccurs="1">
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="getExperimentTypeRequest">
@@ -857,133 +1084,229 @@
   <wsdl:message name="SetGroupNameResponse">
   	<wsdl:part name="parameters" element="tns:SetGroupNameResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getExperimentTypeFault">
+  	<wsdl:part name="parameters" element="tns:getExperimentTypeFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="submitExperimentFault">
+  	<wsdl:part name="parameters" element="tns:submitExperimentFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseExperimentFault">
+  	<wsdl:part name="parameters" element="tns:releaseExperimentFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabInfoFault">
+  	<wsdl:part name="parameters" element="tns:getLabInfoFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentResultsFault">
+  	<wsdl:part name="parameters" element="tns:getExperimentResultsFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseSlaveFault">
+  	<wsdl:part name="parameters" element="tns:releaseSlaveFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabIDFault">
+  	<wsdl:part name="parameters" element="tns:getLabIDFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentSpecsFault">
+  	<wsdl:part name="parameters" element="tns:getExperimentSpecsFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveExperimentResultsFault">
+  	<wsdl:part name="parameters" element="tns:saveExperimentResultsFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserPermissionsFault">
+  	<wsdl:part name="parameters" element="tns:getUserPermissionsFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUserPermissionsFault">
+  	<wsdl:part name="parameters" element="tns:setUserPermissionsFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getInteractiveExperimentSessionFault">
+  	<wsdl:part name="parameters" element="tns:getInteractiveExperimentSessionFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentStatusFault">
+  	<wsdl:part name="parameters" element="tns:getExperimentStatusFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTokenFault">
+  	<wsdl:part name="parameters" element="tns:getTokenFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="scheduleBookingTimeFault">
+  	<wsdl:part name="parameters" element="tns:scheduleBookingTimeFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingTimeFault">
+  	<wsdl:part name="parameters" element="tns:cancelBookingTimeFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExperimentIDFault">
+  	<wsdl:part name="parameters" element="tns:getExperimentIDFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveUserExperimentInputFault">
+  	<wsdl:part name="parameters" element="tns:saveUserExperimentInputFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getSavedUserExperimentInputFault">
+  	<wsdl:part name="parameters" element="tns:getSavedUserExperimentInputFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteSavedUserExperimentInputFault">
+  	<wsdl:part name="parameters" element="tns:deleteSavedUserExperimentInputFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getLabStatusFault">
+  	<wsdl:part name="parameters" element="tns:getLabStatusFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setMaintenanceTimeFault">
+  	<wsdl:part name="parameters" element="tns:setMaintenanceTimeFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelMaintenanceTimeFault">
+  	<wsdl:part name="parameters" element="tns:cancelMaintenanceTimeFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getMaintenanceTimeFault">
+  	<wsdl:part name="parameters" element="tns:getMaintenanceTimeFault"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="LabConnector">
     <wsdl:operation name="getExperimentType">
       <wsdl:input message="tns:getExperimentTypeRequest">
     </wsdl:input>
       <wsdl:output message="tns:getExperimentTypeResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getExperimentTypeFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="submitExperiment">
       <wsdl:input message="tns:submitExperimentRequest">
     </wsdl:input>
       <wsdl:output message="tns:submitExperimentResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:submitExperimentFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="releaseExperiment">
       <wsdl:input message="tns:releaseExperimentRequest">
     </wsdl:input>
       <wsdl:output message="tns:releaseExperimentResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:releaseExperimentFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getLabInfo">
       <wsdl:input message="tns:getLabInfoRequest">
     </wsdl:input>
       <wsdl:output message="tns:getLabInfoResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getLabInfoFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getExperimentResults">
       <wsdl:input message="tns:getExperimentResultsRequest">
     </wsdl:input>
       <wsdl:output message="tns:getExperimentResultsResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getExperimentResultsFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="releaseSlave">
       <wsdl:input message="tns:releaseSlaveRequest">
     </wsdl:input>
       <wsdl:output message="tns:releaseSlaveResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:releaseSlaveFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getLabID">
       <wsdl:input message="tns:getLabIDRequest">
     </wsdl:input>
       <wsdl:output message="tns:getLabIDResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getLabIDFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getExperimentSpecs">
       <wsdl:input message="tns:getExperimentSpecsRequest">
     </wsdl:input>
       <wsdl:output message="tns:getExperimentSpecsResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getExperimentSpecsFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="saveExperimentResults">
       <wsdl:input message="tns:saveExperimentResultsRequest">
     </wsdl:input>
       <wsdl:output message="tns:saveExperimentResultsResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:saveExperimentResultsFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getUserPermissions">
       <wsdl:input message="tns:getUserPermissionsRequest">
     </wsdl:input>
       <wsdl:output message="tns:getUserPermissionsResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getUserPermissionsFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="setUserPermissions">
       <wsdl:input message="tns:setUserPermissionsRequest">
     </wsdl:input>
       <wsdl:output message="tns:setUserPermissionsResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:setUserPermissionsFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getInteractiveExperimentSession">
       <wsdl:input message="tns:getInteractiveExperimentSessionRequest">
     </wsdl:input>
       <wsdl:output message="tns:getInteractiveExperimentSessionResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getInteractiveExperimentSessionFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getExperimentStatus">
       <wsdl:input message="tns:getExperimentStatusRequest">
     </wsdl:input>
       <wsdl:output message="tns:getExperimentStatusResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getExperimentStatusFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getToken">
       <wsdl:input message="tns:getTokenRequest">
     </wsdl:input>
       <wsdl:output message="tns:getTokenResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getTokenFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="scheduleBookingTime">
       <wsdl:input message="tns:scheduleBookingTimeRequest">
     </wsdl:input>
       <wsdl:output message="tns:scheduleBookingTimeResponse">
     </wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:scheduleBookingTimeFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="cancelBookingTime">
     	<wsdl:input message="tns:cancelBookingTimeRequest"></wsdl:input>
     	<wsdl:output message="tns:cancelBookingTimeResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:cancelBookingTimeFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getExperimentID">
     	<wsdl:input message="tns:getExperimentIDRequest"></wsdl:input>
     	<wsdl:output message="tns:getExperimentIDResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getExperimentIDFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="saveUserExperimentInput">
     	<wsdl:input message="tns:saveUserExperimentInputRequest"></wsdl:input>
     	<wsdl:output message="tns:saveUserExperimentInputResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:saveUserExperimentInputFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getSavedUserExperimentInput">
     	<wsdl:input message="tns:getSavedUserExperimentInputRequest"></wsdl:input>
     	<wsdl:output message="tns:getSavedUserExperimentInputResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getSavedUserExperimentInputFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="deleteSavedUserExperimentInput">
     	<wsdl:input message="tns:deleteSavedUserExperimentInputRequest"></wsdl:input>
     	<wsdl:output message="tns:deleteSavedUserExperimentInputResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:deleteSavedUserExperimentInputFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getLabStatus">
     	<wsdl:input message="tns:getLabStatusRequest"></wsdl:input>
     	<wsdl:output message="tns:getLabStatusResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getLabStatusFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="setMaintenanceTime">
     	<wsdl:input message="tns:setMaintenanceTimeRequest"></wsdl:input>
     	<wsdl:output message="tns:setMaintenanceTimeResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:setMaintenanceTimeFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="cancelMaintenanceTime">
     	<wsdl:input message="tns:cancelMaintenanceTimeRequest"></wsdl:input>
     	<wsdl:output message="tns:cancelMaintenanceTimeResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:cancelMaintenanceTimeFault"></wsdl:fault>
+        </wsdl:operation>
     <wsdl:operation name="getMaintenanceTime">
     	<wsdl:input message="tns:getMaintenanceTimeRequest"></wsdl:input>
     	<wsdl:output message="tns:getMaintenanceTimeResponse"></wsdl:output>
-    </wsdl:operation>
+            <wsdl:fault name="fault" message="tns:getMaintenanceTimeFault"></wsdl:fault>
+        </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="LabConnectorSOAP" type="tns:LabConnector">
   	<soap:binding style="document"
