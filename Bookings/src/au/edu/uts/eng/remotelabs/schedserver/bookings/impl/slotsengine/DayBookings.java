@@ -159,6 +159,7 @@ public class DayBookings
                             balancedFree.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
                             break;
                         }
+                        next = next.getTypeLoopNext();
                     }
                     while (next != rigBookings);
                     break;
@@ -172,6 +173,7 @@ public class DayBookings
                             balancedFree.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
                             break;
                         }
+                        next = next.getCapsLoopNext(membooking.getRequestCapabilities());
                     }
                     while (next != rigBookings);
                     break;
@@ -242,7 +244,7 @@ public class DayBookings
         
         while (start < bk.getEndSlot())
         {
-            MBooking ex = br.getNextBooking(bk.getStartSlot());
+            MBooking ex = br.getNextBooking(start);
             if (ex == null || ex.getStartSlot() > bk.getEndSlot())
             {
                 /* We have already finished balancing all the required bookings,
@@ -280,7 +282,7 @@ public class DayBookings
                                 br.removeBooking(ex);
                                 next.commitBooking(ex);
                             }
-                            start = ex.getEndSlot();
+                            start = ex.getEndSlot() + 1;
                             hasBalanced = true;
                             break;
                         }
@@ -317,7 +319,7 @@ public class DayBookings
                                 br.removeBooking(ex);
                                 next.commitBooking(ex);
                             }
-                            start = ex.getEndSlot();
+                            start = ex.getEndSlot() + 1;
                             hasBalanced = true;
                             break;
                         }

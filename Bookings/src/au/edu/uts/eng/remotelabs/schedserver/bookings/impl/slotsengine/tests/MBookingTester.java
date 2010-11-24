@@ -77,6 +77,31 @@ public class MBookingTester extends TestCase
     }
     
     @Test
+    public void testMBookingC()
+    {
+        Bookings b = new Bookings();
+        b.setResourceType("RIG");
+        
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 13);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        b.setStartTime(cal.getTime());
+        
+        cal.add(Calendar.HOUR, 1);
+        cal.add(Calendar.MINUTE, 30);
+        b.setEndTime(cal.getTime());
+        
+        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
+ 
+        assertEquals(b, m.getBooking());
+        assertEquals(BType.RIG, m.getType());
+        assertEquals(52, m.getStartSlot());
+        assertEquals(57, m.getEndSlot());
+        assertEquals(6, m.getNumSlots());
+    }
+    
+    @Test
     public void testMBooking2()
     {
         Bookings b = new Bookings();

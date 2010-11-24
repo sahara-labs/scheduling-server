@@ -89,8 +89,10 @@ public class MRange implements Comparable<MRange>
             MRange cur = range.get(i);
             MRange next = range.get(i + 1);
               
-            /* Ranges are on the same day. */
-            if (cur.getEndSlot() >= next.getStartSlot())
+            /* The +1 deals with sequential ranges. For example, if a range 
+             * finishes at 5 and the next range starts at 6, they should be
+             * collapsed since there isn't a filled slot between the ranges. */
+            if (cur.getEndSlot() + 1 >= next.getStartSlot())
             {
                 range.remove(next);
                 MRange nm = new MRange(cur.getStartSlot(), 
