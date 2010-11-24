@@ -203,10 +203,17 @@ public class RigBookings
         int es;
         while (num > 0)
         {
+            
+            /* Make sure the seek start is actually a free slot. This is the
+             * case of adjacent booking. */
+            while (this.slots[fs] != null) fs = this.slots[fs].getEndSlot() + 1;
+            
             es = fs;
+            
+            /* Seek to the end of the free slots. */
             while (es < this.endSlot && this.slots[++es] == null);
             
-            if (es >= end)
+            if (es >= end || es > this.endSlot)
             {
                 if (this.slots[es - 1] == null)
                 {

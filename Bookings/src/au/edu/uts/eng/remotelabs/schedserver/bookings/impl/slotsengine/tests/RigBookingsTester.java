@@ -73,6 +73,38 @@ public class RigBookingsTester extends TestCase
         f.set(this.bookings, new SystemErrLogger());
     }
     
+    public void testGetFreeSlotsSequential() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        for (int j = 0; j <= 6; j++)
+        {
+            MBooking m = new MBooking(j * 10, j * 10 + 9, BType.RIG);
+            for (int i = m.getStartSlot(); i <= m.getEndSlot(); i++)
+            {
+                slots[i] = m;
+            }
+        }
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 0);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 69);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 7);
+        
+        List<MRange> range = this.bookings.getFreeSlots();
+        assertEquals(1, range.size());
+        MRange r = range.get(0);
+        assertEquals(70, r.getStartSlot());
+        assertEquals(95, r.getEndSlot());
+    }
+    
     public void testAreSlotsFree() throws Exception
     {
         assertTrue(this.bookings.areSlotsFree(0, 96));

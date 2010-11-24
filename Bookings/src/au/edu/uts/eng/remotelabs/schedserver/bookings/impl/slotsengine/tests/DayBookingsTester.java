@@ -286,25 +286,30 @@ public class DayBookingsTester extends TestCase
         assertEquals(5, range.size());
         
         MRange mr = range.get(0);
-        assertEquals(0, mr.getStartSlot());
-        assertEquals(1, mr.getEndSlot());
+        assertEquals(6, mr.getStartSlot());
+        assertEquals(7, mr.getEndSlot());
         assertEquals(2, mr.getNumSlots());
         assertEquals(this.day.getDay(), mr.getDayKey());
         
         mr = range.get(1);
-        assertEquals(6, mr.getStartSlot());
-        assertEquals(7, mr.getEndSlot());
-        assertEquals(2, mr.getNumSlots());
+        assertEquals(10, mr.getStartSlot());
+        assertEquals(19, mr.getEndSlot());
+        assertEquals(10, mr.getNumSlots());
         
         mr = range.get(2);
-        assertEquals(10, mr.getStartSlot());
-        assertEquals(35, mr.getEndSlot());
-        assertEquals(26, mr.getNumSlots());
+        assertEquals(24, mr.getStartSlot());
+        assertEquals(31, mr.getEndSlot());
+        assertEquals(8, mr.getNumSlots());
         
         mr = range.get(3);
         assertEquals(44, mr.getStartSlot());
+        assertEquals(55, mr.getEndSlot());
+        assertEquals(12, mr.getNumSlots());
+        
+        mr = range.get(4);
+        assertEquals(60, mr.getStartSlot());
         assertEquals(95, mr.getEndSlot());
-        assertEquals(52, mr.getNumSlots());
+        assertEquals(36, mr.getNumSlots());
     }
 
     public void testGetFreeSlotsRig() throws Exception

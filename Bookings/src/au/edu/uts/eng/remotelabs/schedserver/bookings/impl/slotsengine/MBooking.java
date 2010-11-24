@@ -134,7 +134,7 @@ public class MBooking
             this.endSlot = TimeUtil.getSlotIndex(end);
             
             if (this.endSlot * TIME_QUANTUM == 
-                end.get(Calendar.HOUR) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
+                end.get(Calendar.HOUR_OF_DAY) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
             {
                 /* Not point wasting a slot when its time isn't used. */
                 this.endSlot--;
