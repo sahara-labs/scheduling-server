@@ -48,7 +48,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -262,12 +261,6 @@ public class DayBookings
                     return false;
                     
                 case TYPE:
-                    /* There isn't any advantage to balancing a type booking 
-                     * when the new booking is a type booking. Getting to this,
-                     * with a type booking implies the type loop is already
-                     * saturated. */
-                    if (bk.getType() == BType.TYPE) return false;
-                    
                     /* Run through the type loop to try to balance the booking. */
                     next = br.getTypeLoopNext();
                     while (next != br)
@@ -297,13 +290,6 @@ public class DayBookings
                     break;
                     
                 case CAPABILITY:
-                    /* There isn't any advantage to balancing a capability booking 
-                     * of the same type as the new booking. Getting to this with an
-                     * capability booking of the same type implies the capability
-                     * booking loop is already saturated. */
-                    if (bk.getType() == BType.CAPABILITY && 
-                            ex.getRequestCapabilities().equals(bk.getRequestCapabilities())) return false;
-                    
                     RequestCapabilities reqCaps = ex.getRequestCapabilities();
                     /* Run through the capability loop to try to balance the booking. */
                     next = br.getCapsLoopNext(reqCaps);
@@ -446,8 +432,8 @@ public class DayBookings
                                 		"This is a probable race condition. Ominous, but the loading search will " +
                                 		"continue regardless.");
                             }
-                            next = next.getCapsLoopNext(reqCaps);
                         }
+                        next = next.getCapsLoopNext(reqCaps);
                     }
                     while (next != first);                    
                 }
@@ -570,11 +556,12 @@ public class DayBookings
                                     "This is a probable race condition. Ominous, but the loading search will " +
                                     "continue regardless.");
                         }
-                        next = next.getTypeLoopNext();
                     }
+                    next = next.getTypeLoopNext();
                 }
                 while (next != first);                    
             }
+
             
             /* The balancing loop was completed and no position was found to put 
              * the booking, so the type was over-booked. The booking will need to be canceled. */
