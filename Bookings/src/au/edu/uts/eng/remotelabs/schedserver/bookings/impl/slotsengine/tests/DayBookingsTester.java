@@ -1778,7 +1778,7 @@ public class DayBookingsTester extends TestCase
         
         MRange mr = range.get(0);
         assertEquals(8, mr.getStartSlot());
-        assertEquals(12, mr.getEndSlot());
+        assertEquals(11, mr.getEndSlot());
         assertEquals(4, mr.getNumSlots());
         assertEquals(this.day.getDay(), mr.getDayKey());
         
@@ -1792,7 +1792,7 @@ public class DayBookingsTester extends TestCase
         assertEquals(35, mr.getEndSlot());
         assertEquals(3, mr.getNumSlots());
         
-        mr = range.get(4);
+        mr = range.get(3);
         assertEquals(38, mr.getStartSlot());
         assertEquals(95, mr.getEndSlot());
     }
