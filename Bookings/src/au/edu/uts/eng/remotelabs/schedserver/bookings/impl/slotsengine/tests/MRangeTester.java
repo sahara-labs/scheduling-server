@@ -58,6 +58,89 @@ public class MRangeTester extends TestCase
         this.day = TimeUtil.getDateStr(Calendar.getInstance());
     }
     
+    public void testComplement()
+    {
+        List<MRange> r1 = new ArrayList<MRange>();
+        r1.add(new MRange(6, 21, this.day));
+        r1.add(new MRange(24, 31, this.day));
+        r1.add(new MRange(33, 35, this.day));
+        r1.add(new MRange(38, 95, this.day));
+        
+        List<MRange> co = MRange.complement(r1);
+       assertEquals(4, co.size());
+        
+        MRange m = co.get(0);
+        assertEquals(0, m.getStartSlot());
+        assertEquals(5, m.getEndSlot());
+        
+        m = co.get(1);
+        assertEquals(22, m.getStartSlot());
+        assertEquals(23, m.getEndSlot());
+        
+        m = co.get(2);
+        assertEquals(32, m.getStartSlot());
+        assertEquals(32, m.getEndSlot());
+        
+        m = co.get(3);
+        assertEquals(36, m.getStartSlot());
+        assertEquals(37, m.getEndSlot());
+    }
+    
+    public void testComplement2()
+    {
+        List<MRange> r1 = new ArrayList<MRange>();
+        r1.add(new MRange(0, 21, this.day));
+        r1.add(new MRange(24, 31, this.day));
+        r1.add(new MRange(33, 35, this.day));
+        r1.add(new MRange(38, 95, this.day));
+        
+        List<MRange> co = MRange.complement(r1);
+       assertEquals(3, co.size());
+        
+        MRange m = co.get(0);
+        
+        m = co.get(0);
+        assertEquals(22, m.getStartSlot());
+        assertEquals(23, m.getEndSlot());
+        
+        m = co.get(1);
+        assertEquals(32, m.getStartSlot());
+        assertEquals(32, m.getEndSlot());
+        
+        m = co.get(2);
+        assertEquals(36, m.getStartSlot());
+        assertEquals(37, m.getEndSlot());
+    }
+    
+    public void testComplement3()
+    {
+        List<MRange> r1 = new ArrayList<MRange>();
+        r1.add(new MRange(0, 21, this.day));
+        r1.add(new MRange(24, 31, this.day));
+        r1.add(new MRange(33, 35, this.day));
+        r1.add(new MRange(38, 55, this.day));
+        
+        List<MRange> co = MRange.complement(r1);
+       assertEquals(4, co.size());
+        
+        MRange m = co.get(0);
+        
+        m = co.get(0);
+        assertEquals(22, m.getStartSlot());
+        assertEquals(23, m.getEndSlot());
+        
+        m = co.get(1);
+        assertEquals(32, m.getStartSlot());
+        assertEquals(32, m.getEndSlot());
+        
+        m = co.get(2);
+        assertEquals(36, m.getStartSlot());
+        assertEquals(37, m.getEndSlot());
+        
+        m = co.get(3);
+        assertEquals(56, m.getStartSlot());
+        assertEquals(95, m.getEndSlot());
+    }
 
     public void testCollapseRangesNoOverlap()
     {

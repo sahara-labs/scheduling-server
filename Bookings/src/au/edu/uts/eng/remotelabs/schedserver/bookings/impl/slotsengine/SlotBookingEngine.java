@@ -59,6 +59,8 @@ public class SlotBookingEngine implements BookingEngine
     /** The length of each booking slot in seconds. */
     public static final int TIME_QUANTUM = 15 * 60;
     
+    public static final int NUM_SLOTS = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM;
+    
     /** The loaded of day bookings. */
     private Map<String, DayBookings> days;
     

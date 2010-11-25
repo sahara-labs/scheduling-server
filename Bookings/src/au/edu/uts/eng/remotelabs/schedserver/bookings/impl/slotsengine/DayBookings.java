@@ -158,19 +158,24 @@ public class DayBookings
         else ts = this.typeTargets.get(rigType);
         
         /* Navigate the type resource loop to find the actual free slots. */
-        List<MRange> actualFree = new ArrayList<MRange>();
+        List<MRange> free = new ArrayList<MRange>();
         RigBookings next = ts;
         do
         {
-            actualFree.addAll(next.getFreeSlots(start, end, thres));
+            free.addAll(next.getFreeSlots(start, end, thres));
             next = next.getTypeLoopNext();
         }
         while (next != ts);
         
+        free = MRange.collapseRange(free);
         
+        for (MRange inuse : MRange.complement(free))
+        {
+            int ins = inuse.getStartSlot();
+            
+        }
         
-        
-        return null;
+        return free;
     }
     
     /**
@@ -188,8 +193,7 @@ public class DayBookings
     {
         RigBookings rigBookings = this.getRigBookings(rig, ses);
         
-        List<MRange> actualFree = rigBookings.getFreeSlots(start, end, thres);
-        List<MRange> balancedFree = new ArrayList<MRange>();
+        List<MRange> free = rigBookings.getFreeSlots(start, end, thres);
         
         /* For the other free times, attempt to load balance the bookings off the rig. */
         int fs = start;
@@ -222,7 +226,7 @@ public class DayBookings
                     {
                         if (this.loadBalance(next, membooking, false))
                         {
-                            balancedFree.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
+                            free.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
                             break;
                         }
                         next = next.getTypeLoopNext();
@@ -236,7 +240,7 @@ public class DayBookings
                     {
                         if (this.loadBalance(next, membooking, false))
                         {
-                            balancedFree.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
+                            free.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
                             break;
                         }
                         next = next.getCapsLoopNext(membooking.getRequestCapabilities());
@@ -248,7 +252,7 @@ public class DayBookings
             fs = membooking.getEndSlot() + 1;
         }
         
-        return MRange.collapseRanges(actualFree, balancedFree);
+        return MRange.collapseRange(free);
     }
     
     /**

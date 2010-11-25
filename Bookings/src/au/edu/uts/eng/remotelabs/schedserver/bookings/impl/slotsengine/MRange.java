@@ -118,6 +118,42 @@ public class MRange implements Comparable<MRange>
         
         return range;
     }
+    
+    /**
+     * Returns the complement of the list of ranges. That is, for a range of
+     * times, this will return a list containing the times not in that range.
+     * The range must 
+     * 
+     * @param range time range
+     * @return complement of range
+     */
+    public static List<MRange> complement(List<MRange> range)
+    {
+        List<MRange> complement = new ArrayList<MRange>();
+        
+        MRange t = range.get(0);
+        if (t.getStartSlot() != 0)
+        {
+            complement.add(new MRange(0, t.getStartSlot()  -1, t.getDayKey()));
+        }
+        
+        for (int i = 0; i < range.size() - 1; i++)
+        {
+            MRange a = range.get(i);
+            MRange b = range.get(i + 1);
+          
+            
+            complement.add(new MRange(a.getEndSlot() + 1, b.getStartSlot() - 1, a.getDayKey()));
+        }
+        
+        t = range.get(range.size() - 1);
+        if (t.getEndSlot() != SlotBookingEngine.NUM_SLOTS - 1)
+        {
+            complement.add(new MRange(t.getEndSlot() + 1, SlotBookingEngine.NUM_SLOTS  - 1, t.getDayKey()));
+        }
+        
+        return complement;
+    }
 
     public int getStartSlot()
     {
