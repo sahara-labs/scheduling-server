@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +48,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -167,15 +167,26 @@ public class DayBookings
         }
         while (next != ts);
         
-        free = MRange.collapseRange(free);
-        
-        for (MRange inuse : MRange.complement(free))
+        /* Try load balancing to freeable slots. */
+        for (MRange inuse : MRange.complement(MRange.collapseRange(free)))
         {
-            int ins = inuse.getStartSlot();
+            int fs = inuse.getStartSlot();
+            int ef = 0;
+            while (ef < inuse.getEndSlot())
+            {
+                MBooking mb = next.getNextBooking(fs);
+                ef = mb.getEndSlot();
+                if (mb.getType() == BType.CAPABILITY && this.loadBalance(next, mb, false))
+                {
+                    
+                }
+                
+            }
+            
             
         }
         
-        return free;
+        return MRange.collapseRange(free);
     }
     
     /**

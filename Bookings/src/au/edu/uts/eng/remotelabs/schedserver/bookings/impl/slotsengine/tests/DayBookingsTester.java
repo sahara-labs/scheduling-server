@@ -571,23 +571,17 @@ public class DayBookingsTester extends TestCase
 
         
         assertNotNull(range);
-        assertEquals(3, range.size());
+        assertEquals(2, range.size());
         
         MRange mr = range.get(0);
         assertEquals(6, mr.getStartSlot());
-        assertEquals(7, mr.getEndSlot());
-        assertEquals(2, mr.getNumSlots());
+        assertEquals(35, mr.getEndSlot());
+        assertEquals(30, mr.getNumSlots());
         assertEquals(this.day.getDay(), mr.getDayKey());
         
         mr = range.get(1);
-        assertEquals(10, mr.getStartSlot());
-        assertEquals(35, mr.getEndSlot());
-        assertEquals(26, mr.getNumSlots());
-        
-        mr = range.get(2);
-        assertEquals(44, mr.getStartSlot());
+        assertEquals(38, mr.getStartSlot());
         assertEquals(95, mr.getEndSlot());
-        assertEquals(52, mr.getNumSlots());
     }
     
     public void testGetFreeSlotsRigTypeT2() throws Exception
@@ -744,7 +738,7 @@ public class DayBookingsTester extends TestCase
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
-        /* Slots 2 - 5. */
+        /* Slots 2 - 3. */
         r3tm.add(Calendar.MINUTE, 30);
         bk10.setStartTime(r3tm.getTime());
         r3tm.add(Calendar.MINUTE, 30);
@@ -760,7 +754,7 @@ public class DayBookingsTester extends TestCase
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
-        /* Slots 2 - 5. */
+        /* Slots 12 - 15. */
         r3tm.add(Calendar.HOUR, 2);
         bk11.setStartTime(r3tm.getTime());
         r3tm.add(Calendar.HOUR, 1);
@@ -776,7 +770,7 @@ public class DayBookingsTester extends TestCase
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
-        /* Slots 2 - 5. */
+        /* Slots 24 - 27. */
         r3tm.add(Calendar.HOUR, 2);
         bk12.setStartTime(r3tm.getTime());
         r3tm.add(Calendar.HOUR, 1);
@@ -825,7 +819,7 @@ public class DayBookingsTester extends TestCase
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
-        /* Slots 20 - 24. */
+        /* Slots 20 - 23. */
         rt1tm.add(Calendar.HOUR, 3);
         bk5.setStartTime(rt1tm.getTime());
         rt1tm.add(Calendar.HOUR, 1);
@@ -841,7 +835,7 @@ public class DayBookingsTester extends TestCase
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
-        /* Slots 0 - 7. */
+        /* Slots 24 - 27. */
         bk14.setStartTime(rt1tm.getTime());
         rt1tm.add(Calendar.HOUR, 1);
         bk14.setEndTime(rt1tm.getTime());
@@ -909,7 +903,7 @@ public class DayBookingsTester extends TestCase
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
-        /* Slots 56 - 59. */
+        /* Slots 22 - 23. */
         bk7.setStartTime(rcap1tm.getTime());
         rcap1tm.add(Calendar.MINUTE, 30);
         bk7.setEndTime(rcap1tm.getTime());
@@ -924,7 +918,7 @@ public class DayBookingsTester extends TestCase
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
-        /* Slots 56 - 59. */
+        /* Slots 32 - 35. */
         rcap1tm.add(Calendar.HOUR, 2);
         bk17.setStartTime(rcap1tm.getTime());
         rcap1tm.add(Calendar.HOUR, 1);
@@ -1069,23 +1063,25 @@ public class DayBookingsTester extends TestCase
 
         
         assertNotNull(range);
-        assertEquals(3, range.size());
+        assertEquals(4, range.size());
         
         MRange mr = range.get(0);
-        assertEquals(6, mr.getStartSlot());
-        assertEquals(7, mr.getEndSlot());
+        assertEquals(0, mr.getStartSlot());
+        assertEquals(1, mr.getEndSlot());
         assertEquals(2, mr.getNumSlots());
         assertEquals(this.day.getDay(), mr.getDayKey());
         
         mr = range.get(1);
-        assertEquals(10, mr.getStartSlot());
-        assertEquals(35, mr.getEndSlot());
-        assertEquals(26, mr.getNumSlots());
+        assertEquals(4, mr.getStartSlot());
+        assertEquals(11, mr.getEndSlot());
         
         mr = range.get(2);
-        assertEquals(44, mr.getStartSlot());
+        assertEquals(16, mr.getStartSlot());
+        assertEquals(23, mr.getEndSlot());
+
+        mr = range.get(3);
+        assertEquals(33, mr.getStartSlot());
         assertEquals(95, mr.getEndSlot());
-        assertEquals(52, mr.getNumSlots());
     }
     
     public void testGetFreeSlotsRigLoadBalanceMulti() throws Exception
