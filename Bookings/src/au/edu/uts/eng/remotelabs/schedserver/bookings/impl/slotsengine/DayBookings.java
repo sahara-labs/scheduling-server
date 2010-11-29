@@ -204,6 +204,8 @@ public class DayBookings
                 }
 
                 next = next.getTypeLoopNext();
+                
+                if (end < inuse.getEndSlot()) break;
             }
             while (ts != next);
         }
@@ -222,7 +224,61 @@ public class DayBookings
     */
     public List<MRange> getFreeSlots(RequestCapabilities reqCaps, int start, int end, int thres, Session ses)
     {
-        return null;
+        if (!this.capsTargets.containsKey(reqCaps))
+        {
+            List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
+            capsList.add(reqCaps);
+            this.loadRequestCapabilities(capsList, ses, false);
+        }
+        
+        RigBookings cs = this.capsTargets.get(reqCaps);
+        if (cs == null)
+        {
+            /* No rigs match the request capabilities. */
+            return Collections.<MRange>emptyList();
+        }
+        
+        List<MRange> free = new ArrayList<MRange>();
+        
+        /* Navigate the capabilities loop to find the actual free slots. */
+        RigBookings next = cs;
+        do
+        {
+            free.addAll(cs.getFreeSlots(start, end, thres));
+            next = next.getCapsLoopNext(reqCaps);
+        }
+        while (cs != next);
+        
+        /* Try load balancing to find freeable slots. */
+        for (MRange inuse : MRange.complement(MRange.collapseRange(free), this.day))
+        {
+            cs = next;
+            do
+            {
+                int ins = inuse.getStartSlot();
+                while (ins <= inuse.getEndSlot())
+                {
+                    MBooking bk = next.getNextBooking(ins);
+                    
+                    /* There isn't much point trying to load balance a capability
+                     * booking, because in enclosing range, the capability loop 
+                     * is saturated. */
+                    if (bk.getType() == BType.CAPABILITY && this.loadBalance(next, bk, false))
+                    {
+                        free.add(new MRange(bk.getStartSlot(), bk.getEndSlot(), bk.getDay()));
+                    }
+                    
+                    ins = bk.getEndSlot() + 1;
+                }
+
+                next = next.getCapsLoopNext(reqCaps);
+            }
+            while (cs != next);
+            
+            if (end < inuse.getEndSlot()) break;
+        }
+        
+        return MRange.collapseRange(free);
     }
     
     /**
@@ -476,6 +532,17 @@ public class DayBookings
             {
                 matchingRigs.addAll(match.getRigCapabilities().getRigs());
             }
+            
+            /* If the request capabilities has no matching rigs, we cannot load 
+             * the request capabilities loop. */
+            if (matchingRigs.size() == 0)
+            {
+                this.logger.debug("Cannot load up request capbilities resource loop for '" + reqCaps.getCapabilities() +
+                        "' because it has no matching rigs.");
+                capsList.remove(0);
+                continue;
+            }
+            
             
             /* Make sure all the rigs are loaded. */
             for (Rig r : matchingRigs)

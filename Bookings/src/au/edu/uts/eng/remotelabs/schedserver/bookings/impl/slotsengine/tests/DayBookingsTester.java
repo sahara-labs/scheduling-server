@@ -93,6 +93,43 @@ public class DayBookingsTester extends TestCase
         this.day = new DayBookings(this.dayStr);
     }
     
+    public void testGetFreeSlotsCapsNoMatches() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RequestCapabilities caps = new RequestCapabilities("foo,bar,baz,bo");
+        ses.save(caps);
+        ses.getTransaction().commit();
+        
+        List<MRange> range = this.day.getFreeSlots(caps, 1, ses);
+        
+        ses.beginTransaction();
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        
+        assertNotNull(range);
+        assertEquals(0, range.size());
+    }
+    
+    public void testGetFreeSlotsTypeNoRig() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType rt = new RigType();
+        rt.setName("lonelytype");
+        ses.save(rt);
+        ses.getTransaction().commit();
+        
+        List<MRange> range = this.day.getFreeSlots(rt, 1, ses);
+        
+        ses.beginTransaction();
+        ses.delete(rt);
+        ses.getTransaction().commit();
+        
+        assertNotNull(range);
+        assertEquals(0, range.size());
+    }
+    
     public void testGetFreeSlotsRigType() throws Exception
     {        
         Session ses = DataAccessActivator.getNewSession();
