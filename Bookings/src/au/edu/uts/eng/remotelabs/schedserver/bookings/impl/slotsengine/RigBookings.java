@@ -206,7 +206,7 @@ public class RigBookings
             
             /* Make sure the seek start is actually a free slot. This is the
              * case of adjacent booking. */
-            while (this.slots[fs] != null) fs = this.slots[fs].getEndSlot() + 1;
+            while (fs < this.slots.length && this.slots[fs] != null) fs = this.slots[fs].getEndSlot() + 1;
             
             es = fs;
             
@@ -325,7 +325,7 @@ public class RigBookings
     }
 
     /**
-     * Gets the booking that is on the slot or immediately proceeds the
+     * Gets the booking that is on the slot or immediately succeeds the
      * slot. If there is booking then <tt>null</tt> is returned.
      * 
      * @param slot start slot

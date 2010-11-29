@@ -125,16 +125,23 @@ public class MRange implements Comparable<MRange>
      * The range must 
      * 
      * @param range time range
+     * @param day day key
      * @return complement of range
      */
-    public static List<MRange> complement(List<MRange> range)
+    public static List<MRange> complement(List<MRange> range, String day)
     {
         List<MRange> complement = new ArrayList<MRange>();
+        
+        if (range.size() == 0)
+        {
+            complement.add(new MRange(0, SlotBookingEngine.NUM_SLOTS - 1, day));
+            return complement;
+        }
         
         MRange t = range.get(0);
         if (t.getStartSlot() != 0)
         {
-            complement.add(new MRange(0, t.getStartSlot()  -1, t.getDayKey()));
+            complement.add(new MRange(0, t.getStartSlot()  -1, day));
         }
         
         for (int i = 0; i < range.size() - 1; i++)
@@ -143,13 +150,13 @@ public class MRange implements Comparable<MRange>
             MRange b = range.get(i + 1);
           
             
-            complement.add(new MRange(a.getEndSlot() + 1, b.getStartSlot() - 1, a.getDayKey()));
+            complement.add(new MRange(a.getEndSlot() + 1, b.getStartSlot() - 1, day));
         }
         
         t = range.get(range.size() - 1);
         if (t.getEndSlot() != SlotBookingEngine.NUM_SLOTS - 1)
         {
-            complement.add(new MRange(t.getEndSlot() + 1, SlotBookingEngine.NUM_SLOTS  - 1, t.getDayKey()));
+            complement.add(new MRange(t.getEndSlot() + 1, SlotBookingEngine.NUM_SLOTS  - 1, day));
         }
         
         return complement;

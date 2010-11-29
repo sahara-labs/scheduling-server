@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.tests;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -66,7 +67,7 @@ public class MRangeTester extends TestCase
         r1.add(new MRange(33, 35, this.day));
         r1.add(new MRange(38, 95, this.day));
         
-        List<MRange> co = MRange.complement(r1);
+        List<MRange> co = MRange.complement(r1, this.day);
        assertEquals(4, co.size());
         
         MRange m = co.get(0);
@@ -94,7 +95,7 @@ public class MRangeTester extends TestCase
         r1.add(new MRange(33, 35, this.day));
         r1.add(new MRange(38, 95, this.day));
         
-        List<MRange> co = MRange.complement(r1);
+        List<MRange> co = MRange.complement(r1, this.day);
        assertEquals(3, co.size());
         
         MRange m = co.get(0);
@@ -120,7 +121,7 @@ public class MRangeTester extends TestCase
         r1.add(new MRange(33, 35, this.day));
         r1.add(new MRange(38, 55, this.day));
         
-        List<MRange> co = MRange.complement(r1);
+        List<MRange> co = MRange.complement(r1, this.day);
        assertEquals(4, co.size());
         
         MRange m = co.get(0);
@@ -140,6 +141,21 @@ public class MRangeTester extends TestCase
         m = co.get(3);
         assertEquals(56, m.getStartSlot());
         assertEquals(95, m.getEndSlot());
+    }
+    
+    public void testComplementEmpty()
+    {
+        List<MRange> range = MRange.complement(Collections.<MRange>emptyList(), this.day);
+        assertEquals(1, range.size());
+        assertEquals(0, range.get(0).getStartSlot());
+        assertEquals(95, range.get(0).getEndSlot());
+    }
+    
+    public void testComplementFull()
+    {
+        List<MRange> range = new ArrayList<MRange>();
+        range.add(new MRange(0, 95, this.day));
+        assertEquals(0, MRange.complement(range, this.day).size());
     }
 
     public void testCollapseRangesNoOverlap()

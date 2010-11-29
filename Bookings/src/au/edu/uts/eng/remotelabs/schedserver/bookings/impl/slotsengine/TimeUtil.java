@@ -178,7 +178,7 @@ public class TimeUtil
     }
     
     /**
-     * Gets a date which begins at the beginning of a day.
+     * Gets a date which begins at the end of a day.
      * 
      * @param dateStr day key
      * @return end date
@@ -216,8 +216,8 @@ public class TimeUtil
      */
     public static int getSlotIndex(Calendar cal)
     {
-        return (int) (cal.get(Calendar.HOUR_OF_DAY) * (3600 / TIME_QUANTUM) + 
-            Math.ceil((cal.get(Calendar.MINUTE) * 60) + cal.get(Calendar.SECOND)) / TIME_QUANTUM);
+        return (int)Math.ceil(
+                cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) / TIME_QUANTUM;
     }
     
     /**
