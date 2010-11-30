@@ -253,7 +253,8 @@ public class DayBookings
         RigBookings cs = this.capsTargets.get(reqCaps);
         if (cs == null)
         {
-            /* No rigs match the request capabilities. */
+            /* No rigs match the request capabilities, so there can't be any 
+             * free slots. */
             return Collections.<MRange>emptyList();
         }
         
@@ -263,7 +264,7 @@ public class DayBookings
         RigBookings next = cs;
         do
         {
-            free.addAll(cs.getFreeSlots(start, end, thres));
+            free.addAll(next.getFreeSlots(start, end, thres));
             next = next.getCapsLoopNext(reqCaps);
         }
         while (cs != next);
