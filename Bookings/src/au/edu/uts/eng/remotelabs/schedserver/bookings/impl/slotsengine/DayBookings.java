@@ -184,23 +184,42 @@ public class DayBookings
         /* Try load balancing to freeable slots. */
         for (MRange inuse : MRange.complement(MRange.collapseRange(free), this.day))
         {
+            int outerrs = inuse.getStartSlot();
+            /* If the seek start is after the end of the period specified, no need
+             * to run load balancing. */
+            if (outerrs > end) continue;
+            /* If the seek start is before the period specified, start at the period
+             * specified. */
+            if (outerrs < start) outerrs = start;
+
+            int outerre =  inuse.getEndSlot();
+            /* If the seek end is before the beginning of the period specified, no
+             * need to run load balancing. */
+            if (outerre < start) continue;
+            /* If the seek end is after the period specified, end at the period
+             * specified. */
+            if (outerre > end) outerre = end;
             
             ts = next;
             do
             {
-                int ins = inuse.getStartSlot();
-                while (ins <= inuse.getEndSlot())
+                int innerrs = outerrs;
+                while (innerrs <= outerre)
                 {
-                    MBooking bk = next.getNextBooking(ins);
+                    MBooking bk = next.getNextBooking(innerrs);
                     
                     /* There isn't much point trying to load balance a type booking,
                      * because in enclosing range, the type loop is saturated. */
                     if (bk.getType() == BType.CAPABILITY && this.loadBalance(next, bk, false))
                     {
                         free.add(new MRange(bk.getStartSlot(), bk.getEndSlot(), bk.getDay()));
+                        
+                        /* No need to further load balance bookings on other rigs
+                         * when they the slots have already been found to be freeable. */
+                        outerrs = bk.getEndSlot() + 1;
                     }
                     
-                    ins = bk.getEndSlot() + 1;
+                    innerrs = bk.getEndSlot() + 1;
                 }
 
                 next = next.getTypeLoopNext();

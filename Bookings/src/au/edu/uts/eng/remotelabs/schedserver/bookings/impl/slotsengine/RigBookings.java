@@ -215,10 +215,10 @@ public class RigBookings
             
             if (es >= end || es > this.endSlot)
             {
-                if (this.slots[es - 1] == null)
+                if (this.slots[es - 1] == null && fs <= end)
                 {
                     /* We have reached the end of the slots. */
-                    if (es - fs >= thres) free.add(new MRange(fs, end, this.dayKey));
+                    if (es - fs >= thres) free.add(new MRange(fs, end < es ? end : end - 1, this.dayKey));
                 }
                 break;
             }
