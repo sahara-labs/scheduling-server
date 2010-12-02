@@ -145,9 +145,9 @@
             <xsd:complexType name="QuerySessionAccessResponseType">
             	<xsd:sequence>
             		<xsd:element name="pagination"
-            			type="re:PaginationType">
+            			type="re:PaginationType" maxOccurs="1" minOccurs="1">
             		</xsd:element>
-            		<xsd:element name="accessReportData" type="re:accessReportType"></xsd:element>
+            		<xsd:element name="accessReportData" type="re:accessReportType" maxOccurs="unbounded" minOccurs="1"></xsd:element>
             	</xsd:sequence>
             </xsd:complexType>
         
@@ -187,19 +187,23 @@
             		<xsd:element name="reasonForTermination" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
             	</xsd:sequence>
 
-            </xsd:complexType><xsd:element name="querySessionAccessResponse">
+            </xsd:complexType>            <xsd:element name="querySessionReport">
             	<xsd:complexType>
             		<xsd:sequence>
 
-            			<xsd:element name="out" type="xsd:string"></xsd:element>
-            		</xsd:sequence>
-            	</xsd:complexType>
-            </xsd:element>
-            <xsd:element name="querySessionReport">
-            	<xsd:complexType>
-            		<xsd:sequence>
-
-            			<xsd:element name="in" type="xsd:string"></xsd:element>
+            			<xsd:element name="querySelect"
+            				type="re:QueryFilterType">
+            			</xsd:element>
+            			<xsd:element name="queryConstraints"
+            				type="re:QueryFilterType">
+            			</xsd:element>
+            			<xsd:element name="startTime" type="xsd:dateTime">
+            			</xsd:element>
+            			<xsd:element name="endTime" type="xsd:dateTime">
+            			</xsd:element>
+            			<xsd:element name="pagination"
+            				type="re:PaginationType">
+            			</xsd:element>
             		</xsd:sequence>
             	</xsd:complexType>
             </xsd:element>
