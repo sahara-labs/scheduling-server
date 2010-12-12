@@ -27,6 +27,7 @@
             				<xsd:restriction base="xsd:string">
             					<xsd:enumeration value="AND"></xsd:enumeration>
             					<xsd:enumeration value="OR"></xsd:enumeration>
+            					<xsd:enumeration value="AND NOT"></xsd:enumeration>
             				</xsd:restriction>
             			</xsd:simpleType>
             		</xsd:element>
@@ -37,6 +38,7 @@
             					<xsd:enumeration value="RIG_TYPE"></xsd:enumeration>
             					<xsd:enumeration value="RIG"></xsd:enumeration>
             					<xsd:enumeration value="USER"></xsd:enumeration>
+            					<xsd:enumeration value="RIG_CAPABILITIES"></xsd:enumeration>
             					<xsd:whiteSpace value="collapse"></xsd:whiteSpace>
             				</xsd:restriction>
             			</xsd:simpleType>
@@ -72,6 +74,7 @@
             					<xsd:enumeration value="RIG"></xsd:enumeration>
             					<xsd:enumeration value="RIG_TYPE"></xsd:enumeration>
             					<xsd:enumeration value="USER"></xsd:enumeration>
+            					<xsd:enumeration value="RIG_CAPABILITIES"></xsd:enumeration>
             				</xsd:restriction>
             			</xsd:simpleType>
             		</xsd:element>
@@ -148,7 +151,7 @@
             		</xsd:element>
                     <xsd:element name="sessionEndTime" type="xsd:dateTime" maxOccurs="1" minOccurs="1">
             		</xsd:element>
-                    <xsd:element name="sessionDuration" type="xsd:float" maxOccurs="1" minOccurs="1">
+                    <xsd:element name="sessionDuration" type="xsd:int" maxOccurs="1" minOccurs="1">
                     </xsd:element>
                     <xsd:element name="reasonForTermination" type="xsd:string" maxOccurs="1" minOccurs="0">
             		</xsd:element>
