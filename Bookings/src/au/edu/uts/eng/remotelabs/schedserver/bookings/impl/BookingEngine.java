@@ -39,6 +39,8 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 import java.util.Calendar;
 import java.util.List;
 
+import org.hibernate.Session;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
@@ -52,7 +54,12 @@ public interface BookingEngine
     /** 
      * Initialise the booking engine.
      */
-    void init();
+    public void init();
+    
+    /** 
+     * Cleanup the booking engine (for shutdown).
+     */
+    public void cleanUp();
     
     /**
      * Gets free time periods for the rig in the requested time period. Each 
@@ -62,9 +69,10 @@ public interface BookingEngine
      * @param rig rig to find free durations of
      * @param period the time period to find the free periods in
      * @param minDuration minimum time of period in seconds
+     * @param ses database session the rig is loaded in
      * @return list of time periods
      */
-    public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration);
+    public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration, Session ses);
     
     /**
      * Gets free time periods for the rig type in the requested time period.
@@ -74,9 +82,10 @@ public interface BookingEngine
      * @param rigType rig type to find free durations of
      * @param period the time period to find the free periods in
      * @param minDuration minimum time of period in seconds
+     * @param ses database session the capabilities are loaded in
      * @return list of time periods
      */
-    public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration);
+    public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration, Session ses);
     
     /**
      * Gets free time periods for the request capabilities in the requested 
@@ -86,9 +95,10 @@ public interface BookingEngine
      * @param caps request capabilities to find free durations of
      * @param period the time period to find the free periods in
      * @param minDuration minimum time of period in seconds
+     * @param ses database session the capabilities are loaded in
      * @return list of time periods
      */
-    public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration);
+    public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration, Session ses);
     
     public class TimePeriod
     {

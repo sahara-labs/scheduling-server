@@ -38,8 +38,12 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.TIME_QUANTUM;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
 
 /**
  * Date / Time utility to convert dates between different formats.
@@ -320,5 +324,29 @@ public class TimeUtil
         else if (t1 != t2) return 1;
         
         return 0;
+    }
+    
+    /**
+     * Returns the days in the specified day period.
+     * 
+     * @param period time period
+     * @return list of day keys
+     */
+    public static List<String> getDayKeys(TimePeriod period)
+    {
+        List<String> days = new ArrayList<String>();
+        
+        Calendar start = Calendar.getInstance();
+        start.setTimeInMillis(period.getStartTime().getTimeInMillis());
+        Calendar end = period.getEndTime();
+        
+        days.add(TimeUtil.getDateStr(start));
+        while (end.compareTo(start) < 86.4e6 && start.get(Calendar.DAY_OF_YEAR) != end.get(Calendar.DAY_OF_YEAR))
+        {
+            start.add(Calendar.DAY_OF_MONTH, 1);
+            days.add(TimeUtil.getDateStr(start));
+        }
+        
+        return days;
     }
 }

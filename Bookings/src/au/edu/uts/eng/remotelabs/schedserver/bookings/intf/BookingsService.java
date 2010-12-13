@@ -52,6 +52,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlots;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
@@ -99,7 +100,9 @@ public class BookingsService implements BookingsInterface
     @Override
     public FindFreeBookingsResponse findFreeBookings(FindBookingSlots findBookingSlots)
     {
-        // TODO Auto-generated method stub
+        FindBookingSlotType request = findBookingSlots.getFindBookingSlots();
+        
+        
         return null;
     }
 

@@ -37,10 +37,11 @@
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -48,7 +49,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-
 
 /**
  * The slot booking engine. This is an in-memory booking engine with uses 
@@ -76,37 +76,85 @@ public class SlotBookingEngine implements BookingEngine
     @Override
     public void init()
     {
-        this.logger.debug("Initalising the slot booking engine.");
+        this.logger.debug("Initalising the slot booking engine...");
+        
+        // TODO init
     }
 
     @Override
-    public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration)
+    public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration, Session ses)
     {
         /* Work out the slots that the minimum duration requires. */
-        int slots = (int)Math.ceil(minDuration / TIME_QUANTUM);
-        for (String day : this.getDayKeys(period))
+        int minSlots = (int)Math.ceil(minDuration / TIME_QUANTUM);
+        
+        /* Which days this falls across. */
+        List<String> dayKeys = TimeUtil.getDayKeys(period);
+        List<MRange> free = new ArrayList<MRange>();
+        
+        DayBookings db;
+        for (String dayKey : dayKeys)
         {
-            DayBookings dayBookings = this.getDayBookings(day);
-            int dayStart = TimeUtil.getDaySlotIndex(period.getStartTime(), day);
-            int dayEnd = TimeUtil.getDaySlotIndex(period.getEndTime(), day);
-            
+            synchronized (db = this.getDayBookings(dayKey))
+            {
+                free.addAll(db.getFreeSlots(rig, 
+                        TimeUtil.getDaySlotIndex(period.getStartTime(), dayKey), 
+                        TimeUtil.getDaySlotIndex(period.getEndTime(), dayKey), 
+                        minSlots, ses));
+            }
         }
         
-        return null;
+        return MRange.rangeToTimePeriod(free);
     }
 
     @Override
-    public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration)
+    public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration, Session ses)
     {
-        // TODO Auto-generated method stub
-        return null;
+        int minSlots = (int)Math.ceil(minDuration / TIME_QUANTUM);
+        List<String> dayKeys = TimeUtil.getDayKeys(period);
+        List<MRange> free = new ArrayList<MRange>();
+        
+        DayBookings db;
+        for (String dayKey : dayKeys)
+        {
+            synchronized (db = this.getDayBookings(dayKey))
+            {
+                free.addAll(db.getFreeSlots(rigType, 
+                        TimeUtil.getDaySlotIndex(period.getStartTime(), dayKey), 
+                        TimeUtil.getDaySlotIndex(period.getEndTime(), dayKey), 
+                        minSlots, ses));
+            }
+        }
+        
+        return MRange.rangeToTimePeriod(free);
     }
 
     @Override
-    public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration)
+    public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration, Session ses)
     {
-        // TODO Auto-generated method stub
-        return null;
+        int minSlots = (int)Math.ceil(minDuration / TIME_QUANTUM);
+        List<String> dayKeys = TimeUtil.getDayKeys(period);
+        List<MRange> free = new ArrayList<MRange>();
+        
+        DayBookings db;
+        for (String dayKey : dayKeys)
+        {
+            synchronized (db = this.getDayBookings(dayKey))
+            {
+                free.addAll(db.getFreeSlots(caps, 
+                        TimeUtil.getDaySlotIndex(period.getStartTime(), dayKey), 
+                        TimeUtil.getDaySlotIndex(period.getEndTime(), dayKey), 
+                        minSlots, ses));
+            }
+        }
+        
+        return MRange.rangeToTimePeriod(free);
+        
+    }
+    
+    @Override
+    public void cleanUp()
+    {
+        // TODO cleanup
     }
     
     /**
@@ -127,29 +175,5 @@ public class SlotBookingEngine implements BookingEngine
         }
         
         return this.days.get(dayKey);
-    }
-    
-    /**
-     * Returns the days in the specified day period.
-     * 
-     * @param period time period
-     * @return list of day keys
-     */
-    private List<String> getDayKeys(TimePeriod period)
-    {
-        List<String> days = new ArrayList<String>();
-        
-        Calendar start = Calendar.getInstance();
-        start.setTimeInMillis(period.getStartTime().getTimeInMillis());
-        Calendar end = period.getEndTime();
-        
-        days.add(TimeUtil.getDateStr(start));
-        while (end.compareTo(start) < 86.4e6 && start.get(Calendar.DAY_OF_YEAR) != end.get(Calendar.DAY_OF_YEAR))
-        {
-            start.add(Calendar.DAY_OF_MONTH, 1);
-            days.add(TimeUtil.getDateStr(start));
-        }
-        
-        return days;
     }
 }

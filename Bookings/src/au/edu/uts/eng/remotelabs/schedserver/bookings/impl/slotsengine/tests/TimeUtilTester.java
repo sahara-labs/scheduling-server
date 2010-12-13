@@ -36,15 +36,23 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.tests;
 
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MILLISECOND;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.YEAR;
+
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import static java.util.Calendar.*;
-
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 
 /**
@@ -345,5 +353,59 @@ public class TimeUtilTester extends TestCase
         String d1 = "2010-10-11";
         String d2 = "2010-10-10";
         assertEquals(1, TimeUtil.compareDays(d1, d2));
+    }
+    
+    public void testGetDayKeys() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        TimePeriod period = new TimePeriod(cal, cal);
+        
+        List<String> keys = TimeUtil.getDayKeys(period);
+        assertNotNull(keys);
+        assertEquals(1, keys.size());
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+    }
+    
+   
+    public void testGetDayKeysTwoDays()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        Calendar next = Calendar.getInstance();
+        next.add(Calendar.DAY_OF_MONTH, 1);
+        next.set(Calendar.HOUR_OF_DAY, 23);
+        next.set(Calendar.MINUTE, 59);
+        next.set(Calendar.SECOND, 59);
+        TimePeriod period = new TimePeriod(cal, next);
+        
+        List<String> keys = TimeUtil.getDayKeys(period);
+        assertNotNull(keys);
+        assertEquals(2, keys.size());
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+    }
+    
+    public void testGetDayKeysFiveDays() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        Calendar next = Calendar.getInstance();
+        next.add(Calendar.DAY_OF_MONTH, 4);
+        TimePeriod period = new TimePeriod(cal, next);
+
+        List<String> keys = TimeUtil.getDayKeys(period);
+        assertNotNull(keys);
+        assertEquals(5, keys.size());
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(2));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(3));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(4));
     }
 }

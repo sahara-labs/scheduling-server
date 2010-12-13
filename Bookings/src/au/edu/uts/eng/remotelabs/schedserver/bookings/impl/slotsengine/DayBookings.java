@@ -436,8 +436,10 @@ public class DayBookings
     }
     
     /**
-     * Runs load balancing of a rig. Load balancing attempts to free the slots
-     * for the memory booking, w
+     * Runs load balancing of a rig. Load balancing attempts to fit the 
+     * provided booking onto the specified rig. The booking may be fitted
+     * if the slots are free or the bookings in the slot range can be 
+     * provided to an equivalent matching rig.
      * 
      * @param rb the rig bookings to free the slots
      * @param bk bookings to try and fit it
@@ -451,12 +453,18 @@ public class DayBookings
         while (start <= bk.getEndSlot())
         {
             MBooking ex = br.getNextBooking(start);
+            
             if (ex == null || ex.getStartSlot() > bk.getEndSlot())
             {
                 /* We have already finished balancing all the required bookings,
                  * so no more work to do. */
                 return true;
             }
+                        
+            /* We will not balance any cross-day bookings. The reason is, 
+             * cross day bookings need to be balancing in sequence with
+             * the other days rigs. */
+            if (ex.isMultiDay()) return false;
             
             boolean hasBalanced = false;
             RigBookings next;

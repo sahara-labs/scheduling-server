@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MRange;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 
@@ -343,5 +344,53 @@ public class MRangeTester extends TestCase
         MRange r1 = new MRange(11, 11, d1);
         MRange r2 = new MRange(11, 11, d1);
         assertEquals(0, r1.compareTo(r2));
+    }
+    
+    public void testRangeToTimePeriod()
+    {
+        String dk = TimeUtil.getDateStr(Calendar.getInstance());
+        List<MRange> range = new ArrayList<MRange>();
+        range.add(new MRange(1, 4, dk));
+        range.add(new MRange(11, 14, dk));
+        range.add(new MRange(21, 24, dk));
+        range.add(new MRange(31, 34, dk));
+        range.add(new MRange(41, 44, dk));
+        
+        List<TimePeriod> times = MRange.rangeToTimePeriod(range);
+        assertEquals(times.size(), range.size());
+        
+        for (int i = 0; i < times.size(); i++)
+        {
+            MRange m = range.get(i);
+            TimePeriod t = times.get(i);
+            
+            assertEquals(m.getDayKey(), TimeUtil.getDateStr(t.getStartTime()));
+            assertEquals(m.getDayKey(), TimeUtil.getDateStr(t.getEndTime()));
+            assertEquals(m.getStartSlot(), TimeUtil.getSlotIndex(t.getStartTime()));
+            
+            /* Duration. */
+            assertEquals(3600, (t.getEndTime().getTimeInMillis() - t.getStartTime().getTimeInMillis()) / 1000); 
+        }
+    }
+    
+    public void testRangeToTimeCollapse()
+    {
+        Calendar cal = Calendar.getInstance();
+        List<MRange> range = new ArrayList<MRange>();
+        range.add(new MRange(0, 95, TimeUtil.getDateStr(cal)));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        range.add(new MRange(0, 95, TimeUtil.getDateStr(cal)));
+        cal.add(Calendar.DAY_OF_MONTH, 2);
+        range.add(new MRange(0, 95, TimeUtil.getDateStr(cal)));
+        
+        
+        List<TimePeriod> times = MRange.rangeToTimePeriod(range);
+        assertEquals(2, times.size());
+        
+        TimePeriod t = times.get(0);
+        Calendar s = t.getStartTime();
+        assertEquals(0, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
     }
 }

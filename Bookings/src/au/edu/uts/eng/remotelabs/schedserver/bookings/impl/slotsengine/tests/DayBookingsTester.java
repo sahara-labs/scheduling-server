@@ -194,6 +194,7 @@ public class DayBookingsTester extends TestCase
             }
             r1st.add(Calendar.MINUTE, 15);
             r1en.add(Calendar.MINUTE, 15);
+            r1en.add(Calendar.SECOND, -1);
         }
         
         ses.getTransaction().commit();
@@ -368,6 +369,7 @@ public class DayBookingsTester extends TestCase
             }
             r1st.add(Calendar.MINUTE, 15);
             r1en.add(Calendar.MINUTE, 15);
+            r1en.add(Calendar.SECOND, -1);
         }
         
         ses.getTransaction().commit();
@@ -542,6 +544,7 @@ public class DayBookingsTester extends TestCase
             }
             r1st.add(Calendar.MINUTE, 15);
             r1en.add(Calendar.MINUTE, 15);
+            r1en.add(Calendar.SECOND, -1);
         }
         
         ses.getTransaction().commit();
@@ -8358,7 +8361,7 @@ public class DayBookingsTester extends TestCase
     {
         Calendar begin = TimeUtil.getDayBegin(this.day.getDay());
         Calendar end = TimeUtil.getDayEnd(this.day.getDay());
-        end.add(Calendar.SECOND, 1);
+        end.add(Calendar.SECOND, -1);
         
         Session ses = DataAccessActivator.getNewSession();
         ses.beginTransaction();

@@ -42,6 +42,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
@@ -55,6 +57,9 @@ public class BookingActivator implements BundleActivator
     /** SOAP interface hosting server service registration. */
     private ServiceRegistration soapReg;
     
+    /** Booking engine implementation. */
+    private static BookingEngine engine;
+    
     /** Logger. */
     private Logger logger;
 
@@ -63,6 +68,10 @@ public class BookingActivator implements BundleActivator
 	{
 		this.logger = LoggerActivator.getLogger();
 		this.logger.info("Starting bookings bundle...");
+		
+		this.logger.info("Initalising the booking engine.");
+		BookingActivator.engine = new SlotBookingEngine();
+		BookingActivator.engine.init();
 		
 		this.logger.debug("Registering the Bookings SOAP service.");
 		ServletContainerService soapService = new ServletContainerService();
@@ -75,5 +84,17 @@ public class BookingActivator implements BundleActivator
 	{
 	    this.logger.info("Shutting down bookings bundle.");
 		this.soapReg.unregister();
+		
+		BookingActivator.engine.cleanUp();
+	}
+	
+	/**
+	 * Returns the running booking engine.
+	 * 
+	 * @return booking engine.
+	 */
+	public BookingEngine getBookingEngine()
+	{
+	    return BookingActivator.engine;
 	}
 }

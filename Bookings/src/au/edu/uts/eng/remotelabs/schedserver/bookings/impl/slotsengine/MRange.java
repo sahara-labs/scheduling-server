@@ -41,6 +41,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
+
 /**
  * Slot range.
  */
@@ -160,6 +162,49 @@ public class MRange implements Comparable<MRange>
         }
         
         return complement;
+    }
+    
+    /**
+     * Converts a list of ranges into a list of time periods. Two time
+     * periods with one at the end of a day and the next at the beginning of the
+     * next day are collapsed to a single time period.
+     * <br />
+     * Ranges on the same day are expected to already be sorted sequentially and
+     * collapsed.
+     * 
+     * @param range list of ranges
+     * @return list of time periods
+     */
+    public static List<TimePeriod> rangeToTimePeriod(List<MRange> range)
+    {
+        if (range.size() == 0)
+        {
+            return Collections.emptyList();
+        }
+        
+        List<TimePeriod> times = new ArrayList<TimePeriod>(range.size());
+        
+        TimePeriod tp = null;
+        for (int i = 0; i < range.size(); i++)
+        {
+            MRange mr = range.get(i);
+            Calendar start = mr.getStart();
+            Calendar end = mr.getEnd();
+
+            /* If the current range starts at the beginning of a day, the 
+             * preceding range finishes at the end of the day and the two
+             * ranges are on successive days. The two ranges should be merged. */
+            if (i > 0 && Math.abs(tp.getEndTime().getTimeInMillis() - start.getTimeInMillis())  < 1000)
+            {
+                times.set(times.size() - 1, tp = new TimePeriod(tp.getStartTime(), end));
+            }
+            else
+            {
+                times.add(tp = new TimePeriod(start, end));
+            }
+        }
+        
+        return times;
     }
 
     public int getStartSlot()
