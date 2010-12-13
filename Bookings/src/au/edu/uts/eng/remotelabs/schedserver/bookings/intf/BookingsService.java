@@ -46,6 +46,7 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
@@ -62,7 +63,9 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResp
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -100,10 +103,79 @@ public class BookingsService implements BookingsInterface
     @Override
     public FindFreeBookingsResponse findFreeBookings(FindBookingSlots findBookingSlots)
     {
+        /* Request parameters. */
         FindBookingSlotType request = findBookingSlots.getFindBookingSlots();
+        String debug = "Received " + this.getClass().getSimpleName() + "#findFreeBookings with params: ";
         
+        UserIDType uid = request.getUserID();
+        debug += " user ID=" + uid.getUserID() + ", user name=" + uid.getUserName() + ", user namespace=" + 
+                uid.getUserNamespace() + " user QName=" + uid.getUserQName();
         
-        return null;
+        PermissionIDType reqPermission = request.getPermissionID();
+        if (reqPermission != null) debug += " permission ID=" + reqPermission.getPermissionID();
+        
+        ResourceIDType reqResource = request.getResourceID();
+        if (reqResource != null) debug += " resource type= " + reqResource.getType() + ", ID=" + 
+                request.getResourceID().getResourceID() + ", name=" + reqResource.getResourceName();
+        
+        debug += " period start=" + request.getPeriod().getStartTime().getTime() + ", period end=" + 
+                request.getPeriod().getEndTime().getTime();
+        this.logger.debug(debug);
+        
+        /* Response parameters. */
+        FindFreeBookingsResponse response = new FindFreeBookingsResponse();
+        BookingSlotListType slots = new BookingSlotListType();
+        response.setFindFreeBookingsResponse(slots);
+        
+        PermissionIDType permission = new PermissionIDType();
+        slots.setPermissionID(permission);
+        
+        ResourceIDType resource = new ResourceIDType();
+        resource.setType("TYPE");
+        slots.setResourceID(resource);
+
+        Session ses = DataAccessActivator.getNewSession();
+        try
+        {
+            /* Load user. */
+            User user = this.getUserFromUserID(uid, ses);
+            if (user == null)
+            {
+                this.logger.info("Unable to provide free times because the user has not been found. Supplied " +
+                        "credentials ID=" + uid.getUserID() + ", namespace=" + uid.getUserNamespace() + ", " +
+                        "name=" + uid.getUserName() + '.');
+                return response;
+            }
+            
+            if (reqPermission != null)
+            {
+                ResourcePermissionDao rpDao = new ResourcePermissionDao(ses);
+                ResourcePermission rp = rpDao.get(Long.valueOf(reqPermission.getPermissionID()));
+                if (rp == null)
+                {
+                    
+                }
+                else
+                {
+                    
+                }
+            }
+            else if (reqResource != null)
+            {
+                
+            }
+            else
+            {
+                this.logger.warn("Unable to provide free times because no permission or resource has been specified " +
+                		"to provide the free times of.");
+            }
+        }
+        finally
+        {
+            ses.close();
+        }
+        
+        return response;
     }
 
     @Override

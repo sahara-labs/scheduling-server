@@ -170,7 +170,10 @@ public class SlotBookingEngine implements BookingEngine
         {
             synchronized (this.days)
             {
-                this.days.put(dayKey, new DayBookings(dayKey));
+                if (!this.days.containsKey(dayKey))
+                {
+                    this.days.put(dayKey, new DayBookings(dayKey));
+                }
             }
         }
         

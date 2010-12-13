@@ -90,6 +90,7 @@ public class DayBookings
     public DayBookings(String day)
     {
         this.logger = LoggerActivator.getLogger();
+        this.logger.debug("Loading day bookings for day " + day + '.');
         
         this.rigBookings = new HashMap<Rig, RigBookings>();
         
@@ -550,6 +551,9 @@ public class DayBookings
         while (capsList.size() > 0)
         {
             RequestCapabilities reqCaps = capsList.get(0);
+            this.logger.debug("Attempting to load bookings for request capabilities " + reqCaps.getCapabilities() + '.');
+            
+
             Criteria qu = ses.createCriteria(Bookings.class)
                 .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
                 .add(Restrictions.eq("requestCapabilities", reqCaps))
@@ -563,6 +567,8 @@ public class DayBookings
              * yet. */
             if (ignoreNoBookings && bookings.size() == 0)
             {
+                this.logger.debug("Not going to load request capabilities " + reqCaps.getCapabilities() + " because " +
+                		"it has no bookings.");
                 capsList.remove(0);
                 continue;
             }
@@ -583,7 +589,6 @@ public class DayBookings
                 capsList.remove(0);
                 continue;
             }
-            
             
             /* Make sure all the rigs are loaded. */
             for (Rig r : matchingRigs)
