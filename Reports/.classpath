@@ -51,5 +51,6 @@
 	<classpathentry kind="lib" path="lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.3.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-Server/lib/servlet-api-2.5-20081211.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

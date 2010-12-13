@@ -41,12 +41,21 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryFilterType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
+
 
 /**
  * @author tmachet
@@ -55,14 +64,72 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionRepo
 public class Reports implements ReportsSkeletonInterface
 {
 
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.reports.intf.ReportsSkeletonInterface#queryInfo(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo)
-     */
+    /** Table names */
+    public static final String RIG_TABLE = "rig";
+    public static final String USER_TABLE = "users";
+    public static final String RIG_TYPE_TABLE = "rig_type";
+    public static final String USER_CLASS_TABLE = "user_class";
+
+    /** Logger. */
+    private Logger logger;
+    
+    
+    public Reports()
+    {
+        this.logger = LoggerActivator.getLogger();
+    }
+
     @Override
     public QueryInfoResponse queryInfo(QueryInfo queryInfo)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String entity;
+        
+        /* Request parameters. */
+        QueryInfoType qIReq = queryInfo.getQueryInfo();
+        
+        /* First Query Filter - this contains the main selection type to be selected */        
+        QueryFilterType query0 = qIReq.getQuerySelect();
+        //Get table to be queried
+        if(query0.getTypeForQuery() == TypeForQuery.RIG)
+        {
+            entity = Reports.RIG_TABLE; 
+        }
+        else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
+        {
+            entity = Reports.RIG_TYPE_TABLE;
+        }
+        else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
+        {
+            entity = Reports.USER_CLASS_TABLE;
+        }
+        else 
+        {
+            // Suggestions for default or how to report faults here
+        }
+            
+                
+        
+        Session ses = DataAccessActivator.getNewSession();
+
+        try
+        {
+        
+            
+            int i = 0;
+            QueryFilterType filter[] = qIReq.getQueryFilter(); 
+            if(filter != null)
+            {
+                for(QueryFilterType f : filter)
+                {
+                    // get values add contraints
+                }
+            }
+        }
+        finally
+        {
+            ses.close();
+        }
+        
     }
 
     /* (non-Javadoc)

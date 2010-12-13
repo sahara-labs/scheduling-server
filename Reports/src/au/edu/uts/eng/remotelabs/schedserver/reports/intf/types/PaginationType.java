@@ -1,691 +1,639 @@
-
 /**
  * PaginationType.java
- *
  * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:25:17 EDT)
+ * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:25:17 EDT)
  */
-            
-                package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
-            
 
-            /**
-            *  PaginationType bean class
-            */
-        
-        public  class PaginationType
-        implements org.apache.axis2.databinding.ADBBean{
-        /* This type was generated from the piece of schema that had
-                name = PaginationType
-                Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/reports
-                Namespace Prefix = ns1
-                */
-            
+package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
-        private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if(namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/reports")){
-                return "ns1";
-            }
-            return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+/**
+ * PaginationType bean class
+ */
+
+public class PaginationType implements org.apache.axis2.databinding.ADBBean
+{
+    /*
+     * This type was generated from the piece of schema that had
+     * name = PaginationType
+     * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/reports
+     * Namespace Prefix = ns1
+     */
+
+    /**
+                 * 
+                 */
+    private static final long serialVersionUID = 8257384869866222634L;
+
+    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    {
+        if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/reports"))
+        {
+            return "ns1";
+        }
+        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+    }
+
+    /**
+     * field for NumberOfPages
+     */
+
+    protected int localNumberOfPages;
+
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localNumberOfPagesTracker = false;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return int
+     */
+    public int getNumberOfPages()
+    {
+        return this.localNumberOfPages;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            NumberOfPages
+     */
+    public void setNumberOfPages(final int param)
+    {
+
+        // setting primitive attribute tracker to true
+
+        if (param == java.lang.Integer.MIN_VALUE)
+        {
+            this.localNumberOfPagesTracker = false;
+
+        }
+        else
+        {
+            this.localNumberOfPagesTracker = true;
         }
 
-        
+        this.localNumberOfPages = param;
 
-                        /**
-                        * field for NumberOfPages
-                        */
+    }
 
-                        
-                                    protected int localNumberOfPages ;
-                                
-                           /*  This tracker boolean wil be used to detect whether the user called the set method
-                          *   for this attribute. It will be used to determine whether to include this field
-                           *   in the serialized XML
-                           */
-                           protected boolean localNumberOfPagesTracker = false ;
-                           
+    /**
+     * field for PageNumber
+     */
 
-                           /**
-                           * Auto generated getter method
-                           * @return int
-                           */
-                           public  int getNumberOfPages(){
-                               return localNumberOfPages;
-                           }
+    protected int localPageNumber;
 
-                           
-                        
-                            /**
-                               * Auto generated setter method
-                               * @param param NumberOfPages
-                               */
-                               public void setNumberOfPages(int param){
-                            
-                                       // setting primitive attribute tracker to true
-                                       
-                                               if (param==java.lang.Integer.MIN_VALUE) {
-                                           localNumberOfPagesTracker = false;
-                                              
-                                       } else {
-                                          localNumberOfPagesTracker = true;
-                                       }
-                                   
-                                            this.localNumberOfPages=param;
-                                    
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localPageNumberTracker = false;
 
-                               }
-                            
+    /**
+     * Auto generated getter method
+     * 
+     * @return int
+     */
+    public int getPageNumber()
+    {
+        return this.localPageNumber;
+    }
 
-                        /**
-                        * field for PageNumber
-                        */
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            PageNumber
+     */
+    public void setPageNumber(final int param)
+    {
 
-                        
-                                    protected int localPageNumber ;
-                                
-                           /*  This tracker boolean wil be used to detect whether the user called the set method
-                          *   for this attribute. It will be used to determine whether to include this field
-                           *   in the serialized XML
-                           */
-                           protected boolean localPageNumberTracker = false ;
-                           
+        // setting primitive attribute tracker to true
 
-                           /**
-                           * Auto generated getter method
-                           * @return int
-                           */
-                           public  int getPageNumber(){
-                               return localPageNumber;
-                           }
+        if (param == java.lang.Integer.MIN_VALUE)
+        {
+            this.localPageNumberTracker = false;
 
-                           
-                        
-                            /**
-                               * Auto generated setter method
-                               * @param param PageNumber
-                               */
-                               public void setPageNumber(int param){
-                            
-                                       // setting primitive attribute tracker to true
-                                       
-                                               if (param==java.lang.Integer.MIN_VALUE) {
-                                           localPageNumberTracker = false;
-                                              
-                                       } else {
-                                          localPageNumberTracker = true;
-                                       }
-                                   
-                                            this.localPageNumber=param;
-                                    
+        }
+        else
+        {
+            this.localPageNumberTracker = true;
+        }
 
-                               }
-                            
+        this.localPageNumber = param;
 
-                        /**
-                        * field for PageLength
-                        */
+    }
 
-                        
-                                    protected int localPageLength ;
-                                
-                           /*  This tracker boolean wil be used to detect whether the user called the set method
-                          *   for this attribute. It will be used to determine whether to include this field
-                           *   in the serialized XML
-                           */
-                           protected boolean localPageLengthTracker = false ;
-                           
+    /**
+     * field for PageLength
+     */
 
-                           /**
-                           * Auto generated getter method
-                           * @return int
-                           */
-                           public  int getPageLength(){
-                               return localPageLength;
-                           }
+    protected int localPageLength;
 
-                           
-                        
-                            /**
-                               * Auto generated setter method
-                               * @param param PageLength
-                               */
-                               public void setPageLength(int param){
-                            
-                                       // setting primitive attribute tracker to true
-                                       
-                                               if (param==java.lang.Integer.MIN_VALUE) {
-                                           localPageLengthTracker = false;
-                                              
-                                       } else {
-                                          localPageLengthTracker = true;
-                                       }
-                                   
-                                            this.localPageLength=param;
-                                    
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localPageLengthTracker = false;
 
-                               }
-                            
+    /**
+     * Auto generated getter method
+     * 
+     * @return int
+     */
+    public int getPageLength()
+    {
+        return this.localPageLength;
+    }
 
-     /**
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            PageLength
+     */
+    public void setPageLength(final int param)
+    {
+
+        // setting primitive attribute tracker to true
+
+        if (param == java.lang.Integer.MIN_VALUE)
+        {
+            this.localPageLengthTracker = false;
+
+        }
+        else
+        {
+            this.localPageLengthTracker = true;
+        }
+
+        this.localPageLength = param;
+
+    }
+
+    /**
      * isReaderMTOMAware
+     * 
      * @return true if the reader supports MTOM
      */
-   public static boolean isReaderMTOMAware(javax.xml.stream.XMLStreamReader reader) {
+    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    {
         boolean isReaderMTOMAware = false;
-        
-        try{
-          isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-        }catch(java.lang.IllegalArgumentException e){
-          isReaderMTOMAware = false;
+
+        try
+        {
+            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
+                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+        }
+        catch (final java.lang.IllegalArgumentException e)
+        {
+            isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
-   }
-     
-     
-        /**
-        *
-        * @param parentQName
-        * @param factory
-        * @return org.apache.axiom.om.OMElement
-        */
-       public org.apache.axiom.om.OMElement getOMElement (
-               final javax.xml.namespace.QName parentQName,
-               final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException{
+    }
 
+    /**
+     * @param parentQName
+     * @param factory
+     * @return org.apache.axiom.om.OMElement
+     */
+    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
+            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    {
 
-        
-               org.apache.axiom.om.OMDataSource dataSource =
-                       new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
+        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
+                parentQName)
+        {
 
-                 public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-                       PaginationType.this.serialize(parentQName,factory,xmlWriter);
-                 }
-               };
-               return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(
-               parentQName,factory,dataSource);
-            
-       }
-
-         public void serialize(final javax.xml.namespace.QName parentQName,
-                                       final org.apache.axiom.om.OMFactory factory,
-                                       org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                                throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-                           serialize(parentQName,factory,xmlWriter,false);
-         }
-
-         public void serialize(final javax.xml.namespace.QName parentQName,
-                               final org.apache.axiom.om.OMFactory factory,
-                               org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-                               boolean serializeType)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-            
-                
-
-
-                java.lang.String prefix = null;
-                java.lang.String namespace = null;
-                
-
-                    prefix = parentQName.getPrefix();
-                    namespace = parentQName.getNamespaceURI();
-
-                    if ((namespace != null) && (namespace.trim().length() > 0)) {
-                        java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
-                        if (writerPrefix != null) {
-                            xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
-                        } else {
-                            if (prefix == null) {
-                                prefix = generatePrefix(namespace);
-                            }
-
-                            xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
-                            xmlWriter.writeNamespace(prefix, namespace);
-                            xmlWriter.setPrefix(prefix, namespace);
-                        }
-                    } else {
-                        xmlWriter.writeStartElement(parentQName.getLocalPart());
-                    }
-                
-                  if (serializeType){
-               
-
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://remotelabs.eng.uts.edu.au/schedserver/reports");
-                   if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
-                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                           namespacePrefix+":PaginationType",
-                           xmlWriter);
-                   } else {
-                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                           "PaginationType",
-                           xmlWriter);
-                   }
-
-               
-                   }
-                if (localNumberOfPagesTracker){
-                                    namespace = "";
-                                    if (! namespace.equals("")) {
-                                        prefix = xmlWriter.getPrefix(namespace);
-
-                                        if (prefix == null) {
-                                            prefix = generatePrefix(namespace);
-
-                                            xmlWriter.writeStartElement(prefix,"numberOfPages", namespace);
-                                            xmlWriter.writeNamespace(prefix, namespace);
-                                            xmlWriter.setPrefix(prefix, namespace);
-
-                                        } else {
-                                            xmlWriter.writeStartElement(namespace,"numberOfPages");
-                                        }
-
-                                    } else {
-                                        xmlWriter.writeStartElement("numberOfPages");
-                                    }
-                                
-                                               if (localNumberOfPages==java.lang.Integer.MIN_VALUE) {
-                                           
-                                                         throw new org.apache.axis2.databinding.ADBException("numberOfPages cannot be null!!");
-                                                      
-                                               } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localNumberOfPages));
-                                               }
-                                    
-                                   xmlWriter.writeEndElement();
-                             } if (localPageNumberTracker){
-                                    namespace = "";
-                                    if (! namespace.equals("")) {
-                                        prefix = xmlWriter.getPrefix(namespace);
-
-                                        if (prefix == null) {
-                                            prefix = generatePrefix(namespace);
-
-                                            xmlWriter.writeStartElement(prefix,"pageNumber", namespace);
-                                            xmlWriter.writeNamespace(prefix, namespace);
-                                            xmlWriter.setPrefix(prefix, namespace);
-
-                                        } else {
-                                            xmlWriter.writeStartElement(namespace,"pageNumber");
-                                        }
-
-                                    } else {
-                                        xmlWriter.writeStartElement("pageNumber");
-                                    }
-                                
-                                               if (localPageNumber==java.lang.Integer.MIN_VALUE) {
-                                           
-                                                         throw new org.apache.axis2.databinding.ADBException("pageNumber cannot be null!!");
-                                                      
-                                               } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPageNumber));
-                                               }
-                                    
-                                   xmlWriter.writeEndElement();
-                             } if (localPageLengthTracker){
-                                    namespace = "";
-                                    if (! namespace.equals("")) {
-                                        prefix = xmlWriter.getPrefix(namespace);
-
-                                        if (prefix == null) {
-                                            prefix = generatePrefix(namespace);
-
-                                            xmlWriter.writeStartElement(prefix,"pageLength", namespace);
-                                            xmlWriter.writeNamespace(prefix, namespace);
-                                            xmlWriter.setPrefix(prefix, namespace);
-
-                                        } else {
-                                            xmlWriter.writeStartElement(namespace,"pageLength");
-                                        }
-
-                                    } else {
-                                        xmlWriter.writeStartElement("pageLength");
-                                    }
-                                
-                                               if (localPageLength==java.lang.Integer.MIN_VALUE) {
-                                           
-                                                         throw new org.apache.axis2.databinding.ADBException("pageLength cannot be null!!");
-                                                      
-                                               } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPageLength));
-                                               }
-                                    
-                                   xmlWriter.writeEndElement();
-                             }
-                    xmlWriter.writeEndElement();
-               
-
-        }
-
-         /**
-          * Util method to write an attribute with the ns prefix
-          */
-          private void writeAttribute(java.lang.String prefix,java.lang.String namespace,java.lang.String attName,
-                                      java.lang.String attValue,javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException{
-              if (xmlWriter.getPrefix(namespace) == null) {
-                       xmlWriter.writeNamespace(prefix, namespace);
-                       xmlWriter.setPrefix(prefix, namespace);
-
-              }
-
-              xmlWriter.writeAttribute(namespace,attName,attValue);
-
-         }
-
-        /**
-          * Util method to write an attribute without the ns prefix
-          */
-          private void writeAttribute(java.lang.String namespace,java.lang.String attName,
-                                      java.lang.String attValue,javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException{
-                if (namespace.equals(""))
-              {
-                  xmlWriter.writeAttribute(attName,attValue);
-              }
-              else
-              {
-                  registerPrefix(xmlWriter, namespace);
-                  xmlWriter.writeAttribute(namespace,attName,attValue);
-              }
-          }
-
-
-           /**
-             * Util method to write an attribute without the ns prefix
-             */
-            private void writeQNameAttribute(java.lang.String namespace, java.lang.String attName,
-                                             javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-
-                java.lang.String attributeNamespace = qname.getNamespaceURI();
-                java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
-                if (attributePrefix == null) {
-                    attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
-                }
-                java.lang.String attributeValue;
-                if (attributePrefix.trim().length() > 0) {
-                    attributeValue = attributePrefix + ":" + qname.getLocalPart();
-                } else {
-                    attributeValue = qname.getLocalPart();
-                }
-
-                if (namespace.equals("")) {
-                    xmlWriter.writeAttribute(attName, attributeValue);
-                } else {
-                    registerPrefix(xmlWriter, namespace);
-                    xmlWriter.writeAttribute(namespace, attName, attributeValue);
-                }
+            @Override
+            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
+                    throws javax.xml.stream.XMLStreamException
+            {
+                PaginationType.this.serialize(this.parentQName, factory, xmlWriter);
             }
-        /**
-         *  method to handle Qnames
-         */
+        };
+        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
 
-        private void writeQName(javax.xml.namespace.QName qname,
-                                javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-            java.lang.String namespaceURI = qname.getNamespaceURI();
-            if (namespaceURI != null) {
-                java.lang.String prefix = xmlWriter.getPrefix(namespaceURI);
-                if (prefix == null) {
-                    prefix = generatePrefix(namespaceURI);
-                    xmlWriter.writeNamespace(prefix, namespaceURI);
-                    xmlWriter.setPrefix(prefix,namespaceURI);
+    }
+
+    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
+            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
+            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    {
+        this.serialize(parentQName, factory, xmlWriter, false);
+    }
+
+    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
+            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
+            org.apache.axis2.databinding.ADBException
+    {
+
+        java.lang.String prefix = null;
+        java.lang.String namespace = null;
+
+        prefix = parentQName.getPrefix();
+        namespace = parentQName.getNamespaceURI();
+
+        if ((namespace != null) && (namespace.trim().length() > 0))
+        {
+            final java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
+            if (writerPrefix != null)
+            {
+                xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
+            }
+            else
+            {
+                if (prefix == null)
+                {
+                    prefix = PaginationType.generatePrefix(namespace);
                 }
 
-                if (prefix.trim().length() > 0){
-                    xmlWriter.writeCharacters(prefix + ":" + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-                } else {
-                    // i.e this is the default namespace
-                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-                }
-
-            } else {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
+                xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
             }
         }
+        else
+        {
+            xmlWriter.writeStartElement(parentQName.getLocalPart());
+        }
 
-        private void writeQNames(javax.xml.namespace.QName[] qnames,
-                                 javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+        if (serializeType)
+        {
 
-            if (qnames != null) {
-                // we have to store this data until last moment since it is not possible to write any
-                // namespace data after writing the charactor data
-                java.lang.StringBuffer stringToWrite = new java.lang.StringBuffer();
-                java.lang.String namespaceURI = null;
-                java.lang.String prefix = null;
-
-                for (int i = 0; i < qnames.length; i++) {
-                    if (i > 0) {
-                        stringToWrite.append(" ");
-                    }
-                    namespaceURI = qnames[i].getNamespaceURI();
-                    if (namespaceURI != null) {
-                        prefix = xmlWriter.getPrefix(namespaceURI);
-                        if ((prefix == null) || (prefix.length() == 0)) {
-                            prefix = generatePrefix(namespaceURI);
-                            xmlWriter.writeNamespace(prefix, namespaceURI);
-                            xmlWriter.setPrefix(prefix,namespaceURI);
-                        }
-
-                        if (prefix.trim().length() > 0){
-                            stringToWrite.append(prefix).append(":").append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                        } else {
-                            stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                        }
-                    } else {
-                        stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                    }
-                }
-                xmlWriter.writeCharacters(stringToWrite.toString());
+            final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+                    "http://remotelabs.eng.uts.edu.au/schedserver/reports");
+            if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
+            {
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
+                        + ":PaginationType", xmlWriter);
+            }
+            else
+            {
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "PaginationType",
+                        xmlWriter);
             }
 
         }
+        if (this.localNumberOfPagesTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
 
+                if (prefix == null)
+                {
+                    prefix = PaginationType.generatePrefix(namespace);
 
-         /**
-         * Register a namespace prefix
-         */
-         private java.lang.String registerPrefix(javax.xml.stream.XMLStreamWriter xmlWriter, java.lang.String namespace) throws javax.xml.stream.XMLStreamException {
-                java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
-                if (prefix == null) {
-                    prefix = generatePrefix(namespace);
-
-                    while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null) {
-                        prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-                    }
-
+                    xmlWriter.writeStartElement(prefix, "numberOfPages", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
+
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "numberOfPages");
                 }
 
-                return prefix;
+            }
+            else
+            {
+                xmlWriter.writeStartElement("numberOfPages");
             }
 
+            if (this.localNumberOfPages == java.lang.Integer.MIN_VALUE)
+            {
 
-  
-        /**
-        * databinding method to get an XML representation of this object
-        *
-        */
-        public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
-                    throws org.apache.axis2.databinding.ADBException{
+                throw new org.apache.axis2.databinding.ADBException("numberOfPages cannot be null!!");
 
+            }
+            else
+            {
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
+                        .convertToString(this.localNumberOfPages));
+            }
 
-        
-                 java.util.ArrayList elementList = new java.util.ArrayList();
-                 java.util.ArrayList attribList = new java.util.ArrayList();
+            xmlWriter.writeEndElement();
+        }
+        if (this.localPageNumberTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
 
-                 if (localNumberOfPagesTracker){
-                                      elementList.add(new javax.xml.namespace.QName("",
-                                                                      "numberOfPages"));
-                                 
-                                elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localNumberOfPages));
-                            } if (localPageNumberTracker){
-                                      elementList.add(new javax.xml.namespace.QName("",
-                                                                      "pageNumber"));
-                                 
-                                elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPageNumber));
-                            } if (localPageLengthTracker){
-                                      elementList.add(new javax.xml.namespace.QName("",
-                                                                      "pageLength"));
-                                 
-                                elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localPageLength));
-                            }
+                if (prefix == null)
+                {
+                    prefix = PaginationType.generatePrefix(namespace);
 
-                return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
-            
-            
+                    xmlWriter.writeStartElement(prefix, "pageNumber", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "pageNumber");
+                }
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement("pageNumber");
+            }
+
+            if (this.localPageNumber == java.lang.Integer.MIN_VALUE)
+            {
+
+                throw new org.apache.axis2.databinding.ADBException("pageNumber cannot be null!!");
+
+            }
+            else
+            {
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
+                        .convertToString(this.localPageNumber));
+            }
+
+            xmlWriter.writeEndElement();
+        }
+        if (this.localPageLengthTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+
+                if (prefix == null)
+                {
+                    prefix = PaginationType.generatePrefix(namespace);
+
+                    xmlWriter.writeStartElement(prefix, "pageLength", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "pageLength");
+                }
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement("pageLength");
+            }
+
+            if (this.localPageLength == java.lang.Integer.MIN_VALUE)
+            {
+
+                throw new org.apache.axis2.databinding.ADBException("pageLength cannot be null!!");
+
+            }
+            else
+            {
+                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
+                        .convertToString(this.localPageLength));
+            }
+
+            xmlWriter.writeEndElement();
+        }
+        xmlWriter.writeEndElement();
+
+    }
+
+    /**
+     * Util method to write an attribute with the ns prefix
+     */
+    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
+            final java.lang.String attName, final java.lang.String attValue,
+            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    {
+        if (xmlWriter.getPrefix(namespace) == null)
+        {
+            xmlWriter.writeNamespace(prefix, namespace);
+            xmlWriter.setPrefix(prefix, namespace);
 
         }
 
-  
+        xmlWriter.writeAttribute(namespace, attName, attValue);
 
-     /**
-      *  Factory class that keeps the parse method
-      */
-    public static class Factory{
+    }
 
-        
-        
+    /**
+     * Register a namespace prefix
+     */
+    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
+            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    {
+        java.lang.String prefix = xmlWriter.getPrefix(namespace);
+
+        if (prefix == null)
+        {
+            prefix = PaginationType.generatePrefix(namespace);
+
+            while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
+            {
+                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+            }
+
+            xmlWriter.writeNamespace(prefix, namespace);
+            xmlWriter.setPrefix(prefix, namespace);
+        }
+
+        return prefix;
+    }
+
+    /**
+     * databinding method to get an XML representation of this object
+     */
+    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
+            throws org.apache.axis2.databinding.ADBException
+    {
+
+        final java.util.ArrayList elementList = new java.util.ArrayList();
+        final java.util.ArrayList attribList = new java.util.ArrayList();
+
+        if (this.localNumberOfPagesTracker)
+        {
+            elementList.add(new javax.xml.namespace.QName("", "numberOfPages"));
+
+            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localNumberOfPages));
+        }
+        if (this.localPageNumberTracker)
+        {
+            elementList.add(new javax.xml.namespace.QName("", "pageNumber"));
+
+            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localPageNumber));
+        }
+        if (this.localPageLengthTracker)
+        {
+            elementList.add(new javax.xml.namespace.QName("", "pageLength"));
+
+            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localPageLength));
+        }
+
+        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
+                attribList.toArray());
+
+    }
+
+    /**
+     * Factory class that keeps the parse method
+     */
+    public static class Factory
+    {
 
         /**
-        * static method to create the object
-        * Precondition:  If this object is an element, the current or next start element starts this object and any intervening reader events are ignorable
-        *                If this object is not an element, it is a complex type and the reader is at the event just after the outer start element
-        * Postcondition: If this object is an element, the reader is positioned at its end element
-        *                If this object is a complex type, the reader is positioned at the end element of its outer element
-        */
-        public static PaginationType parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
-            PaginationType object =
-                new PaginationType();
+         * static method to create the object
+         * Precondition: If this object is an element, the current or next start element starts this object and any
+         * intervening reader events are ignorable
+         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
+         * start element
+         * Postcondition: If this object is an element, the reader is positioned at its end element
+         * If this object is a complex type, the reader is positioned at the end element of its outer element
+         */
+        public static PaginationType parse(final javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception
+        {
+            final PaginationType object = new PaginationType();
 
-            int event;
-            java.lang.String nillableValue = null;
-            java.lang.String prefix ="";
-            java.lang.String namespaceuri ="";
-            try {
-                
+            try
+            {
+
                 while (!reader.isStartElement() && !reader.isEndElement())
+                {
                     reader.next();
+                }
 
-                
-                if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","type")!=null){
-                  java.lang.String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                        "type");
-                  if (fullTypeName!=null){
-                    java.lang.String nsPrefix = null;
-                    if (fullTypeName.indexOf(":") > -1){
-                        nsPrefix = fullTypeName.substring(0,fullTypeName.indexOf(":"));
+                if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
+                {
+                    final java.lang.String fullTypeName = reader.getAttributeValue(
+                            "http://www.w3.org/2001/XMLSchema-instance", "type");
+                    if (fullTypeName != null)
+                    {
+                        java.lang.String nsPrefix = null;
+                        if (fullTypeName.indexOf(":") > -1)
+                        {
+                            nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
+                        }
+                        nsPrefix = nsPrefix == null ? "" : nsPrefix;
+
+                        final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
+
+                        if (!"PaginationType".equals(type))
+                        {
+                            //find namespace for the prefix
+                            final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+                            return (PaginationType) au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper
+                                    .getTypeObject(nsUri, type, reader);
+                        }
+
                     }
-                    nsPrefix = nsPrefix==null?"":nsPrefix;
-
-                    java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":")+1);
-                    
-                            if (!"PaginationType".equals(type)){
-                                //find namespace for the prefix
-                                java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (PaginationType)au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper.getTypeObject(
-                                     nsUri,type,reader);
-                              }
-                        
-
-                  }
-                
 
                 }
 
-                
+                new java.util.Vector();
 
-                
-                // Note all attributes that were handled. Used to differ normal attributes
-                // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
-                
+                reader.next();
 
-                 
-                    
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
                     reader.next();
-                
-                                    
-                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
-                                
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","numberOfPages").equals(reader.getName())){
-                                
-                                    java.lang.String content = reader.getElementText();
-                                    
-                                              object.setNumberOfPages(
-                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-                                              
-                                        reader.next();
-                                    
-                              }  // End of if for expected property start element
-                                
-                                    else {
-                                        
-                                               object.setNumberOfPages(java.lang.Integer.MIN_VALUE);
-                                           
-                                    }
-                                
-                                    
-                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
-                                
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","pageNumber").equals(reader.getName())){
-                                
-                                    java.lang.String content = reader.getElementText();
-                                    
-                                              object.setPageNumber(
-                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-                                              
-                                        reader.next();
-                                    
-                              }  // End of if for expected property start element
-                                
-                                    else {
-                                        
-                                               object.setPageNumber(java.lang.Integer.MIN_VALUE);
-                                           
-                                    }
-                                
-                                    
-                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
-                                
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","pageLength").equals(reader.getName())){
-                                
-                                    java.lang.String content = reader.getElementText();
-                                    
-                                              object.setPageLength(
-                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-                                              
-                                        reader.next();
-                                    
-                              }  // End of if for expected property start element
-                                
-                                    else {
-                                        
-                                               object.setPageLength(java.lang.Integer.MIN_VALUE);
-                                           
-                                    }
-                                  
-                            while (!reader.isStartElement() && !reader.isEndElement())
-                                reader.next();
-                            
-                                if (reader.isStartElement())
-                                // A start element we are not expecting indicates a trailing invalid property
-                                throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
-                            
+                }
 
+                if (reader.isStartElement()
+                        && new javax.xml.namespace.QName("", "numberOfPages").equals(reader.getName()))
+                {
 
+                    final java.lang.String content = reader.getElementText();
 
-            } catch (javax.xml.stream.XMLStreamException e) {
+                    object.setNumberOfPages(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+
+                    object.setNumberOfPages(java.lang.Integer.MIN_VALUE);
+
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "pageNumber").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object.setPageNumber(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+
+                    object.setPageNumber(java.lang.Integer.MIN_VALUE);
+
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "pageLength").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object.setPageLength(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+
+                    object.setPageLength(java.lang.Integer.MIN_VALUE);
+
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement())
+                {
+                    // A start element we are not expecting indicates a trailing invalid property
+                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
+                            + reader.getLocalName());
+                }
+
+            }
+            catch (final javax.xml.stream.XMLStreamException e)
+            {
                 throw new java.lang.Exception(e);
             }
 
             return object;
         }
 
-        }//end of factory class
+    }//end of factory class
 
-        
-
-        }
-           
-          
+}
