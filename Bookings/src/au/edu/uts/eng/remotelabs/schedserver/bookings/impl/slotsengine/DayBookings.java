@@ -223,10 +223,10 @@ public class DayBookings
                 }
 
                 next = next.getTypeLoopNext();
-                
-                if (end < inuse.getEndSlot()) break;
             }
             while (ts != next);
+            
+            if (end < inuse.getEndSlot()) break;
         }
         
         return MRange.collapseRange(free);
@@ -272,23 +272,36 @@ public class DayBookings
         /* Try load balancing to find freeable slots. */
         for (MRange inuse : MRange.complement(MRange.collapseRange(free), this.day))
         {
+            int outerrs = inuse.getStartSlot();
+            /* If the seek start is after the end of the period specified, no need
+             * to run load balancing. */
+            if (outerrs > end) continue;
+            /* If the seek start is before the period specified, start at the period
+             * specified. */
+            if (outerrs < start) outerrs = start;
+
+            int outerre =  inuse.getEndSlot();
+            /* If the seek end is before the beginning of the period specified, no
+             * need to run load balancing. */
+            if (outerre < start) continue;
+            /* If the seek end is after the period specified, end at the period
+             * specified. */
+            if (outerre > end) outerre = end;
+            
             cs = next;
             do
             {
-                int ins = inuse.getStartSlot();
-                while (ins <= inuse.getEndSlot())
+                int innerrs = outerrs;
+                while (innerrs <= outerre)
                 {
-                    MBooking bk = next.getNextBooking(ins);
+                    MBooking bk = next.getNextBooking(innerrs);
                     
-                    /* There isn't much point trying to load balance a capability
-                     * booking, because in enclosing range, the capability loop 
-                     * is saturated. */
-                    if (bk.getType() == BType.CAPABILITY && this.loadBalance(next, bk, false))
+                    if (this.loadBalance(next, bk, false))
                     {
                         free.add(new MRange(bk.getStartSlot(), bk.getEndSlot(), bk.getDay()));
                     }
                     
-                    ins = bk.getEndSlot() + 1;
+                    innerrs = bk.getEndSlot() + 1;
                 }
 
                 next = next.getCapsLoopNext(reqCaps);
@@ -684,9 +697,6 @@ public class DayBookings
         Set<Rig> rigs = rigType.getRigs();
         for (Rig r : rigs)
         {
-            /* Don't duplicate the initial rig. */
-            if (r.equals(rig)) continue;
-            
             for (MatchingCapabilities match : r.getRigCapabilities().getMatchingCapabilitieses())
             {
                 RequestCapabilities reqCaps = match.getRequestCapabilities();
@@ -695,6 +705,9 @@ public class DayBookings
                     capsToLoad.add(reqCaps);
                 }
             }
+            
+            /* Don't duplicate the initial rig. */
+            if (r.equals(rig)) continue;
 
             RigBookings next = new RigBookings(r, this.day);
             this.loadRig(next, r, ses);
