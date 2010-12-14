@@ -270,7 +270,7 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
             
-            if (reqStart.after(permStart))
+            if (reqStart.before(permStart))
             {
                 /* Here the permission start time is after the requested start time 
                  * so the start partial date has no permission. */
@@ -286,7 +286,7 @@ public class BookingsService implements BookingsInterface
                 reqStart = permStart;
             }
             
-            if (reqEnd.before(permEnd))
+            if (reqEnd.after(permEnd))
             {
                 /* Here the permission end time is before the requested end time
                  * so the end partial date has no permission. */
