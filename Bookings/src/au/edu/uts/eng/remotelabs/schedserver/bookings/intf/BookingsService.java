@@ -117,7 +117,9 @@ public class BookingsService implements BookingsInterface
     @Override
     public FindFreeBookingsResponse findFreeBookings(FindFreeBookings findFreeBookings)
     {
-        /* Request parameters. */
+        /* --------------------------------------------------------------------
+         * -- Read request parameters.                                       --
+         * -------------------------------------------------------------------- */
         FindBookingSlotType request = findFreeBookings.getFindBookingSlots();
         String debug = "Received " + this.getClass().getSimpleName() + "#findFreeBookings with params: ";
         
@@ -137,7 +139,10 @@ public class BookingsService implements BookingsInterface
         debug += " period start=" + reqStart.getTime() + ", period end=" + reqEnd.getTime();
         this.logger.debug(debug);
         
-        /* Response parameters. */
+
+        /* --------------------------------------------------------------------
+         * -- Generate valid, blank request parameters.                      --
+         * -------------------------------------------------------------------- */
         FindFreeBookingsResponse response = new FindFreeBookingsResponse();
         BookingSlotListType slots = new BookingSlotListType();
         response.setFindFreeBookingsResponse(slots);
@@ -152,7 +157,9 @@ public class BookingsService implements BookingsInterface
         Session ses = DataAccessActivator.getNewSession();
         try
         {
-            /* Load user. */
+            /* ----------------------------------------------------------------
+             * -- Load the user.                                             --
+             * ---------------------------------------------------------------- */
             User user = this.getUserFromUserID(uid, ses);
             if (user == null)
             {
@@ -162,6 +169,9 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
             
+            /* ----------------------------------------------------------------
+             * -- Load the permission.                                             --
+             * ---------------------------------------------------------------- */
             ResourcePermission perm = null;
             if (reqPermission != null)
             {
@@ -189,14 +199,64 @@ public class BookingsService implements BookingsInterface
                         " because they do not have permission " + perm.getId() + ".");
                 return response;
             }
-            permission.setPermissionID(perm.getId().intValue());
             
+            /* ----------------------------------------------------------------
+             * -- Populate the response with permission parameters.          --
+             * ---------------------------------------------------------------- */
+            permission.setPermissionID(perm.getId().intValue());
+            resource.setType(perm.getType());
+            if (ResourcePermission.RIG_PERMISSION.equals(perm.getType()))
+            {
+                Rig rig = perm.getRig();
+                if (rig == null)
+                {
+                    this.logger.warn("Unable to provide free times because the rig permission with ID=" + perm.getId() +
+                            " is not set with a rig.");
+                    return response;
+                }
+                resource.setResourceID(rig.getId().intValue());
+                resource.setResourceName(rig.getName());
+            }
+            else if (ResourcePermission.TYPE_PERMISSION.equals(perm.getType()))
+            {
+                RigType rigType = perm.getRigType();
+                if (rigType == null)
+                {
+                    this.logger.warn("Unable to provide free times because the rig type permission with ID=" + perm.getId() +
+                        " is not set with a rig type.");
+                    return response;
+                }
+                resource.setResourceID(rigType.getId().intValue());
+                resource.setResourceName(rigType.getName());
+            }
+            else if (ResourcePermission.CAPS_PERMISSION.equals(perm.getType()))
+            {
+                RequestCapabilities caps = perm.getRequestCapabilities();
+                if (caps == null)
+                {
+                    this.logger.warn("Unable to provide free times because the request capabilities permission with ID=" 
+                            + perm.getId() + " is not set with a request capabilities.");
+                    return response;
+                }
+                resource.setResourceID(caps.getId().intValue());
+                resource.setResourceName(caps.getCapabilities());
+            }
+            else
+            {
+                this.logger.warn("Unable to provide free times because the permission with ID=" + perm.getId() + 
+                        " has type '" + perm.getType() + "' which is not understood.");
+                return response;
+            }
+
             /* Check permission times. */
+            /* ----------------------------------------------------------------
+             * -- Check permission times to make sure the request is within  --
+             * -- the permission start and expiry range.                     --
+             * ---------------------------------------------------------------- */
             Calendar permStart = Calendar.getInstance();
             permStart.setTime(perm.getStartTime());
             Calendar permEnd = Calendar.getInstance();
             permEnd.setTime(perm.getExpiryTime());
-            
             if (reqEnd.before(permStart) || reqStart.after(permEnd))
             {
                 /* In this case the requested range is either after the end of the 
@@ -206,6 +266,7 @@ public class BookingsService implements BookingsInterface
                 slot.setSlot(request.getPeriod());
                 slot.setState(SlotState.NOPERMISSION);
                 slots.addBookingSlot(slot);
+
                 return response;
             }
             
@@ -241,44 +302,30 @@ public class BookingsService implements BookingsInterface
                 reqEnd = permEnd;
             }
             
+            /* ----------------------------------------------------------------
+             * -- Get the free times for the permission resource.            --
+             * ---------------------------------------------------------------- */
             List<TimePeriod> free = null;
             resource.setType(perm.getType());
             if (ResourcePermission.RIG_PERMISSION.equals(perm.getType()))
             {
-                Rig rig = perm.getRig();
-                resource.setResourceID(rig.getId().intValue());
-                resource.setResourceName(rig.getName());
-                
-                free = this.engine.getFreeTimes(rig, new TimePeriod(reqStart, reqEnd),
+                free = this.engine.getFreeTimes(perm.getRig(), new TimePeriod(reqStart, reqEnd),
                         perm.getSessionDuration(), ses);
             }
             else if (ResourcePermission.TYPE_PERMISSION.equals(perm.getType()))
-            {
-                RigType type = perm.getRigType();
-                resource.setResourceID(type.getId().intValue());
-                resource.setResourceName(type.getName());
-                
-                free = this.engine.getFreeTimes(type, new TimePeriod(reqStart, reqEnd),
+            { 
+                free = this.engine.getFreeTimes(perm.getRigType(), new TimePeriod(reqStart, reqEnd),
                         perm.getSessionDuration(), ses);
             }
             else if (ResourcePermission.CAPS_PERMISSION.equals(perm.getType()))
             {
-                RequestCapabilities caps = perm.getRequestCapabilities();
-                resource.setResourceID(caps.getId().intValue());
-                resource.setResourceName(caps.getCapabilities());
-                
-                free = this.engine.getFreeTimes(caps, new TimePeriod(reqStart, reqEnd),
+                free = this.engine.getFreeTimes(perm.getRequestCapabilities(), new TimePeriod(reqStart, reqEnd),
                         perm.getSessionDuration(), ses);
             }
-            else
-            {
-                this.logger.warn("Unable to provide free times because the permission type '" + perm.getType() +
-                        "' is not understood.");
-                return response;
-            }
             
-            /* The free list gives the list of free time slots, times outside 
-             * this are in use times. */
+            /* ----------------------------------------------------------------
+             * -- Populate the resource with free and booked time            --
+             * ---------------------------------------------------------------- */
             Calendar c = reqStart;
             for (TimePeriod period : free)
             {
