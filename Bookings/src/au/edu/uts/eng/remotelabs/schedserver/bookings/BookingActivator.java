@@ -93,7 +93,7 @@ public class BookingActivator implements BundleActivator
 	 * 
 	 * @return booking engine.
 	 */
-	public BookingEngine getBookingEngine()
+	public static BookingEngine getBookingEngine()
 	{
 	    return BookingActivator.engine;
 	}

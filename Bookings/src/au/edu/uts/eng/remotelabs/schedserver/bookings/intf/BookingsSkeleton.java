@@ -41,7 +41,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlots;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
@@ -60,7 +60,7 @@ public class BookingsSkeleton implements BookingsInterface
     }
 
     @Override
-    public FindFreeBookingsResponse findFreeBookings(FindBookingSlots findBookingSlots)
+    public FindFreeBookingsResponse findFreeBookings(FindFreeBookings findFreeBookings)
     {
         throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#findFreeBookings");
     }

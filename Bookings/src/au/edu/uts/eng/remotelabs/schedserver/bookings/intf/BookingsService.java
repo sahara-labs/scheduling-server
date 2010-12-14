@@ -44,9 +44,13 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotListType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
@@ -54,7 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingRe
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlots;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
@@ -62,13 +66,18 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.ResourceIDType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.SlotState;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.TimePeriodType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -78,12 +87,17 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class BookingsService implements BookingsInterface
 {
+    /** The booing engine. */
+    private BookingEngine engine;
+    
     /** Logger. */
     private Logger logger;
     
     public BookingsService()
     {
         this.logger = LoggerActivator.getLogger();
+        
+        this.engine = BookingActivator.getBookingEngine();
     }
 
     @Override
@@ -101,10 +115,10 @@ public class BookingsService implements BookingsInterface
     }
 
     @Override
-    public FindFreeBookingsResponse findFreeBookings(FindBookingSlots findBookingSlots)
+    public FindFreeBookingsResponse findFreeBookings(FindFreeBookings findFreeBookings)
     {
         /* Request parameters. */
-        FindBookingSlotType request = findBookingSlots.getFindBookingSlots();
+        FindBookingSlotType request = findFreeBookings.getFindBookingSlots();
         String debug = "Received " + this.getClass().getSimpleName() + "#findFreeBookings with params: ";
         
         UserIDType uid = request.getUserID();
@@ -118,8 +132,9 @@ public class BookingsService implements BookingsInterface
         if (reqResource != null) debug += " resource type= " + reqResource.getType() + ", ID=" + 
                 request.getResourceID().getResourceID() + ", name=" + reqResource.getResourceName();
         
-        debug += " period start=" + request.getPeriod().getStartTime().getTime() + ", period end=" + 
-                request.getPeriod().getEndTime().getTime();
+        Calendar reqStart = request.getPeriod().getStartTime();
+        Calendar reqEnd = request.getPeriod().getEndTime();
+        debug += " period start=" + reqStart.getTime() + ", period end=" + reqEnd.getTime();
         this.logger.debug(debug);
         
         /* Response parameters. */
@@ -147,27 +162,148 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
             
+            ResourcePermission perm = null;
             if (reqPermission != null)
             {
-                ResourcePermissionDao rpDao = new ResourcePermissionDao(ses);
-                ResourcePermission rp = rpDao.get(Long.valueOf(reqPermission.getPermissionID()));
-                if (rp == null)
-                {
-                    
-                }
-                else
-                {
-                    
-                }
+                ResourcePermissionDao resPermissionDao = new ResourcePermissionDao(ses);
+                perm = resPermissionDao.get(Long.valueOf(reqPermission.getPermissionID()));
             }
             else if (reqResource != null)
             {
+                // TODO
+            }
+            
+            /* If no permission is specified, either it doesn't exist or it wasn't
+             * specified. Either way, we can't provide any information. */
+            if (perm == null)
+            {
+                this.logger.warn("Unable to provide free times because no permission or resource has been specified " +
+                		"or found to provide the free times of.");
+                return response;
+            } 
+            
+            /* There is a permission, but the user doesn't have it. */
+            if (!this.checkPermission(user, perm))
+            {
+                this.logger.warn("Unable to provide free times to user " + user.getNamespace() + ':' + user.getName() +
+                        " because they do not have permission " + perm.getId() + ".");
+                return response;
+            }
+            permission.setPermissionID(perm.getId().intValue());
+            
+            /* Check permission times. */
+            Calendar permStart = Calendar.getInstance();
+            permStart.setTime(perm.getStartTime());
+            Calendar permEnd = Calendar.getInstance();
+            permEnd.setTime(perm.getExpiryTime());
+            
+            if (reqEnd.before(permStart) || reqStart.after(permEnd))
+            {
+                /* In this case the requested range is either after the end of the 
+                 * permission region or before the start of the permission 
+                 * region. */
+                BookingSlotType slot = new BookingSlotType();
+                slot.setSlot(request.getPeriod());
+                slot.setState(SlotState.NOPERMISSION);
+                slots.addBookingSlot(slot);
+                return response;
+            }
+            
+            if (reqStart.after(permStart))
+            {
+                /* Here the permission start time is after the requested start time 
+                 * so the start partial date has no permission. */
+                TimePeriodType tp = new TimePeriodType();
+                tp.setStartTime(reqStart);
+                tp.setEndTime(permStart);
+                BookingSlotType slot = new BookingSlotType();
+                slot.setSlot(tp);
+                slot.setState(SlotState.NOPERMISSION);
+                slots.addBookingSlot(slot);
                 
+                /* The permission start time is now the search start time. */
+                reqStart = permStart;
+            }
+            
+            if (reqEnd.before(permEnd))
+            {
+                /* Here the permission end time is before the requested end time
+                 * so the end partial date has no permission. */
+                TimePeriodType tp = new TimePeriodType();
+                tp.setStartTime(permEnd);
+                tp.setEndTime(reqEnd);
+                BookingSlotType slot = new BookingSlotType();
+                slot.setSlot(tp);
+                slot.setState(SlotState.NOPERMISSION);
+                slots.addBookingSlot(slot);
+                
+                /* The permission end time is now the search end time. */
+                reqEnd = permEnd;
+            }
+            
+            List<TimePeriod> free = null;
+            resource.setType(perm.getType());
+            if (ResourcePermission.RIG_PERMISSION.equals(perm.getType()))
+            {
+                Rig rig = perm.getRig();
+                resource.setResourceID(rig.getId().intValue());
+                resource.setResourceName(rig.getName());
+                
+                free = this.engine.getFreeTimes(rig, new TimePeriod(reqStart, reqEnd),
+                        perm.getSessionDuration(), ses);
+            }
+            else if (ResourcePermission.TYPE_PERMISSION.equals(perm.getType()))
+            {
+                RigType type = perm.getRigType();
+                resource.setResourceID(type.getId().intValue());
+                resource.setResourceName(type.getName());
+                
+                free = this.engine.getFreeTimes(type, new TimePeriod(reqStart, reqEnd),
+                        perm.getSessionDuration(), ses);
+            }
+            else if (ResourcePermission.CAPS_PERMISSION.equals(perm.getType()))
+            {
+                RequestCapabilities caps = perm.getRequestCapabilities();
+                resource.setResourceID(caps.getId().intValue());
+                resource.setResourceName(caps.getCapabilities());
+                
+                free = this.engine.getFreeTimes(caps, new TimePeriod(reqStart, reqEnd),
+                        perm.getSessionDuration(), ses);
             }
             else
             {
-                this.logger.warn("Unable to provide free times because no permission or resource has been specified " +
-                		"to provide the free times of.");
+                this.logger.warn("Unable to provide free times because the permission type '" + perm.getType() +
+                        "' is not understood.");
+                return response;
+            }
+            
+            /* The free list gives the list of free time slots, times outside 
+             * this are in use times. */
+            Calendar c = reqStart;
+            for (TimePeriod period : free)
+            {
+                if (Math.abs(period.getStartTime().getTimeInMillis() - c.getTimeInMillis()) > 60000)
+                {
+                    /* The difference with the last time and the next time is
+                     * more than a minute, then there should be a booked period. */
+                    TimePeriodType tp = new TimePeriodType();
+                    tp.setStartTime(c);
+                    tp.setEndTime(period.getStartTime());
+                    BookingSlotType slot = new BookingSlotType();
+                    slot.setSlot(tp);
+                    slot.setState(SlotState.BOOKED);
+                    slots.addBookingSlot(slot);
+                }
+                
+                TimePeriodType tp = new TimePeriodType();
+                tp.setStartTime(period.getStartTime());
+                tp.setEndTime(period.getEndTime());
+                BookingSlotType slot = new BookingSlotType();
+                slot.setSlot(tp);
+                slot.setState(SlotState.FREE);
+                slots.addBookingSlot(slot);
+                
+                c = period.getEndTime();
             }
         }
         finally
@@ -219,9 +355,7 @@ public class BookingsService implements BookingsInterface
         
         
         return response;
-    }
-
-    
+    } 
 
     @Override
     public GetBookingsResponse getBookings(GetBookings getBookings)
@@ -337,6 +471,19 @@ public class BookingsService implements BookingsInterface
         }
         
         return response;
+    }
+    
+    /**
+     * Checks whether the request has the specified permission. 
+     * 
+     * @param user the user to check
+     * @param perm the permission to ensure the user has
+     * @return true if the request has the appropriate permission
+     */
+    private boolean checkPermission(User user, ResourcePermission perm)
+    {
+        // TODO Check request permissions for queuer
+        return true;
     }
     
     /**

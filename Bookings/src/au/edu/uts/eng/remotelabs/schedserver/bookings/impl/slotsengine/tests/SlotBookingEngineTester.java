@@ -148,6 +148,8 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, te.get(Calendar.MINUTE));
         assertEquals(0, te.get(Calendar.SECOND));
         
+        assertTrue(times.get(0).getStartTime().compareTo(s) >= 0);
+        assertTrue(times.get(times.size() - 1).getEndTime().compareTo(e) <= 0);
     }
 
     @Test
@@ -565,7 +567,11 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        
+        TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(r1, tp, 600, ses);
         
         ses.beginTransaction();
@@ -670,6 +676,9 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        
+        assertTrue(range.get(0).getStartTime().compareTo(start) >= 0);
+        assertTrue(range.get(range.size() - 1).getEndTime().compareTo(end) <= 0);
     }
     
     @Test
@@ -1087,7 +1096,10 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(r3, tp, 600, ses);
         
         ses.beginTransaction();
@@ -1203,6 +1215,9 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        
+        assertTrue(range.get(0).getStartTime().compareTo(start) >= 0);
+        assertTrue(range.get(range.size() -1 ).getEndTime().compareTo(end) <= 0);
     }
     
     @Test
@@ -1620,7 +1635,10 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(r2, tp, 600, ses);
         
         ses.beginTransaction();
@@ -1734,6 +1752,9 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        
+        assertTrue(range.get(0).getStartTime().compareTo(start) >= 0);
+        assertTrue(range.get(range.size() - 1).getEndTime().compareTo(end) <= 0);
     }
     
     @Test
@@ -2245,16 +2266,9 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(9, s.get(Calendar.HOUR_OF_DAY));
         assertEquals(30, s.get(Calendar.MINUTE));
         assertEquals(0, s.get(Calendar.SECOND));
-        assertEquals(0, e.get(Calendar.HOUR_OF_DAY));
-        assertEquals(0, e.get(Calendar.MINUTE));
-        assertEquals(0, e.get(Calendar.SECOND));
-        
-        
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
-        assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
-        assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        assertEquals(23, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(59, e.get(Calendar.MINUTE));
+        assertEquals(59, e.get(Calendar.SECOND));
     }
     
     @Test
@@ -2672,7 +2686,12 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        start.add(Calendar.MINUTE, 10);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        
+        TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(rigType2, tp, 600, ses);
         
         ses.beginTransaction();
@@ -2741,10 +2760,11 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(5, range.size());
         
         TimePeriod t = range.get(0);
+        
         Calendar s = t.getStartTime();
         Calendar e = t.getEndTime();
         assertEquals(0, s.get(Calendar.HOUR_OF_DAY));
-        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(10, s.get(Calendar.MINUTE));
         assertEquals(0, s.get(Calendar.SECOND));
         assertEquals(0, e.get(Calendar.HOUR_OF_DAY));
         assertEquals(30, e.get(Calendar.MINUTE));
@@ -2796,6 +2816,9 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        
+        assertTrue(range.get(0).getStartTime().compareTo(start) >= 0);
+        assertTrue(range.get(range.size() - 1).getEndTime().compareTo(end) <= 0);
     }
     
     @Test
@@ -3213,7 +3236,11 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        start.add(Calendar.MINUTE, 16);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(rcaps1, tp, 600, ses);
         
         ses.beginTransaction();
@@ -3285,7 +3312,7 @@ public class SlotBookingEngineTester extends TestCase
         Calendar s = t.getStartTime();
         Calendar e = t.getEndTime();
         assertEquals(0, s.get(Calendar.HOUR_OF_DAY));
-        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(16, s.get(Calendar.MINUTE));
         assertEquals(0, s.get(Calendar.SECOND));
         assertEquals(0, e.get(Calendar.HOUR_OF_DAY));
         assertEquals(30, e.get(Calendar.MINUTE));
@@ -3316,6 +3343,9 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        
+        assertTrue(range.get(0).getStartTime().compareTo(start) >= 0);
+        assertTrue(range.get(range.size() - 1).getEndTime().compareTo(end) <= 0);
     }
     
     @Test
@@ -3733,7 +3763,10 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(rcaps2, tp, 600, ses);
         
         ses.beginTransaction();
@@ -3836,6 +3869,10 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        
+        assertTrue(range.get(0).getStartTime().compareTo(start) >= 0);
+        assertTrue(range.get(range.size() - 1).getEndTime().compareTo(end) <= 0);
+                start.add(Calendar.MINUTE, 16);
     }
     
     @Test
@@ -4253,7 +4290,11 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        start.add(Calendar.MINUTE, 3);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(rcaps3, tp, 600, ses);
         
         ses.beginTransaction();
@@ -4366,5 +4407,8 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR), e.get(Calendar.YEAR));
+        
+        assertTrue(range.get(0).getStartTime().compareTo(start) >= 0);
+        assertTrue(range.get(range.size() - 1).getEndTime().compareTo(end) <= 0);
     }
 }

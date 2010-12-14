@@ -56,7 +56,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlots;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
@@ -102,8 +102,8 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
                 {
 
 
-                    final FindBookingSlots wrappedParam = (FindBookingSlots) this.fromOM(msgContext.getEnvelope()
-                            .getBody().getFirstElement(), FindBookingSlots.class,
+                    final FindFreeBookings wrappedParam = (FindFreeBookings) this.fromOM(msgContext.getEnvelope()
+                            .getBody().getFirstElement(), FindFreeBookings.class,
                             this.getEnvelopeNamespaces(msgContext.getEnvelope()));
 
                     FindFreeBookingsResponse response = skel.findFreeBookings(wrappedParam);
@@ -240,9 +240,9 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
                 return DeleteBookingsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (FindBookingSlots.class.equals(type))
+            if (FindFreeBookings.class.equals(type))
             {
-                return FindBookingSlots.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                return FindFreeBookings.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
             if (FindFreeBookingsResponse.class.equals(type))

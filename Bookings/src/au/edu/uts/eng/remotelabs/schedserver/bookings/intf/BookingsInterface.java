@@ -41,7 +41,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlots;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
@@ -72,10 +72,10 @@ public interface BookingsInterface
     /**
      * Finds free periods where a user may make a booking within a booking period.
      * 
-     * @param findBookingSlots request
+     * @param findFreeBookings request
      * @return response
      */
-    public FindFreeBookingsResponse findFreeBookings(FindBookingSlots findBookingSlots);
+    public FindFreeBookingsResponse findFreeBookings(FindFreeBookings findFreeBookings);
 
     /**
      * Gets information about a booking.

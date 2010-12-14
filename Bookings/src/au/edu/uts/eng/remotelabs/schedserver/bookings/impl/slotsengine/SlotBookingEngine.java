@@ -103,8 +103,10 @@ public class SlotBookingEngine implements BookingEngine
             }
         }
         
-        return MRange.rangeToTimePeriod(free);
+        return this.periodRangeCheck(MRange.rangeToTimePeriod(free), period);
     }
+
+    
 
     @Override
     public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration, Session ses)
@@ -125,7 +127,7 @@ public class SlotBookingEngine implements BookingEngine
             }
         }
         
-        return MRange.rangeToTimePeriod(free);
+        return this.periodRangeCheck(MRange.rangeToTimePeriod(free), period);
     }
 
     @Override
@@ -147,14 +149,44 @@ public class SlotBookingEngine implements BookingEngine
             }
         }
         
-        return MRange.rangeToTimePeriod(free);
+        return this.periodRangeCheck(MRange.rangeToTimePeriod(free), period);
+    }
+    
+    /**
+     * Checks the range of the time period such that the first time period starts 
+     * later or equal to the specified period start and ends earlier or equal to
+     * specified period end.
+     * 
+     * @param fp list of time periods
+     * @param period specified period
+     * @return fp parameter
+     */
+    private List<TimePeriod> periodRangeCheck(List<TimePeriod> fp, TimePeriod period)
+    {
+        if (fp.size() > 0)
+        {   
+            /* Ranging check. Make sure the free start and end times are not 
+             * earlier or later than the specified start or end periods 
+             * respectively. */
+            if (fp.get(0).getStartTime().before(period.getStartTime()))
+            {
+                fp.set(0, new TimePeriod(period.getStartTime(), fp.get(0).getEndTime()));
+            }
+            
+            if (fp.get(fp.size() - 1).getEndTime().after(period.getEndTime()))
+            {
+                fp.set(fp.size() - 1, new TimePeriod(fp.get(fp.size() - 1).getStartTime(), period.getEndTime()));
+            }
+        }
         
+        return fp;
     }
     
     @Override
     public void cleanUp()
     {
-        // TODO cleanup
+        this.logger.debug("Cleaning up the slot booking engine by clearing all days.");
+        this.days.clear();
     }
     
     /**

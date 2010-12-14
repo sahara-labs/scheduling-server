@@ -52,14 +52,14 @@ import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * FindBookingSlots bean class.
+ * FindFreeBookings bean class.
  */
-public class FindBookingSlots implements ADBBean
+public class FindFreeBookings implements ADBBean
 {
     private static final long serialVersionUID = 7760468296218101596L;
     
     public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings",
-            "findBookingSlots", "ns1");
+            "findFreeBookings", "ns1");
 
     protected FindBookingSlotType findBookingSlots;
 
@@ -89,15 +89,15 @@ public class FindBookingSlots implements ADBBean
 
     public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-        final OMDataSource dataSource = new ADBDataSource(this, FindBookingSlots.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this, FindFreeBookings.MY_QNAME)
         {
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                FindBookingSlots.this.serialize(FindBookingSlots.MY_QNAME, factory, xmlWriter);
+                FindFreeBookings.this.serialize(FindFreeBookings.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new OMSourcedElementImpl(FindBookingSlots.MY_QNAME, factory, dataSource);
+        return new OMSourcedElementImpl(FindFreeBookings.MY_QNAME, factory, dataSource);
     }
 
     @Override
@@ -115,20 +115,20 @@ public class FindBookingSlots implements ADBBean
         {
             throw new ADBException("Property cannot be null!");
         }
-        this.findBookingSlots.serialize(FindBookingSlots.MY_QNAME, factory, xmlWriter);
+        this.findBookingSlots.serialize(FindFreeBookings.MY_QNAME, factory, xmlWriter);
     }
 
     @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        return this.findBookingSlots.getPullParser(FindBookingSlots.MY_QNAME);
+        return this.findBookingSlots.getPullParser(FindFreeBookings.MY_QNAME);
     }
 
     public static class Factory
     {
-        public static FindBookingSlots parse(final XMLStreamReader reader) throws Exception
+        public static FindFreeBookings parse(final XMLStreamReader reader) throws Exception
         {
-            final FindBookingSlots object = new FindBookingSlots();
+            final FindFreeBookings object = new FindFreeBookings();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -142,7 +142,7 @@ public class FindBookingSlots implements ADBBean
                     {
                         if (reader.isStartElement()
                                 && new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings",
-                                        "findBookingSlots").equals(reader.getName()))
+                                        "findFreeBookings").equals(reader.getName()))
                         {
                             object.setFindBookingSlots(FindBookingSlotType.Factory.parse(reader));
                         }

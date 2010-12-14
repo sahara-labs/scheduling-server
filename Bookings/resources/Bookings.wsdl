@@ -14,7 +14,7 @@
       </xsd:element>
       <xsd:element name="deleteBookingsResponse" type="bok:BookingResponseType">
       </xsd:element>
-      <xsd:element name="findBookingSlots" type="bok:FindBookingSlotType">
+      <xsd:element name="findFreeBookings" type="bok:FindBookingSlotType">
       </xsd:element>
       <xsd:element name="findFreeBookingsResponse" type="bok:BookingSlotListType">
       </xsd:element>
@@ -158,9 +158,10 @@
       		<xsd:element name="state">
       			<xsd:simpleType>
       				<xsd:restriction base="xsd:string">
-      					<xsd:enumeration value="FREE"/>
-      					<xsd:enumeration value="BOOKED"/>
-      					<xsd:enumeration value="NOPERMISSION"/>
+      					<xsd:enumeration value="FREE" />
+      					<xsd:enumeration value="BOOKED" />
+      					<xsd:enumeration value="NOPERMISSION" />
+      					<xsd:minLength value="4"></xsd:minLength>
       				</xsd:restriction>
       			</xsd:simpleType>
       		</xsd:element>
@@ -214,7 +215,7 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="findFreeBookingsRequest">
-    <wsdl:part name="parameters" element="bok:findBookingSlots">
+    <wsdl:part name="parameters" element="bok:findFreeBookings">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getBookingRequest">
