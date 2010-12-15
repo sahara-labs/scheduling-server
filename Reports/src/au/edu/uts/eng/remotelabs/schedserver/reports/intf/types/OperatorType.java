@@ -1,5 +1,5 @@
 /**
- * TypeForQuery_type3.java
+ * OperatorType.java
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:25:17 EDT)
  */
@@ -7,19 +7,19 @@
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
 /**
- * TypeForQuery_type3 bean class
+ * OperatorType bean class
  */
 
-public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
+public class OperatorType implements org.apache.axis2.databinding.ADBBean
 {
 
     /**
                  * 
                  */
-    private static final long serialVersionUID = -3828759670388555576L;
+    private static final long serialVersionUID = -3507814399887274645L;
 
     public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-            "http://remotelabs.eng.uts.edu.au/schedserver/reports", "typeForQuery_type3", "ns1");
+            "http://remotelabs.eng.uts.edu.au/schedserver/reports", "operator_type1", "ns1");
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -31,55 +31,45 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
     }
 
     /**
-     * field for TypeForQuery_type2
+     * field for Operator_type0
      */
 
-    protected java.lang.String localTypeForQuery_type2;
+    protected java.lang.String localOperator_type0;
 
     private static java.util.HashMap _table_ = new java.util.HashMap();
 
     // Constructor
 
-    protected TypeForQuery_type3(final java.lang.String value, final boolean isRegisterValue)
+    protected OperatorType(final java.lang.String value, final boolean isRegisterValue)
     {
-        this.localTypeForQuery_type2 = value;
+        this.localOperator_type0 = value;
         if (isRegisterValue)
         {
 
-            TypeForQuery_type3._table_.put(this.localTypeForQuery_type2, this);
+            OperatorType._table_.put(this.localOperator_type0, this);
 
         }
 
     }
 
-    public static final java.lang.String _USER_CLASS = org.apache.axis2.databinding.utils.ConverterUtil
-            .convertToString("USER_CLASS");
+    public static final java.lang.String _AND = org.apache.axis2.databinding.utils.ConverterUtil
+            .convertToString("AND");
 
-    public static final java.lang.String _RIG = org.apache.axis2.databinding.utils.ConverterUtil.convertToString("RIG");
+    public static final java.lang.String _OR = org.apache.axis2.databinding.utils.ConverterUtil
+            .convertToString("OR");
 
-    public static final java.lang.String _RIG_TYPE = org.apache.axis2.databinding.utils.ConverterUtil
-            .convertToString("RIG_TYPE");
+    public static final java.lang.String _AND_NOT = org.apache.axis2.databinding.utils.ConverterUtil
+            .convertToString("AND NOT");
 
-    public static final java.lang.String _USER = org.apache.axis2.databinding.utils.ConverterUtil
-            .convertToString("USER");
+    public static final OperatorType AND = new OperatorType(OperatorType._AND, true);
 
-    public static final java.lang.String _REQUEST_CAPABILITIES = org.apache.axis2.databinding.utils.ConverterUtil
-            .convertToString("REQUEST_CAPABILITIES");
+    public static final OperatorType OR = new OperatorType(OperatorType._OR, true);
 
-    public static final TypeForQuery_type3 USER_CLASS = new TypeForQuery_type3(TypeForQuery_type3._USER_CLASS, true);
-
-    public static final TypeForQuery_type3 RIG = new TypeForQuery_type3(TypeForQuery_type3._RIG, true);
-
-    public static final TypeForQuery_type3 RIG_TYPE = new TypeForQuery_type3(TypeForQuery_type3._RIG_TYPE, true);
-
-    public static final TypeForQuery_type3 USER = new TypeForQuery_type3(TypeForQuery_type3._USER, true);
-
-    public static final TypeForQuery_type3 REQUEST_CAPABILITIES = new TypeForQuery_type3(
-            TypeForQuery_type3._REQUEST_CAPABILITIES, true);
+    public static final OperatorType AND_NOT = new OperatorType(OperatorType._AND_NOT, true);
 
     public java.lang.String getValue()
     {
-        return this.localTypeForQuery_type2;
+        return this.localOperator_type0;
     }
 
     @Override
@@ -98,7 +88,7 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
     public java.lang.String toString()
     {
 
-        return this.localTypeForQuery_type2.toString();
+        return this.localOperator_type0.toString();
 
     }
 
@@ -133,17 +123,17 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
     {
 
         final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                TypeForQuery_type3.MY_QNAME)
+                OperatorType.MY_QNAME)
         {
 
             @Override
             public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                     throws javax.xml.stream.XMLStreamException
             {
-                TypeForQuery_type3.this.serialize(TypeForQuery_type3.MY_QNAME, factory, xmlWriter);
+                OperatorType.this.serialize(OperatorType.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(TypeForQuery_type3.MY_QNAME, factory, dataSource);
+        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(OperatorType.MY_QNAME, factory, dataSource);
 
     }
 
@@ -171,7 +161,7 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
 
             if (prefix == null)
             {
-                prefix = TypeForQuery_type3.generatePrefix(namespace);
+                prefix = OperatorType.generatePrefix(namespace);
 
                 xmlWriter.writeStartElement(prefix, localName, namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
@@ -197,16 +187,16 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":typeForQuery_type3", xmlWriter);
+                        + ":operator_type1", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "typeForQuery_type3",
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "operator_type1",
                         xmlWriter);
             }
         }
 
-        if (this.localTypeForQuery_type2 == null)
+        if (this.localOperator_type0 == null)
         {
 
             throw new org.apache.axis2.databinding.ADBException("Value cannot be null !!");
@@ -215,7 +205,7 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
         else
         {
 
-            xmlWriter.writeCharacters(this.localTypeForQuery_type2);
+            xmlWriter.writeCharacters(this.localOperator_type0);
 
         }
 
@@ -251,7 +241,7 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
 
         if (prefix == null)
         {
-            prefix = TypeForQuery_type3.generatePrefix(namespace);
+            prefix = OperatorType.generatePrefix(namespace);
 
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
@@ -273,10 +263,9 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
     {
 
         //We can safely assume an element has only one type associated with it
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(
-                TypeForQuery_type3.MY_QNAME,
+        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(OperatorType.MY_QNAME,
                 new java.lang.Object[] { org.apache.axis2.databinding.utils.reader.ADBXMLStreamReader.ELEMENT_TEXT,
-                        org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localTypeForQuery_type2) },
+                        org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localOperator_type0) },
                 null);
 
     }
@@ -287,12 +276,11 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
     public static class Factory
     {
 
-        public static TypeForQuery_type3 fromValue(final java.lang.String value)
-                throws java.lang.IllegalArgumentException
+        public static OperatorType fromValue(final java.lang.String value) throws java.lang.IllegalArgumentException
         {
-            final TypeForQuery_type3 enumeration = (TypeForQuery_type3)
+            final OperatorType enumeration = (OperatorType)
 
-            TypeForQuery_type3._table_.get(value);
+            OperatorType._table_.get(value);
 
             if (enumeration == null)
             {
@@ -301,7 +289,7 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
             return enumeration;
         }
 
-        public static TypeForQuery_type3 fromString(final java.lang.String value, final java.lang.String namespaceURI)
+        public static OperatorType fromString(final java.lang.String value, final java.lang.String namespaceURI)
                 throws java.lang.IllegalArgumentException
         {
             try
@@ -316,18 +304,18 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
             }
         }
 
-        public static TypeForQuery_type3 fromString(final javax.xml.stream.XMLStreamReader xmlStreamReader,
+        public static OperatorType fromString(final javax.xml.stream.XMLStreamReader xmlStreamReader,
                 final java.lang.String content)
         {
             if (content.indexOf(":") > -1)
             {
                 final java.lang.String prefix = content.substring(0, content.indexOf(":"));
                 final java.lang.String namespaceUri = xmlStreamReader.getNamespaceContext().getNamespaceURI(prefix);
-                return TypeForQuery_type3.Factory.fromString(content, namespaceUri);
+                return OperatorType.Factory.fromString(content, namespaceUri);
             }
             else
             {
-                return TypeForQuery_type3.Factory.fromString(content, "");
+                return OperatorType.Factory.fromString(content, "");
             }
         }
 
@@ -340,10 +328,9 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
          * Postcondition: If this object is an element, the reader is positioned at its end element
          * If this object is a complex type, the reader is positioned at the end element of its outer element
          */
-        public static TypeForQuery_type3 parse(final javax.xml.stream.XMLStreamReader reader)
-                throws java.lang.Exception
+        public static OperatorType parse(final javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception
         {
-            TypeForQuery_type3 object = null;
+            OperatorType object = null;
             new java.util.HashMap();
             new java.util.ArrayList();
 
@@ -371,13 +358,13 @@ public class TypeForQuery_type3 implements org.apache.axis2.databinding.ADBBean
                             // this seems to be a Qname so find the namespace and send
                             prefix = content.substring(0, content.indexOf(":"));
                             namespaceuri = reader.getNamespaceURI(prefix);
-                            object = TypeForQuery_type3.Factory.fromString(content, namespaceuri);
+                            object = OperatorType.Factory.fromString(content, namespaceuri);
                         }
                         else
                         {
                             // this seems to be not a qname send and empty namespace incase of it is
                             // check is done in fromString method
-                            object = TypeForQuery_type3.Factory.fromString(content, "");
+                            object = OperatorType.Factory.fromString(content, "");
                         }
 
                     }

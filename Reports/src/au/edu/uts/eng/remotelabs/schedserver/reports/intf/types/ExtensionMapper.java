@@ -21,7 +21,7 @@ public class ExtensionMapper
                 && "typeForQuery_type3".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery_type3.Factory.parse(reader);
+            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery.Factory.parse(reader);
 
         }
 
@@ -38,7 +38,7 @@ public class ExtensionMapper
                 && "operator_type1".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.Operator_type1.Factory.parse(reader);
+            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.OperatorType.Factory.parse(reader);
 
         }
 
@@ -96,7 +96,7 @@ public class ExtensionMapper
                 && "typeForQuery_type3".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery_type3.Factory.parse(reader);
+            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery.Factory.parse(reader);
 
         }
 

@@ -41,14 +41,24 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 
+import java.util.List;
+
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryFilterType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse;
@@ -63,13 +73,6 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
  */
 public class Reports implements ReportsSkeletonInterface
 {
-
-    /** Table names */
-    public static final String RIG_TABLE = "rig";
-    public static final String USER_TABLE = "users";
-    public static final String RIG_TYPE_TABLE = "rig_type";
-    public static final String USER_CLASS_TABLE = "user_class";
-
     /** Logger. */
     private Logger logger;
     
@@ -82,53 +85,95 @@ public class Reports implements ReportsSkeletonInterface
     @Override
     public QueryInfoResponse queryInfo(QueryInfo queryInfo)
     {
-        String entity;
-        
-        /* Request parameters. */
+        /** Request parameters. **/
         QueryInfoType qIReq = queryInfo.getQueryInfo();
+        String debug = "Received " + this.getClass().getSimpleName() + "#queryInfo with params:";
+        debug += "Requestor: " + qIReq.getRequestor() + ", QuerySelect: " + qIReq.getQuerySelect().toString(); 
+        if(qIReq.getQueryFilter() != null) debug += ", QueryFilter: " + qIReq.getQueryFilter().toString();
+        debug += ", limit: " + qIReq.getLimit(); 
+        this.logger.debug(debug);
         
-        /* First Query Filter - this contains the main selection type to be selected */        
-        QueryFilterType query0 = qIReq.getQuerySelect();
-        //Get table to be queried
-        if(query0.getTypeForQuery() == TypeForQuery.RIG)
-        {
-            entity = Reports.RIG_TABLE; 
-        }
-        else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
-        {
-            entity = Reports.RIG_TYPE_TABLE;
-        }
-        else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
-        {
-            entity = Reports.USER_CLASS_TABLE;
-        }
-        else 
-        {
-            // Suggestions for default or how to report faults here
-        }
-            
-                
+        /** Response parameters. */
+        QueryInfoResponse resp = new QueryInfoResponse();
+        QueryInfoResponseType respType = new QueryInfoResponseType();
+        respType.setTypeForQuery(TypeForQuery.RIG);
+        resp.setQueryInfoResponse(respType);
         
         Session ses = DataAccessActivator.getNewSession();
 
+        /* First Query Filter - this contains the main selection type to be selected */        
+        QueryFilterType query0 = qIReq.getQuerySelect();
+
         try
         {
-        
+            Criteria cri;
+
+            //Get table to be queried
+            if(query0.getTypeForQuery() == TypeForQuery.RIG)
+            {
+                cri = ses.createCriteria(Rig.class);
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
+            {
+                cri = ses.createCriteria(RigType.class);
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
+            {
+                cri = ses.createCriteria(UserClass.class);
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.USER)
+            {
+                cri = ses.createCriteria(User.class);
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.REQUEST_CAPABILITIES)
+            {
+                cri = ses.createCriteria(RequestCapabilities.class);
+            }
+            else 
+            {
+                this.logger.error("QueryInfo request failed because TypeForQuery does not have a valid value.  Value is " +
+                        query0.getTypeForQuery().toString());
+                return resp;
+            }
             
-            int i = 0;
+            /* TODO use ID to restrict query
+            * Check permission method that looks for
+            * ADMIN anything
+            * ACADEMIC - get permissions
+            *    check canGenerateReports
+            * others - none
+            */
+        
+            if(query0.getQueryLike() != null)
+            {
+                cri.add(Restrictions.like("name", query0.getQueryLike()));
+            }
+
             QueryFilterType filter[] = qIReq.getQueryFilter(); 
             if(filter != null)
             {
-                for(QueryFilterType f : filter)
-                {
-                    // get values add contraints
-                }
+                //DODGY Designed, not implemented
             }
+            
+            cri.setMaxResults(qIReq.getLimit());
+            
+            @SuppressWarnings("unchecked")
+            List<User> list = cri.list();
+            for (User user : list)
+            {
+                respType.addSelectionResult(user.toString());
+            }
+            
         }
         finally
         {
             ses.close();
         }
+        
+        respType.setTypeForQuery(query0.getTypeForQuery());
+        resp.setQueryInfoResponse(respType);
+        
+        return resp;
         
     }
 

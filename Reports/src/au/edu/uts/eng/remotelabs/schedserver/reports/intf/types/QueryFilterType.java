@@ -34,14 +34,14 @@ public class QueryFilterType implements org.apache.axis2.databinding.ADBBean
      * field for Operator
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.Operator_type1 localOperator;
+    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.OperatorType localOperator;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.Operator_type1
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.OperatorType
      */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.Operator_type1 getOperator()
+    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.OperatorType getOperator()
     {
         return this.localOperator;
     }
@@ -52,7 +52,7 @@ public class QueryFilterType implements org.apache.axis2.databinding.ADBBean
      * @param param
      *            Operator
      */
-    public void setOperator(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.Operator_type1 param)
+    public void setOperator(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.OperatorType param)
     {
 
         this.localOperator = param;
@@ -451,7 +451,7 @@ public class QueryFilterType implements org.apache.axis2.databinding.ADBBean
                 if (reader.isStartElement() && new javax.xml.namespace.QName("", "operator").equals(reader.getName()))
                 {
 
-                    object.setOperator(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.Operator_type1.Factory
+                    object.setOperator(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.OperatorType.Factory
                             .parse(reader));
 
                     reader.next();

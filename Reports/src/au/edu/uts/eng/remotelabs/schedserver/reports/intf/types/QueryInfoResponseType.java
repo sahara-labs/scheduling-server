@@ -37,14 +37,14 @@ public class QueryInfoResponseType implements org.apache.axis2.databinding.ADBBe
      * field for TypeForQuery
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery_type3 localTypeForQuery;
+    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery localTypeForQuery;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery_type3
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery
      */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery_type3 getTypeForQuery()
+    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery getTypeForQuery()
     {
         return this.localTypeForQuery;
     }
@@ -55,7 +55,7 @@ public class QueryInfoResponseType implements org.apache.axis2.databinding.ADBBe
      * @param param
      *            TypeForQuery
      */
-    public void setTypeForQuery(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery_type3 param)
+    public void setTypeForQuery(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery param)
     {
 
         this.localTypeForQuery = param;
@@ -479,7 +479,7 @@ public class QueryInfoResponseType implements org.apache.axis2.databinding.ADBBe
                 {
 
                     object
-                            .setTypeForQuery(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery_type3.Factory
+                            .setTypeForQuery(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery.Factory
                                     .parse(reader));
 
                     reader.next();
