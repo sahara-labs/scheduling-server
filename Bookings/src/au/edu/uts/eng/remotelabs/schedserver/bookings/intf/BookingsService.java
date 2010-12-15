@@ -38,18 +38,17 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.intf;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.jivesoftware.smackx.workgroup.packet.UserID;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingResponseType;
@@ -78,6 +77,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -179,7 +179,56 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
             
-            
+            if (User.USER.equals(user.getPersona()) && !user.getId().equals(booking.getUser().getId()))
+            {
+                /* If the user is a user they can only cancel the booking if it
+                 * is for them. */
+                this.logger.info("Unable to delete booking because the user " + user.getNamespace() + ':' + 
+                        user.getName() + " does not own the booking.");
+                status.setFailureReason("Does not own booking.");
+                return response;
+            }
+            else if (User.ACADEMIC.equals(user.getPersona()) && !user.getId().equals(booking.getUser().getId()))
+            {
+                /* An academic may cancel bookings for classes they own. */
+                boolean hasPerm = false;
+                UserClass userClass = booking.getResourcePermission().getUserClass();
+                
+                Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
+                while (apIt.hasNext())
+                {
+                    AcademicPermission ap = apIt.next();
+                    if (ap.getUserClass().getId().equals(userClass.getId()) && ap.isCanKick())
+                    {
+                        hasPerm = true;
+                        break;
+                    }    
+                }
+                
+                if (!hasPerm)
+                {
+                    this.logger.info("Unable to delete booking because the user " + user.getNamespace() + ':' + 
+                            user.getName() + " does not own or have academic permission to cancel it.");
+                    status.setFailureReason("Does not own or have academic permission to cancel.");
+                    return response;
+                }
+                
+                this.logger.debug("Academic " + user.getNamespace() + ':' + user.getName() + " has permission to " +
+                		"cancel booking " + bid + " from user class" + userClass.getName() + '.');
+            }
+            else if (User.ADMIN.equals(user.getPersona()))
+            {
+                this.logger.debug("Admin " + user.getNamespace() + ':' + user.getName() + " canceling booking " + 
+                        bid + '.');
+            }
+            else
+            {
+                this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " with persona " + 
+                        user.getPersona() + " is attempting to cancel booking " + bid + ". They have no permission.");
+                status.setFailureReason("No permission.");
+                return response;
+            }
+
             
         }
         finally
