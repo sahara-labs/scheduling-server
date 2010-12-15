@@ -44,18 +44,22 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.jivesoftware.smackx.workgroup.packet.UserID;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
@@ -90,7 +94,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class BookingsService implements BookingsInterface
 {
-    /** The booing engine. */
+    /** The booking engine. */
     private BookingEngine engine;
     
     /** Logger. */
@@ -113,8 +117,77 @@ public class BookingsService implements BookingsInterface
     @Override
     public DeleteBookingsResponse deleteBookings(DeleteBookings deleteBookings)
     {
-        // TODO Auto-generated method stub
-        return null;
+        /* --------------------------------------------------------------------
+         * -- Read request parameters.                                       --
+         * -------------------------------------------------------------------- */
+        DeleteBookingType request = new DeleteBookingType();
+        String debug = "Received " + this.getClass().getSimpleName() + "#deleteBookings with params: ";
+        
+        UserIDType uid = request.getUserID();
+        debug += " user ID=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + 
+            uid.getUserName() + " user QName=" + uid.getUserQName();
+        
+        int bid = request.getBookingID().getBookingID();
+        debug += ", booking ID=" + bid + ", reason=" + request.getReason() + '.';
+        this.logger.debug(debug);
+        
+        /* --------------------------------------------------------------------
+         * -- Generate valid, blank request parameters.                      --
+         * -------------------------------------------------------------------- */
+        DeleteBookingsResponse response = new DeleteBookingsResponse();
+        BookingResponseType status = new BookingResponseType();
+        status.setSuccess(false);
+        response.setDeleteBookingsResponse(status);
+        
+        Session ses = DataAccessActivator.getNewSession();
+        try
+        {
+            /* ----------------------------------------------------------------
+             * -- Load the user.                                             --
+             * ---------------------------------------------------------------- */
+            User user = this.getUserFromUserID(uid, ses);
+            if (user == null)
+            {
+                this.logger.info("Unable to cancel a booking because the user has not been found. Supplied " +
+                        "credentials ID=" + uid.getUserID() + ", namespace=" + uid.getUserNamespace() + ", " +
+                        "name=" + uid.getUserName() + '.');
+                status.setFailureReason("User not found.");
+                return response;
+            }
+            
+            /* ----------------------------------------------------------------
+             * -- Load the booking.                                          --
+             * ---------------------------------------------------------------- */
+            BookingsDao dao = new BookingsDao(ses);
+            Bookings booking = dao.get(Long.valueOf(bid));
+            if (booking == null)
+            {
+                this.logger.info("Unable to delete a booking because the booking with ID " + bid + " was not " +
+                		"been found.");
+                status.setFailureReason("Booking not found.");
+                return response;
+            }
+            
+            /* ----------------------------------------------------------------
+             * -- Check whether the booking can get canceled and if the     --
+             * -- user has permission to cancel it.                          --
+             * ---------------------------------------------------------------- */
+            if (!booking.isActive())
+            {
+                this.logger.info("Unable to delete booking because the booking has already been canceled or redeemed.");
+                status.setFailureReason("Booking already canceled or redeemed.");
+                return response;
+            }
+            
+            
+            
+        }
+        finally
+        {
+            ses.close();
+        }
+        
+        return response;
     }
 
     @Override
@@ -127,8 +200,8 @@ public class BookingsService implements BookingsInterface
         String debug = "Received " + this.getClass().getSimpleName() + "#findFreeBookings with params: ";
         
         UserIDType uid = request.getUserID();
-        debug += " user ID=" + uid.getUserID() + ", user name=" + uid.getUserName() + ", user namespace=" + 
-                uid.getUserNamespace() + " user QName=" + uid.getUserQName();
+        debug += " user ID=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + 
+                uid.getUserName() + " user QName=" + uid.getUserQName();
         
         PermissionIDType reqPermission = request.getPermissionID();
         if (reqPermission != null) debug += " permission ID=" + reqPermission.getPermissionID();
@@ -251,6 +324,7 @@ public class BookingsService implements BookingsInterface
                 }
                 else if (rpList.size() > 1)
                 {
+                    // TODO stupid easy case
 //                    Date rsd = reqStart.getTime();
 //                    Date red = reqEnd.getTime();
 //                    /* Multiple permissions so we take the permission in time range. */
