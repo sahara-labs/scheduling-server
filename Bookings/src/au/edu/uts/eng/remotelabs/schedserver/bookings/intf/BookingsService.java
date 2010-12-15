@@ -36,6 +36,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.intf;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -79,6 +80,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
@@ -180,7 +183,86 @@ public class BookingsService implements BookingsInterface
             }
             else if (reqResource != null)
             {
-                // TODO
+                Criteria qu = ses.createCriteria(ResourcePermission.class);
+                
+                /* Add resource restrictions. */
+                qu.add(Restrictions.eq("type", reqResource.getType()));
+                if (ResourcePermission.TYPE_PERMISSION.equals(reqResource.getType()))
+                {
+                    if (reqResource.getResourceID() > 0)
+                    {
+                        qu.add(Restrictions.eq("rigType.id", Long.valueOf(reqResource.getResourceID())));
+                    }
+                    if (reqResource.getResourceName() != null)
+                    {
+                        qu.createCriteria("rigType")
+                          .add(Restrictions.eq("name", reqResource.getResourceName()));
+                    }
+                }
+                else if (ResourcePermission.RIG_PERMISSION.equals(reqResource.getType()))
+                {
+                    if (reqResource.getResourceID() > 0)
+                    {
+                        qu.add(Restrictions.eq("rig.id", Long.valueOf(reqResource.getResourceID())));
+                    }
+                    if (reqResource.getResourceName() != null)
+                    {
+                        qu.createCriteria("rig")
+                          .add(Restrictions.eq("name", reqResource.getResourceName()));
+                    }
+                }
+                else if (ResourcePermission.CAPS_PERMISSION.equals(reqResource.getType()))
+                {
+                    if (reqResource.getResourceID() > 0)
+                    {
+                        qu.add(Restrictions.eq("requestCapabilities.id", Long.valueOf(reqResource.getResourceID())));
+                    }
+                    if (reqResource.getResourceName() != null)
+                    {
+                        qu.createCriteria("requestCapabilities")
+                          .add(Restrictions.eq("capabilities", reqResource.getResourceName()));
+                    }
+                }
+                else
+                {
+                    this.logger.warn("Unable to provide free times because resource type " + reqResource.getType() +
+                            " is not understood.");
+                    return response;
+                }
+                
+                List<UserClass> uc = new ArrayList<UserClass>();
+                for (UserAssociation assoc : user.getUserAssociations()) uc.add(assoc.getUserClass());
+
+                /* The permission user class must be active and bookable. */
+                qu.createCriteria("userClass")
+                  .add(Restrictions.eq("active", Boolean.TRUE))
+                  .add(Restrictions.eq("bookable", Boolean.TRUE));
+                qu.add(Restrictions.in("userClass",  uc));
+                
+                /* Add order in case we need to count in range, latest first. */
+                qu.addOrder(Order.desc("startTime"));
+
+                @SuppressWarnings("unchecked")
+                List <ResourcePermission> rpList = qu.list();
+                if (rpList.size() == 1)
+                {
+                    /* One permission so good to go. */
+                    perm = rpList.get(0);
+                }
+                else if (rpList.size() > 1)
+                {
+//                    Date rsd = reqStart.getTime();
+//                    Date red = reqEnd.getTime();
+//                    /* Multiple permissions so we take the permission in time range. */
+//                    for (ResourcePermission rp : rpList)
+//                    {
+//                        
+//                                
+//                    }
+                    
+                    /* Nothing in range so it doesn't matter which resource we give. */
+                    if (perm == null) perm = rpList.get(0);
+                }
             }
             
             /* If no permission is specified, either it doesn't exist or it wasn't
@@ -190,7 +272,14 @@ public class BookingsService implements BookingsInterface
                 this.logger.warn("Unable to provide free times because no permission or resource has been specified " +
                 		"or found to provide the free times of.");
                 return response;
-            } 
+            }
+            
+            /* Make sure the permission a valid booking permission. */
+            if (!(perm.getUserClass().isActive() && perm.getUserClass().isBookable()))
+            {
+                this.logger.warn("Unable to provide free times because the permission is not a valid booking permission.");
+                return response;
+            }
             
             /* There is a permission, but the user doesn't have it. */
             if (!this.checkPermission(user, perm))
@@ -248,7 +337,6 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
 
-            /* Check permission times. */
             /* ----------------------------------------------------------------
              * -- Check permission times to make sure the request is within  --
              * -- the permission start and expiry range.                     --
@@ -286,20 +374,14 @@ public class BookingsService implements BookingsInterface
                 reqStart = permStart;
             }
             
+            Calendar searchEnd = reqEnd;
             if (reqEnd.after(permEnd))
             {
                 /* Here the permission end time is before the requested end time
-                 * so the end partial date has no permission. */
-                TimePeriodType tp = new TimePeriodType();
-                tp.setStartTime(permEnd);
-                tp.setEndTime(reqEnd);
-                BookingSlotType slot = new BookingSlotType();
-                slot.setSlot(tp);
-                slot.setState(SlotState.NOPERMISSION);
-                slots.addBookingSlot(slot);
-                
-                /* The permission end time is now the search end time. */
-                reqEnd = permEnd;
+                 * so the end partial date has no permission. We will search the free
+                 * search end to the permission end but add the no permission period
+                 * last. */
+                searchEnd = permEnd;
             }
             
             /* ----------------------------------------------------------------
@@ -309,17 +391,17 @@ public class BookingsService implements BookingsInterface
             resource.setType(perm.getType());
             if (ResourcePermission.RIG_PERMISSION.equals(perm.getType()))
             {
-                free = this.engine.getFreeTimes(perm.getRig(), new TimePeriod(reqStart, reqEnd),
+                free = this.engine.getFreeTimes(perm.getRig(), new TimePeriod(reqStart, searchEnd),
                         perm.getSessionDuration(), ses);
             }
             else if (ResourcePermission.TYPE_PERMISSION.equals(perm.getType()))
             { 
-                free = this.engine.getFreeTimes(perm.getRigType(), new TimePeriod(reqStart, reqEnd),
+                free = this.engine.getFreeTimes(perm.getRigType(), new TimePeriod(reqStart, searchEnd),
                         perm.getSessionDuration(), ses);
             }
             else if (ResourcePermission.CAPS_PERMISSION.equals(perm.getType()))
             {
-                free = this.engine.getFreeTimes(perm.getRequestCapabilities(), new TimePeriod(reqStart, reqEnd),
+                free = this.engine.getFreeTimes(perm.getRequestCapabilities(), new TimePeriod(reqStart, searchEnd),
                         perm.getSessionDuration(), ses);
             }
             
@@ -351,6 +433,18 @@ public class BookingsService implements BookingsInterface
                 slots.addBookingSlot(slot);
                 
                 c = period.getEndTime();
+            }
+            
+            if (reqEnd.after(permEnd))
+            {
+                /* Add a no permission at the end. */
+                TimePeriodType tp = new TimePeriodType();
+                tp.setStartTime(permEnd);
+                tp.setEndTime(reqEnd);
+                BookingSlotType slot = new BookingSlotType();
+                slot.setSlot(tp);
+                slot.setState(SlotState.NOPERMISSION);
+                slots.addBookingSlot(slot);
             }
         }
         finally

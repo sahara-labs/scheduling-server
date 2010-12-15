@@ -131,7 +131,561 @@ public class BookingsServiceTester extends TestCase
     }
     
     @Test
-    public void testFindFreeTimesBeforePermPartial()
+    public void testFindFreeTimesResType()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        UserClass uclass2 = new UserClass();
+        uclass2.setName("booktestclass2");
+        uclass2.setActive(true);
+        uclass2.setQueuable(false);
+        uclass2.setBookable(true);
+        uclass2.setTimeHorizon(1000);
+        ses.save(uclass2);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation();
+        assoc.setId(new UserAssociationId(us1.getId(), uclass1.getId()));
+        assoc.setUser(us1);
+        assoc.setUserClass(uclass1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        start.add(Calendar.HOUR_OF_DAY, 3);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        end.add(Calendar.MINUTE, -30);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(1800);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(start.getTime());
+        perm1.setExpiryTime(end.getTime());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        ResourcePermission perm2 = new ResourcePermission();
+        perm2.setUserClass(uclass2);
+        perm2.setType("TYPE");
+        perm2.setSessionDuration(1800);
+        perm2.setQueueActivityTimeout(300);
+        perm2.setAllowedExtensions((short)10);
+        perm2.setSessionActivityTimeout(300);
+        perm2.setExtensionDuration(300);
+        perm2.setMaximumBookings(10);
+        perm2.setRigType(rigType1);
+        perm2.setStartTime(start.getTime());
+        perm2.setExpiryTime(end.getTime());
+        perm2.setDisplayName("bookperm");
+        ses.save(perm2);
+        ResourcePermission perm3 = new ResourcePermission();
+        perm3.setUserClass(uclass1);
+        perm3.setType("TYPE");
+        perm3.setSessionDuration(1800);
+        perm3.setQueueActivityTimeout(300);
+        perm3.setAllowedExtensions((short)10);
+        perm3.setSessionActivityTimeout(300);
+        perm3.setExtensionDuration(300);
+        perm3.setMaximumBookings(10);
+        perm3.setRigType(rigType1);
+        Calendar out = Calendar.getInstance();
+        out.add(Calendar.MONTH, 1);
+        perm3.setStartTime(out.getTime());
+        out.add(Calendar.DAY_OF_MONTH, 1);
+        perm3.setExpiryTime(out.getTime());
+        perm3.setDisplayName("bookperm");
+        ses.save(perm3);
+        ses.getTransaction().commit();
+        
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+        ses.refresh(uclass1);
+        ses.refresh(us1);
+        
+        FindFreeBookings request = new FindFreeBookings();
+        FindBookingSlotType slotReq = new FindBookingSlotType();
+        request.setFindBookingSlots(slotReq);
+        UserIDType uid = new UserIDType();
+        uid.setUserQName(us1.getNamespace() + ':' + us1.getName());
+        slotReq.setUserID(uid);
+        ResourceIDType reqres = new ResourceIDType();
+        reqres.setType("TYPE");
+        reqres.setResourceName(rigType1.getName());
+        slotReq.setResourceID(reqres);
+        
+        TimePeriodType tp = new TimePeriodType();
+        start.add(Calendar.HOUR_OF_DAY, -3);
+        end.add(Calendar.MINUTE, 30);
+        tp.setStartTime(start);
+        tp.setEndTime(end);
+        slotReq.setPeriod(tp);
+        
+        FindFreeBookingsResponse response = this.service.findFreeBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(perm3);
+        ses.delete(perm2);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.delete(uclass2);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        BookingSlotListType slots = response.getFindFreeBookingsResponse();
+        assertNotNull(slots);
+        
+        ResourceIDType res = slots.getResourceID();
+        assertNotNull(res);
+        assertEquals("TYPE", res.getType());
+        assertEquals(rigType1.getName(), res.getResourceName());
+        
+        PermissionIDType pid = slots.getPermissionID();
+        assertNotNull(pid);
+        assertEquals(perm1.getId().intValue(), pid.getPermissionID());
+        
+        BookingSlotType slotsList[] = slots.getBookingSlot();
+        assertNotNull(slotsList);
+        
+        for (BookingSlotType s : slotsList)
+        {
+            assertNotNull(s.getState());
+            
+            TimePeriodType t = s.getSlot();
+            assertNotNull(t);
+            assertNotNull(t.getStartTime());
+            assertNotNull(t.getEndTime());
+        }
+        
+        assertEquals(3, slotsList.length);
+        
+        BookingSlotType bs = slotsList[0];
+        assertEquals(SlotState.NOPERMISSION, bs.getState());
+        Calendar s = bs.getSlot().getStartTime();
+        assertEquals(0, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        Calendar e = bs.getSlot().getEndTime();
+        assertEquals(3, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+        
+        bs = slotsList[1];
+        assertEquals(SlotState.FREE, bs.getState());
+        s = bs.getSlot().getStartTime();
+        assertEquals(3, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        e = bs.getSlot().getEndTime();
+        assertEquals(23, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+        
+        bs = slotsList[2];
+        assertEquals(SlotState.NOPERMISSION, bs.getState());
+        s = bs.getSlot().getStartTime();
+        assertEquals(23, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        e = bs.getSlot().getEndTime();
+        assertEquals(0, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+    }
+    
+    @Test
+    public void testFindFreeTimesResRig()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        UserClass uclass2 = new UserClass();
+        uclass2.setName("booktestclass2");
+        uclass2.setActive(true);
+        uclass2.setQueuable(false);
+        uclass2.setBookable(true);
+        uclass2.setTimeHorizon(1000);
+        ses.save(uclass2);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation();
+        assoc.setId(new UserAssociationId(us1.getId(), uclass1.getId()));
+        assoc.setUser(us1);
+        assoc.setUserClass(uclass1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        start.add(Calendar.HOUR_OF_DAY, 3);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        end.add(Calendar.MINUTE, -30);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(1800);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(start.getTime());
+        perm1.setExpiryTime(end.getTime());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        ResourcePermission perm2 = new ResourcePermission();
+        perm2.setUserClass(uclass2);
+        perm2.setType("TYPE");
+        perm2.setSessionDuration(1800);
+        perm2.setQueueActivityTimeout(300);
+        perm2.setAllowedExtensions((short)10);
+        perm2.setSessionActivityTimeout(300);
+        perm2.setExtensionDuration(300);
+        perm2.setMaximumBookings(10);
+        perm2.setRigType(rigType1);
+        perm2.setStartTime(start.getTime());
+        perm2.setExpiryTime(end.getTime());
+        perm2.setDisplayName("bookperm");
+        ses.save(perm2);
+        ses.getTransaction().commit();
+        
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+        ses.refresh(uclass1);
+        ses.refresh(us1);
+        
+        FindFreeBookings request = new FindFreeBookings();
+        FindBookingSlotType slotReq = new FindBookingSlotType();
+        request.setFindBookingSlots(slotReq);
+        UserIDType uid = new UserIDType();
+        uid.setUserQName(us1.getNamespace() + ':' + us1.getName());
+        slotReq.setUserID(uid);
+        ResourceIDType reqres = new ResourceIDType();
+        reqres.setType("RIG");
+        reqres.setResourceID(r1.getId().intValue());
+        slotReq.setResourceID(reqres);
+        
+        TimePeriodType tp = new TimePeriodType();
+        start.add(Calendar.HOUR_OF_DAY, -3);
+        end.add(Calendar.MINUTE, 30);
+        tp.setStartTime(start);
+        tp.setEndTime(end);
+        slotReq.setPeriod(tp);
+        
+        FindFreeBookingsResponse response = this.service.findFreeBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(perm2);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.delete(uclass2);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        BookingSlotListType slots = response.getFindFreeBookingsResponse();
+        assertNotNull(slots);
+        
+        ResourceIDType res = slots.getResourceID();
+        assertNotNull(res);
+        assertEquals("RIG", res.getType());
+        assertEquals(r1.getId().intValue(), res.getResourceID());
+        assertEquals(r1.getName(), res.getResourceName());
+        
+        PermissionIDType pid = slots.getPermissionID();
+        assertNotNull(pid);
+        assertEquals(perm1.getId().intValue(), pid.getPermissionID());
+        
+        BookingSlotType slotsList[] = slots.getBookingSlot();
+        assertNotNull(slotsList);
+        
+        for (BookingSlotType s : slotsList)
+        {
+            assertNotNull(s.getState());
+            
+            TimePeriodType t = s.getSlot();
+            assertNotNull(t);
+            assertNotNull(t.getStartTime());
+            assertNotNull(t.getEndTime());
+        }
+        
+        assertEquals(3, slotsList.length);
+        
+        BookingSlotType bs = slotsList[0];
+        assertEquals(SlotState.NOPERMISSION, bs.getState());
+        Calendar s = bs.getSlot().getStartTime();
+        assertEquals(0, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        Calendar e = bs.getSlot().getEndTime();
+        assertEquals(3, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+        
+        bs = slotsList[1];
+        assertEquals(SlotState.FREE, bs.getState());
+        s = bs.getSlot().getStartTime();
+        assertEquals(3, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        e = bs.getSlot().getEndTime();
+        assertEquals(23, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+        
+        bs = slotsList[2];
+        assertEquals(SlotState.NOPERMISSION, bs.getState());
+        s = bs.getSlot().getStartTime();
+        assertEquals(23, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        e = bs.getSlot().getEndTime();
+        assertEquals(0, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+    }
+    
+    @Test
+    public void testFindFreeTimesResCaps()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        UserClass uclass2 = new UserClass();
+        uclass2.setName("booktestclass2");
+        uclass2.setActive(true);
+        uclass2.setQueuable(false);
+        uclass2.setBookable(true);
+        uclass2.setTimeHorizon(1000);
+        ses.save(uclass2);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation();
+        assoc.setId(new UserAssociationId(us1.getId(), uclass1.getId()));
+        assoc.setUser(us1);
+        assoc.setUserClass(uclass1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        RequestCapabilities rcaps1 = new RequestCapabilities("book");
+        ses.save(rcaps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        start.add(Calendar.HOUR_OF_DAY, 3);
+        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        end.add(Calendar.DAY_OF_MONTH, 1);
+        end.add(Calendar.MINUTE, -30);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("CAPABILITY");
+        perm1.setSessionDuration(1800);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRequestCapabilities(rcaps1);
+        perm1.setStartTime(start.getTime());
+        perm1.setExpiryTime(end.getTime());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        ResourcePermission perm2 = new ResourcePermission();
+        perm2.setUserClass(uclass2);
+        perm2.setType("TYPE");
+        perm2.setSessionDuration(1800);
+        perm2.setQueueActivityTimeout(300);
+        perm2.setAllowedExtensions((short)10);
+        perm2.setSessionActivityTimeout(300);
+        perm2.setExtensionDuration(300);
+        perm2.setMaximumBookings(10);
+        perm2.setRigType(rigType1);
+        perm2.setStartTime(start.getTime());
+        perm2.setExpiryTime(end.getTime());
+        perm2.setDisplayName("bookperm");
+        ses.save(perm2);
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
+        MatchingCapabilities m1 = new MatchingCapabilities(rcaps1, caps1);
+        ses.save(m1);
+        ses.getTransaction().commit();
+        
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+        ses.refresh(uclass1);
+        ses.refresh(us1);
+        
+        FindFreeBookings request = new FindFreeBookings();
+        FindBookingSlotType slotReq = new FindBookingSlotType();
+        request.setFindBookingSlots(slotReq);
+        UserIDType uid = new UserIDType();
+        uid.setUserQName(us1.getNamespace() + ':' + us1.getName());
+        slotReq.setUserID(uid);
+        ResourceIDType reqres = new ResourceIDType();
+        reqres.setType("CAPABILITY");
+        reqres.setResourceID(rcaps1.getId().intValue());
+        reqres.setResourceName(rcaps1.getCapabilities());
+        slotReq.setResourceID(reqres);
+        
+        TimePeriodType tp = new TimePeriodType();
+        start.add(Calendar.HOUR_OF_DAY, -3);
+        end.add(Calendar.MINUTE, 30);
+        tp.setStartTime(start);
+        tp.setEndTime(end);
+        slotReq.setPeriod(tp);
+        
+        FindFreeBookingsResponse response = this.service.findFreeBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(perm2);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(m1);
+        ses.delete(rcaps1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.delete(uclass2);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        BookingSlotListType slots = response.getFindFreeBookingsResponse();
+        assertNotNull(slots);
+        
+        ResourceIDType res = slots.getResourceID();
+        assertNotNull(res);
+        assertEquals("CAPABILITY", res.getType());
+        assertEquals(rcaps1.getId().intValue(), res.getResourceID());
+        assertEquals(rcaps1.getCapabilities(), res.getResourceName());
+        
+        PermissionIDType pid = slots.getPermissionID();
+        assertNotNull(pid);
+        assertEquals(perm1.getId().intValue(), pid.getPermissionID());
+        
+        BookingSlotType slotsList[] = slots.getBookingSlot();
+        assertNotNull(slotsList);
+        
+        for (BookingSlotType s : slotsList)
+        {
+            assertNotNull(s.getState());
+            
+            TimePeriodType t = s.getSlot();
+            assertNotNull(t);
+            assertNotNull(t.getStartTime());
+            assertNotNull(t.getEndTime());
+        }
+        
+        assertEquals(3, slotsList.length);
+        
+        BookingSlotType bs = slotsList[0];
+        assertEquals(SlotState.NOPERMISSION, bs.getState());
+        Calendar s = bs.getSlot().getStartTime();
+        assertEquals(0, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        Calendar e = bs.getSlot().getEndTime();
+        assertEquals(3, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+        
+        bs = slotsList[1];
+        assertEquals(SlotState.FREE, bs.getState());
+        s = bs.getSlot().getStartTime();
+        assertEquals(3, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        e = bs.getSlot().getEndTime();
+        assertEquals(23, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+        
+        bs = slotsList[2];
+        assertEquals(SlotState.NOPERMISSION, bs.getState());
+        s = bs.getSlot().getStartTime();
+        assertEquals(23, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        e = bs.getSlot().getEndTime();
+        assertEquals(0, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+    }
+    
+    @Test
+    public void testFindFreeTimesPermPartial()
     {
         Session ses = DataAccessActivator.getNewSession();
         ses.beginTransaction();
