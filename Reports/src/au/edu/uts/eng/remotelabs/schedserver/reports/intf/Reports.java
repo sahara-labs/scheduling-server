@@ -45,6 +45,8 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -55,6 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryFilterType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse;
@@ -62,6 +65,8 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoRespons
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
@@ -88,9 +93,9 @@ public class Reports implements ReportsSkeletonInterface
         /** Request parameters. **/
         QueryInfoType qIReq = queryInfo.getQueryInfo();
         String debug = "Received " + this.getClass().getSimpleName() + "#queryInfo with params:";
-        debug += "Requestor: " + qIReq.getRequestor() + ", QuerySelect: " + qIReq.getQuerySelect().toString(); 
-        if(qIReq.getQueryFilter() != null) debug += ", QueryFilter: " + qIReq.getQueryFilter().toString();
-        debug += ", limit: " + qIReq.getLimit(); 
+            debug += "Requestor: " + qIReq.getRequestor() + ", QuerySelect: " + qIReq.getQuerySelect().toString(); 
+            if(qIReq.getQueryFilter() != null) debug += ", QueryFilter: " + qIReq.getQueryFilter().toString();
+            debug += ", limit: " + qIReq.getLimit(); 
         this.logger.debug(debug);
         
         /** Response parameters. */
@@ -149,19 +154,22 @@ public class Reports implements ReportsSkeletonInterface
                 cri.add(Restrictions.like("name", query0.getQueryLike()));
             }
 
+            cri.setMaxResults(qIReq.getLimit());
+            cri.setProjection(Projections.property("name"));
+            cri.addOrder(Order.asc("name"));
+            
             QueryFilterType filter[] = qIReq.getQueryFilter(); 
             if(filter != null)
             {
                 //DODGY Designed, not implemented
             }
             
-            cri.setMaxResults(qIReq.getLimit());
             
             @SuppressWarnings("unchecked")
-            List<User> list = cri.list();
-            for (User user : list)
+            List list = cri.list();
+            for (Object o : list)
             {
-                respType.addSelectionResult(user.toString());
+                respType.addSelectionResult(o.toString());
             }
             
         }
@@ -174,7 +182,6 @@ public class Reports implements ReportsSkeletonInterface
         resp.setQueryInfoResponse(respType);
         
         return resp;
-        
     }
 
     /* (non-Javadoc)
@@ -183,9 +190,85 @@ public class Reports implements ReportsSkeletonInterface
     @Override
     public QuerySessionAccessResponse querySessionAccess(QuerySessionAccess querySessionAccess)
     {
-        // TODO Auto-generated method stub
-        return null;
+        /** Request parameters. **/
+        QuerySessionAccessType qSAReq = querySessionAccess.getQuerySessionAccess();
+        String debug = "Received " + this.getClass().getSimpleName() + "#querySessionAccess with params:";
+            debug += "Requestor: " + qSAReq.getRequestor() + ", QuerySelect: " + qSAReq.getQuerySelect().toString(); 
+            if(qSAReq.getQueryConstraints() != null) debug += ", QueryConstraints: " + qSAReq.getQueryConstraints().toString();  //DODGY only first displayed
+            debug += ", start time: " + qSAReq.getStartTime() + ", end time: " + qSAReq.getEndTime() + ", pagination: " + qSAReq.getPagination();
+        this.logger.debug(debug);
+        
+        /** Response parameters. */
+        QuerySessionAccessResponse resp = new QuerySessionAccessResponse();
+        QuerySessionAccessResponseType respType = new QuerySessionAccessResponseType();
+        PaginationType page = new PaginationType();
+        page.setNumberOfPages(1);
+        page.setPageLength(30);
+        page.setPageNumber(1);
+        respType.setPagination(page);
+        resp.setQuerySessionAccessResponse(respType);
+        
+        Session ses = DataAccessActivator.getNewSession();
+
+        /* Set up query from request parameters*/
+        try
+        {
+            Criteria cri = ses.createCriteria(Session.class);
+
+            /* TODO use ID to restrict query
+             * Check permission method that looks for
+             * ADMIN anything
+             * ACADEMIC - get permissions
+             *    check canGenerateReports
+             * others - none
+             */
+         
+            /* First Query Filter - this contains grouping for the query */        
+            QueryFilterType query0 = qSAReq.getQuerySelect();
+            //Get table to be queried
+            if(query0.getTypeForQuery() == TypeForQuery.RIG)
+            {
+                cri.add(Restrictions.like("rig", query0.getQueryLike()));
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
+            {
+                // TODO - what does rig type mean for session - need to do a link from tables and select
+                // Do we use RigType getRigs?  How to do this?
+               
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
+            {
+                // TODO  Does it make sense to have user class and not permissions here???
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.USER)
+            {
+                cri.add(Restrictions.like("user", query0.getQueryLike()));
+            }
+            else if(query0.getTypeForQuery() == TypeForQuery.REQUEST_CAPABILITIES)
+            {
+                this.logger.error("Request capabilities not implemented yet - " +
+                        query0.getTypeForQuery().toString());
+                return resp;
+            }
+            else 
+            {
+                this.logger.error("queryAccessReport request failed because TypeForQuery does not have a valid value.  Value is " +
+                        query0.getTypeForQuery().toString());
+                return resp;
+            }
+            
+
+            
+        }
+        finally
+        {
+            ses.close();
+        }
+        
+        
+        return resp;    
     }
+    
 
     /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.reports.intf.ReportsSkeletonInterface#querySessionReport(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport)

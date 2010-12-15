@@ -141,11 +141,11 @@ public class ReportsTester extends TestCase
         QueryInfoType reqTy = new QueryInfoType();
         
         QueryFilterType qSelect = new QueryFilterType();
-        TypeForQuery type = TypeForQuery.USER;
+        TypeForQuery type = TypeForQuery.RIG;
         OperatorType op = OperatorType.AND;
         qSelect.setTypeForQuery(type);
         qSelect.setOperator(op);
-        qSelect.setQueryLike("test%");
+        //qSelect.setQueryLike("test%");
         
         RequestorType user = new RequestorType();
         user.setUserName("testuser1");
@@ -171,11 +171,12 @@ public class ReportsTester extends TestCase
         assertNotNull(resp);
         
         String typeResp = resp.getTypeForQuery().toString();
-        assertEquals("USER", typeResp);
+        assertEquals("RIG", typeResp);
         
         String[] selectResult = resp.getSelectionResult();
         assertNotNull(selectResult);
-        assertEquals(2,selectResult.length);
+        assertEquals(1,selectResult.length);
+        assertEquals("Structural_Visualisation_1",selectResult[0]);
     }
 
     /**
