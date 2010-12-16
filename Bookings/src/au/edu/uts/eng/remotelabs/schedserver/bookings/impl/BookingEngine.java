@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
@@ -99,6 +100,16 @@ public interface BookingEngine
      * @return list of time periods
      */
     public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration, Session ses);
+    
+    /**
+     * Cancels a booking.
+     * 
+     * @param booking booking to cancel
+     * @param reason the reason the booking is being canceled
+     * @param ses database session the booking is loaded in
+     * @return true if successful
+     */
+    public boolean cancelBooking(Bookings booking, String reason, Session ses);
     
     public class TimePeriod
     {

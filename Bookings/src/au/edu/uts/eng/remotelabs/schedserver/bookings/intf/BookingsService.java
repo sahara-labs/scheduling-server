@@ -120,7 +120,7 @@ public class BookingsService implements BookingsInterface
         /* --------------------------------------------------------------------
          * -- Read request parameters.                                       --
          * -------------------------------------------------------------------- */
-        DeleteBookingType request = new DeleteBookingType();
+        DeleteBookingType request = deleteBookings.getDeleteBookings();
         String debug = "Received " + this.getClass().getSimpleName() + "#deleteBookings with params: ";
         
         UserIDType uid = request.getUserID();
@@ -172,6 +172,7 @@ public class BookingsService implements BookingsInterface
              * -- Check whether the booking can get canceled and if the     --
              * -- user has permission to cancel it.                          --
              * ---------------------------------------------------------------- */
+            boolean sendNotif = false;
             if (!booking.isActive())
             {
                 this.logger.info("Unable to delete booking because the booking has already been canceled or redeemed.");
@@ -185,7 +186,7 @@ public class BookingsService implements BookingsInterface
                  * is for them. */
                 this.logger.info("Unable to delete booking because the user " + user.getNamespace() + ':' + 
                         user.getName() + " does not own the booking.");
-                status.setFailureReason("Does not own booking.");
+                status.setFailureReason("User does not own booking.");
                 return response;
             }
             else if (User.ACADEMIC.equals(user.getPersona()) && !user.getId().equals(booking.getUser().getId()))
@@ -209,17 +210,19 @@ public class BookingsService implements BookingsInterface
                 {
                     this.logger.info("Unable to delete booking because the user " + user.getNamespace() + ':' + 
                             user.getName() + " does not own or have academic permission to cancel it.");
-                    status.setFailureReason("Does not own or have academic permission to cancel.");
+                    status.setFailureReason("User does not own or have academic permission to cancel.");
                     return response;
                 }
                 
                 this.logger.debug("Academic " + user.getNamespace() + ':' + user.getName() + " has permission to " +
                 		"cancel booking " + bid + " from user class" + userClass.getName() + '.');
+                sendNotif = true;
             }
             else if (User.ADMIN.equals(user.getPersona()))
             {
                 this.logger.debug("Admin " + user.getNamespace() + ':' + user.getName() + " canceling booking " + 
                         bid + '.');
+                sendNotif = true;
             }
             else
             {
@@ -229,7 +232,21 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
 
-            
+            /* ----------------------------------------------------------------
+             * -- Actually cancel the booking.                               --
+             * ---------------------------------------------------------------- */
+            if (!this.engine.cancelBooking(booking, request.getReason(), ses))
+            {
+                status.setFailureReason("System error.");
+            }
+            else
+            {
+                status.setSuccess(true);
+                if (sendNotif)
+                {
+                    // TODO Send notification of cancellation
+                }
+            }   
         }
         finally
         {

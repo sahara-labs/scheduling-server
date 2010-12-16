@@ -408,4 +408,24 @@ public class TimeUtilTester extends TestCase
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(TimeUtil.getDateStr(cal), keys.get(4));
     }
+    
+    public void testGetDayKeysFiveDaysDate() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        Calendar next = Calendar.getInstance();
+        next.add(Calendar.DAY_OF_MONTH, 4);
+
+        List<String> keys = TimeUtil.getDayKeys(cal.getTime(), next.getTime());
+        assertNotNull(keys);
+        assertEquals(5, keys.size());
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(2));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(3));
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        assertEquals(TimeUtil.getDateStr(cal), keys.get(4));
+    }
 }

@@ -393,6 +393,74 @@ public class DayBookings
     }
     
     /**
+     * Removes the booking from this day bookings. 
+     * 
+     * @param booking booking to remove
+     * @return true if successful
+     */
+    public boolean removeBooking(MBooking booking)
+    {
+        /* Find the rig that has the booking. */
+        RigBookings rb = null;
+        switch (booking.getType())
+        {
+            case RIG:
+                Rig rig = booking.getBooking().getRig();
+                if (!this.rigBookings.containsKey(rig))
+                {
+                    /* The rig  isn't loaded, so no need to unload it. */
+                    return true;
+                }
+                rb = this.rigBookings.get(rig);
+                break;
+            case TYPE:
+                RigType rigType = booking.getRigType();
+                if (!this.typeTargets.containsKey(rigType))
+                {
+                    /* The type isn't loaded so need to remove a booking from
+                     * it. */
+                    return true;
+                }
+                rb = this.typeTargets.get(rigType);
+                RigBookings next = rb;
+                do
+                {
+                    if (next.hasBooking(booking))
+                    {
+                        rb = next; 
+                        break;
+                    }
+                    next = next.getTypeLoopNext();
+                }
+                while (next != rb);
+                break;
+            case CAPABILITY:
+                RequestCapabilities reqCaps = booking.getRequestCapabilities();
+                if (!this.capsTargets.containsKey(reqCaps))
+                {
+                    /* The capability isn't loaded so no need to remove a 
+                     * booking from it. */
+                    return true;
+                }
+                rb = this.capsTargets.get(reqCaps);
+                next = rb;
+                do
+                {
+                    if (next.hasBooking(booking))
+                    {
+                        rb = next;
+                        break;
+                    }
+                    next = next.getCapsLoopNext(reqCaps);
+                }
+                while (rb != next);
+                break;
+        }
+        
+        return rb.removeBooking(booking);
+    }
+    
+    /**
      * Gets the rig bookings for the rig. If the rig bookings hasn't been 
      * loaded for the rig, it is loaded by:
      * <ul>

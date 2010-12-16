@@ -44,6 +44,7 @@ import java.util.Map;
 import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
@@ -106,8 +107,6 @@ public class SlotBookingEngine implements BookingEngine
         return this.periodRangeCheck(MRange.rangeToTimePeriod(free), period);
     }
 
-    
-
     @Override
     public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration, Session ses)
     {
@@ -150,6 +149,37 @@ public class SlotBookingEngine implements BookingEngine
         }
         
         return this.periodRangeCheck(MRange.rangeToTimePeriod(free), period);
+    }
+    
+    @Override
+    public boolean cancelBooking(Bookings booking, String reason, Session ses)
+    {
+        boolean response = true;
+        
+        /* Remove the booking from the memory allocations. */
+        DayBookings db;
+        for (String dayKey : TimeUtil.getDayKeys(booking.getStartTime(), booking.getEndTime()))
+        {
+            synchronized (this.days)
+            {
+                if (this.days.containsKey(dayKey))
+                {
+                    synchronized (db = this.days.get(dayKey))
+                    {
+                        if (!db.removeBooking(new MBooking(booking, dayKey))) response = false; 
+                    }
+                }
+            }
+        }
+        
+        /* Cancel the booking. */ 
+        booking.setActive(false);
+        booking.setCancelReason(reason);
+        ses.beginTransaction();
+        ses.flush();
+        ses.getTransaction().commit();
+        
+        return response;
     }
     
     /**

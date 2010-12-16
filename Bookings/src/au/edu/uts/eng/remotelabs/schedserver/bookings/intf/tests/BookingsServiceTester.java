@@ -53,10 +53,14 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
@@ -121,13 +125,482 @@ public class BookingsServiceTester extends TestCase
     {
         fail("Not yet implemented"); // TODO
     }
-
-    /**
-     * Test method for {@link BookingsService#deleteBookings(types.DeleteBookings)}.
-     */
-    public void testDeleteBookings()
+    
+    @Test
+    public void testDeleteBookingsBookingDemo() throws Exception
     {
-        fail("Not yet implemented"); // TODO
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("DEMO");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation();
+        assoc.setId(new UserAssociationId(us1.getId(), uclass1.getId()));
+        assoc.setUser(us1);
+        assoc.setUserClass(uclass1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(1800);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        bk1.setStartTime(new Date());
+        bk1.setEndTime(new Date());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        ses.getTransaction().commit();
+        
+        DeleteBookings request = new DeleteBookings();
+        DeleteBookingType dbt = new DeleteBookingType();
+        request.setDeleteBookings(dbt);
+        UserIDType uid = new UserIDType();
+        uid.setUserID(String.valueOf(us1.getId().intValue()));
+        dbt.setUserID(uid);
+        BookingIDType bid = new BookingIDType();
+        bid.setBookingID(bk1.getId().intValue());
+        dbt.setBookingID(bid);
+        
+        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        
+        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        assertNotNull(bresp);
+        assertFalse(bresp.getSuccess());
+        assertEquals("No permission.", bresp.getFailureReason());
+    }
+    
+    @Test
+    public void testDeleteBookingsAcademicNotOwned() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        User us2 = new User();
+        us2.setName("bktestuser2");
+        us2.setNamespace("BKNS");
+        us2.setPersona("ACADEMIC");
+        ses.save(us2);
+        UserAssociation assoc = new UserAssociation();
+        assoc.setId(new UserAssociationId(us1.getId(), uclass1.getId()));
+        assoc.setUser(us1);
+        assoc.setUserClass(uclass1);
+        UserAssociation assoc2 = new UserAssociation();
+        assoc2.setId(new UserAssociationId(us2.getId(), uclass1.getId()));
+        assoc2.setUser(us2);
+        assoc2.setUserClass(uclass1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(1800);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        bk1.setStartTime(new Date());
+        bk1.setEndTime(new Date());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        ses.getTransaction().commit();
+        
+        DeleteBookings request = new DeleteBookings();
+        DeleteBookingType dbt = new DeleteBookingType();
+        request.setDeleteBookings(dbt);
+        UserIDType uid = new UserIDType();
+        uid.setUserID(String.valueOf(us2.getId().intValue()));
+        dbt.setUserID(uid);
+        BookingIDType bid = new BookingIDType();
+        bid.setBookingID(bk1.getId().intValue());
+        dbt.setBookingID(bid);
+        
+        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(assoc2);
+        ses.delete(us1);
+        ses.delete(us2);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        
+        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        assertNotNull(bresp);
+        assertFalse(bresp.getSuccess());
+        assertEquals("User does not own or have academic permission to cancel.", bresp.getFailureReason());
+    }
+    
+    @Test
+    public void testDeleteBookingsBookingNotOwned() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        User us2 = new User();
+        us2.setName("bktestuser2");
+        us2.setNamespace("BKNS");
+        us2.setPersona("USER");
+        ses.save(us2);
+        UserAssociation assoc = new UserAssociation();
+        assoc.setId(new UserAssociationId(us1.getId(), uclass1.getId()));
+        assoc.setUser(us1);
+        assoc.setUserClass(uclass1);
+        UserAssociation assoc2 = new UserAssociation();
+        assoc2.setId(new UserAssociationId(us2.getId(), uclass1.getId()));
+        assoc2.setUser(us2);
+        assoc2.setUserClass(uclass1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(1800);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        bk1.setStartTime(new Date());
+        bk1.setEndTime(new Date());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        ses.getTransaction().commit();
+        
+        DeleteBookings request = new DeleteBookings();
+        DeleteBookingType dbt = new DeleteBookingType();
+        request.setDeleteBookings(dbt);
+        UserIDType uid = new UserIDType();
+        uid.setUserID(String.valueOf(us2.getId().intValue()));
+        dbt.setUserID(uid);
+        BookingIDType bid = new BookingIDType();
+        bid.setBookingID(bk1.getId().intValue());
+        dbt.setBookingID(bid);
+        
+        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(assoc2);
+        ses.delete(us1);
+        ses.delete(us2);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        
+        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        assertNotNull(bresp);
+        assertFalse(bresp.getSuccess());
+        assertEquals("User does not own booking.", bresp.getFailureReason());
+    }
+    
+    @Test
+    public void testDeleteBookingsBookingNotActive() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation();
+        assoc.setId(new UserAssociationId(us1.getId(), uclass1.getId()));
+        assoc.setUser(us1);
+        assoc.setUserClass(uclass1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(1800);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        Bookings bk1 = new Bookings();
+        bk1.setActive(false);
+        bk1.setDuration(3600);
+        bk1.setStartTime(new Date());
+        bk1.setEndTime(new Date());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        ses.getTransaction().commit();
+        
+        DeleteBookings request = new DeleteBookings();
+        DeleteBookingType dbt = new DeleteBookingType();
+        request.setDeleteBookings(dbt);
+        UserIDType uid = new UserIDType();
+        uid.setUserID(String.valueOf(us1.getId().intValue()));
+        dbt.setUserID(uid);
+        BookingIDType bid = new BookingIDType();
+        bid.setBookingID(bk1.getId().intValue());
+        dbt.setBookingID(bid);
+        
+        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        
+        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        assertNotNull(bresp);
+        assertFalse(bresp.getSuccess());
+        assertEquals("Booking already canceled or redeemed.", bresp.getFailureReason());
+        
+        OMElement ele = response.getOMElement(DeleteBookingsResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+        
+    @Test
+    public void testDeleteBookingsNoBooking() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        User user = new User();
+        user.setNamespace("bookingtuser");
+        user.setName("buser");
+        user.setPersona("USER");
+        ses.save(user);
+        ses.getTransaction().commit();
+        
+        DeleteBookings request = new DeleteBookings();
+        DeleteBookingType dbt = new DeleteBookingType();
+        request.setDeleteBookings(dbt);
+        UserIDType uid = new UserIDType();
+        uid.setUserQName("bookingtuser:buser");
+        dbt.setUserID(uid);
+        BookingIDType bid = new BookingIDType();
+        bid.setBookingID(10241024);
+        dbt.setBookingID(bid);
+        
+        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        
+        ses.beginTransaction();
+        ses.delete(user);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        
+        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        assertNotNull(bresp);
+        assertFalse(bresp.getSuccess());
+        assertEquals("Booking not found.", bresp.getFailureReason());
+        
+        OMElement ele = response.getOMElement(DeleteBookingsResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        
+    }
+    
+    @Test
+    public void testDeleteBookingsNoUser() throws Exception
+    {
+        DeleteBookings request = new DeleteBookings();
+        DeleteBookingType dbt = new DeleteBookingType();
+        request.setDeleteBookings(dbt);
+        UserIDType uid = new UserIDType();
+        uid.setUserQName("NO:User");
+        dbt.setUserID(uid);
+        BookingIDType bid = new BookingIDType();
+        bid.setBookingID(10241024);
+        dbt.setBookingID(bid);
+        
+        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        assertNotNull(response);
+        
+        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        assertNotNull(bresp);
+        assertFalse(bresp.getSuccess());
+        assertNotNull(bresp.getFailureReason());
+        assertEquals("User not found.", bresp.getFailureReason());
+        
+        OMElement ele = response.getOMElement(DeleteBookingsResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+        
     }
     
     @Test

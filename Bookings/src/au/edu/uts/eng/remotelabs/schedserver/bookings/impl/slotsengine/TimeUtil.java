@@ -327,7 +327,7 @@ public class TimeUtil
     }
     
     /**
-     * Returns the days in the specified day period.
+     * Returns the days in the specified date period.
      * 
      * @param period time period
      * @return list of day keys
@@ -345,6 +345,31 @@ public class TimeUtil
         {
             start.add(Calendar.DAY_OF_MONTH, 1);
             days.add(TimeUtil.getDateStr(start));
+        }
+        
+        return days;
+    }
+    
+    /**
+     * Returns the days in the specified date period.
+     * 
+     * @param period time period
+     * @return list of day keys
+     */
+    public static List<String> getDayKeys(Date start, Date end)
+    {
+        List<String> days = new ArrayList<String>();
+        
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(start);
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(end);
+        
+        days.add(TimeUtil.getDateStr(start));
+        while (end.compareTo(start) < 86.4e6 && startCal.get(Calendar.DAY_OF_YEAR) != endCal.get(Calendar.DAY_OF_YEAR))
+        {
+            startCal.add(Calendar.DAY_OF_MONTH, 1);
+            days.add(TimeUtil.getDateStr(startCal));
         }
         
         return days;
