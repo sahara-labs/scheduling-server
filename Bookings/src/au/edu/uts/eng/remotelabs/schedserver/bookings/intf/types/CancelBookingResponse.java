@@ -52,25 +52,25 @@ import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * DeleteBookingsResponse bean class.
+ * CancelBookingResponse bean class.
  */
-public class DeleteBookingsResponse implements ADBBean
+public class CancelBookingResponse implements ADBBean
 {
     private static final long serialVersionUID = -3325429149443327894L;
 
     public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings",
-            "deleteBookingsResponse", "ns1");
+            "cancelBookingResponse", "ns1");
 
-    protected BookingResponseType deleteBookingsResponse;
+    protected BookingResponseType cancelBookingsResponse;
 
     public BookingResponseType getDeleteBookingsResponse()
     {
-        return this.deleteBookingsResponse;
+        return this.cancelBookingsResponse;
     }
 
-    public void setDeleteBookingsResponse(final BookingResponseType param)
+    public void setCancelBookingResponse(final BookingResponseType param)
     {
-        this.deleteBookingsResponse = param;
+        this.cancelBookingsResponse = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -90,15 +90,15 @@ public class DeleteBookingsResponse implements ADBBean
 
     public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-        final OMDataSource dataSource = new ADBDataSource(this, DeleteBookingsResponse.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this, CancelBookingResponse.MY_QNAME)
         {
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                DeleteBookingsResponse.this.serialize(DeleteBookingsResponse.MY_QNAME, factory, xmlWriter);
+                CancelBookingResponse.this.serialize(CancelBookingResponse.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new OMSourcedElementImpl(DeleteBookingsResponse.MY_QNAME, factory, dataSource);
+        return new OMSourcedElementImpl(CancelBookingResponse.MY_QNAME, factory, dataSource);
     }
 
     @Override
@@ -113,24 +113,24 @@ public class DeleteBookingsResponse implements ADBBean
             final boolean serializeType) throws XMLStreamException, ADBException
     {
 
-        if (this.deleteBookingsResponse == null)
+        if (this.cancelBookingsResponse == null)
         {
             throw new ADBException("Property cannot be null!");
         }
-        this.deleteBookingsResponse.serialize(DeleteBookingsResponse.MY_QNAME, factory, xmlWriter);
+        this.cancelBookingsResponse.serialize(CancelBookingResponse.MY_QNAME, factory, xmlWriter);
     }
 
     @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        return this.deleteBookingsResponse.getPullParser(DeleteBookingsResponse.MY_QNAME);
+        return this.cancelBookingsResponse.getPullParser(CancelBookingResponse.MY_QNAME);
     }
 
     public static class Factory
     {
-        public static DeleteBookingsResponse parse(final XMLStreamReader reader) throws Exception
+        public static CancelBookingResponse parse(final XMLStreamReader reader) throws Exception
         {
-            final DeleteBookingsResponse object = new DeleteBookingsResponse();
+            final CancelBookingResponse object = new CancelBookingResponse();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -144,9 +144,9 @@ public class DeleteBookingsResponse implements ADBBean
                     {
                         if (reader.isStartElement()
                                 && new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings",
-                                        "deleteBookingsResponse").equals(reader.getName()))
+                                        "cancelBookingResponse").equals(reader.getName()))
                         {
-                            object.setDeleteBookingsResponse(BookingResponseType.Factory.parse(reader));
+                            object.setCancelBookingResponse(BookingResponseType.Factory.parse(reader));
                         }
                         else
                         {

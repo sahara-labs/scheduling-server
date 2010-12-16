@@ -7,9 +7,9 @@
         <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.bookings.intf.BookingsService</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
-        <operation name="deleteBookings" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
-            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/deleteBookings</actionMapping>
-            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/Bookings/deleteBookingsResponse</outputActionMapping>
+        <operation name="cancelBooking" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/cancelBooking</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/Bookings/cancelBookingResponse</outputActionMapping>
         </operation>
         <operation name="findFreeBookings" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/findFreeBookings</actionMapping>

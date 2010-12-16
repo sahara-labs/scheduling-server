@@ -10,9 +10,9 @@
       </xsd:element>
       <xsd:element name="createBookingResponse" type="bok:BookingResponseType">
       </xsd:element>
-      <xsd:element name="deleteBookings" type="bok:DeleteBookingType">
+      <xsd:element name="cancelBooking" type="bok:CancelBookingType">
       </xsd:element>
-      <xsd:element name="deleteBookingsResponse" type="bok:BookingResponseType">
+      <xsd:element name="cancelBookingResponse" type="bok:BookingResponseType">
       </xsd:element>
       <xsd:element name="findFreeBookings" type="bok:FindBookingSlotType">
       </xsd:element>
@@ -168,7 +168,7 @@
       	</xsd:sequence>
       </xsd:complexType>
     
-      <xsd:complexType name="DeleteBookingType">
+      <xsd:complexType name="CancelBookingType">
       	<xsd:sequence>
       		<xsd:element name="userID" type="bok:UserIDType"/>
       		<xsd:element name="bookingID" type="bok:BookingIDType"/>
@@ -202,8 +202,8 @@
     <wsdl:part name="parameters" element="bok:getBookingHistory">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="deleteBookingsRequest">
-    <wsdl:part name="parameters" element="bok:deleteBookings">
+  <wsdl:message name="cancelBookingRequest">
+    <wsdl:part name="parameters" element="bok:cancelBooking">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createBookingResponse">
@@ -234,8 +234,8 @@
     <wsdl:part name="parameters" element="bok:getBookingsResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="deleteBookingsResponse">
-    <wsdl:part name="parameters" element="bok:deleteBookingsResponse">
+  <wsdl:message name="cancelBookingResponse">
+    <wsdl:part name="parameters" element="bok:cancelBookingResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createBookingRequest">
@@ -253,10 +253,10 @@
       <wsdl:output message="bok:createBookingResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="deleteBookings">
-      <wsdl:input message="bok:deleteBookingsRequest">
+    <wsdl:operation name="cancelBooking">
+      <wsdl:input message="bok:cancelBookingRequest">
     </wsdl:input>
-      <wsdl:output message="bok:deleteBookingsResponse">
+      <wsdl:output message="bok:cancelBookingResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="findFreeBookings">
@@ -298,7 +298,7 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="deleteBookings">
+    <wsdl:operation name="cancelBooking">
       <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/deleteBookings"/>
       <wsdl:input>
         <soap:body use="literal"/>

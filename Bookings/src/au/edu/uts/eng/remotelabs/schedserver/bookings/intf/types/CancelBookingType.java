@@ -59,13 +59,13 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * DeleteBookingType bean class.
+ * CancelBookingType bean class.
  */
-public class DeleteBookingType implements ADBBean
+public class CancelBookingType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = DeleteBookingType
+     * name = CancelBookingType
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/bookings
      * Namespace Prefix = ns1
      */
@@ -149,7 +149,7 @@ public class DeleteBookingType implements ADBBean
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                DeleteBookingType.this.serialize(this.parentQName, factory, xmlWriter);
+                CancelBookingType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -180,7 +180,7 @@ public class DeleteBookingType implements ADBBean
             {
                 if (prefix == null)
                 {
-                    prefix = DeleteBookingType.generatePrefix(namespace);
+                    prefix = CancelBookingType.generatePrefix(namespace);
                 }
 
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
@@ -201,11 +201,11 @@ public class DeleteBookingType implements ADBBean
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":DeleteBookingType", xmlWriter);
+                        + ":CancelBookingType", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "DeleteBookingType",
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "CancelBookingType",
                         xmlWriter);
             }
         }
@@ -230,7 +230,7 @@ public class DeleteBookingType implements ADBBean
                 prefix = xmlWriter.getPrefix(namespace);
                 if (prefix == null)
                 {
-                    prefix = DeleteBookingType.generatePrefix(namespace);
+                    prefix = CancelBookingType.generatePrefix(namespace);
                     xmlWriter.writeStartElement(prefix, "reason", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
@@ -276,7 +276,7 @@ public class DeleteBookingType implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = DeleteBookingType.generatePrefix(namespace);
+            prefix = CancelBookingType.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
@@ -325,9 +325,9 @@ public class DeleteBookingType implements ADBBean
 
     public static class Factory
     {
-        public static DeleteBookingType parse(final XMLStreamReader reader) throws Exception
+        public static CancelBookingType parse(final XMLStreamReader reader) throws Exception
         {
-            final DeleteBookingType object = new DeleteBookingType();
+            final CancelBookingType object = new CancelBookingType();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -349,10 +349,10 @@ public class DeleteBookingType implements ADBBean
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
                         final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-                        if (!"DeleteBookingType".equals(type))
+                        if (!"CancelBookingType".equals(type))
                         {
                             final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (DeleteBookingType) ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            return (CancelBookingType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
                     }
                 }

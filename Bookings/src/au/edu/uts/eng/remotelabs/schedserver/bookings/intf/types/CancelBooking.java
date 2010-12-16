@@ -52,25 +52,25 @@ import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * DeleteBookings bean class.
+ * CancelBooking bean class.
  */
-public class DeleteBookings implements ADBBean
+public class CancelBooking implements ADBBean
 {
     private static final long serialVersionUID = 2724944911794446265L;
     
     public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings",
-            "deleteBookings", "ns1");
+            "cancelBooking", "ns1");
 
-    protected DeleteBookingType deleteBookings;
+    protected CancelBookingType cancelBooking;
 
-    public DeleteBookingType getDeleteBookings()
+    public CancelBookingType getDeleteBookings()
     {
-        return this.deleteBookings;
+        return this.cancelBooking;
     }
 
-    public void setDeleteBookings(final DeleteBookingType param)
+    public void setCancelBooking(final CancelBookingType param)
     {
-        this.deleteBookings = param;
+        this.cancelBooking = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -89,15 +89,15 @@ public class DeleteBookings implements ADBBean
 
     public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-        final OMDataSource dataSource = new ADBDataSource(this, DeleteBookings.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this, CancelBooking.MY_QNAME)
         {
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                DeleteBookings.this.serialize(DeleteBookings.MY_QNAME, factory, xmlWriter);
+                CancelBooking.this.serialize(CancelBooking.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new OMSourcedElementImpl(DeleteBookings.MY_QNAME, factory, dataSource);
+        return new OMSourcedElementImpl(CancelBooking.MY_QNAME, factory, dataSource);
     }
 
     @Override
@@ -112,24 +112,24 @@ public class DeleteBookings implements ADBBean
             final boolean serializeType) throws XMLStreamException, ADBException
     {
 
-        if (this.deleteBookings == null)
+        if (this.cancelBooking == null)
         {
             throw new ADBException("Property cannot be null!");
         }
-        this.deleteBookings.serialize(DeleteBookings.MY_QNAME, factory, xmlWriter);
+        this.cancelBooking.serialize(CancelBooking.MY_QNAME, factory, xmlWriter);
     }
 
     @Override
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-        return this.deleteBookings.getPullParser(DeleteBookings.MY_QNAME);
+        return this.cancelBooking.getPullParser(CancelBooking.MY_QNAME);
     }
 
     public static class Factory
     {
-        public static DeleteBookings parse(final XMLStreamReader reader) throws Exception
+        public static CancelBooking parse(final XMLStreamReader reader) throws Exception
         {
-            final DeleteBookings object = new DeleteBookings();
+            final CancelBooking object = new CancelBooking();
 
             try
             {
@@ -143,10 +143,10 @@ public class DeleteBookings implements ADBBean
                     if (reader.isStartElement())
                     {
                         if (reader.isStartElement()
-                                && new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings", "deleteBookings")
+                                && new QName("http://remotelabs.eng.uts.edu.au/schedserver/bookings", "cancelBooking")
                                         .equals(reader.getName()))
                         {
-                            object.setDeleteBookings(DeleteBookingType.Factory.parse(reader));
+                            object.setCancelBooking(CancelBookingType.Factory.parse(reader));
                         }
                         else
                         {

@@ -39,8 +39,8 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBooking;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
@@ -54,9 +54,9 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResp
 public class BookingsSkeleton implements BookingsInterface
 {   
     @Override
-    public DeleteBookingsResponse deleteBookings(DeleteBookings deleteBookings)
+    public CancelBookingResponse cancelBooking(CancelBooking cancelBooking)
     {
-        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#deleteBookings");
+        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#cancelBooking");
     }
 
     @Override

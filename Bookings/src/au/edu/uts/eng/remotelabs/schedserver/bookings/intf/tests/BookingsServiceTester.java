@@ -58,9 +58,9 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotList
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingType;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBooking;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
@@ -189,9 +189,9 @@ public class BookingsServiceTester extends TestCase
 
         ses.getTransaction().commit();
         
-        DeleteBookings request = new DeleteBookings();
-        DeleteBookingType dbt = new DeleteBookingType();
-        request.setDeleteBookings(dbt);
+        CancelBooking request = new CancelBooking();
+        CancelBookingType dbt = new CancelBookingType();
+        request.setCancelBooking(dbt);
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(us1.getId().intValue()));
         dbt.setUserID(uid);
@@ -199,7 +199,7 @@ public class BookingsServiceTester extends TestCase
         bid.setBookingID(bk1.getId().intValue());
         dbt.setBookingID(bid);
         
-        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        CancelBookingResponse response = this.service.cancelBooking(request);
         
         ses.beginTransaction();
         ses.delete(bk1);
@@ -292,9 +292,9 @@ public class BookingsServiceTester extends TestCase
 
         ses.getTransaction().commit();
         
-        DeleteBookings request = new DeleteBookings();
-        DeleteBookingType dbt = new DeleteBookingType();
-        request.setDeleteBookings(dbt);
+        CancelBooking request = new CancelBooking();
+        CancelBookingType dbt = new CancelBookingType();
+        request.setCancelBooking(dbt);
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(us2.getId().intValue()));
         dbt.setUserID(uid);
@@ -302,7 +302,7 @@ public class BookingsServiceTester extends TestCase
         bid.setBookingID(bk1.getId().intValue());
         dbt.setBookingID(bid);
         
-        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        CancelBookingResponse response = this.service.cancelBooking(request);
         
         ses.beginTransaction();
         ses.delete(bk1);
@@ -397,9 +397,9 @@ public class BookingsServiceTester extends TestCase
 
         ses.getTransaction().commit();
         
-        DeleteBookings request = new DeleteBookings();
-        DeleteBookingType dbt = new DeleteBookingType();
-        request.setDeleteBookings(dbt);
+        CancelBooking request = new CancelBooking();
+        CancelBookingType dbt = new CancelBookingType();
+        request.setCancelBooking(dbt);
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(us2.getId().intValue()));
         dbt.setUserID(uid);
@@ -407,7 +407,7 @@ public class BookingsServiceTester extends TestCase
         bid.setBookingID(bk1.getId().intValue());
         dbt.setBookingID(bid);
         
-        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        CancelBookingResponse response = this.service.cancelBooking(request);
         
         ses.beginTransaction();
         ses.delete(bk1);
@@ -493,9 +493,9 @@ public class BookingsServiceTester extends TestCase
 
         ses.getTransaction().commit();
         
-        DeleteBookings request = new DeleteBookings();
-        DeleteBookingType dbt = new DeleteBookingType();
-        request.setDeleteBookings(dbt);
+        CancelBooking request = new CancelBooking();
+        CancelBookingType dbt = new CancelBookingType();
+        request.setCancelBooking(dbt);
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(us1.getId().intValue()));
         dbt.setUserID(uid);
@@ -503,7 +503,7 @@ public class BookingsServiceTester extends TestCase
         bid.setBookingID(bk1.getId().intValue());
         dbt.setBookingID(bid);
         
-        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        CancelBookingResponse response = this.service.cancelBooking(request);
         
         ses.beginTransaction();
         ses.delete(bk1);
@@ -523,7 +523,7 @@ public class BookingsServiceTester extends TestCase
         assertFalse(bresp.getSuccess());
         assertEquals("Booking already canceled or redeemed.", bresp.getFailureReason());
         
-        OMElement ele = response.getOMElement(DeleteBookingsResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        OMElement ele = response.getOMElement(CancelBookingResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
         assertNotNull(ele);
         
         String xml = ele.toStringWithConsume();
@@ -542,9 +542,9 @@ public class BookingsServiceTester extends TestCase
         ses.save(user);
         ses.getTransaction().commit();
         
-        DeleteBookings request = new DeleteBookings();
-        DeleteBookingType dbt = new DeleteBookingType();
-        request.setDeleteBookings(dbt);
+        CancelBooking request = new CancelBooking();
+        CancelBookingType dbt = new CancelBookingType();
+        request.setCancelBooking(dbt);
         UserIDType uid = new UserIDType();
         uid.setUserQName("bookingtuser:buser");
         dbt.setUserID(uid);
@@ -552,7 +552,7 @@ public class BookingsServiceTester extends TestCase
         bid.setBookingID(10241024);
         dbt.setBookingID(bid);
         
-        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        CancelBookingResponse response = this.service.cancelBooking(request);
         
         ses.beginTransaction();
         ses.delete(user);
@@ -565,7 +565,7 @@ public class BookingsServiceTester extends TestCase
         assertFalse(bresp.getSuccess());
         assertEquals("Booking not found.", bresp.getFailureReason());
         
-        OMElement ele = response.getOMElement(DeleteBookingsResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        OMElement ele = response.getOMElement(CancelBookingResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
         assertNotNull(ele);
         
         String xml = ele.toStringWithConsume();
@@ -576,9 +576,9 @@ public class BookingsServiceTester extends TestCase
     @Test
     public void testDeleteBookingsNoUser() throws Exception
     {
-        DeleteBookings request = new DeleteBookings();
-        DeleteBookingType dbt = new DeleteBookingType();
-        request.setDeleteBookings(dbt);
+        CancelBooking request = new CancelBooking();
+        CancelBookingType dbt = new CancelBookingType();
+        request.setCancelBooking(dbt);
         UserIDType uid = new UserIDType();
         uid.setUserQName("NO:User");
         dbt.setUserID(uid);
@@ -586,7 +586,7 @@ public class BookingsServiceTester extends TestCase
         bid.setBookingID(10241024);
         dbt.setBookingID(bid);
         
-        DeleteBookingsResponse response = this.service.deleteBookings(request);
+        CancelBookingResponse response = this.service.cancelBooking(request);
         assertNotNull(response);
         
         BookingResponseType bresp = response.getDeleteBookingsResponse();
@@ -595,7 +595,7 @@ public class BookingsServiceTester extends TestCase
         assertNotNull(bresp.getFailureReason());
         assertEquals("User not found.", bresp.getFailureReason());
         
-        OMElement ele = response.getOMElement(DeleteBookingsResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        OMElement ele = response.getOMElement(CancelBookingResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
         assertNotNull(ele);
         
         String xml = ele.toStringWithConsume();

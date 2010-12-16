@@ -129,9 +129,9 @@ public class ExtensionMapper
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/bookings".equals(namespaceURI)
-                && "DeleteBookingType".equals(typeName))
+                && "CancelBookingType".equals(typeName))
         {
-            return DeleteBookingType.Factory.parse(reader);
+            return CancelBookingType.Factory.parse(reader);
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/bookings".equals(namespaceURI)

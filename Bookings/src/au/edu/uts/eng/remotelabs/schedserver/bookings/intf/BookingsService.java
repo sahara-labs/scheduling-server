@@ -58,9 +58,9 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingType;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBooking;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
@@ -115,13 +115,13 @@ public class BookingsService implements BookingsInterface
     }
 
     @Override
-    public DeleteBookingsResponse deleteBookings(DeleteBookings deleteBookings)
+    public CancelBookingResponse cancelBooking(CancelBooking cancelBooking)
     {
         /* --------------------------------------------------------------------
          * -- Read request parameters.                                       --
          * -------------------------------------------------------------------- */
-        DeleteBookingType request = deleteBookings.getDeleteBookings();
-        String debug = "Received " + this.getClass().getSimpleName() + "#deleteBookings with params: ";
+        CancelBookingType request = cancelBooking.getDeleteBookings();
+        String debug = "Received " + this.getClass().getSimpleName() + "#cancelBooking with params: ";
         
         UserIDType uid = request.getUserID();
         debug += " user ID=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + 
@@ -134,10 +134,10 @@ public class BookingsService implements BookingsInterface
         /* --------------------------------------------------------------------
          * -- Generate valid, blank request parameters.                      --
          * -------------------------------------------------------------------- */
-        DeleteBookingsResponse response = new DeleteBookingsResponse();
+        CancelBookingResponse response = new CancelBookingResponse();
         BookingResponseType status = new BookingResponseType();
         status.setSuccess(false);
-        response.setDeleteBookingsResponse(status);
+        response.setCancelBookingResponse(status);
         
         Session ses = DataAccessActivator.getNewSession();
         try

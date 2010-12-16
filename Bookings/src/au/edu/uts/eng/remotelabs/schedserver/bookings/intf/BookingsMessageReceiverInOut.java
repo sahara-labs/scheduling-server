@@ -54,8 +54,8 @@ import org.apache.axis2.util.JavaUtils;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookings;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.DeleteBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBooking;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
@@ -89,13 +89,13 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
             String methodName;
             if ((op.getName() != null) && ((methodName = JavaUtils.xmlNameToJava(op.getName().getLocalPart())) != null))
             {
-                if ("deleteBookings".equals(methodName))
+                if ("cancelBooking".equals(methodName))
                 {
-                    final DeleteBookings wrappedParam = (DeleteBookings) this.fromOM(msgContext.getEnvelope().getBody()
-                            .getFirstElement(), DeleteBookings.class,
+                    final CancelBooking wrappedParam = (CancelBooking) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), CancelBooking.class,
                             this.getEnvelopeNamespaces(msgContext.getEnvelope()));
 
-                    DeleteBookingsResponse response = skel.deleteBookings(wrappedParam);
+                    CancelBookingResponse response = skel.cancelBooking(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else if ("findFreeBookings".equals(methodName))
@@ -149,13 +149,13 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
         }
     }
 
-    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final DeleteBookingsResponse param,
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final CancelBookingResponse param,
             final boolean optimizeContent) throws AxisFault
     {
         try
         {
             final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-            emptyEnvelope.getBody().addChild(param.getOMElement(DeleteBookingsResponse.MY_QNAME, factory));
+            emptyEnvelope.getBody().addChild(param.getOMElement(CancelBookingResponse.MY_QNAME, factory));
             return emptyEnvelope;
         }
         catch (final ADBException e)
@@ -230,14 +230,14 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
         try
         {
 
-            if (DeleteBookings.class.equals(type))
+            if (CancelBooking.class.equals(type))
             {
-                return DeleteBookings.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                return CancelBooking.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (DeleteBookingsResponse.class.equals(type))
+            if (CancelBookingResponse.class.equals(type))
             {
-                return DeleteBookingsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                return CancelBookingResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
             if (FindFreeBookings.class.equals(type))
