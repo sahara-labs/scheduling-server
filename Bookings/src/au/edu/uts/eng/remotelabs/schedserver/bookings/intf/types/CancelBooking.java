@@ -63,7 +63,7 @@ public class CancelBooking implements ADBBean
 
     protected CancelBookingType cancelBooking;
 
-    public CancelBookingType getDeleteBookings()
+    public CancelBookingType getCancelBooking()
     {
         return this.cancelBooking;
     }

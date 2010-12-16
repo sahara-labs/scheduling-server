@@ -58,9 +58,9 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotList
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
@@ -124,6 +124,259 @@ public class BookingsServiceTester extends TestCase
     public void testCreateBooking()
     {
         fail("Not yet implemented"); // TODO
+    }
+    
+    @Test
+    public void testCancelBooking() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        RigCapabilities caps2 = new RigCapabilities("book,test,bar");
+        ses.save(caps2);
+        RigCapabilities caps3 = new RigCapabilities("book,baz,foo");
+        ses.save(caps3);
+        RequestCapabilities rcaps1 = new RequestCapabilities("book");
+        ses.save(rcaps1);
+        RequestCapabilities rcaps2 = new RequestCapabilities("foo");
+        ses.save(rcaps2);
+        RequestCapabilities rcaps3 = new RequestCapabilities("bar");
+        ses.save(rcaps3);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        Rig r2 = new Rig();
+        r2.setName("bkrig2");
+        r2.setRigType(rigType1);
+        r2.setLastUpdateTimestamp(new Date());
+        r2.setRigCapabilities(caps2);
+        ses.save(r2);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        /* #### BOOKINGS FOR R1 ########################################### */
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        r1tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.DAY_OF_MONTH, 5);
+        r1tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(r1tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        /* #### BOOKINGS FOR R2 ########################################### */
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk8 = new Bookings();
+        bk8.setActive(true);
+        bk8.setDuration(3600);
+        /* Slots 13 - 16. */
+        r2tm.add(Calendar.HOUR, 3);
+        bk8.setStartTime(r2tm.getTime());
+        r2tm.add(Calendar.HOUR, 1);
+        bk8.setEndTime(r2tm.getTime());
+        bk8.setResourcePermission(perm1);
+        bk8.setResourceType("RIG");
+        bk8.setRig(r2);
+        bk8.setUser(us1);
+        bk8.setUserName(us1.getName());
+        bk8.setUserNamespace(us1.getNamespace());
+        ses.save(bk8);
+
+        /* #### Type bookings for RigType1 ####################################*/
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk4 = new Bookings();
+        bk4.setActive(true);
+        bk4.setDuration(1800);
+        /* Slots 0 - 1. */
+        bk4.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.MINUTE, 30);
+        bk4.setEndTime(rt1tm.getTime());
+        bk4.setResourcePermission(perm1);
+        bk4.setResourceType("TYPE");
+        bk4.setRigType(rigType1);
+        bk4.setUser(us1);
+        bk4.setUserName(us1.getName());
+        bk4.setUserNamespace(us1.getNamespace());
+        ses.save(bk4);
+        
+        Bookings bk13 = new Bookings();
+        bk13.setActive(true);
+        bk13.setDuration(7200);
+        /* Slots 0 - 7. */
+        rt1tm.add(Calendar.MINUTE, -30);
+        bk13.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 2);
+        bk13.setEndTime(rt1tm.getTime());
+        bk13.setResourcePermission(perm1);
+        bk13.setResourceType("TYPE");
+        bk13.setRigType(rigType1);
+        bk13.setUser(us1);
+        bk13.setUserName(us1.getName());
+        bk13.setUserNamespace(us1.getNamespace());
+        ses.save(bk13);
+        
+        /* #### Bookings for Request Caps 1. #################################*/
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk6 = new Bookings();
+        bk6.setActive(true);
+        bk6.setDuration(1800);
+        /* Slots 20 - 21. */
+        rcap1tm.add(Calendar.HOUR, 5);
+        bk6.setStartTime(rcap1tm.getTime());
+        rcap1tm.add(Calendar.MINUTE, 30);
+        bk6.setEndTime(rcap1tm.getTime());
+        bk6.setResourcePermission(perm1);
+        bk6.setResourceType("CAPABILITY");
+        bk6.setRequestCapabilities(rcaps1);
+        bk6.setUser(us1);
+        bk6.setUserName(us1.getName());
+        bk6.setUserNamespace(us1.getNamespace());
+        ses.save(bk6);
+        
+        Bookings bk7 = new Bookings();
+        bk7.setActive(true);
+        bk7.setDuration(1800);
+        /* Slots 22 - 23. */
+        bk7.setStartTime(rcap1tm.getTime());
+        rcap1tm.add(Calendar.MINUTE, 30);
+        bk7.setEndTime(rcap1tm.getTime());
+        bk7.setResourcePermission(perm1);
+        bk7.setResourceType("CAPABILITY");
+        bk7.setRequestCapabilities(rcaps1);
+        bk7.setUser(us1);
+        bk7.setUserName(us1.getName());
+        bk7.setUserNamespace(us1.getNamespace());
+        ses.save(bk7);
+        
+        /* #### Bookings for Request Caps 3. #################################*/
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk19 = new Bookings();
+        bk19.setActive(true);
+        bk19.setDuration(4500);
+        /* Slots 56 - 59. */
+        rcap3tm.add(Calendar.HOUR, 7);
+        bk19.setStartTime(rcap3tm.getTime());
+        rcap3tm.add(Calendar.HOUR, 1);
+        rcap3tm.add(Calendar.MINUTE, 15);
+        bk19.setEndTime(rcap3tm.getTime());
+        bk19.setResourcePermission(perm1);
+        bk19.setResourceType("CAPABILITY");
+        bk19.setRequestCapabilities(rcaps3);
+        bk19.setUser(us1);
+        bk19.setUserName(us1.getName());
+        bk19.setUserNamespace(us1.getNamespace());
+        ses.save(bk19);
+        
+        ses.getTransaction().commit();
+        
+        ses.beginTransaction();
+        MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
+        ses.save(mat1);
+        MatchingCapabilities mat2 = new MatchingCapabilities(rcaps1, caps2);
+        ses.save(mat2);
+        MatchingCapabilities mat3 = new MatchingCapabilities(rcaps1, caps3);
+        ses.save(mat3);
+        MatchingCapabilities mat4 = new MatchingCapabilities(rcaps2, caps1);
+        ses.save(mat4);
+        MatchingCapabilities mat5 = new MatchingCapabilities(rcaps2, caps3);
+        ses.save(mat5);
+        MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
+        ses.save(mat6);
+        ses.getTransaction().commit();
+        
+        ses.refresh(rcaps1);
+        ses.refresh(rcaps2);
+        ses.refresh(rcaps3);
+        ses.refresh(caps1);
+        ses.refresh(caps2);
+        ses.refresh(caps3);
+        ses.refresh(r1);
+        ses.refresh(r2);
+        ses.refresh(rigType1);
+        
+        CancelBooking request = new CancelBooking();
+        CancelBookingType param = new CancelBookingType();
+        request.setCancelBooking(param);
+        UserIDType uid = new UserIDType();
+        uid.setUserQName(us1.getNamespace() + ':' + us1.getName());
+        param.setUserID(uid);
+        BookingIDType bid = new BookingIDType();
+        bid.setBookingID(bk1.getId().intValue());
+        param.setBookingID(bid);
+        param.setReason("Test cancelling");
+        
+        CancelBookingResponse response = this.service.cancelBooking(request);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk4);
+        ses.delete(bk6);
+        ses.delete(bk7);
+        ses.delete(bk8);
+        ses.delete(bk13);
+        ses.delete(bk19);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(r2);
+        ses.delete(mat1);
+        ses.delete(mat2);
+        ses.delete(mat3);
+        ses.delete(mat4);
+        ses.delete(mat5);
+        ses.delete(mat6);
+        ses.delete(caps1);
+        ses.delete(caps2);
+        ses.delete(caps3);
+        ses.delete(rcaps1);
+        ses.delete(rcaps2);
+        ses.delete(rcaps3);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        BookingResponseType respParm = response.getCancelBookingResponse();
+        assertNotNull(respParm);
+        assertTrue(respParm.getSuccess());
     }
     
     @Test
@@ -214,7 +467,7 @@ public class BookingsServiceTester extends TestCase
         
         assertNotNull(response);
         
-        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        BookingResponseType bresp = response.getCancelBookingResponse();
         assertNotNull(bresp);
         assertFalse(bresp.getSuccess());
         assertEquals("No permission.", bresp.getFailureReason());
@@ -319,7 +572,7 @@ public class BookingsServiceTester extends TestCase
         
         assertNotNull(response);
         
-        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        BookingResponseType bresp = response.getCancelBookingResponse();
         assertNotNull(bresp);
         assertFalse(bresp.getSuccess());
         assertEquals("User does not own or have academic permission to cancel.", bresp.getFailureReason());
@@ -424,7 +677,7 @@ public class BookingsServiceTester extends TestCase
         
         assertNotNull(response);
         
-        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        BookingResponseType bresp = response.getCancelBookingResponse();
         assertNotNull(bresp);
         assertFalse(bresp.getSuccess());
         assertEquals("User does not own booking.", bresp.getFailureReason());
@@ -518,7 +771,7 @@ public class BookingsServiceTester extends TestCase
         
         assertNotNull(response);
         
-        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        BookingResponseType bresp = response.getCancelBookingResponse();
         assertNotNull(bresp);
         assertFalse(bresp.getSuccess());
         assertEquals("Booking already canceled or redeemed.", bresp.getFailureReason());
@@ -560,7 +813,7 @@ public class BookingsServiceTester extends TestCase
         
         assertNotNull(response);
         
-        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        BookingResponseType bresp = response.getCancelBookingResponse();
         assertNotNull(bresp);
         assertFalse(bresp.getSuccess());
         assertEquals("Booking not found.", bresp.getFailureReason());
@@ -589,7 +842,7 @@ public class BookingsServiceTester extends TestCase
         CancelBookingResponse response = this.service.cancelBooking(request);
         assertNotNull(response);
         
-        BookingResponseType bresp = response.getDeleteBookingsResponse();
+        BookingResponseType bresp = response.getCancelBookingResponse();
         assertNotNull(bresp);
         assertFalse(bresp.getSuccess());
         assertNotNull(bresp.getFailureReason());

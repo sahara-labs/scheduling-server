@@ -120,7 +120,7 @@ public class BookingsService implements BookingsInterface
         /* --------------------------------------------------------------------
          * -- Read request parameters.                                       --
          * -------------------------------------------------------------------- */
-        CancelBookingType request = cancelBooking.getDeleteBookings();
+        CancelBookingType request = cancelBooking.getCancelBooking();
         String debug = "Received " + this.getClass().getSimpleName() + "#cancelBooking with params: ";
         
         UserIDType uid = request.getUserID();
@@ -180,7 +180,8 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
             
-            if (User.USER.equals(user.getPersona()) && !user.getId().equals(booking.getUser().getId()))
+            String persona = user.getPersona();
+            if (User.USER.equals(persona) && !user.getId().equals(booking.getUser().getId()))
             {
                 /* If the user is a user they can only cancel the booking if it
                  * is for them. */
@@ -189,7 +190,7 @@ public class BookingsService implements BookingsInterface
                 status.setFailureReason("User does not own booking.");
                 return response;
             }
-            else if (User.ACADEMIC.equals(user.getPersona()) && !user.getId().equals(booking.getUser().getId()))
+            else if (User.ACADEMIC.equals(persona) && !user.getId().equals(booking.getUser().getId()))
             {
                 /* An academic may cancel bookings for classes they own. */
                 boolean hasPerm = false;
@@ -218,13 +219,13 @@ public class BookingsService implements BookingsInterface
                 		"cancel booking " + bid + " from user class" + userClass.getName() + '.');
                 sendNotif = true;
             }
-            else if (User.ADMIN.equals(user.getPersona()))
+            else if (User.ADMIN.equals(persona))
             {
                 this.logger.debug("Admin " + user.getNamespace() + ':' + user.getName() + " canceling booking " + 
                         bid + '.');
                 sendNotif = true;
             }
-            else
+            else if (!(User.ACADEMIC.equals(persona) || User.ADMIN.equals(persona) || User.USER.equals(persona)))
             {
                 this.logger.warn("User " + user.getNamespace() + ':' + user.getName() + " with persona " + 
                         user.getPersona() + " is attempting to cancel booking " + bid + ". They have no permission.");

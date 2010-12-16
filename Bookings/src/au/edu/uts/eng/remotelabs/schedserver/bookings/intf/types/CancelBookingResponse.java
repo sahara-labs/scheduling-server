@@ -63,7 +63,7 @@ public class CancelBookingResponse implements ADBBean
 
     protected BookingResponseType cancelBookingsResponse;
 
-    public BookingResponseType getDeleteBookingsResponse()
+    public BookingResponseType getCancelBookingResponse()
     {
         return this.cancelBookingsResponse;
     }
