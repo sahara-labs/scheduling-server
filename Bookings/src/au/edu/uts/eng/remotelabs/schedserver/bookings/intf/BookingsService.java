@@ -764,8 +764,18 @@ public class BookingsService implements BookingsInterface
      */
     private boolean checkPermission(User user, ResourcePermission perm)
     {
-        // TODO Check request permissions for queuer
-        return true;
+        UserClass userClass = perm.getUserClass();
+        for (UserAssociation assoc : user.getUserAssociations())
+        {
+            if (assoc.getUserClass().getId().equals(userClass.getId()))
+            {
+                return true;
+            }
+        }
+        
+        this.logger.info("User " + user.getNamespace() + ':' + user.getName() + " is not a member of user class " +
+        		userClass.getName() + '.');
+        return false;
     }
     
     /**
