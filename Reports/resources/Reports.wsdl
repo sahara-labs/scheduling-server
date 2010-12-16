@@ -140,15 +140,17 @@
 
 
 
-            		<xsd:choice maxOccurs="unbounded" minOccurs="1"><xsd:element maxOccurs="1" minOccurs="0" name="userClass" type="xsd:string">
-            		</xsd:element><xsd:element maxOccurs="1" minOccurs="0" name="rigType" type="xsd:string">
-            		</xsd:element><xsd:element maxOccurs="1" minOccurs="0" name="rigName" type="xsd:string">
-            		</xsd:element></xsd:choice>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="queueDuration" type="xsd:string">
+                    <xsd:element maxOccurs="1" minOccurs="0" name="userClass" type="xsd:string">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="1" name="sessionStartTime" type="xsd:dateTime">
+                    <xsd:element maxOccurs="1" minOccurs="0" name="rigType" type="xsd:string">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="1" name="sessionEndTime" type="xsd:dateTime">
+                    <xsd:element maxOccurs="1" minOccurs="0" name="rigName" type="xsd:string">
+            		</xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="queueDuration" type="xsd:int">
+            		</xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="1" name="sessionStartTime" type="xsd:date">
+            		</xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="1" name="sessionEndTime" type="xsd:date">
             		</xsd:element>
                     <xsd:element maxOccurs="1" minOccurs="1" name="sessionDuration" type="xsd:int">
                     </xsd:element>

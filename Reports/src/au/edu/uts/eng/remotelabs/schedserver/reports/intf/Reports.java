@@ -44,19 +44,20 @@ package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryFilterType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo;
@@ -69,6 +70,7 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAcce
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
 
 
@@ -87,6 +89,7 @@ public class Reports implements ReportsSkeletonInterface
         this.logger = LoggerActivator.getLogger();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public QueryInfoResponse queryInfo(QueryInfo queryInfo)
     {
@@ -104,7 +107,7 @@ public class Reports implements ReportsSkeletonInterface
         respType.setTypeForQuery(TypeForQuery.RIG);
         resp.setQueryInfoResponse(respType);
         
-        Session ses = DataAccessActivator.getNewSession();
+        org.hibernate.Session ses = DataAccessActivator.getNewSession();
 
         /* First Query Filter - this contains the main selection type to be selected */        
         QueryFilterType query0 = qIReq.getQuerySelect();
@@ -117,22 +120,62 @@ public class Reports implements ReportsSkeletonInterface
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
                 cri = ses.createCriteria(Rig.class);
+                if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
+                cri.setMaxResults(qIReq.getLimit());
+                cri.addOrder(Order.asc("name"));
+                List<Rig> list = cri.list();
+                for (Rig o : list)
+                {
+                    respType.addSelectionResult(o.getName());
+                }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
             {
                 cri = ses.createCriteria(RigType.class);
+                if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
+                cri.setMaxResults(qIReq.getLimit());
+                cri.addOrder(Order.asc("name"));
+                List<RigType> list = cri.list();
+                for (RigType o : list)
+                {
+                    respType.addSelectionResult(o.getName());
+                }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
             {
                 cri = ses.createCriteria(UserClass.class);
+                if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
+                cri.setMaxResults(qIReq.getLimit());
+                cri.addOrder(Order.asc("name"));
+                List<UserClass> list = cri.list();
+                for (UserClass o : list)
+                {
+                    respType.addSelectionResult(o.getName());
+                }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER)
             {
                 cri = ses.createCriteria(User.class);
+                if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
+                cri.setMaxResults(qIReq.getLimit());
+                cri.addOrder(Order.asc("name"));
+                List<User> list = cri.list();
+                for (User o : list)
+                {
+                    respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
+                }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.REQUEST_CAPABILITIES)
             {
                 cri = ses.createCriteria(RequestCapabilities.class);
+                if(query0.getQueryLike() != null)  cri.add(Restrictions.like("capabilities", query0.getQueryLike()));
+                cri.setMaxResults(qIReq.getLimit());
+                cri.addOrder(Order.asc("capabilities"));
+                List<RequestCapabilities> list = cri.list();
+                for (RequestCapabilities o : list)
+                {
+                    respType.addSelectionResult(o.getCapabilities());
+                }
             }
             else 
             {
@@ -148,30 +191,12 @@ public class Reports implements ReportsSkeletonInterface
             *    check canGenerateReports
             * others - none
             */
-        
-            if(query0.getQueryLike() != null)
-            {
-                cri.add(Restrictions.like("name", query0.getQueryLike()));
-            }
 
-            cri.setMaxResults(qIReq.getLimit());
-            cri.setProjection(Projections.property("name"));
-            cri.addOrder(Order.asc("name"));
-            
             QueryFilterType filter[] = qIReq.getQueryFilter(); 
             if(filter != null)
             {
                 //DODGY Designed, not implemented
             }
-            
-            
-            @SuppressWarnings("unchecked")
-            List list = cri.list();
-            for (Object o : list)
-            {
-                respType.addSelectionResult(o.toString());
-            }
-            
         }
         finally
         {
@@ -187,6 +212,7 @@ public class Reports implements ReportsSkeletonInterface
     /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.reports.intf.ReportsSkeletonInterface#querySessionAccess(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess)
      */
+    @SuppressWarnings({ "unchecked", "null" })
     @Override
     public QuerySessionAccessResponse querySessionAccess(QuerySessionAccess querySessionAccess)
     {
@@ -208,7 +234,10 @@ public class Reports implements ReportsSkeletonInterface
         respType.setPagination(page);
         resp.setQuerySessionAccessResponse(respType);
         
-        Session ses = DataAccessActivator.getNewSession();
+        AccessReportType reportType = null;
+        RequestorType user0 = null;
+        
+        org.hibernate.Session ses = DataAccessActivator.getNewSession();
 
         /* Set up query from request parameters*/
         try
@@ -228,13 +257,68 @@ public class Reports implements ReportsSkeletonInterface
             //Get table to be queried
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
-                cri.add(Restrictions.like("rig", query0.getQueryLike()));
+                cri.add(Restrictions.eq("rig", query0.getQueryLike()));
+                List<Session> list = cri.list();
+                for (Session o : list)
+                {
+                    user0.setUserName(o.getUserName());
+                    reportType.setUser(user0);
+                    reportType.setRigName(query0.getQueryLike());
+                    
+                    //TODO Check do we need check here?  Elsewhere?
+                    if(o.getAssignmentTime().getTime() > 0)
+                    {
+                        int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        reportType.setSessionStartTime(o.getAssignmentTime());
+                    }
+                    
+                    if(o.getRemovalTime().getTime() > 0)
+                    {
+                        int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
+                        reportType.setSessionDuration(sessionD);
+                        reportType.setSessionEndTime(o.getRemovalTime());
+                    }
+                    
+                    respType.setAccessReportData(reportType);
+                }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
             {
-                // TODO - what does rig type mean for session - need to do a link from tables and select
-                // Do we use RigType getRigs?  How to do this?
-               
+                RigTypeDao rTypeDAO = new RigTypeDao(ses);
+                RigType rType = rTypeDAO.findByName(query0.getQueryLike());
+                cri = ses.createCriteria(Session.class);
+                if (rType == null)
+                {
+                    this.logger.warn("No valid rig type found - " + query0.getTypeForQuery().toString());
+                    return resp;
+                }
+                cri.createCriteria("rig").add(Restrictions.eq("rigType",rType));
+                List<Session> list = cri.list();
+                for (Session o : list)
+                {
+                    user0.setUserName(o.getUserName());
+                    reportType.setUser(user0);
+                    reportType.setRigType(query0.getQueryLike());
+                    
+                    //TODO Check do we need check here?  Elsewhere?
+                    if(o.getAssignmentTime().getTime() > 0)
+                    {
+                        int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        reportType.setSessionStartTime(o.getAssignmentTime());
+                    }
+                    
+                    if(o.getRemovalTime().getTime() > 0)
+                    {
+                        int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
+                        reportType.setSessionDuration(sessionD);
+                        reportType.setSessionEndTime(o.getRemovalTime());
+                    }
+                    
+                    respType.setAccessReportData(reportType);
+                }
+                
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
             {
@@ -264,7 +348,6 @@ public class Reports implements ReportsSkeletonInterface
         {
             ses.close();
         }
-        
         
         return resp;    
     }
