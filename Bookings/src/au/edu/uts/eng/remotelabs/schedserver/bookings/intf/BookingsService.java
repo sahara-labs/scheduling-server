@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.intf;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,11 +57,11 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotList
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingsRequestType;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
@@ -392,14 +393,19 @@ public class BookingsService implements BookingsInterface
                 else if (rpList.size() > 1)
                 {
                     // TODO stupid easy case
-//                    Date rsd = reqStart.getTime();
-//                    Date red = reqEnd.getTime();
-//                    /* Multiple permissions so we take the permission in time range. */
-//                    for (ResourcePermission rp : rpList)
-//                    {
-//                        
-//                                
-//                    }
+                    Date rsd = reqStart.getTime();
+                    Date red = reqEnd.getTime();
+                    /* Multiple permissions so we take the permission in time range. */
+                    for (ResourcePermission rp : rpList)
+                    {
+                        if (rp.getStartTime().before(rsd) && rp.getExpiryTime().after(rsd) ||
+                            rp.getStartTime().before(red) && rp.getExpiryTime().after(red) ||
+                            rp.getStartTime().after(rsd)  && rp.getExpiryTime().before(red))
+                        {
+                            perm = rp;
+                            break;
+                        }
+                    }
                     
                     /* Nothing in range so it doesn't matter which resource we give. */
                     if (perm == null) perm = rpList.get(0);
