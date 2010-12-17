@@ -88,7 +88,7 @@ public class User implements java.io.Serializable
     /** Name space of the user. */
     private String namespace;
     
-    /** Persona of the user which may be 'ADMIN', 'ACADEMIC', 'STUDENT', 'DEMO'. */
+    /** Persona of the user which may be 'ADMIN', 'ACADEMIC', 'USER', 'DEMO'. */
     private String persona;
     
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
