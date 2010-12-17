@@ -6,6 +6,7 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
+
 /**
  * RequestorType bean class
  */
@@ -19,10 +20,9 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
      * Namespace Prefix = ns1
      */
 
-    /**
-                 * 
-                 */
-    private static final long serialVersionUID = 6135164550661709912L;
+    public static final String QNAME_DELIM = ":";
+
+    private static final long serialVersionUID = -5562949871886115940L;
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -80,11 +80,47 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
 
     }
 
+    
+    public String getUserName()
+    {
+        if (this.nsNameSequence != null && this.nsNameSequence.getUserName() != null)
+        {
+            return this.nsNameSequence.getUserName();
+        }
+        
+        if (this.localUserQName != null)
+        {
+            String idParts[] = this.localUserQName.split(RequestorType.QNAME_DELIM, 2);
+            if (idParts.length == 2)
+            {
+                return idParts[1];
+            }
+        }
+        
+        return null;
+    }
+    
+    public String getUserNamespace()
+    {
+        if (this.nsNameSequence != null && this.nsNameSequence.getUserNamespace() != null)
+        {
+            return this.nsNameSequence.getUserNamespace();
+        }
+        
+        if (this.localUserQName != null)
+        {
+            String idParts[] = this.localUserQName.split(RequestorType.QNAME_DELIM, 2);
+            return idParts[0];
+        }
+        
+        return null;
+    }
+
     /**
-     * field for RequestorTypeSequence_type0
+     * field for UserNSNameSequence
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorTypeSequence_type0 localRequestorTypeSequence_type0;
+    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence nsNameSequence;
 
     /*
      * This tracker boolean wil be used to detect whether the user called the set method
@@ -96,21 +132,21 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorTypeSequence_type0
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence
      */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorTypeSequence_type0 getRequestorTypeSequence_type0()
+    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence getRequestorTypeSequence_type0()
     {
-        return this.localRequestorTypeSequence_type0;
+        return this.nsNameSequence;
     }
 
     /**
      * Auto generated setter method
      * 
      * @param param
-     *            RequestorTypeSequence_type0
+     *            UserNSNameSequence
      */
     public void setRequestorTypeSequence_type0(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorTypeSequence_type0 param)
+            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence param)
     {
 
         if (param != null)
@@ -124,54 +160,54 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
 
         }
 
-        this.localRequestorTypeSequence_type0 = param;
+        this.nsNameSequence = param;
 
     }
 
     /**
-     * field for UserName
+     * field for UserQName
      */
 
-    protected java.lang.String localUserName;
+    protected java.lang.String localUserQName;
 
     /*
      * This tracker boolean wil be used to detect whether the user called the set method
      * for this attribute. It will be used to determine whether to include this field
      * in the serialized XML
      */
-    protected boolean localUserNameTracker = false;
+    protected boolean localUserQNameTracker = false;
 
     /**
      * Auto generated getter method
      * 
      * @return java.lang.String
      */
-    public java.lang.String getUserName()
+    public java.lang.String getUserQName()
     {
-        return this.localUserName;
+        return this.localUserQName;
     }
 
     /**
      * Auto generated setter method
      * 
      * @param param
-     *            UserName
+     *            UserQName
      */
-    public void setUserName(final java.lang.String param)
+    public void setUserQName(final java.lang.String param)
     {
 
         if (param != null)
         {
             //update the setting tracker
-            this.localUserNameTracker = true;
+            this.localUserQNameTracker = true;
         }
         else
         {
-            this.localUserNameTracker = false;
+            this.localUserQNameTracker = false;
 
         }
 
-        this.localUserName = param;
+        this.localUserQName = param;
 
     }
 
@@ -325,13 +361,13 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
         }
         if (this.localRequestorTypeSequence_type0Tracker)
         {
-            if (this.localRequestorTypeSequence_type0 == null)
+            if (this.nsNameSequence == null)
             {
-                throw new org.apache.axis2.databinding.ADBException("RequestorTypeSequence_type0 cannot be null!!");
+                throw new org.apache.axis2.databinding.ADBException("UserNSNameSequence cannot be null!!");
             }
-            this.localRequestorTypeSequence_type0.serialize(null, factory, xmlWriter);
+            this.nsNameSequence.serialize(null, factory, xmlWriter);
         }
-        if (this.localUserNameTracker)
+        if (this.localUserQNameTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -342,33 +378,33 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
                 {
                     prefix = RequestorType.generatePrefix(namespace);
 
-                    xmlWriter.writeStartElement(prefix, "userName", namespace);
+                    xmlWriter.writeStartElement(prefix, "userQName", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
 
                 }
                 else
                 {
-                    xmlWriter.writeStartElement(namespace, "userName");
+                    xmlWriter.writeStartElement(namespace, "userQName");
                 }
 
             }
             else
             {
-                xmlWriter.writeStartElement("userName");
+                xmlWriter.writeStartElement("userQName");
             }
 
-            if (this.localUserName == null)
+            if (this.localUserQName == null)
             {
                 // write the nil attribute
 
-                throw new org.apache.axis2.databinding.ADBException("userName cannot be null!!");
+                throw new org.apache.axis2.databinding.ADBException("userQName cannot be null!!");
 
             }
             else
             {
 
-                xmlWriter.writeCharacters(this.localUserName);
+                xmlWriter.writeCharacters(this.localUserQName);
 
             }
 
@@ -446,25 +482,25 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
         if (this.localRequestorTypeSequence_type0Tracker)
         {
             elementList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/reports",
-                    "RequestorTypeSequence_type0"));
+                    "UserNSNameSequence"));
 
-            if (this.localRequestorTypeSequence_type0 == null)
+            if (this.nsNameSequence == null)
             {
-                throw new org.apache.axis2.databinding.ADBException("RequestorTypeSequence_type0 cannot be null!!");
+                throw new org.apache.axis2.databinding.ADBException("UserNSNameSequence cannot be null!!");
             }
-            elementList.add(this.localRequestorTypeSequence_type0);
+            elementList.add(this.nsNameSequence);
         }
-        if (this.localUserNameTracker)
+        if (this.localUserQNameTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "userName"));
+            elementList.add(new javax.xml.namespace.QName("", "userQName"));
 
-            if (this.localUserName != null)
+            if (this.localUserQName != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserName));
+                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserQName));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("userName cannot be null!!");
+                throw new org.apache.axis2.databinding.ADBException("userQName cannot be null!!");
             }
         }
 
@@ -564,7 +600,7 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
                     {
 
                         object
-                                .setRequestorTypeSequence_type0(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorTypeSequence_type0.Factory
+                                .setRequestorTypeSequence_type0(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence.Factory
                                         .parse(reader));
 
                     } // End of if for expected property start element
@@ -584,12 +620,12 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
                     reader.next();
                 }
 
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "userName").equals(reader.getName()))
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "userQName").equals(reader.getName()))
                 {
 
                     final java.lang.String content = reader.getElementText();
 
-                    object.setUserName(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+                    object.setUserQName(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
 
                     reader.next();
 

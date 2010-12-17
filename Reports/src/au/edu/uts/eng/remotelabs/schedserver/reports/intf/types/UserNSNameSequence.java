@@ -1,6 +1,6 @@
 
 /**
- * QuerySessionAccessResponseType.java
+ * UserNSNameSequence.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:25:17 EDT)
@@ -10,13 +10,13 @@
             
 
             /**
-            *  QuerySessionAccessResponseType bean class
+            *  UserNSNameSequence bean class
             */
         
-        public  class QuerySessionAccessResponseType
+        public  class UserNSNameSequence
         implements org.apache.axis2.databinding.ADBBean{
         /* This type was generated from the piece of schema that had
-                name = QuerySessionAccessResponseType
+                name = UserNSNameSequence
                 Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/reports
                 Namespace Prefix = ns1
                 */
@@ -32,116 +32,92 @@
         
 
                         /**
-                        * field for Pagination
+                        * field for UserName
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType localPagination ;
+                                    protected java.lang.String localUserName ;
                                 
+                           /*  This tracker boolean wil be used to detect whether the user called the set method
+                          *   for this attribute. It will be used to determine whether to include this field
+                           *   in the serialized XML
+                           */
+                           protected boolean localUserNameTracker = false ;
+                           
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType
+                           * @return java.lang.String
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType getPagination(){
-                               return localPagination;
+                           public  java.lang.String getUserName(){
+                               return localUserName;
                            }
 
                            
                         
                             /**
                                * Auto generated setter method
-                               * @param param Pagination
+                               * @param param UserName
                                */
-                               public void setPagination(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType param){
+                               public void setUserName(java.lang.String param){
                             
-                                            this.localPagination=param;
+                                       if (param != null){
+                                          //update the setting tracker
+                                          localUserNameTracker = true;
+                                       } else {
+                                          localUserNameTracker = false;
+                                              
+                                       }
+                                   
+                                            this.localUserName=param;
                                     
 
                                }
                             
 
                         /**
-                        * field for AccessReportData
-                        * This was an Array!
+                        * field for UserNamespace
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] localAccessReportData ;
+                                    protected java.lang.String localUserNamespace ;
                                 
                            /*  This tracker boolean wil be used to detect whether the user called the set method
                           *   for this attribute. It will be used to determine whether to include this field
                            *   in the serialized XML
                            */
-                           protected boolean localAccessReportDataTracker = false ;
+                           protected boolean localUserNamespaceTracker = false ;
                            
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[]
+                           * @return java.lang.String
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] getAccessReportData(){
-                               return localAccessReportData;
+                           public  java.lang.String getUserNamespace(){
+                               return localUserNamespace;
                            }
 
                            
                         
-
-
-                               
-                              /**
-                               * validate the array for AccessReportData
+                            /**
+                               * Auto generated setter method
+                               * @param param UserNamespace
                                */
-                              protected void validateAccessReportData(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] param){
-                             
-                              }
-
-
-                             /**
-                              * Auto generated setter method
-                              * @param param AccessReportData
-                              */
-                              public void setAccessReportData(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] param){
-                              
-                                   validateAccessReportData(param);
-
-                               
-                                          if (param != null){
-                                             //update the setting tracker
-                                             localAccessReportDataTracker = true;
-                                          } else {
-                                             localAccessReportDataTracker = false;
-                                                 
-                                          }
-                                      
-                                      this.localAccessReportData=param;
-                              }
-
-                               
-                             
-                             /**
-                             * Auto generated add method for the array for convenience
-                             * @param param au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType
-                             */
-                             public void addAccessReportData(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType param){
-                                   if (localAccessReportData == null){
-                                   localAccessReportData = new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[]{};
-                                   }
-
+                               public void setUserNamespace(java.lang.String param){
                             
-                                 //update the setting tracker
-                                localAccessReportDataTracker = true;
+                                       if (param != null){
+                                          //update the setting tracker
+                                          localUserNamespaceTracker = true;
+                                       } else {
+                                          localUserNamespaceTracker = false;
+                                              
+                                       }
+                                   
+                                            this.localUserNamespace=param;
+                                    
+
+                               }
                             
-
-                               java.util.List list =
-                            org.apache.axis2.databinding.utils.ConverterUtil.toList(localAccessReportData);
-                               list.add(param);
-                               this.localAccessReportData =
-                             (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[])list.toArray(
-                            new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[list.size()]);
-
-                             }
-                             
 
      /**
      * isReaderMTOMAware
@@ -175,7 +151,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
                  public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-                       QuerySessionAccessResponseType.this.serialize(parentQName,factory,xmlWriter);
+                       UserNSNameSequence.this.serialize(parentQName,factory,xmlWriter);
                  }
                };
                return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(
@@ -202,70 +178,91 @@
                 java.lang.String prefix = null;
                 java.lang.String namespace = null;
                 
-
-                    prefix = parentQName.getPrefix();
-                    namespace = parentQName.getNamespaceURI();
-
-                    if ((namespace != null) && (namespace.trim().length() > 0)) {
-                        java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
-                        if (writerPrefix != null) {
-                            xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
-                        } else {
-                            if (prefix == null) {
-                                prefix = generatePrefix(namespace);
-                            }
-
-                            xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
-                            xmlWriter.writeNamespace(prefix, namespace);
-                            xmlWriter.setPrefix(prefix, namespace);
-                        }
-                    } else {
-                        xmlWriter.writeStartElement(parentQName.getLocalPart());
-                    }
-                
                   if (serializeType){
                
 
                    java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://remotelabs.eng.uts.edu.au/schedserver/reports");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                           namespacePrefix+":QuerySessionAccessResponseType",
+                           namespacePrefix+":UserNSNameSequence",
                            xmlWriter);
                    } else {
                        writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
-                           "QuerySessionAccessResponseType",
+                           "UserNSNameSequence",
                            xmlWriter);
                    }
 
                
                    }
-               
-                                            if (localPagination==null){
-                                                 throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
-                                            }
-                                           localPagination.serialize(new javax.xml.namespace.QName("","pagination"),
-                                               factory,xmlWriter);
-                                         if (localAccessReportDataTracker){
-                                       if (localAccessReportData!=null){
-                                            for (int i = 0;i < localAccessReportData.length;i++){
-                                                if (localAccessReportData[i] != null){
-                                                 localAccessReportData[i].serialize(new javax.xml.namespace.QName("","accessReportData"),
-                                                           factory,xmlWriter);
-                                                } else {
-                                                   
-                                                        // we don't have to do any thing since minOccures is zero
-                                                    
-                                                }
+                if (localUserNameTracker){
+                                    namespace = "";
+                                    if (! namespace.equals("")) {
+                                        prefix = xmlWriter.getPrefix(namespace);
 
-                                            }
-                                     } else {
-                                        
-                                               throw new org.apache.axis2.databinding.ADBException("accessReportData cannot be null!!");
-                                        
+                                        if (prefix == null) {
+                                            prefix = generatePrefix(namespace);
+
+                                            xmlWriter.writeStartElement(prefix,"userName", namespace);
+                                            xmlWriter.writeNamespace(prefix, namespace);
+                                            xmlWriter.setPrefix(prefix, namespace);
+
+                                        } else {
+                                            xmlWriter.writeStartElement(namespace,"userName");
+                                        }
+
+                                    } else {
+                                        xmlWriter.writeStartElement("userName");
                                     }
-                                 }
-                    xmlWriter.writeEndElement();
-               
+                                
+
+                                          if (localUserName==null){
+                                              // write the nil attribute
+                                              
+                                                     throw new org.apache.axis2.databinding.ADBException("userName cannot be null!!");
+                                                  
+                                          }else{
+
+                                        
+                                                   xmlWriter.writeCharacters(localUserName);
+                                            
+                                          }
+                                    
+                                   xmlWriter.writeEndElement();
+                             } if (localUserNamespaceTracker){
+                                    namespace = "";
+                                    if (! namespace.equals("")) {
+                                        prefix = xmlWriter.getPrefix(namespace);
+
+                                        if (prefix == null) {
+                                            prefix = generatePrefix(namespace);
+
+                                            xmlWriter.writeStartElement(prefix,"userNamespace", namespace);
+                                            xmlWriter.writeNamespace(prefix, namespace);
+                                            xmlWriter.setPrefix(prefix, namespace);
+
+                                        } else {
+                                            xmlWriter.writeStartElement(namespace,"userNamespace");
+                                        }
+
+                                    } else {
+                                        xmlWriter.writeStartElement("userNamespace");
+                                    }
+                                
+
+                                          if (localUserNamespace==null){
+                                              // write the nil attribute
+                                              
+                                                     throw new org.apache.axis2.databinding.ADBException("userNamespace cannot be null!!");
+                                                  
+                                          }else{
+
+                                        
+                                                   xmlWriter.writeCharacters(localUserNamespace);
+                                            
+                                          }
+                                    
+                                   xmlWriter.writeEndElement();
+                             }
 
         }
 
@@ -425,37 +422,25 @@
                  java.util.ArrayList elementList = new java.util.ArrayList();
                  java.util.ArrayList attribList = new java.util.ArrayList();
 
-                
-                            elementList.add(new javax.xml.namespace.QName("",
-                                                                      "pagination"));
-                            
-                            
-                                    if (localPagination==null){
-                                         throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
-                                    }
-                                    elementList.add(localPagination);
-                                 if (localAccessReportDataTracker){
-                             if (localAccessReportData!=null) {
-                                 for (int i = 0;i < localAccessReportData.length;i++){
-
-                                    if (localAccessReportData[i] != null){
-                                         elementList.add(new javax.xml.namespace.QName("",
-                                                                          "accessReportData"));
-                                         elementList.add(localAccessReportData[i]);
-                                    } else {
-                                        
-                                                // nothing to do
-                                            
-                                    }
-
-                                 }
-                             } else {
+                 if (localUserNameTracker){
+                                      elementList.add(new javax.xml.namespace.QName("",
+                                                                      "userName"));
                                  
-                                        throw new org.apache.axis2.databinding.ADBException("accessReportData cannot be null!!");
-                                    
-                             }
-
-                        }
+                                        if (localUserName != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localUserName));
+                                        } else {
+                                           throw new org.apache.axis2.databinding.ADBException("userName cannot be null!!");
+                                        }
+                                    } if (localUserNamespaceTracker){
+                                      elementList.add(new javax.xml.namespace.QName("",
+                                                                      "userNamespace"));
+                                 
+                                        if (localUserNamespace != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localUserNamespace));
+                                        } else {
+                                           throw new org.apache.axis2.databinding.ADBException("userNamespace cannot be null!!");
+                                        }
+                                    }
 
                 return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
             
@@ -480,9 +465,9 @@
         * Postcondition: If this object is an element, the reader is positioned at its end element
         *                If this object is a complex type, the reader is positioned at the end element of its outer element
         */
-        public static QuerySessionAccessResponseType parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
-            QuerySessionAccessResponseType object =
-                new QuerySessionAccessResponseType();
+        public static UserNSNameSequence parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
+            UserNSNameSequence object =
+                new UserNSNameSequence();
 
             int event;
             java.lang.String nillableValue = null;
@@ -494,32 +479,6 @@
                     reader.next();
 
                 
-                if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","type")!=null){
-                  java.lang.String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                        "type");
-                  if (fullTypeName!=null){
-                    java.lang.String nsPrefix = null;
-                    if (fullTypeName.indexOf(":") > -1){
-                        nsPrefix = fullTypeName.substring(0,fullTypeName.indexOf(":"));
-                    }
-                    nsPrefix = nsPrefix==null?"":nsPrefix;
-
-                    java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":")+1);
-                    
-                            if (!"QuerySessionAccessResponseType".equals(type)){
-                                //find namespace for the prefix
-                                java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (QuerySessionAccessResponseType)au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper.getTypeObject(
-                                     nsUri,type,reader);
-                              }
-                        
-
-                  }
-                
-
-                }
-
-                
 
                 
                 // Note all attributes that were handled. Used to differ normal attributes
@@ -528,67 +487,36 @@
                 
 
                  
-                    
-                    reader.next();
-                
-                        java.util.ArrayList list2 = new java.util.ArrayList();
-                    
                                     
                                     while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
                                 
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","pagination").equals(reader.getName())){
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","userName").equals(reader.getName())){
                                 
-                                                object.setPagination(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType.Factory.parse(reader));
+                                    java.lang.String content = reader.getElementText();
+                                    
+                                              object.setUserName(
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                               
                                         reader.next();
                                     
                               }  // End of if for expected property start element
                                 
-                                else{
-                                    // A start element we are not expecting indicates an invalid parameter was passed
-                                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
-                                }
-                            
+                                    else {
+                                        
+                                    }
+                                
                                     
                                     while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
                                 
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","accessReportData").equals(reader.getName())){
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","userNamespace").equals(reader.getName())){
                                 
+                                    java.lang.String content = reader.getElementText();
                                     
+                                              object.setUserNamespace(
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+                                              
+                                        reader.next();
                                     
-                                    // Process the array and step past its final element's end.
-                                    list2.add(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType.Factory.parse(reader));
-                                                                
-                                                        //loop until we find a start element that is not part of this array
-                                                        boolean loopDone2 = false;
-                                                        while(!loopDone2){
-                                                            // We should be at the end element, but make sure
-                                                            while (!reader.isEndElement())
-                                                                reader.next();
-                                                            // Step out of this element
-                                                            reader.next();
-                                                            // Step to next element event.
-                                                            while (!reader.isStartElement() && !reader.isEndElement())
-                                                                reader.next();
-                                                            if (reader.isEndElement()){
-                                                                //two continuous end elements means we are exiting the xml structure
-                                                                loopDone2 = true;
-                                                            } else {
-                                                                if (new javax.xml.namespace.QName("","accessReportData").equals(reader.getName())){
-                                                                    list2.add(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType.Factory.parse(reader));
-                                                                        
-                                                                }else{
-                                                                    loopDone2 = true;
-                                                                }
-                                                            }
-                                                        }
-                                                        // call the converter utility  to convert and set the array
-                                                        
-                                                        object.setAccessReportData((au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[])
-                                                            org.apache.axis2.databinding.utils.ConverterUtil.convertToArray(
-                                                                au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType.class,
-                                                                list2));
-                                                            
                               }  // End of if for expected property start element
                                 
                                     else {
@@ -597,10 +525,6 @@
                                   
                             while (!reader.isStartElement() && !reader.isEndElement())
                                 reader.next();
-                            
-                                if (reader.isStartElement())
-                                // A start element we are not expecting indicates a trailing invalid property
-                                throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getLocalName());
                             
 
 

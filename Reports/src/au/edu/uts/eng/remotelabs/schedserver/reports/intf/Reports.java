@@ -41,6 +41,8 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -49,6 +51,8 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
@@ -72,6 +76,7 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionRepo
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence;
 
 
 /**
@@ -100,6 +105,7 @@ public class Reports implements ReportsSkeletonInterface
             if(qIReq.getQueryFilter() != null) debug += ", QueryFilter: " + qIReq.getQueryFilter().toString();
             debug += ", limit: " + qIReq.getLimit(); 
         this.logger.debug(debug);
+        RequestorType uid = qIReq.getRequestor();
         
         /** Response parameters. */
         QueryInfoResponse resp = new QueryInfoResponse();
@@ -116,9 +122,23 @@ public class Reports implements ReportsSkeletonInterface
         {
             Criteria cri;
 
+            /* ----------------------------------------------------------------
+             * -- Load the requestor.                                             --
+             * ---------------------------------------------------------------- */
+            User user = this.getUserFromUserID(uid, ses);
+            if (user == null)
+            {
+                this.logger.info("Unable to generate report because the user has not been found. Supplied " +
+                        "credentials ID=" + uid.getUserID() + ", namespace=" + uid.getUserNamespace() + ", " +
+                        "name=" + uid.getUserName() + '.');
+                return resp;
+            }
+            String persona = user.getPersona();
+ 
             //Get table to be queried
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
+                //Rig Information only available to ADMIN, to be mediated by interface
                 cri = ses.createCriteria(Rig.class);
                 if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
                 cri.setMaxResults(qIReq.getLimit());
@@ -131,7 +151,9 @@ public class Reports implements ReportsSkeletonInterface
             }
             else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
             {
+                //Rig Type Information only available to ADMIN, to be mediated by interface                cri = ses.createCriteria(RigType.class);
                 cri = ses.createCriteria(RigType.class);
+
                 if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
                 cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
@@ -144,23 +166,72 @@ public class Reports implements ReportsSkeletonInterface
             else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
             {
                 cri = ses.createCriteria(UserClass.class);
+
                 if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
                 cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
                 List<UserClass> list = cri.list();
                 for (UserClass o : list)
                 {
+                    /* ----------------------------------------------------------------
+                     * Check that the requestor has permissions to request the report.
+                     * If persona = USER, no reports (USERs will not get here)
+                     * If persona = ADMIN, any report 
+                     * If persona = ACADEMIC, only for classes they own if they can genrate reports
+                     * ---------------------------------------------------------------- */
+
+                    if (User.ACADEMIC.equals(persona))
+                    {
+                        /* An academic may generate reports for their own classes only. */
+                        boolean hasPerm = false;
+                            
+                        Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
+                        while (apIt.hasNext())
+                        {
+                            AcademicPermission ap = apIt.next();
+                            if (ap.getUserClass().getId().equals(o.getId()) && ap.isCanGenerateReports())
+                            {
+                                hasPerm = true;
+                                break;
+                             }    
+                        }
+                            
+                        if (!hasPerm)
+                        {
+                            this.logger.info("Unable to generate report for user class " + o.getName() + 
+                                    " because the user " + user.getNamespace() + ':' + user.getName() +
+                                    " does not own or have academic permission to it.");
+                            continue;
+                        }
+                            
+                        this.logger.debug("Academic " + user.getNamespace() + ':' + user.getName() + " has permission to " +
+                                   "generate report from user class" + o.getName() + '.');
+                    }
+                    
                     respType.addSelectionResult(o.getName());
                 }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER)
             {
                 cri = ses.createCriteria(User.class);
+
+                /* ----------------------------------------------------------------
+                 * TODO Check that the requestor has permissions to request the report.
+                 * If persona = USER, no reports (USERs will not get here)
+                 * If persona = ADMIN, any report 
+                 * If persona = ACADEMIC, only for users in classes they own if they can genrate reports
+                 * 
+                 *  NOTE generate academics class list
+                 *  Get users in each class
+                 *  Compare to users matching search criteria
+                 * ---------------------------------------------------------------- */
+
+                
                 if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
                 cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
-                List<User> list = cri.list();
-                for (User o : list)
+                List<User> userList = cri.list();
+                for (User o : userList)
                 {
                     respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
                 }
@@ -184,14 +255,6 @@ public class Reports implements ReportsSkeletonInterface
                 return resp;
             }
             
-            /* TODO use ID to restrict query
-            * Check permission method that looks for
-            * ADMIN anything
-            * ACADEMIC - get permissions
-            *    check canGenerateReports
-            * others - none
-            */
-
             QueryFilterType filter[] = qIReq.getQueryFilter(); 
             if(filter != null)
             {
@@ -212,7 +275,7 @@ public class Reports implements ReportsSkeletonInterface
     /* (non-Javadoc)
      * @see au.edu.uts.eng.remotelabs.schedserver.reports.intf.ReportsSkeletonInterface#querySessionAccess(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess)
      */
-    @SuppressWarnings({ "unchecked", "null" })
+    @SuppressWarnings({ "unchecked" })
     @Override
     public QuerySessionAccessResponse querySessionAccess(QuerySessionAccess querySessionAccess)
     {
@@ -234,8 +297,7 @@ public class Reports implements ReportsSkeletonInterface
         respType.setPagination(page);
         resp.setQuerySessionAccessResponse(respType);
         
-        AccessReportType reportType = null;
-        RequestorType user0 = null;
+        AccessReportType reportType = new AccessReportType();
         
         org.hibernate.Session ses = DataAccessActivator.getNewSession();
 
@@ -243,6 +305,7 @@ public class Reports implements ReportsSkeletonInterface
         try
         {
             Criteria cri = ses.createCriteria(Session.class);
+            cri.addOrder(Order.asc("requestTime"));
 
             /* TODO use ID to restrict query
              * Check permission method that looks for
@@ -257,30 +320,47 @@ public class Reports implements ReportsSkeletonInterface
             //Get table to be queried
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
-                cri.add(Restrictions.eq("rig", query0.getQueryLike()));
+                cri.add(Restrictions.eq("assignedRigName", query0.getQueryLike()));
+                cri.add(Restrictions.between("requestTime", qSAReq.getStartTime().getTime(), qSAReq.getEndTime().getTime()));
                 List<Session> list = cri.list();
                 for (Session o : list)
                 {
-                    user0.setUserName(o.getUserName());
+                    //Get user from session object
+                    RequestorType user0 = new RequestorType();
+                    UserNSNameSequence nsSequence = new UserNSNameSequence();
+                    nsSequence.setUserName(o.getUser().getName());
+                    nsSequence.setUserNamespace(o.getUser().getNamespace());
+                    user0.setRequestorTypeSequence_type0(nsSequence);
                     reportType.setUser(user0);
+                                        
                     reportType.setRigName(query0.getQueryLike());
                     
-                    //TODO Check do we need check here?  Elsewhere?
-                    if(o.getAssignmentTime().getTime() > 0)
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(o.getRequestTime());
+                    reportType.setQueueStartTime(cal);
+
+                    if(o.getAssignmentTime() != null)
                     {
                         int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
                         reportType.setQueueDuration(queueD);
-                        reportType.setSessionStartTime(o.getAssignmentTime());
-                    }
-                    
-                    if(o.getRemovalTime().getTime() > 0)
-                    {
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getAssignmentTime());
+                        reportType.setSessionStartTime(cal);
+
                         int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
                         reportType.setSessionDuration(sessionD);
-                        reportType.setSessionEndTime(o.getRemovalTime());
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getRemovalTime());
+                        reportType.setSessionEndTime(cal);
+                    }
+                    else
+                    {
+                        int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        reportType.setSessionDuration(0);
                     }
                     
-                    respType.setAccessReportData(reportType);
+                    respType.addAccessReportData(reportType);
                 }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
@@ -297,26 +377,41 @@ public class Reports implements ReportsSkeletonInterface
                 List<Session> list = cri.list();
                 for (Session o : list)
                 {
-                    user0.setUserName(o.getUserName());
+                    //Get user from session object
+                    RequestorType user0 = new RequestorType();
+                    UserNSNameSequence nsSequence = new UserNSNameSequence();
+                    nsSequence.setUserName(o.getUser().getName());
+                    nsSequence.setUserNamespace(o.getUser().getNamespace());
+                    user0.setRequestorTypeSequence_type0(nsSequence);
                     reportType.setUser(user0);
+
                     reportType.setRigType(query0.getQueryLike());
                     
-                    //TODO Check do we need check here?  Elsewhere?
-                    if(o.getAssignmentTime().getTime() > 0)
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(o.getRequestTime());
+                    reportType.setQueueStartTime(cal);
+                    
+                    if(o.getAssignmentTime() != null)
                     {
                         int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
                         reportType.setQueueDuration(queueD);
-                        reportType.setSessionStartTime(o.getAssignmentTime());
-                    }
-                    
-                    if(o.getRemovalTime().getTime() > 0)
-                    {
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getAssignmentTime());
+                        reportType.setSessionStartTime(cal);
                         int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
                         reportType.setSessionDuration(sessionD);
-                        reportType.setSessionEndTime(o.getRemovalTime());
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getRemovalTime());
+                        reportType.setSessionEndTime(cal);
+                    }
+                    else
+                    {
+                        int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        reportType.setSessionDuration(0);
                     }
                     
-                    respType.setAccessReportData(reportType);
+                    respType.addAccessReportData(reportType);
                 }
                 
             }
@@ -362,5 +457,54 @@ public class Reports implements ReportsSkeletonInterface
         // TODO Auto-generated method stub
         return null;
     }
+
+    
+    /**
+     * Gets the user identified by the user id type. 
+     * 
+     * @param uid user identity 
+     * @param ses database session
+     * @return user or null if not found
+     */
+    private User getUserFromUserID(RequestorType uid, org.hibernate.Session ses)
+    {
+        UserDao dao = new UserDao(ses);
+        User user;
+        
+        long recordId = this.getIdentifier(uid.getUserID());
+        String ns = uid.getUserNamespace(), nm = uid.getUserName();
+        
+        if (recordId > 0 && (user = dao.get(recordId)) != null)
+        {
+            return user;
+        }
+        else if (ns != null && nm != null && (user = dao.findByName(ns, nm)) != null)
+        {
+            return user;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Converts string identifiers to a long.
+     * 
+     * @param idStr string containing a long  
+     * @return long or 0 if identifier not valid
+     */
+    private long getIdentifier(String idStr)
+    {
+        if (idStr == null) return 0;
+        
+        try
+        {
+            return Long.parseLong(idStr);
+        }
+        catch (NumberFormatException nfe)
+        {
+            return 0;
+        }
+    }
+
 
 }

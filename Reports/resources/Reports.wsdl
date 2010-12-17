@@ -55,7 +55,7 @@
             		<xsd:sequence maxOccurs="1" minOccurs="0"><xsd:element maxOccurs="1" minOccurs="0" name="userName" type="xsd:string">
             		</xsd:element><xsd:element maxOccurs="1" minOccurs="0" name="userNamespace" type="xsd:string">
             		</xsd:element></xsd:sequence>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="userName" type="xsd:string">
+                    <xsd:element maxOccurs="1" minOccurs="0" name="userQName" type="xsd:string">
             		</xsd:element>
                 </xsd:sequence>
             </xsd:complexType>
@@ -123,14 +123,15 @@
             	<xsd:sequence>
             		<xsd:element maxOccurs="1" minOccurs="1" name="pagination" type="re:PaginationType">
             		</xsd:element>
-            		<xsd:element maxOccurs="1" minOccurs="0" name="accessReportData" type="re:AccessReportType"/>
+            		<xsd:element maxOccurs="unbounded" minOccurs="0" name="accessReportData" type="re:AccessReportType"/>
             	</xsd:sequence>
             </xsd:complexType>
         
             <xsd:complexType name="AccessReportType">
             	<xsd:sequence>
 
-            		<xsd:element maxOccurs="1" minOccurs="1" name="user" type="re:RequestorType">
+            		<xsd:element maxOccurs="1" minOccurs="1" name="user"
+            			type="re:RequestorType">
             		</xsd:element>
 
 
@@ -140,30 +141,42 @@
 
 
 
-                    <xsd:element maxOccurs="1" minOccurs="0" name="userClass" type="xsd:string">
+            		<xsd:element maxOccurs="1" minOccurs="0"
+            			name="userClass" type="xsd:string">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="rigType" type="xsd:string">
+            		<xsd:element maxOccurs="1" minOccurs="0"
+            			name="rigType" type="xsd:string">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="rigName" type="xsd:string">
+            		<xsd:element maxOccurs="1" minOccurs="0"
+            			name="rigName" type="xsd:string">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="queueDuration" type="xsd:int">
+            		<xsd:element name="queueStartTime" type="xsd:dateTime" maxOccurs="1" minOccurs="1"></xsd:element>
+            		<xsd:element maxOccurs="1" minOccurs="0"
+            			name="queueDuration" type="xsd:int">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="1" name="sessionStartTime" type="xsd:date">
+            		<xsd:element maxOccurs="1" minOccurs="0"
+            			name="sessionStartTime" type="xsd:dateTime">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="1" name="sessionEndTime" type="xsd:date">
+            		<xsd:element maxOccurs="1" minOccurs="1"
+            			name="sessionEndTime" type="xsd:dateTime">
             		</xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="1" name="sessionDuration" type="xsd:int">
-                    </xsd:element>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="reasonForTermination" type="xsd:string">
+            		<xsd:element maxOccurs="1" minOccurs="1"
+            			name="sessionDuration" type="xsd:int">
             		</xsd:element>
-                </xsd:sequence>
+            		<xsd:element maxOccurs="1" minOccurs="0"
+            			name="reasonForTermination" type="xsd:string">
+            		</xsd:element>
+            		<xsd:element name="wasAssigned" type="xsd:boolean"
+            			maxOccurs="1" minOccurs="1">
+            		</xsd:element>
+            	</xsd:sequence>
 
             </xsd:complexType>
 
-            <xsd:element name="querySessionReport" type="re:QuerySessionReportComplexType">
+            <xsd:element name="querySessionReport" type="re:QuerySessionReportType">
 
             </xsd:element>
-            <xsd:element name="querySessionReportResponse" type="re:QuerySessionReportResponseComplexType">
+            <xsd:element name="querySessionReportResponse" type="re:QuerySessionReportResponseType">
 
             </xsd:element>
         
@@ -204,7 +217,7 @@
             		<xsd:element maxOccurs="1" minOccurs="1" name="totalSessionDuration" type="xsd:float"/>
             	</xsd:sequence>
             </xsd:complexType>
-            <xsd:complexType name="QuerySessionReportComplexType">
+            <xsd:complexType name="QuerySessionReportType">
             	<xsd:sequence>
             		<xsd:element maxOccurs="1" minOccurs="1" name="querySelect" type="re:QueryFilterType">
             		</xsd:element>
@@ -216,11 +229,11 @@
             		</xsd:element>
             	</xsd:sequence>
             </xsd:complexType>
-            <xsd:complexType name="QuerySessionReportResponseComplexType">
+            <xsd:complexType name="QuerySessionReportResponseType">
             	<xsd:sequence>
-            		<xsd:element maxOccurs="1" minOccurs="0" name="pagination" type="re:PaginationType">
+            		<xsd:element maxOccurs="1" minOccurs="1" name="pagination" type="re:PaginationType">
             		</xsd:element>
-            		<xsd:element maxOccurs="unbounded" minOccurs="1" name="sessionReport" type="re:SessionReportType">
+            		<xsd:element maxOccurs="unbounded" minOccurs="0" name="sessionReport" type="re:SessionReportType">
             		</xsd:element>
             	</xsd:sequence>
             </xsd:complexType>

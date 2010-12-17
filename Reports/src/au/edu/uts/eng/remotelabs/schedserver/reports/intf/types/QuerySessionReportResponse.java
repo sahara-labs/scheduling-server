@@ -38,7 +38,7 @@ public class QuerySessionReportResponse implements org.apache.axis2.databinding.
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseComplexType
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.QuerySessionReportResponseComplexType
      */
     public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseComplexType getQuerySessionReportResponse()
     {

@@ -128,30 +128,6 @@ public class QuerySessionReport implements org.apache.axis2.databinding.ADBBean
     }
 
     /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
-    {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
-        if (prefix == null)
-        {
-            prefix = QuerySessionReport.generatePrefix(namespace);
-
-            while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
-            {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
-            }
-
-            xmlWriter.writeNamespace(prefix, namespace);
-            xmlWriter.setPrefix(prefix, namespace);
-        }
-
-        return prefix;
-    }
-
-    /**
      * databinding method to get an XML representation of this object
      */
     public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
