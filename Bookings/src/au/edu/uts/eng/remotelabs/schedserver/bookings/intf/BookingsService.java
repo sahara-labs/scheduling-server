@@ -62,6 +62,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingRe
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CancelBookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.CreateBookingType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindBookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.FindFreeBookingsResponse;
@@ -69,6 +70,8 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfiles;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfilesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.SlotState;
@@ -111,7 +114,24 @@ public class BookingsService implements BookingsInterface
     @Override
     public CreateBookingResponse createBooking(CreateBooking createBooking)
     {
-        // TODO Auto-generated method stub
+        /* --------------------------------------------------------------------
+         * -- Read request parameters.                                       --
+         * -------------------------------------------------------------------- */
+        CreateBookingType request = createBooking.getCreateBooking();
+        String debug = "Received " + this.getClass().getSimpleName() + "#createBooking with params: ";
+        
+        UserIDType uid = request.getUserID();
+        debug += " user ID=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + 
+            uid.getUserName() + " user QName=" + uid.getUserQName();
+        
+        BookingType book = new BookingType();
+        
+        
+        debug += ", send notification=" + request.getSendNotification() + '.';
+        this.logger.debug(debug);
+        
+        
+        
         return null;
     }
 
@@ -392,7 +412,6 @@ public class BookingsService implements BookingsInterface
                 }
                 else if (rpList.size() > 1)
                 {
-                    // TODO stupid easy case
                     Date rsd = reqStart.getTime();
                     Date red = reqEnd.getTime();
                     /* Multiple permissions so we take the permission in time range. */
@@ -759,6 +778,13 @@ public class BookingsService implements BookingsInterface
         }
         
         return response;
+    }
+    
+    @Override
+    public GetTimezoneProfilesResponse getTimezoneProfiles(GetTimezoneProfiles profiles)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
     
     /**

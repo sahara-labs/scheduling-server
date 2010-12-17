@@ -62,6 +62,8 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfiles;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfilesResponse;
 
 /**
  * Bookings message receiver.
@@ -133,6 +135,15 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
                                     this.getEnvelopeNamespaces(msgContext.getEnvelope()));
 
                     GetBookingsResponse response = skel.getBookings(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
+                }
+                else if ("getTimezoneProfiles".equals(methodName))
+                {
+                    final GetTimezoneProfiles wrappedParam = (GetTimezoneProfiles) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), GetTimezoneProfiles.class, 
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    
+                    GetTimezoneProfilesResponse response = skel.getTimezoneProfiles(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else
@@ -223,13 +234,26 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
             throw AxisFault.makeFault(e);
         }
     }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final GetTimezoneProfilesResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(GetTimezoneProfilesResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
 
     private Object fromOM(final OMElement param, final Class<?> type, final Map<String, String> extraNamespaces) throws AxisFault
     {
-
         try
         {
-
             if (CancelBooking.class.equals(type))
             {
                 return CancelBooking.Factory.parse(param.getXMLStreamReaderWithoutCaching());
@@ -278,6 +302,16 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
             if (GetBookingsResponse.class.equals(type))
             {
                 return GetBookingsResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (GetTimezoneProfiles.class.equals(type))
+            {
+                return GetTimezoneProfiles.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (GetTimezoneProfilesResponse.class.equals(type))
+            {
+                return GetTimezoneProfilesResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
         }
         catch (final Exception e)

@@ -128,10 +128,14 @@
 
       <xsd:complexType name="CreateBookingType">
       	<xsd:sequence>
-      		<xsd:element name="userID" type="bok:UserIDType"/>
-      		<xsd:element name="booking" type="bok:BookingType"/>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="sendNotification" type="xsd:boolean"/>
-                    <xsd:element maxOccurs="1" minOccurs="0" name="code" type="xsd:base64Binary">
+      		<xsd:element name="userID" type="bok:UserIDType" />
+      		<xsd:element name="booking" type="bok:BookingType" />
+      		<xsd:element maxOccurs="1" minOccurs="0"
+      			name="sendNotification" type="xsd:boolean" />
+                    <xsd:element name="notificationTimezone" type="xsd:string" maxOccurs="1" minOccurs="0">
+      		</xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="code"
+      			type="xsd:base64Binary">
       		</xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
@@ -195,6 +199,35 @@
       		<xsd:element name="showFinished" type="xsd:boolean"/>
       	</xsd:sequence>
       </xsd:complexType>
+      <xsd:element name="getTimezoneProfiles" type="bok:OptionalType">
+      </xsd:element>
+      <xsd:element name="getTimezoneProfilesResponse"
+      	type="bok:SystemTimezoneType">
+      </xsd:element>
+
+      <xsd:complexType name="OptionalType">
+      	<xsd:sequence>
+      		<xsd:element name="pad" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="SystemTimezoneType">
+      	<xsd:sequence>
+      		<xsd:element name="systemTimezone" type="xsd:string">
+      			<xsd:annotation>
+      				<xsd:documentation>This is the communciation timezone all co</xsd:documentation>
+      			</xsd:annotation></xsd:element>
+      		<xsd:element name="offsetFromUTC" type="xsd:int"></xsd:element>
+      		<xsd:element name="supportedTimezones" type="bok:TimezoneType" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="TimezoneType">
+      	<xsd:sequence>
+      		<xsd:element name="timezone" type="xsd:string"></xsd:element>
+      		<xsd:element name="offsetFromSystem" type="xsd:int"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
     </xsd:schema>
   </wsdl:types>
   
@@ -246,6 +279,12 @@
     <wsdl:part name="parameters" element="bok:getBookingHistoryResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getTimezoneProfilesRequest">
+  	<wsdl:part name="parameters" element="bok:getTimezoneProfiles"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTimezoneProfilesResponse">
+  	<wsdl:part name="parameters" element="bok:getTimezoneProfilesResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="Bookings">
     <wsdl:operation name="createBooking">
       <wsdl:input message="bok:createBookingRequest">
@@ -277,54 +316,74 @@
       <wsdl:output message="bok:getBookingsResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getTimezoneProfiles">
+    	<wsdl:input message="bok:getTimezoneProfilesRequest"></wsdl:input>
+    	<wsdl:output message="bok:getTimezoneProfilesResponse"></wsdl:output>
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BookingsSOAP" type="bok:Bookings">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="getBookings">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/NewOperation"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="createBooking">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/createBooking"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="cancelBooking">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/deleteBookings"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="findFreeBookings">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/findFreeBookings"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getBooking">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/getBooking"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="getBookings">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/getBookings" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="createBooking">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/createBooking" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="cancelBooking">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/deleteBookings" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="findFreeBookings">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/findFreeBookings" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getBooking">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/getBooking" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getTimezoneProfiles">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/bookings/getTimezoneProfiles" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="Bookings">
     <wsdl:port name="BookingsSOAP" binding="bok:BookingsSOAP">

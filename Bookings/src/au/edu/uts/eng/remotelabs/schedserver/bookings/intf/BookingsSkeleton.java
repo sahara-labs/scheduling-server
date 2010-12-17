@@ -47,6 +47,8 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfiles;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfilesResponse;
 
 /**
  * Bookings skeleton interface.
@@ -83,4 +85,9 @@ public class BookingsSkeleton implements BookingsInterface
         throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getBookings");
     }
 
+    @Override
+    public GetTimezoneProfilesResponse getTimezoneProfiles(GetTimezoneProfiles profiles)
+    {
+        throw new UnsupportedOperationException("Please implement " + this.getClass().getName() + "#getTimeProfiles");
+    }
 }

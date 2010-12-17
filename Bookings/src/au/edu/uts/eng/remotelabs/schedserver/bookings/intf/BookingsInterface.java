@@ -47,6 +47,8 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfiles;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfilesResponse;
 
 /**
  * Interface for the Bookings service.
@@ -93,4 +95,12 @@ public interface BookingsInterface
      * @return response
      */
     public GetBookingsResponse getBookings(GetBookings getBookings);
+    
+    /**
+     * Gets the time zone information about the Scheduling Server.
+     * 
+     * @param profiles request
+     * @return response
+     */
+    public GetTimezoneProfilesResponse getTimezoneProfiles(GetTimezoneProfiles profiles);
 }

@@ -32,16 +32,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 8th November 2010
+ * @date 17th December 2010
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -50,11 +50,7 @@ import org.apache.axiom.om.OMConstants;
 import org.apache.axiom.om.OMDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.impl.MTOMConstants;
 import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
-import org.apache.axiom.om.impl.llom.OMStAXWrapper;
-import org.apache.axiom.om.util.ElementHelper;
-import org.apache.axiom.soap.impl.builder.MTOMStAXSOAPModelBuilder;
 import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
@@ -64,31 +60,24 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * CreateBookingType bean class.
+ * SystemTimezoneType bean class.
  */
-public class CreateBookingType implements ADBBean
+public class SystemTimezoneType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = CreateBookingType
+     * name = SystemTimezoneType
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/bookings
      * Namespace Prefix = ns1
      */
 
-    private static final long serialVersionUID = -4171523737366447715L;
+    private static final long serialVersionUID = 1014558000219603430L;
     
-    protected UserIDType userID;
+    protected String systemTimezone;
     
-    protected BookingType booking;
+    protected int offsetFromUTC;
     
-    protected boolean sendNotification;
-    protected boolean sendNotificationTracker = false;
-    
-    protected String notificationTimezone;
-    protected boolean notificationTimezoneTracker = false;
-    
-    protected DataHandler code;
-    protected boolean codeTracker = false;
+    protected TimezoneType[] supportedTimezones;
 
     private static String generatePrefix(final String namespace)
     {
@@ -99,73 +88,56 @@ public class CreateBookingType implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    public UserIDType getUserID()
+    public String getSystemTimezone()
     {
-        return this.userID;
+        return this.systemTimezone;
     }
 
-    public void setUserID(final UserIDType param)
+    public void setSystemTimezone(final String param)
     {
-        this.userID = param;
+        this.systemTimezone = param;
     }
 
-    public BookingType getBooking()
+    public int getOffsetFromUTC()
     {
-        return this.booking;
+        return this.offsetFromUTC;
     }
 
-    public void setBooking(final BookingType param)
+    public void setOffsetFromUTC(final int param)
     {
-        this.booking = param;
+        this.offsetFromUTC = param;
     }
 
-    public boolean getSendNotification()
+    public TimezoneType[] getSupportedTimezones()
     {
-        return this.sendNotification;
+        return this.supportedTimezones;
     }
 
-    public void setSendNotification(final boolean param)
+    protected void validateSupportedTimezones(final TimezoneType[] param)
     {
-        this.sendNotificationTracker = true;
-        this.sendNotification = param;
-    }
-    
-    public String getNotificationTimezone()
-    {
-        return this.notificationTimezone;
-    }
-    
-    public void setNotificationTimezone(final String param)
-    {
-        if (param == null)
+        if ((param != null) && (param.length < 1))
         {
-            this.notificationTimezoneTracker = false;
+            throw new RuntimeException();
         }
-        else
-        {
-            this.notificationTimezoneTracker = true;
-        }
-        
-        this.notificationTimezone = param;
     }
 
-    public DataHandler getCode()
+    public void setSupportedTimezones(final TimezoneType[] param)
     {
-        return this.code;
+        this.validateSupportedTimezones(param);
+        this.supportedTimezones = param;
     }
 
-    public void setCode(final DataHandler param)
+    @SuppressWarnings("unchecked")
+    public void addSupportedTimezones(final TimezoneType param)
     {
-        if (param != null)
+        if (this.supportedTimezones == null)
         {
-            this.codeTracker = true;
-        }
-        else
-        {
-            this.codeTracker = false;
+            this.supportedTimezones = new TimezoneType[] {};
         }
 
-        this.code = param;
+        final List<TimezoneType> list = ConverterUtil.toList(this.supportedTimezones);
+        list.add(param);
+        this.supportedTimezones = list.toArray(new TimezoneType[list.size()]);
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -189,7 +161,7 @@ public class CreateBookingType implements ADBBean
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                CreateBookingType.this.serialize(this.parentQName, factory, xmlWriter);
+                SystemTimezoneType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -220,7 +192,7 @@ public class CreateBookingType implements ADBBean
             {
                 if (prefix == null)
                 {
-                    prefix = CreateBookingType.generatePrefix(namespace);
+                    prefix = SystemTimezoneType.generatePrefix(namespace);
                 }
 
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
@@ -240,109 +212,95 @@ public class CreateBookingType implements ADBBean
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":CreateBookingType", xmlWriter);
+                        + ":SystemTimezoneType", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "CreateBookingType",
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "SystemTimezoneType",
                         xmlWriter);
             }
         }
 
-        if (this.userID == null)
+        namespace = "";
+        if (!namespace.equals(""))
         {
-            throw new ADBException("userID cannot be null!!");
-        }
-        this.userID.serialize(new QName("", "userID"), factory, xmlWriter);
-
-        if (this.booking == null)
-        {
-            throw new ADBException("booking cannot be null!!");
-        }
-        this.booking.serialize(new QName("", "booking"), factory, xmlWriter);
-
-        if (this.sendNotificationTracker)
-        {
-            namespace = "";
-            if (!namespace.equals(""))
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
             {
-                prefix = xmlWriter.getPrefix(namespace);
-                if (prefix == null)
-                {
-                    prefix = CreateBookingType.generatePrefix(namespace);
-                    xmlWriter.writeStartElement(prefix, "sendNotification", namespace);
-                    xmlWriter.writeNamespace(prefix, namespace);
-                    xmlWriter.setPrefix(prefix, namespace);
-                }
-                else
-                {
-                    xmlWriter.writeStartElement(namespace, "sendNotification");
-                }
+                prefix = SystemTimezoneType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "systemTimezone", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
             }
             else
             {
-                xmlWriter.writeStartElement("sendNotification");
+                xmlWriter.writeStartElement(namespace, "systemTimezone");
             }
-            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.sendNotification));
-            xmlWriter.writeEndElement();
         }
-        
-        if (this.notificationTimezoneTracker)
+        else
         {
-            namespace = "";
-            if (!namespace.equals(""))
+            xmlWriter.writeStartElement("systemTimezone");
+        }
+
+        if (this.systemTimezone == null)
+        {
+            throw new ADBException("systemTimezone cannot be null!!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(this.systemTimezone);
+        }
+        xmlWriter.writeEndElement();
+
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+
+            if (prefix == null)
             {
-                prefix = xmlWriter.getPrefix(namespace);
-                if (prefix == null)
-                {
-                    prefix = CreateBookingType.generatePrefix(namespace);
-                    xmlWriter.writeStartElement(prefix, "notificationTimezone", namespace);
-                    xmlWriter.writeNamespace(prefix, namespace);
-                    xmlWriter.setPrefix(prefix, namespace);
-                }
-                else
-                {
-                    xmlWriter.writeStartElement(namespace, "notificationTimezone");
-                }
+                prefix = SystemTimezoneType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "offsetFromUTC", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
             }
             else
             {
-                xmlWriter.writeStartElement("notificationTimezone");
+                xmlWriter.writeStartElement(namespace, "offsetFromUTC");
             }
-            xmlWriter.writeCharacters(this.notificationTimezone);
-            xmlWriter.writeEndElement();
+        }
+        else
+        {
+            xmlWriter.writeStartElement("offsetFromUTC");
         }
 
-        if (this.codeTracker)
+        if (this.offsetFromUTC == Integer.MIN_VALUE)
         {
-            namespace = "";
-            if (!namespace.equals(""))
-            {
-                prefix = xmlWriter.getPrefix(namespace);
-                if (prefix == null)
-                {
-                    prefix = CreateBookingType.generatePrefix(namespace);
+            throw new ADBException("offsetFromUTC cannot be null!!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.offsetFromUTC));
+        }
 
-                    xmlWriter.writeStartElement(prefix, "code", namespace);
-                    xmlWriter.writeNamespace(prefix, namespace);
-                    xmlWriter.setPrefix(prefix, namespace);
+        xmlWriter.writeEndElement();
+        if (this.supportedTimezones != null)
+        {
+            for (final TimezoneType localSupportedTimezone : this.supportedTimezones)
+            {
+                if (localSupportedTimezone != null)
+                {
+                    localSupportedTimezone.serialize(new QName("", "supportedTimezones"), factory, xmlWriter);
                 }
                 else
                 {
-                    xmlWriter.writeStartElement(namespace, "code");
+                    throw new ADBException("supportedTimezones cannot be null!!");
                 }
             }
-            else
-            {
-                xmlWriter.writeStartElement("code");
-            }
-
-            if (this.code != null)
-            {
-                xmlWriter.writeDataHandler(this.code);
-            }
-
-            xmlWriter.writeEndElement();
+        }
+        else
+        {
+            throw new ADBException("supportedTimezones cannot be null!!");
         }
 
         xmlWriter.writeEndElement();
@@ -356,7 +314,6 @@ public class CreateBookingType implements ADBBean
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
-
         xmlWriter.writeAttribute(namespace, attName, attValue);
     }
 
@@ -365,7 +322,7 @@ public class CreateBookingType implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = CreateBookingType.generatePrefix(namespace);
+            prefix = SystemTimezoneType.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
@@ -382,54 +339,58 @@ public class CreateBookingType implements ADBBean
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
 
-        final ArrayList<Object> elementList = new ArrayList<Object>();
+        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        elementList.add(new QName("", "userID"));
-        if (this.userID == null)
+        elementList.add(new QName("", "systemTimezone"));
+        if (this.systemTimezone != null)
         {
-            throw new ADBException("userID cannot be null!!");
+            elementList.add(ConverterUtil.convertToString(this.systemTimezone));
         }
-        elementList.add(this.userID);
+        else
+        {
+            throw new ADBException("systemTimezone cannot be null!!");
+        }
 
-        elementList.add(new QName("", "booking"));
-        if (this.booking == null)
+        elementList.add(new QName("", "offsetFromUTC"));
+        elementList.add(ConverterUtil.convertToString(this.offsetFromUTC));
+
+        if (this.supportedTimezones != null)
         {
-            throw new ADBException("booking cannot be null!!");
+            for (final TimezoneType localSupportedTimezone : this.supportedTimezones)
+            {
+                if (localSupportedTimezone != null)
+                {
+                    elementList.add(new QName("", "supportedTimezones"));
+                    elementList.add(localSupportedTimezone);
+                }
+                else
+                {
+                    throw new ADBException("supportedTimezones cannot be null !!");
+                }
+            }
         }
-        elementList.add(this.booking);
-        
-        if (this.sendNotificationTracker)
+        else
         {
-            elementList.add(new QName("", "sendNotification"));
-            elementList.add(ConverterUtil.convertToString(this.sendNotification));
+            throw new ADBException("supportedTimezones cannot be null!!");
         }
-        
-        if (this.notificationTimezoneTracker)
-        {
-            elementList.add(new QName("", "notificationTimezone"));
-            elementList.add(this.notificationTimezone);
-        }
-        
-        if (this.codeTracker)
-        {
-            elementList.add(new QName("", "code"));
-            elementList.add(this.code);
-        }
-        
+
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
     }
 
     public static class Factory
     {
-        public static CreateBookingType parse(final XMLStreamReader reader) throws Exception
+
+        public static SystemTimezoneType parse(final XMLStreamReader reader) throws Exception
         {
-            final CreateBookingType object = new CreateBookingType();
+            final SystemTimezoneType object = new SystemTimezoneType();
+
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
+
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
                     final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
@@ -444,22 +405,25 @@ public class CreateBookingType implements ADBBean
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
                         final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-                        if (!"CreateBookingType".equals(type))
+                        if (!"SystemTimezoneType".equals(type))
                         {
                             final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (CreateBookingType) ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            return (SystemTimezoneType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
                     }
                 }
 
                 reader.next();
+                final ArrayList<TimezoneType> tzList = new ArrayList<TimezoneType>();
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "userID").equals(reader.getName()))
+
+                if (reader.isStartElement() && new QName("", "systemTimezone").equals(reader.getName()))
                 {
-                    object.setUserID(UserIDType.Factory.parse(reader));
+                    final String content = reader.getElementText();
+                    object.setSystemTimezone(ConverterUtil.convertToString(content));
                     reader.next();
                 }
                 else
@@ -471,9 +435,10 @@ public class CreateBookingType implements ADBBean
                 {
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "booking").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "offsetFromUTC").equals(reader.getName()))
                 {
-                    object.setBooking(BookingType.Factory.parse(reader));
+                    final String content = reader.getElementText();
+                    object.setOffsetFromUTC(ConverterUtil.convertToInt(content));
                     reader.next();
                 }
                 else
@@ -485,60 +450,47 @@ public class CreateBookingType implements ADBBean
                 {
                     reader.next();
                 }
+                if (reader.isStartElement() && new QName("", "supportedTimezones").equals(reader.getName()))
+                {
+                    tzList.add(TimezoneType.Factory.parse(reader));
 
-                if (reader.isStartElement() && new QName("", "sendNotification").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setSendNotification(ConverterUtil.convertToBoolean(content));
-                    reader.next();
-                }
-                
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                
-                if (reader.isStartElement() && new QName("", "notificationTimezone").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setNotificationTimezone(content);
-                    reader.next();
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement() && new QName("", "code").equals(reader.getName()))
-                {
-                    reader.next();
-                    if (CreateBookingType.isReaderMTOMAware(reader)
-                            && Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_BINARY)))
+                    boolean noMore = false;
+                    while (!noMore)
                     {
-                        object.setCode((DataHandler) reader.getProperty(OMConstants.DATA_HANDLER));
-                    }
-                    else
-                    {
-                        if (reader.getEventType() == XMLStreamConstants.START_ELEMENT
-                                && reader.getName().equals(
-                                        new QName(MTOMConstants.XOP_NAMESPACE_URI, MTOMConstants.XOP_INCLUDE)))
+                        while (!reader.isEndElement())
                         {
-                            @SuppressWarnings("deprecation")
-                            final String id = ElementHelper.getContentID(reader, "UTF-8");
-                            object.setCode(((MTOMStAXSOAPModelBuilder) ((OMStAXWrapper) reader).getBuilder())
-                                    .getDataHandler(id));
-                            reader.next();
                             reader.next();
                         }
-                        else if (reader.hasText())
+
+                        reader.next();                        // Step to next element event.
+                        while (!reader.isStartElement() && !reader.isEndElement())
                         {
-                            final String content = reader.getText();
-                            object.setCode(ConverterUtil.convertToBase64Binary(content));
                             reader.next();
                         }
+                        if (reader.isEndElement())
+                        {
+                            noMore = true;
+                        }
+                        else
+                        {
+                            if (new QName("", "supportedTimezones").equals(reader.getName()))
+                            {
+                                tzList.add(TimezoneType.Factory.parse(reader));
+                            }
+                            else
+                            {
+                                noMore = true;
+                            }
+                        }
                     }
-                    reader.next();
+
+
+                    object.setSupportedTimezones((TimezoneType[]) ConverterUtil.convertToArray(TimezoneType.class,
+                            tzList));
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -546,7 +498,7 @@ public class CreateBookingType implements ADBBean
                     reader.next();
                 }
                 if (reader.isStartElement())
-                {
+                {                 
                     throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
             }

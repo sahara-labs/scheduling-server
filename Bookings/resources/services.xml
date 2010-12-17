@@ -24,8 +24,12 @@
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/Bookings/createBookingResponse</outputActionMapping>
         </operation>
         <operation name="getBookings" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
-            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/NewOperation</actionMapping>
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/getBookings</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/Bookings/getBookingsResponse</outputActionMapping>
+        </operation>
+        <operation name="getTimezoneProfiles" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/bookings">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/getTimezoneProfiles</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/bookings/Bookings/getTimezoneProfilesResponse</outputActionMapping>
         </operation>
     </service>
 </serviceGroup>
