@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -75,7 +76,9 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProf
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.SlotState;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.SystemTimezoneType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.TimePeriodType;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.TimezoneType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
@@ -783,8 +786,36 @@ public class BookingsService implements BookingsInterface
     @Override
     public GetTimezoneProfilesResponse getTimezoneProfiles(GetTimezoneProfiles profiles)
     {
-        // TODO Auto-generated method stub
-        return null;
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getTimezoneProfiles.");
+        
+        /* Response parameters. */
+        GetTimezoneProfilesResponse response = new GetTimezoneProfilesResponse();
+        SystemTimezoneType sysTz = new SystemTimezoneType();
+        response.setGetTimezoneProfilesResponse(sysTz);
+        
+        /* Populate the default time zone information. */
+        TimeZone defaultTz = TimeZone.getDefault();
+        sysTz.setSystemTimezone(defaultTz.getDisplayName());
+        
+        int off = defaultTz.getRawOffset() / 1000;
+        sysTz.setOffsetFromUTC(off);
+        
+        for (String tzId : TimeZone.getAvailableIDs())
+        {
+            TimeZone tz = TimeZone.getTimeZone(tzId);
+            TimezoneType tzt = new TimezoneType();
+            tzt.setTimezone(tz.getDisplayName());
+            
+            int tOff = tz.getRawOffset() / 1000;
+            
+            // FIXME correctly deal with DST
+            System.out.println(tz.getID() + ": " + tz.getDisplayName() + " " + (tOff - off) / 60);
+            
+            tzt.setOffsetFromSystem(off - tOff);
+            sysTz.addSupportedTimezones(tzt);
+        }
+        
+        return response;
     }
     
     /**

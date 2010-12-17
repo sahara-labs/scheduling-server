@@ -68,6 +68,8 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookings;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfiles;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProfilesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.SlotState;
@@ -5379,5 +5381,14 @@ public class BookingsServiceTester extends TestCase
         BookingType bt = bks[0];
         assertNotNull(bt);
         assertEquals(bt.getBookingID(), bk5.getId().intValue());
+    }
+    
+    @Test
+    public void testGetTimezoneProfiles()
+    {
+        GetTimezoneProfiles request = new GetTimezoneProfiles();
+        
+        GetTimezoneProfilesResponse response = this.service.getTimezoneProfiles(request);
+        assertNotNull(response);
     }
 }
