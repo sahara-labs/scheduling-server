@@ -72,6 +72,30 @@ public class BookingType extends BookingIDType implements ADBBean
      */
 
     private static final long serialVersionUID = -4835899445783457143L;
+    
+    protected ResourceIDType bookedResource;
+    protected boolean bookedResourceTracker;
+    
+    protected PermissionIDType permissionID;
+    
+    protected Calendar startTime;
+    
+    protected Calendar endTime;
+    
+    protected int duration;
+    protected boolean durationTracker;
+    
+    protected boolean isFinished;
+    protected boolean isFinishedTracker;
+
+    protected boolean isCancelled;
+    protected boolean isCancelledTracker = false;
+    
+    protected String cancelReason;
+    protected boolean cancelReasonTracker = false;
+
+    protected String codeReference;
+    protected boolean codeReferenceTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -82,8 +106,6 @@ public class BookingType extends BookingIDType implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    protected ResourceIDType bookedResource;
-
     public ResourceIDType getBookedResource()
     {
         return this.bookedResource;
@@ -91,10 +113,16 @@ public class BookingType extends BookingIDType implements ADBBean
 
     public void setBookedResource(final ResourceIDType param)
     {
+        if (param == null)
+        {
+            this.bookedResourceTracker = false;
+        }
+        else
+        {
+            this.bookedResourceTracker = true;
+        }
         this.bookedResource = param;
     }
-
-    protected PermissionIDType permissionID;
 
     public PermissionIDType getPermissionID()
     {
@@ -106,8 +134,6 @@ public class BookingType extends BookingIDType implements ADBBean
         this.permissionID = param;
     }
 
-    protected Calendar startTime;
-
     public Calendar getStartTime()
     {
         return this.startTime;
@@ -117,8 +143,6 @@ public class BookingType extends BookingIDType implements ADBBean
     {
         this.startTime = param;
     }
-    
-    protected Calendar endTime;
     
     public Calendar getEndTime()
     {
@@ -130,8 +154,6 @@ public class BookingType extends BookingIDType implements ADBBean
         this.endTime = param;
     }
 
-    protected int duration;
-
     public int getDuration()
     {
         return this.duration;
@@ -139,11 +161,16 @@ public class BookingType extends BookingIDType implements ADBBean
 
     public void setDuration(final int param)
     {
+        if (param == Integer.MIN_VALUE)
+        {
+            this.durationTracker = false;
+        }
+        else
+        {
+            this.durationTracker = true;
+        }
         this.duration = param;
     }
-
-    protected boolean isFinished;
-    protected boolean isFinishedTracker = false;
 
     public boolean getIsFinished()
     {
@@ -156,9 +183,6 @@ public class BookingType extends BookingIDType implements ADBBean
         this.isFinished = param;
     }
 
-    protected boolean isCancelled;
-    protected boolean isCancelledTracker = false;
-
     public boolean getIsCancelled()
     {
         return this.isCancelled;
@@ -169,9 +193,6 @@ public class BookingType extends BookingIDType implements ADBBean
         this.isCancelledTracker = true;
         this.isCancelled = param;
     }
-
-    protected String cancelReason;
-    protected boolean cancelReasonTracker = false;
 
     public String getCancelReason()
     {
@@ -191,9 +212,6 @@ public class BookingType extends BookingIDType implements ADBBean
 
         this.cancelReason = param;
     }
-
-    protected String codeReference;
-    protected boolean codeReferenceTracker = false;
 
     public String getCodeReference()
     {
@@ -324,12 +342,15 @@ public class BookingType extends BookingIDType implements ADBBean
             xmlWriter.writeCharacters(ConverterUtil.convertToString(this.bookingID));
         }
         xmlWriter.writeEndElement();
-
-        if (this.bookedResource == null)
+        
+        if (this.bookedResourceTracker)
         {
-            throw new ADBException("bookedResource cannot be null!!");
+            if (this.bookedResource == null)
+            {
+                throw new ADBException("bookedResource cannot be null!!");
+            }
+            this.bookedResource.serialize(new QName("", "bookedResource"), factory, xmlWriter);
         }
-        this.bookedResource.serialize(new QName("", "bookedResource"), factory, xmlWriter);
 
         if (this.permissionID == null)
         {
@@ -399,38 +420,40 @@ public class BookingType extends BookingIDType implements ADBBean
         }
         xmlWriter.writeEndElement();
 
-        namespace = "";
-        if (!namespace.equals(""))
+        if (this.durationTracker)
         {
-            prefix = xmlWriter.getPrefix(namespace);
-
-            if (prefix == null)
+            namespace = "";
+            if (!namespace.equals(""))
             {
-                prefix = BookingType.generatePrefix(namespace);
-                xmlWriter.writeStartElement(prefix, "duration", namespace);
-                xmlWriter.writeNamespace(prefix, namespace);
-                xmlWriter.setPrefix(prefix, namespace);
+                prefix = xmlWriter.getPrefix(namespace);
+    
+                if (prefix == null)
+                {
+                    prefix = BookingType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "duration", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "duration");
+                }
             }
             else
             {
-                xmlWriter.writeStartElement(namespace, "duration");
+                xmlWriter.writeStartElement("duration");
             }
+    
+            if (this.duration == Integer.MIN_VALUE)
+            {
+                throw new ADBException("duration cannot be null!!");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.duration));
+            }
+            xmlWriter.writeEndElement();
         }
-        else
-        {
-            xmlWriter.writeStartElement("duration");
-        }
-
-        if (this.duration == Integer.MIN_VALUE)
-        {
-            throw new ADBException("duration cannot be null!!");
-        }
-        else
-        {
-            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.duration));
-        }
-        xmlWriter.writeEndElement();
-
         if (this.isFinishedTracker)
         {
             namespace = "";
@@ -600,12 +623,15 @@ public class BookingType extends BookingIDType implements ADBBean
         elementList.add(new QName("", "bookingID"));
         elementList.add(ConverterUtil.convertToString(this.bookingID));
 
-        elementList.add(new QName("", "bookedResource"));
-        if (this.bookedResource == null)
+        if (this.bookedResourceTracker)
         {
-            throw new ADBException("bookedResource cannot be null!!");
+            elementList.add(new QName("", "bookedResource"));
+            if (this.bookedResource == null)
+            {
+                throw new ADBException("bookedResource cannot be null!!");
+            }
+            elementList.add(this.bookedResource);
         }
-        elementList.add(this.bookedResource);
 
         elementList.add(new QName("", "permissionID"));
         if (this.permissionID == null)
@@ -634,8 +660,11 @@ public class BookingType extends BookingIDType implements ADBBean
             throw new ADBException("endTime cannot be null");
         }
 
-        elementList.add(new QName("", "duration"));
-        elementList.add(ConverterUtil.convertToString(this.duration));
+        if (this.durationTracker)
+        {
+            elementList.add(new QName("", "duration"));
+            elementList.add(ConverterUtil.convertToString(this.duration));
+        }
 
         if (this.isFinishedTracker)
         {
@@ -738,10 +767,6 @@ public class BookingType extends BookingIDType implements ADBBean
                     object.setBookedResource(ResourceIDType.Factory.parse(reader));
                     reader.next();
                 }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
-                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
@@ -797,10 +822,6 @@ public class BookingType extends BookingIDType implements ADBBean
                     final String content = reader.getElementText();
                     object.setDuration(ConverterUtil.convertToInt(content));
                     reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

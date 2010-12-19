@@ -41,11 +41,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
@@ -127,15 +130,118 @@ public class BookingsService implements BookingsInterface
         debug += " user ID=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + 
             uid.getUserName() + " user QName=" + uid.getUserQName();
         
-        BookingType book = new BookingType();
+        BookingType booking = request.getBooking();
+        int pid = booking.getPermissionID().getPermissionID();
+        debug += ", permission=" + pid;
         
+        Calendar start = booking.getStartTime();
+        Calendar end = booking.getEndTime();
+        debug += ", start=" + start.getTime() + ", end=" + end.getTime();
         
-        debug += ", send notification=" + request.getSendNotification() + '.';
+        debug += ", send notification=" + request.getSendNotification() + ", notification time zone=" + 
+                request.getNotificationTimezone() +  '.';
         this.logger.debug(debug);
         
+        /* --------------------------------------------------------------------
+         * -- Generate default response parameters.                          --
+         * -------------------------------------------------------------------- */
+        CreateBookingResponse response = new CreateBookingResponse();
+        BookingResponseType status = new BookingResponseType();
+        status.setSuccess(false);
+        response.setCreateBookingResponse(status);
         
-        
-        return null;
+        Session ses = DataAccessActivator.getNewSession();
+        try
+        {
+            /* ----------------------------------------------------------------
+             * -- Load the user.                                             --
+             * ---------------------------------------------------------------- */
+            User user = this.getUserFromUserID(uid, ses);
+            if (user == null)
+            {
+                this.logger.info("Unable to create a booking because the user has not been found. Supplied " +
+                        "credentials ID=" + uid.getUserID() + ", namespace=" + uid.getUserNamespace() + ", " +
+                        "name=" + uid.getUserName() + '.');
+                status.setFailureReason("User not found.");
+                return response;
+            }
+            
+            /* ----------------------------------------------------------------
+             * -- Load the permission.                                       --
+             * ---------------------------------------------------------------- */
+            ResourcePermission perm = new ResourcePermissionDao(ses).get(Long.valueOf(pid));
+            if (perm == null)
+            {
+                this.logger.info("Unable to create a booking because the permission has not been found. Supplied " +
+                        "permission ID=" + pid + '.');
+                status.setFailureReason("Permission not found.");
+                return response;
+            }
+            
+            if (!this.checkPermission(user, perm))
+            {
+                this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' + 
+                        user.getName() + " does not have permission " + pid + '.');
+                status.setFailureReason("Does not have permission.");
+                return response;
+            }
+            
+            /* ----------------------------------------------------------------
+             * -- Check permission constraints.                              --
+             * ---------------------------------------------------------------- */
+            if (!perm.getUserClass().isBookable())
+            {
+                this.logger.info("Unable to create a booking because the permission " + pid + " is not bookable.");
+                status.setFailureReason("Permission not bookable.");
+                return response;
+            }
+            
+            if (start.getTime().before(perm.getStartTime()) || end.getTime().after(perm.getExpiryTime()))
+            {
+                this.logger.info("Unable to create a booking because the booking time is outside the permission time. " +
+                		"Permission start: " + perm.getStartTime() + ", expiry: " + perm.getExpiryTime() + 
+                		", booking start: " + start.getTime() + ", booking end: " +end.getTime() + '.');
+                status.setFailureReason("Booking time out of permission range.");
+                return response;
+            }
+            
+            /* Time horizon is a moving offset when bookings can be made. */
+            Calendar horizon = Calendar.getInstance();
+            horizon.add(Calendar.SECOND, perm.getUserClass().getTimeHorizon());
+            if (horizon.after(start))
+            {
+                this.logger.info("Unable to create a booking because the booking start time (" + start.getTime() +
+                        ") is before the time horizon (" + horizon.getTime() + ").");
+                status.setFailureReason("Before time horizon.");
+                return response;
+            }
+
+            /* Maximum concurrent bookings. */
+            int numBookings = (Integer) ses.createCriteria(Bookings.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.eq("user", user))
+                .add(Restrictions.eq("resourcePermission", perm))
+                .setProjection(Projections.rowCount())
+                .uniqueResult();
+            if (numBookings >= perm.getMaximumBookings())
+            {
+                this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' + 
+                        user.getName() + " already has the maxiumum numnber of bookings (" + numBookings + ").");
+                status.setFailureReason("Has maximum number of bookings.");
+                return response;
+            }
+            
+            /* ----------------------------------------------------------------
+             * -- Attempt to create booking.                                 --
+             * ---------------------------------------------------------------- */
+            
+        }
+        finally
+        {
+            ses.close();
+        }
+
+        return response;
     }
 
     @Override
@@ -795,26 +901,28 @@ public class BookingsService implements BookingsInterface
         
         /* Populate the default time zone information. */
         TimeZone defaultTz = TimeZone.getDefault();
-        sysTz.setSystemTimezone(defaultTz.getDisplayName());
+        sysTz.setSystemTimezone(defaultTz.getID());
         
-        int off = defaultTz.getRawOffset() / 1000;
+        int off = defaultTz.getOffset(System.currentTimeMillis()) / 1000;
         sysTz.setOffsetFromUTC(off);
         
+        Map<String, TimezoneType> tzList = new TreeMap<String, TimezoneType>();
         for (String tzId : TimeZone.getAvailableIDs())
         {
+            /* Remove time zones that won't make sense to *most* users. */
+            if (tzId.startsWith("Etc")) continue;
+            if (!tzId.contains("/")) continue;
+            if (tzId.startsWith("SystemV")) continue;
+
             TimeZone tz = TimeZone.getTimeZone(tzId);
             TimezoneType tzt = new TimezoneType();
-            tzt.setTimezone(tz.getDisplayName());
-            
-            int tOff = tz.getRawOffset() / 1000;
-            
-            // FIXME correctly deal with DST
-            System.out.println(tz.getID() + ": " + tz.getDisplayName() + " " + (tOff - off) / 60);
-            
-            tzt.setOffsetFromSystem(off - tOff);
-            sysTz.addSupportedTimezones(tzt);
+            tzt.setTimezone(tzId);
+
+            tzt.setOffsetFromSystem(off - tz.getOffset(System.currentTimeMillis()) / 1000);
+            tzList.put(tzId, tzt);
         }
         
+        for (TimezoneType tzt : tzList.values()) sysTz.addSupportedTimezones(tzt);
         return response;
     }
     
