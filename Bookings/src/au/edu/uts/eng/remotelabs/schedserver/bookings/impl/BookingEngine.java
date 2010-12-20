@@ -36,6 +36,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabili
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 
 
 /**
@@ -106,12 +108,13 @@ public interface BookingEngine
      * Creates a booking. If creating the booking was unsuccessful a list
      * of possible solutions are given.
      * 
-     * @param start booking start
-     * @param end booking end
-     * @param perm permission the booking is to be created on
+     * @param user user to create booking for
+     * @param perm permission detailing booking details
+     * @param tp period for booking
+     * @param ses database ses 
      * @return booking response
      */
-    public BookingCreation createBooking(ResourcePermission perm, Calendar start, Calendar end);
+    public BookingCreation createBooking(User user, ResourcePermission perm, TimePeriod tp, Session ses);
     
     /**
      * Cancels a booking.
@@ -123,7 +126,7 @@ public interface BookingEngine
      */
     public boolean cancelBooking(Bookings booking, String reason, Session ses);
     
-    public class TimePeriod
+    public static class TimePeriod
     {
         /** Period start. */
         private Calendar startTime;
@@ -148,7 +151,7 @@ public interface BookingEngine
         }
     }
     
-    public class BookingCreation
+    public static class BookingCreation
     {
         /** Whether the booking was created. */
         private boolean wasCreated;
@@ -157,14 +160,24 @@ public interface BookingEngine
          *  match the requested booking. */
         private List<TimePeriod> bestFits;
         
-        public BookingCreation(boolean created)
+        public BookingCreation()
         {
-            this.wasCreated = created;
+            this.bestFits = new ArrayList<BookingEngine.TimePeriod>();
         }
         
         public boolean wasCreated()
         {
             return this.wasCreated;
+        }
+        
+        public void setWasCreated(boolean param)
+        {
+            this.wasCreated = param;
+        }
+        
+        public void addBestFit(TimePeriod tp)
+        {
+            this.bestFits.add(tp);
         }
         
         public List<TimePeriod> getBestFits()

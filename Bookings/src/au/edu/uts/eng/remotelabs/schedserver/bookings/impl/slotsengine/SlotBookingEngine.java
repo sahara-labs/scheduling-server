@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
@@ -50,6 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabili
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
@@ -85,13 +87,88 @@ public class SlotBookingEngine implements BookingEngine
     }
 
     @Override
-    public BookingCreation createBooking(ResourcePermission perm, Calendar start, Calendar end)
+    public BookingCreation createBooking(User user, ResourcePermission perm, TimePeriod tp, Session ses)
     {
+        Calendar start = tp.getStartTime();
+        Calendar end = tp.getEndTime();
+        
+        BookingCreation response = new BookingCreation();
+        
+        Bookings bk = new Bookings();
+        bk.setActive(true);
+        
+        /* Timing information. */
+        bk.setStartTime(start.getTime());
+        bk.setEndTime(end.getTime());
+        bk.setDuration((int) (end.getTimeInMillis() - start.getTimeInMillis() / 1000));
+        
+        /* User information. */
+        bk.setUser(user);
+        bk.setUserNamespace(user.getNamespace());
+        bk.setUserName(user.getName());
+        
+        DayBookings db;
+        List<String> dayKeys = TimeUtil.getDayKeys(start.getTime(), end.getTime());
+        if (dayKeys.size() == 1)
+        {
+            String day = dayKeys.get(0);
+            
+            /* Good. We can procede to add it without fiddling. */
+            bk.setResourceType(perm.getType());
+            bk.setRig(perm.getRig());
+            bk.setRigType(perm.getRigType());
+            bk.setRequestCapabilities(perm.getRequestCapabilities());
+            
+            MBooking mb = new MBooking(bk, day);
+
+            
+            synchronized (db = this.getDayBookings(day))
+            {
+                if (db.createBooking(mb, ses))
+                {
+                    response.setWasCreated(true);
+                }
+                else
+                {
+                    response.setWasCreated(false);
+                    for (MRange range : db.findBestFits(mb, ses))
+                    {
+                        response.addBestFit(new TimePeriod(range.getStart(), range.getEnd()));
+                    }
+                }
+            }
+            
+            /* If created persist the booking to the database. */
+            if (response.wasCreated())
+            {
+                try
+                {
+                    /* Save the booking to the database. */
+                    ses.beginTransaction();
+                    ses.save(bk);
+                    ses.getTransaction().commit();
+                    response.setWasCreated(true);
+                }
+                catch (HibernateException ex)
+                {
+                    /* Roll back and remove booking. */
+                    ses.getTransaction().rollback();
+                    response.setWasCreated(false);
+                    
+                    synchronized (db) { db.removeBooking(mb); }
+                    throw ex;
+                }
+            }
+        }
+        else
+        {
+            /* Multiday booking so we will need to do some fiddling. */
+        }
         
         
         
-        // TODO Auto-generated method stub
-        return null;
+        
+        return response;
     }
 
     @Override
