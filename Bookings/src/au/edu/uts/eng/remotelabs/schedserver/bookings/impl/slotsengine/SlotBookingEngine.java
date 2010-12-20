@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import org.hibernate.Session;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -80,6 +82,16 @@ public class SlotBookingEngine implements BookingEngine
         this.logger.debug("Initalising the slot booking engine...");
         
         // TODO init
+    }
+
+    @Override
+    public BookingCreation createBooking(ResourcePermission perm, Calendar start, Calendar end)
+    {
+        
+        
+        
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override

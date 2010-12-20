@@ -189,6 +189,9 @@ public class BookingsService implements BookingsInterface
             /* ----------------------------------------------------------------
              * -- Check permission constraints.                              --
              * ---------------------------------------------------------------- */
+            Date startDate = start.getTime();
+            Date endDate = end.getTime();
+            
             if (!perm.getUserClass().isBookable())
             {
                 this.logger.info("Unable to create a booking because the permission " + pid + " is not bookable.");
@@ -196,11 +199,11 @@ public class BookingsService implements BookingsInterface
                 return response;
             }
             
-            if (start.getTime().before(perm.getStartTime()) || end.getTime().after(perm.getExpiryTime()))
+            if (startDate.before(perm.getStartTime()) || endDate.after(perm.getExpiryTime()))
             {
                 this.logger.info("Unable to create a booking because the booking time is outside the permission time. " +
                 		"Permission start: " + perm.getStartTime() + ", expiry: " + perm.getExpiryTime() + 
-                		", booking start: " + start.getTime() + ", booking end: " +end.getTime() + '.');
+                		", booking start: " + startDate + ", booking end: " + endDate + '.');
                 status.setFailureReason("Booking time out of permission range.");
                 return response;
             }
@@ -210,7 +213,7 @@ public class BookingsService implements BookingsInterface
             horizon.add(Calendar.SECOND, perm.getUserClass().getTimeHorizon());
             if (horizon.after(start))
             {
-                this.logger.info("Unable to create a booking because the booking start time (" + start.getTime() +
+                this.logger.info("Unable to create a booking because the booking start time (" + startDate +
                         ") is before the time horizon (" + horizon.getTime() + ").");
                 status.setFailureReason("Before time horizon.");
                 return response;
@@ -227,14 +230,34 @@ public class BookingsService implements BookingsInterface
             {
                 this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' + 
                         user.getName() + " already has the maxiumum numnber of bookings (" + numBookings + ").");
-                status.setFailureReason("Has maximum number of bookings.");
+                status.setFailureReason("User has maximum number of bookings.");
+                return response;
+            }
+            
+            /* User bookings at the same time. */
+            numBookings = (Integer) ses.createCriteria(Bookings.class)
+                 .setProjection(Projections.rowCount())
+                 .add(Restrictions.eq("active", Boolean.TRUE))
+                 .add(Restrictions.eq("user", user))
+                 .add(Restrictions.disjunction()
+                         .add(Restrictions.between("startTime", startDate, endDate))
+                         .add(Restrictions.between("endTime", startDate, endDate))
+                         .add(Restrictions.and(
+                                 Restrictions.lt("startTime", startDate),
+                                 Restrictions.gt("endTime", endDate)))
+                 ).uniqueResult();
+            if (numBookings > 0)
+            {
+                this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' +
+                        user.getName() + " has concurrent bookings.");
+                status.setFailureReason("User has concurrent bookings.");
                 return response;
             }
             
             /* ----------------------------------------------------------------
              * -- Attempt to create booking.                                 --
              * ---------------------------------------------------------------- */
-            
+            status.setSuccess(true);
         }
         finally
         {

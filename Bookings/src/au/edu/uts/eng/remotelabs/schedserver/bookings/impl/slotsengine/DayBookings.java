@@ -103,6 +103,97 @@ public class DayBookings
     }
     
     /**
+     * Creates a booking for the rig. This methods assumes it has free rein 
+     * to choose which rig that matches the booked resoruce may be scheduled 
+     * in the day. Therefore a multi-day rig type or request capabilities
+     * booking must be converted to an appropriate rig booking.
+     * 
+     * @param mb memory booking
+     * @param ses database session
+     * @return
+     */
+    public boolean createBooking(MBooking mb, Session ses)
+    {
+        RigBookings rb, next;
+        
+        switch (mb.getType())
+        {
+            case RIG:
+                rb = this.getRigBookings(mb.getBooking().getRig(), ses);
+                if (rb.areSlotsFree(mb))
+                {
+                    return rb.commitBooking(mb);
+                }
+                
+                /* No directly free slots are found try a load balancing run to
+                 * free some slots. */
+                return this.outerLoadBalance(rb, mb, false) && this.outerLoadBalance(rb, mb, true) && rb.commitBooking(mb);
+                
+            case TYPE:
+                RigType rt = mb.getRigType();
+                if ((rb = this.typeTargets.get(rt)) == null)
+                {
+                    Set<Rig> rigs = rt.getRigs();
+                    if (rigs.size() == 0)
+                    {
+                        this.logger.info("Cannot make a booking for the rig type " + rt.getName() + " because it has " +
+                        		"no rigs.");
+                        return false;
+                    }
+                    rb = this.getRigBookings(rigs.iterator().next(), ses);
+                }
+                
+                next = rb;
+                do
+                {
+                    if (next.areSlotsFree(mb))
+                    {
+                        return next.commitBooking(mb);
+                    }
+                    next = next.getTypeLoopNext();
+                }
+                while (next != rb);
+                
+                /* No directly free slots are found try a load balancing run to
+                 * free some slots. */
+                return this.outerLoadBalance(rb, mb, false) && this.outerLoadBalance(rb, mb, true) && rb.commitBooking(mb);
+                
+            case CAPABILITY:
+                RequestCapabilities caps = mb.getRequestCapabilities();
+                if ((rb = this.capsTargets.get(caps)) == null)
+                {
+                    List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
+                    capsList.add(caps);
+                    this.loadRequestCapabilities(capsList, ses, false);
+                    
+                    if ((rb = this.capsTargets.get(caps)) == null)
+                    {
+                        this.logger.info("Cannot make a booing for the request capabilities " + caps.getCapabilities() +
+                                " because it has no matching rigs.");
+                        return false;
+                    }
+                }
+                
+                next = rb;
+                do 
+                {
+                    if (next.areSlotsFree(mb))
+                    {
+                        return next.commitBooking(mb);
+                    }
+                    next = next.getCapsLoopNext(caps);
+                }
+                while (next != rb);
+
+                /* No directly free slots are found try a load balancing run to
+                 * free some slots. */
+                return this.outerLoadBalance(rb, mb, false) && this.outerLoadBalance(rb, mb, true) && rb.commitBooking(mb);
+        }
+        
+        return false;
+    }
+    
+    /**
      * Gets the free slots for the rig type during the day.
      * 
      * @param rigType the rig type to find free slots of
@@ -211,7 +302,7 @@ public class DayBookings
                     
                     /* There isn't much point trying to load balance a type booking,
                      * because in enclosing range, the type loop is saturated. */
-                    if (bk.getType() == BType.CAPABILITY && this.loadBalance(next, bk, false))
+                    if (bk.getType() == BType.CAPABILITY && this.innerLoadBalance(next, bk, false))
                     {
                         free.add(new MRange(bk.getStartSlot(), bk.getEndSlot(), bk.getDay()));
                         
@@ -297,7 +388,7 @@ public class DayBookings
                 {
                     MBooking bk = next.getNextBooking(innerrs);
                     
-                    if (this.loadBalance(next, bk, false))
+                    if (this.innerLoadBalance(next, bk, false))
                     {
                         free.add(new MRange(bk.getStartSlot(), bk.getEndSlot(), bk.getDay()));
                     }
@@ -328,15 +419,15 @@ public class DayBookings
      */
     public List<MRange> getFreeSlots(Rig rig, int start, int end, int thres, Session ses)
     {
-        RigBookings rigBookings = this.getRigBookings(rig, ses);
+        RigBookings rb = this.getRigBookings(rig, ses);
         
-        List<MRange> free = rigBookings.getFreeSlots(start, end, thres);
+        List<MRange> free = rb.getFreeSlots(start, end, thres);
         
         /* For the other free times, attempt to load balance the bookings off the rig. */
         int fs = start;
         while (fs < end)
         {
-            MBooking membooking = rigBookings.getNextBooking(fs);
+            MBooking membooking = rb.getNextBooking(fs);
             if (membooking == null)
             {
                 break;
@@ -358,31 +449,31 @@ public class DayBookings
                     break;
                     
                 case TYPE:
-                    next = rigBookings.getTypeLoopNext();
+                    next = rb.getTypeLoopNext();
                     do
                     {
-                        if (this.loadBalance(next, membooking, false))
+                        if (this.innerLoadBalance(next, membooking, false))
                         {
                             free.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
                             break;
                         }
                         next = next.getTypeLoopNext();
                     }
-                    while (next != rigBookings);
+                    while (next != rb);
                     break;
                     
                 case CAPABILITY:
-                    next = rigBookings.getCapsLoopNext(membooking.getRequestCapabilities());
+                    next = rb.getCapsLoopNext(membooking.getRequestCapabilities());
                     do
                     {
-                        if (this.loadBalance(next, membooking, false))
+                        if (this.innerLoadBalance(next, membooking, false))
                         {
                             free.add(new MRange(membooking.getStartSlot(), membooking.getEndSlot(), this.day));
                             break;
                         }
                         next = next.getCapsLoopNext(membooking.getRequestCapabilities());
                     }
-                    while (next != rigBookings);
+                    while (next != rb);
                     break;
             }
             
@@ -505,6 +596,58 @@ public class DayBookings
     }
     
     /**
+     * @param mb
+     * @param rb
+     */
+    private boolean outerLoadBalance(RigBookings rb, MBooking mb, boolean dryRun)
+    {
+        RigBookings next;
+        /* We need to rule a load balance pass to try and free up 
+         * space for the booking. */
+        MBooking ex = rb.getNextBooking(mb.getStartSlot());
+        while (ex.getStartSlot() <= mb.getEndSlot())
+        {
+            switch (ex.getType())
+            {
+                case RIG: return false;
+                case TYPE:
+                    next = rb.getTypeLoopNext();
+                    do
+                    {
+                        if (this.innerLoadBalance(next, ex, dryRun))
+                        {
+                            rb.removeBooking(ex);
+                            break;
+                        }
+                        next = next.getTypeLoopNext();
+                    }
+                    while (next != rb);
+                    
+                    if (rb.hasBooking(ex)) return false;
+                    break;
+                    
+                case CAPABILITY:
+                    next = rb.getCapsLoopNext(ex.getRequestCapabilities());
+                    do
+                    {
+                        if (this.innerLoadBalance(next, ex, dryRun))
+                        {
+                            rb.removeBooking(ex);
+                            break;
+                        }
+                        next = next.getCapsLoopNext(ex.getRequestCapabilities());
+                    }
+                    while (next != rb);
+                    
+                    if (rb.hasBooking(ex)) return false;
+            }
+            
+            ex = rb.getNextBooking(ex.getEndSlot() + 1);
+        }
+        return true;
+    }
+    
+    /**
      * Runs load balancing of a rig. Load balancing attempts to fit the 
      * provided booking onto the specified rig. The booking may be fitted
      * if the slots are free or the bookings in the slot range can be 
@@ -515,7 +658,7 @@ public class DayBookings
      * @param doCommit whether the load balancing will actually be committed 
      * @return true if successfully able to load balance
      */
-    private boolean loadBalance(RigBookings br, MBooking bk, boolean doCommit)
+    private boolean innerLoadBalance(RigBookings br, MBooking bk, boolean doCommit)
     {
         int start = bk.getStartSlot();
         
@@ -716,7 +859,7 @@ public class DayBookings
                 {
                     do
                     {
-                        if (this.loadBalance(next, membooking, true))
+                        if (this.innerLoadBalance(next, membooking, true))
                         {
                             if (next.commitBooking(membooking))
                             {
@@ -840,7 +983,7 @@ public class DayBookings
             {
                 do
                 {
-                    if (this.loadBalance(next, membooking, true))
+                    if (this.innerLoadBalance(next, membooking, true))
                     {
                         if (next.commitBooking(membooking))
                         {

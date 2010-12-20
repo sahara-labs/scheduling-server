@@ -136,6 +136,384 @@ public class BookingsServiceTester extends TestCase
     }
     
     @Test
+    public void testCreateBookingConcurrentCovered() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation(new UserAssociationId(us1.getId(), uclass1.getId()), uclass1, us1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(2);
+        perm1.setRig(r1);
+        Calendar cal = Calendar.getInstance();
+        perm1.setStartTime(cal.getTime());
+        cal.add(Calendar.DAY_OF_MONTH, 10);
+        perm1.setExpiryTime(cal.getTime());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        Calendar bk1Tm = Calendar.getInstance();
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        bk1Tm.add(Calendar.HOUR, 1);
+        bk1.setStartTime(bk1Tm.getTime());
+        bk1Tm.add(Calendar.HOUR, 2);
+        bk1.setEndTime(bk1Tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk8 = new Bookings();
+        bk8.setActive(false);
+        bk8.setDuration(3600);
+        r2tm.add(Calendar.HOUR, 3);
+        bk8.setStartTime(r2tm.getTime());
+        r2tm.add(Calendar.HOUR, 1);
+        bk8.setEndTime(r2tm.getTime());
+        bk8.setResourcePermission(perm1);
+        bk8.setResourceType("RIG");
+        bk8.setRig(r1);
+        bk8.setUser(us1);
+        bk8.setUserName(us1.getName());
+        bk8.setUserNamespace(us1.getNamespace());
+        ses.save(bk8);
+
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+        
+        CreateBooking request = new CreateBooking();
+        CreateBookingType param = new CreateBookingType();
+        request.setCreateBooking(param);
+        UserIDType uid = new UserIDType();
+        UserNSNameSequence seq = new UserNSNameSequence();
+        seq.setUserNamespace(us1.getNamespace());
+        seq.setUserName(us1.getName());
+        uid.setUserNSNameSequence(seq);
+        param.setUserID(uid);
+        BookingType bt = new BookingType();
+        param.setBooking(bt);
+        PermissionIDType pid = new PermissionIDType();
+        pid.setPermissionID(perm1.getId().intValue());
+        bt.setPermissionID(pid);
+        
+        bk1Tm.add(Calendar.MINUTE, -90);
+        bt.setStartTime(bk1Tm);
+        Calendar bkEnd = Calendar.getInstance();
+        bkEnd.setTime(bk1Tm.getTime());
+        bkEnd.add(Calendar.HOUR, 1);
+        bt.setEndTime(bkEnd);
+        CreateBookingResponse response = this.service.createBooking(request);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk8);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        BookingResponseType respParm = response.getCreateBookingResponse();
+        assertNotNull(respParm);
+        assertFalse(respParm.getSuccess());
+        assertEquals("User has concurrent bookings.", respParm.getFailureReason());
+    }
+    
+    @Test
+    public void testCreateBookingConcurrentBookingsAfter() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation(new UserAssociationId(us1.getId(), uclass1.getId()), uclass1, us1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(2);
+        perm1.setRig(r1);
+        Calendar cal = Calendar.getInstance();
+        perm1.setStartTime(cal.getTime());
+        cal.add(Calendar.DAY_OF_MONTH, 10);
+        perm1.setExpiryTime(cal.getTime());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        Calendar bk1Tm = Calendar.getInstance();
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        bk1Tm.add(Calendar.HOUR, 1);
+        bk1.setStartTime(bk1Tm.getTime());
+        bk1Tm.add(Calendar.HOUR, 2);
+        bk1.setEndTime(bk1Tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk8 = new Bookings();
+        bk8.setActive(false);
+        bk8.setDuration(3600);
+        r2tm.add(Calendar.HOUR, 3);
+        bk8.setStartTime(r2tm.getTime());
+        r2tm.add(Calendar.HOUR, 1);
+        bk8.setEndTime(r2tm.getTime());
+        bk8.setResourcePermission(perm1);
+        bk8.setResourceType("RIG");
+        bk8.setRig(r1);
+        bk8.setUser(us1);
+        bk8.setUserName(us1.getName());
+        bk8.setUserNamespace(us1.getNamespace());
+        ses.save(bk8);
+
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+        
+        CreateBooking request = new CreateBooking();
+        CreateBookingType param = new CreateBookingType();
+        request.setCreateBooking(param);
+        UserIDType uid = new UserIDType();
+        UserNSNameSequence seq = new UserNSNameSequence();
+        seq.setUserNamespace(us1.getNamespace());
+        seq.setUserName(us1.getName());
+        uid.setUserNSNameSequence(seq);
+        param.setUserID(uid);
+        BookingType bt = new BookingType();
+        param.setBooking(bt);
+        PermissionIDType pid = new PermissionIDType();
+        pid.setPermissionID(perm1.getId().intValue());
+        bt.setPermissionID(pid);
+        
+        bk1Tm.add(Calendar.MINUTE, -150);
+        bt.setStartTime(bk1Tm);
+        Calendar bkEnd = Calendar.getInstance();
+        bkEnd.setTime(bk1Tm.getTime());
+        bkEnd.add(Calendar.HOUR, 1);
+        bt.setEndTime(bkEnd);
+        CreateBookingResponse response = this.service.createBooking(request);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk8);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        BookingResponseType respParm = response.getCreateBookingResponse();
+        assertNotNull(respParm);
+        assertFalse(respParm.getSuccess());
+        assertEquals("User has concurrent bookings.", respParm.getFailureReason());
+    }
+    
+    @Test
+    public void testCreateBookingConcurrentBookings() throws Exception
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        UserAssociation assoc = new UserAssociation(new UserAssociationId(us1.getId(), uclass1.getId()), uclass1, us1);
+        ses.save(assoc);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(2);
+        perm1.setRig(r1);
+        Calendar cal = Calendar.getInstance();
+        perm1.setStartTime(cal.getTime());
+        cal.add(Calendar.DAY_OF_MONTH, 10);
+        perm1.setExpiryTime(cal.getTime());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+        
+        Calendar bk1Tm = Calendar.getInstance();
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        bk1Tm.add(Calendar.HOUR, 1);
+        bk1.setStartTime(bk1Tm.getTime());
+        bk1Tm.add(Calendar.HOUR, 2);
+        bk1.setEndTime(bk1Tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk8 = new Bookings();
+        bk8.setActive(false);
+        bk8.setDuration(3600);
+        r2tm.add(Calendar.HOUR, 3);
+        bk8.setStartTime(r2tm.getTime());
+        r2tm.add(Calendar.HOUR, 1);
+        bk8.setEndTime(r2tm.getTime());
+        bk8.setResourcePermission(perm1);
+        bk8.setResourceType("RIG");
+        bk8.setRig(r1);
+        bk8.setUser(us1);
+        bk8.setUserName(us1.getName());
+        bk8.setUserNamespace(us1.getNamespace());
+        ses.save(bk8);
+
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+        
+        CreateBooking request = new CreateBooking();
+        CreateBookingType param = new CreateBookingType();
+        request.setCreateBooking(param);
+        UserIDType uid = new UserIDType();
+        UserNSNameSequence seq = new UserNSNameSequence();
+        seq.setUserNamespace(us1.getNamespace());
+        seq.setUserName(us1.getName());
+        uid.setUserNSNameSequence(seq);
+        param.setUserID(uid);
+        BookingType bt = new BookingType();
+        param.setBooking(bt);
+        PermissionIDType pid = new PermissionIDType();
+        pid.setPermissionID(perm1.getId().intValue());
+        bt.setPermissionID(pid);
+        
+        bk1Tm.add(Calendar.MINUTE, -30);
+        bt.setStartTime(bk1Tm);
+        Calendar bkEnd = Calendar.getInstance();
+        bkEnd.setTime(bk1Tm.getTime());
+        bkEnd.add(Calendar.HOUR, 1);
+        bt.setEndTime(bkEnd);
+        CreateBookingResponse response = this.service.createBooking(request);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk8);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(assoc);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        BookingResponseType respParm = response.getCreateBookingResponse();
+        assertNotNull(respParm);
+        assertFalse(respParm.getSuccess());
+        assertEquals("User has concurrent bookings.", respParm.getFailureReason());
+    }
+    
+    @Test
     public void testCreateBookingMaxBookings() throws Exception
     {
         Session ses = DataAccessActivator.getNewSession();
@@ -274,10 +652,9 @@ public class BookingsServiceTester extends TestCase
         BookingResponseType respParm = response.getCreateBookingResponse();
         assertNotNull(respParm);
         assertFalse(respParm.getSuccess());
-        assertEquals("Has maximum number of bookings.", respParm.getFailureReason());
+        assertEquals("User has maximum number of bookings.", respParm.getFailureReason());
     }
 
-    
     public void testCreateBookingHorizon()
     {
         Session ses = DataAccessActivator.getNewSession();
@@ -3691,7 +4068,7 @@ public class BookingsServiceTester extends TestCase
         e = bs.getSlot().getEndTime();
         assertEquals(0, e.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, e.get(Calendar.MINUTE));
-        assertEquals(0, e.get(Calendar.SECOND));
+        assertEquals(0, e.get(Calendar.SECOND));        
     }
     
     @Test

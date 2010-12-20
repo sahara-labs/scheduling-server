@@ -52,7 +52,7 @@ import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * CreateBookingResponse bean class.
+ * BookingCreation bean class.
  */
 public class CreateBookingResponse implements ADBBean
 {

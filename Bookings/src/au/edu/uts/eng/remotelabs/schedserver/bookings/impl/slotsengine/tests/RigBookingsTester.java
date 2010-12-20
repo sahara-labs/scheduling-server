@@ -62,6 +62,9 @@ public class RigBookingsTester extends TestCase
 {
     /** Object of class under test. */
     private RigBookings bookings;
+    
+    /** Day key. */
+    private String dayKey;
 
     @Override
     @Before
@@ -71,6 +74,8 @@ public class RigBookingsTester extends TestCase
         Field f = RigBookings.class.getDeclaredField("logger");
         f.setAccessible(true);
         f.set(this.bookings, new SystemErrLogger());
+        
+        this.dayKey = TimeUtil.getDateStr(Calendar.getInstance());
     }
     
     public void testGetFreeSlotsSequential() throws Throwable
@@ -81,7 +86,7 @@ public class RigBookingsTester extends TestCase
         
         for (int j = 0; j <= 6; j++)
         {
-            MBooking m = new MBooking(j * 10, j * 10 + 9, BType.RIG);
+            MBooking m = new MBooking(j * 10, j * 10 + 9, BType.RIG, this.dayKey);
             for (int i = m.getStartSlot(); i <= m.getEndSlot(); i++)
             {
                 slots[i] = m;
@@ -122,7 +127,7 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[]) f.get(this.bookings);
         
-        MBooking m = new MBooking(0, 48, BType.RIG);
+        MBooking m = new MBooking(0, 48, BType.RIG, this.dayKey);
         for (int i = 0; i <= 48; i++)
         {
            slots[i] = m;
@@ -151,13 +156,13 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[]) f.get(this.bookings);
         
-        MBooking m = new MBooking(5, 10, BType.RIG);
+        MBooking m = new MBooking(5, 10, BType.RIG, this.dayKey);
         for (int i = 5; i <= 10; i++)
         {
            slots[i] = m;
         }
         
-        m = new MBooking(15, 25, BType.RIG);
+        m = new MBooking(15, 25, BType.RIG, this.dayKey);
         for (int i = 15; i <= 25; i++)
         {
             slots[i] = m;
@@ -187,7 +192,7 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[]) f.get(this.bookings);
         
-        MBooking m = new MBooking(5, 10, BType.RIG);
+        MBooking m = new MBooking(5, 10, BType.RIG, this.dayKey);
         assertTrue(this.bookings.commitBooking(m));
         
         f = RigBookings.class.getDeclaredField("startSlot");
@@ -222,10 +227,10 @@ public class RigBookingsTester extends TestCase
         assertFalse(this.bookings.areSlotsFree(5, 10));
         assertTrue(this.bookings.areSlotsFree(11, 96));
         
-        m = new MBooking(10, 15, BType.RIG);
+        m = new MBooking(10, 15, BType.RIG, this.dayKey);
         assertFalse(this.bookings.commitBooking(m));
         
-        m = new MBooking(1, 3, BType.RIG);
+        m = new MBooking(1, 3, BType.RIG, this.dayKey);
         assertTrue(this.bookings.commitBooking(m));
         assertEquals(2, this.bookings.getNumBookings());
         
@@ -236,7 +241,7 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         assertEquals(10, f.getInt(this.bookings));
         
-        m = new MBooking(15, 20, BType.RIG);
+        m = new MBooking(15, 20, BType.RIG, this.dayKey);
         assertTrue(this.bookings.commitBooking(m));
         assertEquals(3, this.bookings.getNumBookings());
         
@@ -256,7 +261,7 @@ public class RigBookingsTester extends TestCase
         
         for (int i = 0; i < 24; i++)
         {
-            MBooking m = new MBooking(i * 4, i * 4 + 3, BType.RIG);
+            MBooking m = new MBooking(i * 4, i * 4 + 3, BType.RIG, this.dayKey);
             assertTrue(this.bookings.commitBooking(m));
         }
         
@@ -276,7 +281,7 @@ public class RigBookingsTester extends TestCase
         b.setId(1L);
         
         
-        MBooking m = new MBooking(5, 10, BType.RIG);
+        MBooking m = new MBooking(5, 10, BType.RIG, this.dayKey);
         m.setBooking(b);
         
         for (int i = 5; i <= 10; i++)
@@ -310,7 +315,7 @@ public class RigBookingsTester extends TestCase
         
         Bookings b = new Bookings();
         b.setId(1L);
-        MBooking m = new MBooking(5, 10, BType.RIG);
+        MBooking m = new MBooking(5, 10, BType.RIG, this.dayKey);
         m.setBooking(b);
         for (int i = 5; i <= 10; i++)
         {
@@ -319,7 +324,7 @@ public class RigBookingsTester extends TestCase
         
         Bookings b2 = new Bookings();
         b2.setId(2L);
-        MBooking m2 = new MBooking(20,30, BType.RIG);
+        MBooking m2 = new MBooking(20,30, BType.RIG, this.dayKey);
         m2.setBooking(b2);
         for (int i = 20; i <= 30; i++)
         {
@@ -387,7 +392,7 @@ public class RigBookingsTester extends TestCase
         Field f = RigBookings.class.getDeclaredField("slots");
         f.setAccessible(true);
         MBooking slots[] = (MBooking[])f.get(this.bookings);
-        MBooking m = new MBooking(0, 95, BType.RIG);
+        MBooking m = new MBooking(0, 95, BType.RIG, this.dayKey);
         for (int i = 0; i < slots.length; i++)
         {
             slots[i] = m;
@@ -414,13 +419,13 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[])f.get(this.bookings);
         
-        MBooking m = new MBooking(10, 20, BType.RIG);
+        MBooking m = new MBooking(10, 20, BType.RIG, this.dayKey);
         for (int i = 10; i <= 20; i++)
         {
             slots[i] = m;
         }
         
-        m = new MBooking(30, 40, BType.RIG);
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
         for (int i = 30; i <= 40; i++)
         {
             slots[i] = m;
@@ -461,13 +466,13 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[])f.get(this.bookings);
         
-        MBooking m = new MBooking(0, 20, BType.RIG);
+        MBooking m = new MBooking(0, 20, BType.RIG, this.dayKey);
         for (int i = 0; i <= 20; i++)
         {
             slots[i] = m;
         }
         
-        m = new MBooking(90, 95, BType.RIG);
+        m = new MBooking(90, 95, BType.RIG, this.dayKey);
         for (int i = 90; i <= 95; i++)
         {
             slots[i] = m;
@@ -499,13 +504,13 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[])f.get(this.bookings);
         
-        MBooking m = new MBooking(0, 20, BType.RIG);
+        MBooking m = new MBooking(0, 20, BType.RIG, this.dayKey);
         for (int i = 0; i <= 20; i++)
         {
             slots[i] = m;
         }
         
-        m = new MBooking(90, 95, BType.RIG);
+        m = new MBooking(90, 95, BType.RIG, this.dayKey);
         for (int i = 90; i <= 95; i++)
         {
             slots[i] = m;
@@ -537,19 +542,19 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[])f.get(this.bookings);
         
-        MBooking m = new MBooking(0, 20, BType.RIG);
+        MBooking m = new MBooking(0, 20, BType.RIG, this.dayKey);
         for (int i = 0; i <= 20; i++)
         {
             slots[i] = m;
         }
         
-        m = new MBooking(30, 40, BType.RIG);
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
         for (int i = 30; i <= 40; i++)
         {
             slots[i] = m;
         }
         
-        m = new MBooking(50, 70, BType.RIG);
+        m = new MBooking(50, 70, BType.RIG, this.dayKey);
         for (int i = 50; i <= 70; i++)
         {
             slots[i] = m;
@@ -585,19 +590,19 @@ public class RigBookingsTester extends TestCase
         f.setAccessible(true);
         MBooking slots[] = (MBooking[])f.get(this.bookings);
         
-        MBooking m = new MBooking(0, 20, BType.RIG);
+        MBooking m = new MBooking(0, 20, BType.RIG, this.dayKey);
         for (int i = 0; i <= 20; i++)
         {
             slots[i] = m;
         }
         
-        m = new MBooking(30, 40, BType.RIG);
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
         for (int i = 30; i <= 40; i++)
         {
             slots[i] = m;
         }
         
-        m = new MBooking(50, 60, BType.RIG);
+        m = new MBooking(50, 60, BType.RIG, this.dayKey);
         for (int i = 50; i <= 70; i++)
         {
             slots[i] = m;
@@ -640,7 +645,7 @@ public class RigBookingsTester extends TestCase
         int i;
         for (i = 0; i < slots.length; i += 2)
         {
-            slots[i] = new MBooking(i, i, BType.RIG);
+            slots[i] = new MBooking(i, i, BType.RIG, this.dayKey);
         }
         
         f = RigBookings.class.getDeclaredField("startSlot");
@@ -675,13 +680,13 @@ public class RigBookingsTester extends TestCase
         int i, j = 0;
         for (i = 0; i < 49; i += 2)
         {
-            slots[i] = new MBooking(i, i, BType.RIG);
+            slots[i] = new MBooking(i, i, BType.RIG, this.dayKey);
             j++;
         }
         
         for ( ; i < slots.length; i += 3)
         {
-            slots[i] = new MBooking(i, i, BType.RIG);
+            slots[i] = new MBooking(i, i, BType.RIG, this.dayKey);
             j++;
         }
 

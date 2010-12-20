@@ -145,12 +145,13 @@ public class MBooking
         this.numSlots = this.endSlot - this.startSlot + 1;  
     }
     
-    public MBooking(int start, int end, BType type)
+    public MBooking(int start, int end, BType type, String day)
     {
         this.startSlot = start;
         this.endSlot = end;
         this.numSlots = this.endSlot - this.startSlot + 1;
         this.bType = type;
+        this.day = day;
     }
 
     public Bookings getBooking()
@@ -219,7 +220,7 @@ public class MBooking
         if (o == null) return false;
         if (!(o instanceof MBooking)) return false;
         
-        if (this.booking == null || this.day == null)
+        if (this.booking == null || this.day == null || this.getBooking().getId() == null)
         {
             return o == this;
         }
@@ -231,7 +232,7 @@ public class MBooking
     @Override
     public int hashCode()
     {
-        if (this.booking == null || this.day == null)
+        if (this.booking == null || this.day == null || this.booking.getId() == null)
         {
             return super.hashCode();
         }

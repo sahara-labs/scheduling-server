@@ -43,6 +43,7 @@ import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 
@@ -102,6 +103,17 @@ public interface BookingEngine
     public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration, Session ses);
     
     /**
+     * Creates a booking. If creating the booking was unsuccessful a list
+     * of possible solutions are given.
+     * 
+     * @param start booking start
+     * @param end booking end
+     * @param perm permission the booking is to be created on
+     * @return booking response
+     */
+    public BookingCreation createBooking(ResourcePermission perm, Calendar start, Calendar end);
+    
+    /**
      * Cancels a booking.
      * 
      * @param booking booking to cancel
@@ -133,6 +145,31 @@ public interface BookingEngine
         public Calendar getEndTime()
         {
             return this.endTime;
+        }
+    }
+    
+    public class BookingCreation
+    {
+        /** Whether the booking was created. */
+        private boolean wasCreated;
+        
+        /** The list of best fits which most closely 
+         *  match the requested booking. */
+        private List<TimePeriod> bestFits;
+        
+        public BookingCreation(boolean created)
+        {
+            this.wasCreated = created;
+        }
+        
+        public boolean wasCreated()
+        {
+            return this.wasCreated;
+        }
+        
+        public List<TimePeriod> getBestFits()
+        {
+            return this.bestFits;
         }
     }
 }
