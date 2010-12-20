@@ -194,6 +194,105 @@ public class DayBookings
     }
     
     /**
+     * Finds the best fits for booking. This will generally attempt to provide 
+     * an early solution and a late solution.
+     * 
+     * @param mb booking that couldn't be commited
+     * @param ses
+     * @return
+     * @todo Implement balance operation in determining best fits
+     */
+    public List<MRange> findBestFits(MBooking mb, Session ses)
+    {
+        ///////////////////////////////////////////////////////////////////////
+        // DODGY: Does not do a balance operation to work out best fits      //
+        ///////////////////////////////////////////////////////////////////////
+        
+        MRange ef = null, lf = null;
+        
+        RigBookings rb, next;
+        switch (mb.getType())
+        {
+            case RIG:
+                rb = this.getRigBookings(mb.getBooking().getRig(), ses);
+                ef = rb.getEarlyFit(mb);
+                lf = rb.getLateFit(mb);
+                break;
+                
+            case TYPE:
+                if ((next = rb = this.typeTargets.get(mb.getRigType())) == null)
+                {
+                    Set<Rig> rigs = mb.getRigType().getRigs();
+                    if (rigs.size() == 0) return Collections.<MRange>emptyList();
+                    next = rb = this.getRigBookings(rigs.iterator().next(), ses);
+                }
+
+                do
+                {
+                    ef = this.compareBestFits(mb, ef, next.getEarlyFit(mb), true);
+                    lf = this.compareBestFits(mb, lf, next.getLateFit(mb), false);
+                    next = next.getTypeLoopNext();
+                }
+                while (next != rb);
+                break;
+                
+            case CAPABILITY:
+                RequestCapabilities caps = mb.getRequestCapabilities();
+                if ((next = rb = this.capsTargets.get(caps)) == null)
+                {
+                    List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
+                    capsList.add(caps);
+                    this.loadRequestCapabilities(capsList, ses, false);
+                    
+                    if ((next = rb = this.capsTargets.get(caps)) == null) return Collections.<MRange>emptyList();
+                }
+
+                do
+                {
+                    ef = this.compareBestFits(mb, ef, next.getEarlyFit(mb), true);
+                    lf = this.compareBestFits(mb, lf, next.getLateFit(mb), false);
+                    next = next.getCapsLoopNext(caps);
+                }
+                while (next != rb);
+                break;           
+        }
+
+        List<MRange> fits = new ArrayList<MRange>(2);
+        if (ef != null) fits.add(ef);
+        if (lf != null) fits.add(lf);
+        return fits;
+    }
+    
+    /**
+     * Compares two best fits with a designated booking. The /best/ best fit
+     * is the one which is cloest to the desginated booking.
+     * 
+     * @param mb desired booking
+     * @param r1 first fit
+     * @param r2 second fit
+     * @param whether the fit is early (before) or late (after)
+     * @return the /best/ best fit
+     */
+    private MRange compareBestFits(MBooking mb, MRange r1, MRange r2, boolean early)
+    {
+        if (r1 == null) return r2;
+        if (r2 == null) return r1;
+        
+        if (early)
+        {
+            if      (r1.getEndSlot() > r2.getEndSlot()) return r1;     // r1 is closer to designated booking
+            else if (r1.getEndSlot() < r2.getEndSlot()) return r2;     // r2 is closer to designated booking
+            else return r1.getNumSlots() > r2.getNumSlots() ? r1 : r2; // r1 is longer
+        }
+        else
+        {
+            if      (r1.getStartSlot() < r2.getStartSlot()) return r1; // r1 is closer to designated booking
+            else if (r1.getStartSlot() > r2.getStartSlot()) return r2; // r2 is closer to designated booking
+            else return r1.getNumSlots() > r2.getNumSlots() ? r1 : r2; // r1 is longer
+        }
+    }
+    
+    /**
      * Gets the free slots for the rig type during the day.
      * 
      * @param rigType the rig type to find free slots of
@@ -596,8 +695,13 @@ public class DayBookings
     }
     
     /**
-     * @param mb
-     * @param rb
+     * Outer load balance. Load balancing is trying to fit the specifed booking
+     * onto the rig.
+     * 
+     * @param rb rig to balance to
+     * @param mb booling to balance onto rig 
+     * @param dryRun whether to actually commit the changes.
+     * @return true if successful
      */
     private boolean outerLoadBalance(RigBookings rb, MBooking mb, boolean dryRun)
     {

@@ -78,6 +78,314 @@ public class RigBookingsTester extends TestCase
         this.dayKey = TimeUtil.getDateStr(Calendar.getInstance());
     }
     
+    public void testGetEarlyFit() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 20, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(50, 70, BType.RIG, this.dayKey);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        MBooking mb = new MBooking(10, 15, BType.RIG, this.dayKey);
+        
+        MRange es = this.bookings.getEarlyFit(mb);
+        assertNotNull(es);
+        assertEquals(4, es.getStartSlot());
+        assertEquals(9, es.getEndSlot());
+        assertEquals(6, es.getNumSlots());
+    }
+    
+    public void testGetEarlyFit2() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 26, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 26; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(50, 70, BType.RIG, this.dayKey);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        MBooking mb = new MBooking(27, 30, BType.RIG, this.dayKey);
+        
+        MRange es = this.bookings.getEarlyFit(mb);
+        assertNotNull(es);
+        assertEquals(27, es.getStartSlot());
+        assertEquals(29, es.getEndSlot());
+        assertEquals(3, es.getNumSlots());
+    }
+    
+    public void testGetEarlyFit3() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 29, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 29; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 49, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 49; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(51, 70, BType.RIG, this.dayKey);
+        for (int i = 51; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        MBooking mb = new MBooking(50, 54, BType.RIG, this.dayKey);
+        
+        MRange es = this.bookings.getEarlyFit(mb);
+        assertNotNull(es);
+        assertEquals(5, es.getStartSlot());
+        assertEquals(9, es.getEndSlot());
+        assertEquals(mb.getNumSlots(), es.getNumSlots());
+    }
+    
+    public void testGetLateFit() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 20, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(50, 70, BType.RIG, this.dayKey);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        MBooking mb = new MBooking(10, 15, BType.RIG, this.dayKey);
+        
+        MRange es = this.bookings.getLateFit(mb);
+        assertNotNull(es);
+        assertEquals(21, es.getStartSlot());
+        assertEquals(26, es.getEndSlot());
+        assertEquals(6, es.getNumSlots());
+    }
+    
+    public void testGetLateFit2() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 26, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 26; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(50, 70, BType.RIG, this.dayKey);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        MBooking mb = new MBooking(26, 30, BType.RIG, this.dayKey);
+        
+        MRange es = this.bookings.getLateFit(mb);
+        assertNotNull(es);
+        assertEquals(27, es.getStartSlot());
+        assertEquals(29, es.getEndSlot());
+        assertEquals(3, es.getNumSlots());
+    }
+    
+    public void testGetLateFit3() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 29, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 29; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 49, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 49; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(51, 70, BType.RIG, this.dayKey);
+        for (int i = 51; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        MBooking mb = new MBooking(50, 53, BType.RIG, this.dayKey);
+        
+        MRange es = this.bookings.getLateFit(mb);
+        assertNotNull(es);
+        assertEquals(71, es.getStartSlot());
+        assertEquals(74, es.getEndSlot());
+        assertEquals(4, es.getNumSlots());
+    }
+    
+    public void testGetLateFit4() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 27, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 27; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 49, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 49; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(51, 70, BType.RIG, this.dayKey);
+        for (int i = 51; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        MBooking mb = new MBooking(27, 30, BType.RIG, this.dayKey);
+        
+        MRange es = this.bookings.getLateFit(mb);
+        assertNotNull(es);
+        assertEquals(28, es.getStartSlot());
+        assertEquals(29, es.getEndSlot());
+        assertEquals(2, es.getNumSlots());
+    }
+    
     public void testGetFreeSlotsSequential() throws Throwable
     {
         Field f = RigBookings.class.getDeclaredField("slots");

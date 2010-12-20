@@ -273,6 +273,96 @@ public class RigBookings
     }
     
     /**
+     * Gets an earlier time a booking can be satisfied. This assumes the booking
+     * couldn't be satisfied. The early fit may not have full duration if it cannot
+     * be fitted at the latest early time.
+     * 
+     * @param mb booking to find early fit
+     * @return range if found, null if not
+     */
+    public MRange getEarlyFit(MBooking mb)
+    {
+        int ss = 0, se = 0, rs, re, opt = mb.getNumSlots(), min = (int) Math.ceil(opt / 2);
+        
+        MBooking ex = this.getNextBooking(mb.getStartSlot());
+        if (ex == null) return null;
+        
+        re = ex.getStartSlot() - 1;
+        rs = re - min + 1;
+        
+        while (rs > 0)
+        {
+            if (this.areSlotsFree(rs, re))
+            {
+                ss = rs;
+                se = re;
+                if (re - rs + 1 < opt) rs--;
+                /* Optimal solution found. */
+                else return new MRange(ss, se, this.dayKey);
+            }
+            else
+            {
+                /* If we already have a solution use that, otherwise go earlier. */
+                if (ss != 0) return new MRange(ss, se, this.dayKey);
+                
+                ex = this.getNextBooking(rs);
+                if (ex == null) return null;
+                
+                re = ex.getStartSlot() - 1;
+                rs = re - min - 1;
+            }
+        }
+        
+        /* Nothing found. */
+        return null;
+    }
+    /**
+     * Gets an later time a booking can be satisfied. This assumes the booking
+     * couldn't be satisfied. The late fit may not have full duration if it cannot
+     * be fitted at the earliest later time.
+     * 
+     * @param mb booking to find late fit
+     * @return range if found, null if not
+     */
+    public MRange getLateFit(MBooking mb)
+    {
+        int ss = 0, se = 0, rs, re, opt = mb.getNumSlots(), min = (int) Math.ceil(opt / 2);
+        
+        MBooking ex = this.getNextBooking(mb.getStartSlot());
+        if (ex == null) return null;
+        
+        rs = ex.getEndSlot() + 1;
+        re = rs + min - 1;
+        
+        while (re <= SlotBookingEngine.NUM_SLOTS)
+        {
+            if (this.areSlotsFree(rs, re))
+            {
+                ss = rs;
+                se = re;
+                if (re - rs + 1 < opt) re++;
+                /* Optimal solution found. */
+                else return new MRange(ss, se, this.dayKey);
+            }
+            else
+            {
+                /* If we already have a solution use that, otherwise go earlier. */
+                if (ss != 0) return new MRange(ss, se, this.dayKey);
+                
+                ex = this.getNextBooking(re);
+                if (ex == null) return null;
+                
+                rs = ex.getEndSlot() + 1;
+                re = rs + min - 1;
+            }
+        }
+        
+        /* Nothing found. */
+        return null;
+    }
+    
+    
+    /**
      * Returns true if this rig has the supplied booking.
      * 
      * @param booking booking to find
