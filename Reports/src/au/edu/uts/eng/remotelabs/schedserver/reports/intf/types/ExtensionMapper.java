@@ -18,7 +18,7 @@ public class ExtensionMapper
     {
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/reports".equals(namespaceURI)
-                && "typeForQuery_type3".equals(typeName))
+                && "typeForQuery".equals(typeName))
         {
 
             return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery.Factory.parse(reader);
@@ -35,7 +35,7 @@ public class ExtensionMapper
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/reports".equals(namespaceURI)
-                && "operator_type1".equals(typeName))
+                && "operator".equals(typeName))
         {
 
             return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.OperatorType.Factory.parse(reader);
@@ -67,10 +67,10 @@ public class ExtensionMapper
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/reports".equals(namespaceURI)
-                && "QuerySessionReportResponseComplexType".equals(typeName))
+                && "QuerySessionReportResponseType".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseComplexType.Factory
+            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType.Factory
                     .parse(reader);
 
         }
@@ -133,10 +133,10 @@ public class ExtensionMapper
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/reports".equals(namespaceURI)
-                && "QuerySessionReportComplexType".equals(typeName))
+                && "QuerySessionReportType".equals(typeName))
         {
 
-            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportComplexType.Factory
+            return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType.Factory
                     .parse(reader);
 
         }

@@ -16,7 +16,7 @@ public class QuerySessionReportResponse implements org.apache.axis2.databinding.
     /**
                  * 
                  */
-    private static final long serialVersionUID = 8115900424911117267L;
+    private static final long serialVersionUID = 4232988185105402803L;
     public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
             "http://remotelabs.eng.uts.edu.au/schedserver/reports", "querySessionReportResponse", "ns1");
 
@@ -33,14 +33,14 @@ public class QuerySessionReportResponse implements org.apache.axis2.databinding.
      * field for QuerySessionReportResponse
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseComplexType localQuerySessionReportResponse;
+    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType localQuerySessionReportResponse;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.QuerySessionReportResponseComplexType
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType
      */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseComplexType getQuerySessionReportResponse()
+    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType getQuerySessionReportResponse()
     {
         return this.localQuerySessionReportResponse;
     }
@@ -52,7 +52,7 @@ public class QuerySessionReportResponse implements org.apache.axis2.databinding.
      *            QuerySessionReportResponse
      */
     public void setQuerySessionReportResponse(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseComplexType param)
+            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType param)
     {
 
         this.localQuerySessionReportResponse = param;
@@ -206,7 +206,7 @@ public class QuerySessionReportResponse implements org.apache.axis2.databinding.
                         {
 
                             object
-                                    .setQuerySessionReportResponse(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseComplexType.Factory
+                                    .setQuerySessionReportResponse(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType.Factory
                                             .parse(reader));
 
                         } // End of if for expected property start element

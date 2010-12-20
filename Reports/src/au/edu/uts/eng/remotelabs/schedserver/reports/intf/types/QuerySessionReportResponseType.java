@@ -1,5 +1,5 @@
 /**
- * QuerySessionReportResponseComplexType.java
+ * QuerySessionReportResponseType.java
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:25:17 EDT)
  */
@@ -7,14 +7,14 @@
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
 /**
- * QuerySessionReportResponseComplexType bean class
+ * QuerySessionReportResponseType bean class
  */
 
-public class QuerySessionReportResponseComplexType implements org.apache.axis2.databinding.ADBBean
+public class QuerySessionReportResponseType implements org.apache.axis2.databinding.ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = QuerySessionReportResponseComplexType
+     * name = QuerySessionReportResponseType
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/reports
      * Namespace Prefix = ns1
      */
@@ -22,7 +22,7 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
     /**
                  * 
                  */
-    private static final long serialVersionUID = 6968536364314418891L;
+    private static final long serialVersionUID = 8262998913324109889L;
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -38,13 +38,6 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
      */
 
     protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType localPagination;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localPaginationTracker = false;
 
     /**
      * Auto generated getter method
@@ -65,17 +58,6 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
     public void setPagination(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType param)
     {
 
-        if (param != null)
-        {
-            //update the setting tracker
-            this.localPaginationTracker = true;
-        }
-        else
-        {
-            this.localPaginationTracker = false;
-
-        }
-
         this.localPagination = param;
 
     }
@@ -86,6 +68,13 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
      */
 
     protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportType[] localSessionReport;
+
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localSessionReportTracker = false;
 
     /**
      * Auto generated getter method
@@ -104,11 +93,6 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
             final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportType[] param)
     {
 
-        if ((param != null) && (param.length < 1))
-        {
-            throw new java.lang.RuntimeException();
-        }
-
     }
 
     /**
@@ -122,6 +106,17 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
     {
 
         this.validateSessionReport(param);
+
+        if (param != null)
+        {
+            //update the setting tracker
+            this.localSessionReportTracker = true;
+        }
+        else
+        {
+            this.localSessionReportTracker = false;
+
+        }
 
         this.localSessionReport = param;
     }
@@ -138,6 +133,9 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
         {
             this.localSessionReport = new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportType[] {};
         }
+
+        //update the setting tracker
+        this.localSessionReportTracker = true;
 
         final java.util.List list = org.apache.axis2.databinding.utils.ConverterUtil.toList(this.localSessionReport);
         list.add(param);
@@ -184,7 +182,7 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
             public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                     throws javax.xml.stream.XMLStreamException
             {
-                QuerySessionReportResponseComplexType.this.serialize(this.parentQName, factory, xmlWriter);
+                QuerySessionReportResponseType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -221,7 +219,7 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
             {
                 if (prefix == null)
                 {
-                    prefix = QuerySessionReportResponseComplexType.generatePrefix(namespace);
+                    prefix = QuerySessionReportResponseType.generatePrefix(namespace);
                 }
 
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
@@ -242,47 +240,47 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":QuerySessionReportResponseComplexType", xmlWriter);
+                        + ":QuerySessionReportResponseType", xmlWriter);
             }
             else
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                        "QuerySessionReportResponseComplexType", xmlWriter);
+                        "QuerySessionReportResponseType", xmlWriter);
             }
 
         }
-        if (this.localPaginationTracker)
+
+        if (this.localPagination == null)
         {
-            if (this.localPagination == null)
+            throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
+        }
+        this.localPagination.serialize(new javax.xml.namespace.QName("", "pagination"), factory, xmlWriter);
+        if (this.localSessionReportTracker)
+        {
+            if (this.localSessionReport != null)
             {
-                throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
+                for (final SessionReportType element : this.localSessionReport)
+                {
+                    if (element != null)
+                    {
+                        element.serialize(new javax.xml.namespace.QName("", "sessionReport"), factory, xmlWriter);
+                    }
+                    else
+                    {
+
+                        // we don't have to do any thing since minOccures is zero
+
+                    }
+
+                }
             }
-            this.localPagination.serialize(new javax.xml.namespace.QName("", "pagination"), factory, xmlWriter);
-        }
-        if (this.localSessionReport != null)
-        {
-            for (final SessionReportType element : this.localSessionReport)
+            else
             {
-                if (element != null)
-                {
-                    element.serialize(new javax.xml.namespace.QName("", "sessionReport"), factory, xmlWriter);
-                }
-                else
-                {
 
-                    throw new org.apache.axis2.databinding.ADBException("sessionReport cannot be null!!");
-
-                }
+                throw new org.apache.axis2.databinding.ADBException("sessionReport cannot be null!!");
 
             }
         }
-        else
-        {
-
-            throw new org.apache.axis2.databinding.ADBException("sessionReport cannot be null!!");
-
-        }
-
         xmlWriter.writeEndElement();
 
     }
@@ -315,7 +313,7 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
 
         if (prefix == null)
         {
-            prefix = QuerySessionReportResponseComplexType.generatePrefix(namespace);
+            prefix = QuerySessionReportResponseType.generatePrefix(namespace);
 
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
@@ -339,39 +337,40 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
         final java.util.ArrayList elementList = new java.util.ArrayList();
         final java.util.ArrayList attribList = new java.util.ArrayList();
 
-        if (this.localPaginationTracker)
-        {
-            elementList.add(new javax.xml.namespace.QName("", "pagination"));
+        elementList.add(new javax.xml.namespace.QName("", "pagination"));
 
-            if (this.localPagination == null)
-            {
-                throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
-            }
-            elementList.add(this.localPagination);
+        if (this.localPagination == null)
+        {
+            throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
         }
-        if (this.localSessionReport != null)
+        elementList.add(this.localPagination);
+        if (this.localSessionReportTracker)
         {
-            for (final SessionReportType element : this.localSessionReport)
+            if (this.localSessionReport != null)
             {
-
-                if (element != null)
-                {
-                    elementList.add(new javax.xml.namespace.QName("", "sessionReport"));
-                    elementList.add(element);
-                }
-                else
+                for (final SessionReportType element : this.localSessionReport)
                 {
 
-                    throw new org.apache.axis2.databinding.ADBException("sessionReport cannot be null !!");
+                    if (element != null)
+                    {
+                        elementList.add(new javax.xml.namespace.QName("", "sessionReport"));
+                        elementList.add(element);
+                    }
+                    else
+                    {
+
+                        // nothing to do
+
+                    }
 
                 }
+            }
+            else
+            {
+
+                throw new org.apache.axis2.databinding.ADBException("sessionReport cannot be null!!");
 
             }
-        }
-        else
-        {
-
-            throw new org.apache.axis2.databinding.ADBException("sessionReport cannot be null!!");
 
         }
 
@@ -395,10 +394,10 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
          * Postcondition: If this object is an element, the reader is positioned at its end element
          * If this object is a complex type, the reader is positioned at the end element of its outer element
          */
-        public static QuerySessionReportResponseComplexType parse(final javax.xml.stream.XMLStreamReader reader)
+        public static QuerySessionReportResponseType parse(final javax.xml.stream.XMLStreamReader reader)
                 throws java.lang.Exception
         {
-            final QuerySessionReportResponseComplexType object = new QuerySessionReportResponseComplexType();
+            final QuerySessionReportResponseType object = new QuerySessionReportResponseType();
 
             try
             {
@@ -423,11 +422,11 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
 
                         final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
-                        if (!"QuerySessionReportResponseComplexType".equals(type))
+                        if (!"QuerySessionReportResponseType".equals(type))
                         {
                             //find namespace for the prefix
                             final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (QuerySessionReportResponseComplexType) au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper
+                            return (QuerySessionReportResponseType) au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper
                                     .getTypeObject(nsUri, type, reader);
                         }
 
@@ -459,7 +458,9 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
 
                 else
                 {
-
+                    // A start element we are not expecting indicates an invalid parameter was passed
+                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
+                            + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -523,9 +524,7 @@ public class QuerySessionReportResponseComplexType implements org.apache.axis2.d
 
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

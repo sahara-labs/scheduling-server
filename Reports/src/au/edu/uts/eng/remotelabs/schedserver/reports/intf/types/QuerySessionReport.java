@@ -16,7 +16,7 @@ public class QuerySessionReport implements org.apache.axis2.databinding.ADBBean
     /**
                  * 
                  */
-    private static final long serialVersionUID = -3921581212378720435L;
+    private static final long serialVersionUID = 5398536674597137689L;
     public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
             "http://remotelabs.eng.uts.edu.au/schedserver/reports", "querySessionReport", "ns1");
 
@@ -33,14 +33,14 @@ public class QuerySessionReport implements org.apache.axis2.databinding.ADBBean
      * field for QuerySessionReport
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportComplexType localQuerySessionReport;
+    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType localQuerySessionReport;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportComplexType
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType
      */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportComplexType getQuerySessionReport()
+    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType getQuerySessionReport()
     {
         return this.localQuerySessionReport;
     }
@@ -52,7 +52,7 @@ public class QuerySessionReport implements org.apache.axis2.databinding.ADBBean
      *            QuerySessionReport
      */
     public void setQuerySessionReport(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportComplexType param)
+            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType param)
     {
 
         this.localQuerySessionReport = param;
@@ -128,6 +128,30 @@ public class QuerySessionReport implements org.apache.axis2.databinding.ADBBean
     }
 
     /**
+     * Register a namespace prefix
+     */
+    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
+            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    {
+        java.lang.String prefix = xmlWriter.getPrefix(namespace);
+
+        if (prefix == null)
+        {
+            prefix = QuerySessionReport.generatePrefix(namespace);
+
+            while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
+            {
+                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+            }
+
+            xmlWriter.writeNamespace(prefix, namespace);
+            xmlWriter.setPrefix(prefix, namespace);
+        }
+
+        return prefix;
+    }
+
+    /**
      * databinding method to get an XML representation of this object
      */
     public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
@@ -181,7 +205,7 @@ public class QuerySessionReport implements org.apache.axis2.databinding.ADBBean
                         {
 
                             object
-                                    .setQuerySessionReport(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportComplexType.Factory
+                                    .setQuerySessionReport(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType.Factory
                                             .parse(reader));
 
                         } // End of if for expected property start element

@@ -51,6 +51,7 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -58,6 +59,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -85,6 +87,8 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequen
  */
 public class Reports implements ReportsSkeletonInterface
 {
+    public static final String QNAME_DELIM = ":";
+
     /** Logger. */
     private Logger logger;
     
@@ -138,6 +142,10 @@ public class Reports implements ReportsSkeletonInterface
             //Get table to be queried
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
+                /* ----------------------------------------------------------------
+                 * -- Rig Information only available to ADMIN, to be mediated    --
+                 * -- by interface. No criteria on Requestor                     --
+                 * ---------------------------------------------------------------- */
                 //Rig Information only available to ADMIN, to be mediated by interface
                 cri = ses.createCriteria(Rig.class);
                 if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
@@ -151,7 +159,10 @@ public class Reports implements ReportsSkeletonInterface
             }
             else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
             {
-                //Rig Type Information only available to ADMIN, to be mediated by interface                cri = ses.createCriteria(RigType.class);
+                /* ----------------------------------------------------------------
+                 * -- Rig Type Information only available to ADMIN, to be        -- 
+                 * -- mediated by interface. No criteria on Requestor            --
+                 * ---------------------------------------------------------------- */
                 cri = ses.createCriteria(RigType.class);
 
                 if(query0.getQueryLike() != null)  cri.add(Restrictions.like("name", query0.getQueryLike()));
@@ -286,7 +297,8 @@ public class Reports implements ReportsSkeletonInterface
             if(qSAReq.getQueryConstraints() != null) debug += ", QueryConstraints: " + qSAReq.getQueryConstraints().toString();  //DODGY only first displayed
             debug += ", start time: " + qSAReq.getStartTime() + ", end time: " + qSAReq.getEndTime() + ", pagination: " + qSAReq.getPagination();
         this.logger.debug(debug);
-        
+        RequestorType uid = qSAReq.getRequestor();
+
         /** Response parameters. */
         QuerySessionAccessResponse resp = new QuerySessionAccessResponse();
         QuerySessionAccessResponseType respType = new QuerySessionAccessResponseType();
@@ -297,34 +309,72 @@ public class Reports implements ReportsSkeletonInterface
         respType.setPagination(page);
         resp.setQuerySessionAccessResponse(respType);
         
-        AccessReportType reportType = new AccessReportType();
-        
         org.hibernate.Session ses = DataAccessActivator.getNewSession();
 
         /* Set up query from request parameters*/
         try
         {
+            /* ----------------------------------------------------------------
+             * -- Load the requestor.                                             --
+             * ---------------------------------------------------------------- */
+            User user = this.getUserFromUserID(uid, ses);
+            if (user == null)
+            {
+                this.logger.info("Unable to generate report because the user has not been found. Supplied " +
+                        "credentials ID=" + uid.getUserID() + ", namespace=" + uid.getUserNamespace() + ", " +
+                        "name=" + uid.getUserName() + '.');
+                return resp;
+            }
+            String persona = user.getPersona();
+
             Criteria cri = ses.createCriteria(Session.class);
+            // Order by request time
             cri.addOrder(Order.asc("requestTime"));
 
-            /* TODO use ID to restrict query
-             * Check permission method that looks for
-             * ADMIN anything
-             * ACADEMIC - get permissions
-             *    check canGenerateReports
-             * others - none
-             */
-         
             /* First Query Filter - this contains grouping for the query */        
             QueryFilterType query0 = qSAReq.getQuerySelect();
-            //Get table to be queried
+
+            /* ----------------------------------------------------------------
+             * -- Get the Query type and process accordingly                 --
+             * -- 1. Rig                                                     --
+             * -- 2. Rig Type                                                --
+             * -- 3. User Class                                              --
+             * -- 4. User                                                    --
+             * -- 4. Capabilities (not yet implemented)                      --
+             * ---------------------------------------------------------------- */
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
+                /* ----------------------------------------------------------------
+                 * -- 1. Rig Information only available to ADMIN, to be mediated --
+                 * --    by interface. No criteria on Requestor                  --
+                 * ---------------------------------------------------------------- */
+                
+                // Select Rig name to match query
                 cri.add(Restrictions.eq("assignedRigName", query0.getQueryLike()));
-                cri.add(Restrictions.between("requestTime", qSAReq.getStartTime().getTime(), qSAReq.getEndTime().getTime()));
+                // Select time period
+                if (qSAReq.getStartTime() != null) cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
+                if (qSAReq.getEndTime() != null) cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
+                
+                //Query Filter to be used for multiple selections in later versions of reporting. 
+                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
+                
+                // Add pagination requirements
+                if (qSAReq.getPagination() != null)
+                {
+                    PaginationType pages = qSAReq.getPagination();
+                    int noPages = pages.getNumberOfPages();
+                    int pageNumber = pages.getPageNumber();
+                    int pageLength = pages.getPageLength();
+
+                    if (noPages > 1) cri.setMaxResults(pageLength);
+                    if (pageNumber > 1) cri.setFirstResult((pageNumber-1)*pageLength);
+                }
+                               
                 List<Session> list = cri.list();
                 for (Session o : list)
                 {
+                    AccessReportType reportType = new AccessReportType();
+
                     //Get user from session object
                     RequestorType user0 = new RequestorType();
                     UserNSNameSequence nsSequence = new UserNSNameSequence();
@@ -349,9 +399,6 @@ public class Reports implements ReportsSkeletonInterface
 
                         int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
                         reportType.setSessionDuration(sessionD);
-                        cal = Calendar.getInstance();
-                        cal.setTime(o.getRemovalTime());
-                        reportType.setSessionEndTime(cal);
                     }
                     else
                     {
@@ -360,11 +407,21 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setSessionDuration(0);
                     }
                     
+                    cal = Calendar.getInstance();
+                    cal.setTime(o.getRemovalTime());
+                    reportType.setSessionEndTime(cal);
+                    
+                    reportType.setReasonForTermination(o.getRemovalReason());
+
                     respType.addAccessReportData(reportType);
                 }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
             {
+                /* ----------------------------------------------------------------
+                 * -- 2. Rig Type Information only available to ADMIN, to be     -- 
+                 * --    mediated by interface. No criteria on Requestor         --
+                 * ---------------------------------------------------------------- */
                 RigTypeDao rTypeDAO = new RigTypeDao(ses);
                 RigType rType = rTypeDAO.findByName(query0.getQueryLike());
                 cri = ses.createCriteria(Session.class);
@@ -373,10 +430,33 @@ public class Reports implements ReportsSkeletonInterface
                     this.logger.warn("No valid rig type found - " + query0.getTypeForQuery().toString());
                     return resp;
                 }
+                // Select Sessions where rig value is of the correct Rig Type
                 cri.createCriteria("rig").add(Restrictions.eq("rigType",rType));
+
+                // Select time period
+                if (qSAReq.getStartTime() != null) cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
+                if (qSAReq.getEndTime() != null) cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
+                
+                //Query Filter to be used for multiple selections in later versions of reporting. 
+                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
+                
+                // Add pagination requirements
+                if (qSAReq.getPagination() != null)
+                {
+                    PaginationType pages = qSAReq.getPagination();
+                    int noPages = pages.getNumberOfPages();
+                    int pageNumber = pages.getPageNumber();
+                    int pageLength = pages.getPageLength();
+
+                    if (noPages > 1) cri.setMaxResults(pageLength);
+                    if (pageNumber > 1) cri.setFirstResult((pageNumber-1)*pageLength);
+                }
+
                 List<Session> list = cri.list();
                 for (Session o : list)
                 {
+                    AccessReportType reportType = new AccessReportType();
+
                     //Get user from session object
                     RequestorType user0 = new RequestorType();
                     UserNSNameSequence nsSequence = new UserNSNameSequence();
@@ -400,9 +480,6 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setSessionStartTime(cal);
                         int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
                         reportType.setSessionDuration(sessionD);
-                        cal = Calendar.getInstance();
-                        cal.setTime(o.getRemovalTime());
-                        reportType.setSessionEndTime(cal);
                     }
                     else
                     {
@@ -411,17 +488,261 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setSessionDuration(0);
                     }
                     
+                    cal = Calendar.getInstance();
+                    cal.setTime(o.getRemovalTime());
+                    reportType.setSessionEndTime(cal);
+                    
+                    reportType.setReasonForTermination(o.getRemovalReason());
+
                     respType.addAccessReportData(reportType);
                 }
                 
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
             {
-                // TODO  Does it make sense to have user class and not permissions here???
+                /* ----------------------------------------------------------------
+                 * -- 3. User Class Information only available to ADMIN and      -- 
+                 * --    ACADEMIC users with permissions to generate reports     --
+                 * --    for this class.                                         --
+                 * ---------------------------------------------------------------- */
+                UserClassDao uClassDAO = new UserClassDao(ses);
+                UserClass uClass = uClassDAO.findByName(query0.getQueryLike());
+                if (uClass == null)
+                {
+                    this.logger.warn("No valid user class found - " + query0.getTypeForQuery().toString());
+                    return resp;
+                }
+                
+                /* ----------------------------------------------------------------
+                 * Check that the requestor has permissions to request the report.
+                 * If persona = USER, no reports (USERs will not get here)
+                 * If persona = ADMIN, any report 
+                 * If persona = ACADEMIC, only for classes they own if they can genrate reports
+                 * ---------------------------------------------------------------- */
+                if (User.ACADEMIC.equals(persona))
+                {
+                    /* An academic may generate reports for their own classes only. */
+                    boolean hasPerm = false;
+                        
+                    Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
+                    while (apIt.hasNext())
+                    {
+                        AcademicPermission ap = apIt.next();
+                        if (ap.getUserClass().getId().equals(uClass.getId()) && ap.isCanGenerateReports())
+                        {
+                            hasPerm = true;
+                            break;
+                         }    
+                    }
+                        
+                    if (!hasPerm)
+                    {
+                        this.logger.info("Unable to generate report for user class " + uClass.getName() + 
+                                " because the user " + user.getNamespace() + ':' + user.getName() +
+                                " does not own or have academic permission to it.");
+                        return resp;
+                    }
+                        
+                    this.logger.debug("Academic " + user.getNamespace() + ':' + user.getName() + " has permission to " +
+                               "generate report from user class" + uClass.getName() + '.');
+                }
+
+                //Select sessions where the resource permission associated is for this user class    
+                cri.createCriteria("resourcePermission").add(Restrictions.eq("userClass",uClass));
+
+                // Select time period
+                if (qSAReq.getStartTime() != null) cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
+                if (qSAReq.getEndTime() != null) cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
+                
+                //Query Filter to be used for multiple selections in later versions of reporting. 
+                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
+                
+                // Add pagination requirements
+                if (qSAReq.getPagination() != null)
+                {
+                    PaginationType pages = qSAReq.getPagination();
+                    int noPages = pages.getNumberOfPages();
+                    int pageNumber = pages.getPageNumber();
+                    int pageLength = pages.getPageLength();
+
+                    if (noPages > 1) cri.setMaxResults(pageLength);
+                    if (pageNumber > 1) cri.setFirstResult((pageNumber-1)*pageLength);
+                }
+
+                List<Session> list = cri.list();
+                for (Session o : list)
+                {
+                    AccessReportType reportType = new AccessReportType();
+
+                    //Get user from session object
+                    RequestorType user0 = new RequestorType();
+                    UserNSNameSequence nsSequence = new UserNSNameSequence();
+                    nsSequence.setUserName(o.getUser().getName());
+                    nsSequence.setUserNamespace(o.getUser().getNamespace());
+                    user0.setRequestorTypeSequence_type0(nsSequence);
+                    reportType.setUser(user0);
+
+                    reportType.setUserClass(query0.getQueryLike());
+                    reportType.setRigName(o.getAssignedRigName());
+                    
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(o.getRequestTime());
+                    reportType.setQueueStartTime(cal);
+                    
+                    if(o.getAssignmentTime() != null)
+                    {
+                        int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getAssignmentTime());
+                        reportType.setSessionStartTime(cal);
+                        int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
+                        reportType.setSessionDuration(sessionD);
+                    }
+                    else
+                    {
+                        int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        reportType.setSessionDuration(0);
+                    }
+                    
+                    cal = Calendar.getInstance();
+                    cal.setTime(o.getRemovalTime());
+                    reportType.setSessionEndTime(cal);
+                    
+                    reportType.setReasonForTermination(o.getRemovalReason());
+
+                    respType.addAccessReportData(reportType);
+                }
+                
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER)
             {
-                cri.add(Restrictions.like("user", query0.getQueryLike()));
+                /* ----------------------------------------------------------------
+                 * -- 4. User Information only available to ADMIN and            -- 
+                 * --    ACADEMIC users with permissions to generate reports     --
+                 * --    for this classes to which this user belongs.            --
+                 * -- NOTE: User nam expected as: namespace:username             --
+                 * ---------------------------------------------------------------- */
+                
+                UserDao userDAO = new UserDao(ses);
+                String idParts[] = query0.getQueryLike().split(Reports.QNAME_DELIM, 2);
+                User u = userDAO.findByName(idParts[0], idParts[1]);
+                
+                if (u == null)
+                {
+                    this.logger.warn("No valid user found - " + query0.getTypeForQuery().toString());
+                    return resp;
+                }
+                
+                /* ----------------------------------------------------------------
+                 * Check that the requestor has permissions to request the report.
+                 * If persona = USER, no reports (USERs will not get here)
+                 * If persona = ADMIN, any report 
+                 * If persona = ACADEMIC, only for users belonging to 
+                 *    classes they can generate reports for
+                 * ---------------------------------------------------------------- */
+                if (User.ACADEMIC.equals(persona))
+                {
+                    /* An academic may generate reports for their own classes only. */
+                    boolean hasPerm = false;
+                        
+                    Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
+                    while (apIt.hasNext())
+                    {
+                        AcademicPermission ap = apIt.next();
+                        Iterator<UserAssociation> uaIt = u.getUserAssociations().iterator();
+                        while (uaIt.hasNext())
+                        {
+                            UserAssociation ua = uaIt.next();
+                            if (ap.getUserClass().getId().equals(ua.getUserClass().getId()) && ap.isCanGenerateReports())
+                            {
+                                hasPerm = true;
+                                break;
+                            }
+                        }
+                        if(hasPerm) break;
+                    }
+                        
+                    if (!hasPerm)
+                    {
+                        this.logger.info("Unable to generate report for user class " + u.getName() + 
+                                " because the user " + user.getNamespace() + ':' + user.getName() +
+                                " does not own or have academic permission to it.");
+                        return resp;
+                    }
+                        
+                    this.logger.debug("Academic " + user.getNamespace() + ':' + user.getName() + " has permission to " +
+                               "generate report from user class" + u.getName() + '.');
+                }
+                
+                //Select sessions where the resource permission associated is for this user class    
+                cri.add(Restrictions.eq("user",query0.getQueryLike()));
+
+                // Select time period
+                if (qSAReq.getStartTime() != null) cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
+                if (qSAReq.getEndTime() != null) cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
+                
+                //Query Filter to be used for multiple selections in later versions of reporting. 
+                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
+                
+                // Add pagination requirements
+                if (qSAReq.getPagination() != null)
+                {
+                    PaginationType pages = qSAReq.getPagination();
+                    int noPages = pages.getNumberOfPages();
+                    int pageNumber = pages.getPageNumber();
+                    int pageLength = pages.getPageLength();
+
+                    if (noPages > 1) cri.setMaxResults(pageLength);
+                    if (pageNumber > 1) cri.setFirstResult((pageNumber-1)*pageLength);
+                }
+
+                List<Session> list = cri.list();
+                for (Session o : list)
+                {
+                    AccessReportType reportType = new AccessReportType();
+
+                    //Get user from session object
+                    RequestorType user0 = new RequestorType();
+                    UserNSNameSequence nsSequence = new UserNSNameSequence();
+                    nsSequence.setUserName(o.getUser().getName());
+                    nsSequence.setUserNamespace(o.getUser().getNamespace());
+                    user0.setRequestorTypeSequence_type0(nsSequence);
+                    reportType.setUser(user0);
+
+                    reportType.setRigName(o.getAssignedRigName());
+                    
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(o.getRequestTime());
+                    reportType.setQueueStartTime(cal);
+                    
+                    if(o.getAssignmentTime() != null)
+                    {
+                        int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getAssignmentTime());
+                        reportType.setSessionStartTime(cal);
+                        int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
+                        reportType.setSessionDuration(sessionD);
+                    }
+                    else
+                    {
+                        int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
+                        reportType.setQueueDuration(queueD);
+                        reportType.setSessionDuration(0);
+                    }
+                    
+                    cal = Calendar.getInstance();
+                    cal.setTime(o.getRemovalTime());
+                    reportType.setSessionEndTime(cal);
+
+                    reportType.setReasonForTermination(o.getRemovalReason());
+                    
+                    respType.addAccessReportData(reportType);
+                }
+
             }
             else if(query0.getTypeForQuery() == TypeForQuery.REQUEST_CAPABILITIES)
             {

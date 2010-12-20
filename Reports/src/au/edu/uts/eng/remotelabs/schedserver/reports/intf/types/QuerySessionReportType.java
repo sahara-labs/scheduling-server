@@ -1,5 +1,5 @@
 /**
- * QuerySessionReportComplexType.java
+ * QuerySessionReportType.java
  * This file was auto-generated from WSDL
  * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:25:17 EDT)
  */
@@ -7,14 +7,14 @@
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
 /**
- * QuerySessionReportComplexType bean class
+ * QuerySessionReportType bean class
  */
 
-public class QuerySessionReportComplexType implements org.apache.axis2.databinding.ADBBean
+public class QuerySessionReportType implements org.apache.axis2.databinding.ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = QuerySessionReportComplexType
+     * name = QuerySessionReportType
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/reports
      * Namespace Prefix = ns1
      */
@@ -22,7 +22,7 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
     /**
                  * 
                  */
-    private static final long serialVersionUID = -4165852072947156278L;
+    private static final long serialVersionUID = -8139632410865313745L;
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -288,7 +288,7 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
             public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                     throws javax.xml.stream.XMLStreamException
             {
-                QuerySessionReportComplexType.this.serialize(this.parentQName, factory, xmlWriter);
+                QuerySessionReportType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -325,7 +325,7 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
             {
                 if (prefix == null)
                 {
-                    prefix = QuerySessionReportComplexType.generatePrefix(namespace);
+                    prefix = QuerySessionReportType.generatePrefix(namespace);
                 }
 
                 xmlWriter.writeStartElement(prefix, parentQName.getLocalPart(), namespace);
@@ -346,12 +346,12 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":QuerySessionReportComplexType", xmlWriter);
+                        + ":QuerySessionReportType", xmlWriter);
             }
             else
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
-                        "QuerySessionReportComplexType", xmlWriter);
+                        "QuerySessionReportType", xmlWriter);
             }
 
         }
@@ -379,7 +379,7 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
 
                 if (prefix == null)
                 {
-                    prefix = QuerySessionReportComplexType.generatePrefix(namespace);
+                    prefix = QuerySessionReportType.generatePrefix(namespace);
 
                     xmlWriter.writeStartElement(prefix, "startTime", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
@@ -423,7 +423,7 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
 
                 if (prefix == null)
                 {
-                    prefix = QuerySessionReportComplexType.generatePrefix(namespace);
+                    prefix = QuerySessionReportType.generatePrefix(namespace);
 
                     xmlWriter.writeStartElement(prefix, "endTime", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
@@ -498,7 +498,7 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
 
         if (prefix == null)
         {
-            prefix = QuerySessionReportComplexType.generatePrefix(namespace);
+            prefix = QuerySessionReportType.generatePrefix(namespace);
 
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
@@ -596,10 +596,10 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
          * Postcondition: If this object is an element, the reader is positioned at its end element
          * If this object is a complex type, the reader is positioned at the end element of its outer element
          */
-        public static QuerySessionReportComplexType parse(final javax.xml.stream.XMLStreamReader reader)
+        public static QuerySessionReportType parse(final javax.xml.stream.XMLStreamReader reader)
                 throws java.lang.Exception
         {
-            final QuerySessionReportComplexType object = new QuerySessionReportComplexType();
+            final QuerySessionReportType object = new QuerySessionReportType();
 
             try
             {
@@ -624,11 +624,11 @@ public class QuerySessionReportComplexType implements org.apache.axis2.databindi
 
                         final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
-                        if (!"QuerySessionReportComplexType".equals(type))
+                        if (!"QuerySessionReportType".equals(type))
                         {
                             //find namespace for the prefix
                             final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (QuerySessionReportComplexType) au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper
+                            return (QuerySessionReportType) au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper
                                     .getTypeObject(nsUri, type, reader);
                         }
 
