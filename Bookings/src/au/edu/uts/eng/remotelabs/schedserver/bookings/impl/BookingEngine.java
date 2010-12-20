@@ -160,6 +160,9 @@ public interface BookingEngine
          *  match the requested booking. */
         private List<TimePeriod> bestFits;
         
+        /** Booking created. */
+        private Bookings booking;
+        
         public BookingCreation()
         {
             this.bestFits = new ArrayList<BookingEngine.TimePeriod>();
@@ -173,6 +176,16 @@ public interface BookingEngine
         public void setWasCreated(boolean param)
         {
             this.wasCreated = param;
+        }
+        
+        public Bookings getBooking()
+        {
+            return this.booking;
+        }
+        
+        public void setBooking(Bookings param)
+        {
+            this.booking = param;
         }
         
         public void addBestFit(TimePeriod tp)

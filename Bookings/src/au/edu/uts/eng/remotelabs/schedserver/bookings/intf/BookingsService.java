@@ -53,7 +53,9 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingCreation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingResponseType;
@@ -255,9 +257,30 @@ public class BookingsService implements BookingsInterface
             }
             
             /* ----------------------------------------------------------------
-             * -- Attempt to create booking.                                 --
+             * -- Create booking.                                            --
              * ---------------------------------------------------------------- */
-            status.setSuccess(true);
+            BookingCreation bc = this.engine.createBooking(user, perm, new TimePeriod(start, end), ses);
+            if (bc.wasCreated())
+            {
+                status.setSuccess(true);
+                BookingIDType bid = new BookingIDType();
+                bid.setBookingID(bc.getBooking().getId().intValue());
+                status.setBookingID(bid);
+            }
+            else
+            {
+                status.setSuccess(false);
+                BookingListType bestFits = new BookingListType();
+                status.setBestFits(bestFits);
+                for (TimePeriod tp : bc.getBestFits())
+                {
+                    BookingType fit = new BookingType();
+                    fit.setPermissionID(booking.getPermissionID());
+                    fit.setStartTime(tp.getStartTime());
+                    fit.setEndTime(tp.getEndTime());
+                    bestFits.addBookings(fit);
+                }
+            }
         }
         finally
         {
