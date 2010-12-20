@@ -108,7 +108,7 @@ public class TimeUtil
     /**
      * Gets a date which is at the beginning of a day.
      * 
-     * @param dateStr day key
+     * @param date a date
      * @return start date
      */
     public static Calendar getDayBegin(Date date)
@@ -126,7 +126,7 @@ public class TimeUtil
     /**
      * Gets a date which is at the beginning of a day.
      * 
-     * @param dateStr day key
+     * @param date a date
      * @return start date
      */
     public static Calendar getDayBegin(Calendar date)
@@ -166,7 +166,7 @@ public class TimeUtil
     /**
      * Gets a date which is at the end of a day.
      * 
-     * @param dateStr day key
+     * @param date a date
      * @return end date
      */
     public static Calendar getDayEnd(Date date)
@@ -184,7 +184,7 @@ public class TimeUtil
     /**
      * Gets a date which begins at the end of a day.
      * 
-     * @param dateStr day key
+     * @param date a date
      * @return end date
      */
     public static Calendar getDayEnd(Calendar date)
@@ -353,7 +353,8 @@ public class TimeUtil
     /**
      * Returns the days in the specified date period.
      * 
-     * @param period time period
+     * @param start range start
+     * @param end range end
      * @return list of day keys
      */
     public static List<String> getDayKeys(Date start, Date end)

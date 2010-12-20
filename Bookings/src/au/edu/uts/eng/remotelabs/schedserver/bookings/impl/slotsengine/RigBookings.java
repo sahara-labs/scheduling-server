@@ -99,7 +99,7 @@ public class RigBookings
      * Returns true if the number of rig slots free.
      * 
      * @param start the start slot
-     * @param num number of slots
+     * @param end the end slot
      * @return true if slots are free
      */
     public boolean areSlotsFree(int start, int end)
