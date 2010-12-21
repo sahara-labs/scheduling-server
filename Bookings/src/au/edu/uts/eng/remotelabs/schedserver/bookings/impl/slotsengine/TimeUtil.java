@@ -279,6 +279,7 @@ public class TimeUtil
         
         int s = (t - m) / TIME_QUANTUM;
         cal.set(Calendar.SECOND, s);
+        cal.set(Calendar.MILLISECOND, 0);
         
         return cal;
     }

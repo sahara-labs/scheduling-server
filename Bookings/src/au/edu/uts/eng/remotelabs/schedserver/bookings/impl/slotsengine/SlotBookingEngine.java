@@ -167,7 +167,11 @@ public class SlotBookingEngine implements BookingEngine
         }
         else
         {
-            /* Multiday booking so we will need to do some fiddling. */
+            /* Multi-day booking so we will need to do some fiddling. */
+            
+            /* 1) If the booking is less than an hour each way of a hour divide,
+             * give a best fit solution and not allow the booking to be created. */
+            // TODO multi-day
         }
         
         return response;
