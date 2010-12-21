@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.stat.Statistics;
 import org.osgi.framework.BundleActivator;
@@ -156,6 +157,19 @@ public class DataAccessActivator implements BundleActivator
             }
 
             return DataAccessActivator.sessionFactory.openSession();
+        }
+    }
+    
+    public static StatelessSession getNewStatelessSession()
+    {
+        synchronized (DataAccessActivator.sessionFactory)
+        {
+            if (sessionFactory == null)
+            {
+                return null;
+            }
+
+            return DataAccessActivator.sessionFactory.openStatelessSession();
         }
     }
 
