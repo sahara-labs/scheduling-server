@@ -96,11 +96,12 @@ public class SlotBookingEngine implements BookingEngine
         
         Bookings bk = new Bookings();
         bk.setActive(true);
+        bk.setResourcePermission(perm);
         
         /* Timing information. */
         bk.setStartTime(start.getTime());
         bk.setEndTime(end.getTime());
-        bk.setDuration((int) (end.getTimeInMillis() - start.getTimeInMillis() / 1000));
+        bk.setDuration((int) (end.getTimeInMillis() - start.getTimeInMillis()) / 1000);
         
         /* User information. */
         bk.setUser(user);
@@ -111,22 +112,48 @@ public class SlotBookingEngine implements BookingEngine
         List<String> dayKeys = TimeUtil.getDayKeys(start.getTime(), end.getTime());
         if (dayKeys.size() == 1)
         {
+            /* Single day booking so we can procede normally creating the booking. */
             String day = dayKeys.get(0);
             
-            /* Good. We can procede to add it without fiddling. */
             bk.setResourceType(perm.getType());
             bk.setRig(perm.getRig());
             bk.setRigType(perm.getRigType());
             bk.setRequestCapabilities(perm.getRequestCapabilities());
             
             MBooking mb = new MBooking(bk, day);
-
-            
             synchronized (db = this.getDayBookings(day))
             {
                 if (db.createBooking(mb, ses))
                 {
                     response.setWasCreated(true);
+                    try
+                    {
+                        /* Save the booking to the database. */
+                        ses.beginTransaction();
+                        ses.save(bk);
+                        ses.getTransaction().commit();
+                        response.setWasCreated(true);
+                        response.setBooking(bk);
+                        
+                        String info = "Successfully created booking for " + user.getNamespace() + ':' + user.getName() + 
+                                " on ";
+                        switch (mb.getType())
+                        {
+                            case RIG:        info += "rig " + mb.getBooking().getRig().getName(); break;
+                            case TYPE:       info += "rig type " + mb.getRigType().getName(); break;
+                            case CAPABILITY: info += "capabilities " + mb.getRequestCapabilities().getCapabilities(); break;
+                        }
+                        info += " to start at " + bk.getStartTime() + " and finish " + bk.getEndTime() + '.';
+                        this.logger.info(info);
+                    }
+                    catch (HibernateException ex)
+                    {
+                        this.logger.error("Failed to persist a booking to the databse. Error: " + ex.getMessage() + 
+                                ". Rolling back and removing the booking.");
+                        ses.getTransaction().rollback();
+                        response.setWasCreated(false);
+                        db.removeBooking(mb);
+                    }
                 }
                 else
                 {
@@ -137,36 +164,11 @@ public class SlotBookingEngine implements BookingEngine
                     }
                 }
             }
-            
-            /* If created persist the booking to the database. */
-            if (response.wasCreated())
-            {
-                try
-                {
-                    /* Save the booking to the database. */
-                    ses.beginTransaction();
-                    ses.save(bk);
-                    ses.getTransaction().commit();
-                    response.setWasCreated(true);
-                }
-                catch (HibernateException ex)
-                {
-                    /* Roll back and remove booking. */
-                    ses.getTransaction().rollback();
-                    response.setWasCreated(false);
-                    
-                    synchronized (db) { db.removeBooking(mb); }
-                    throw ex;
-                }
-            }
         }
         else
         {
             /* Multiday booking so we will need to do some fiddling. */
         }
-        
-        
-        
         
         return response;
     }

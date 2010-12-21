@@ -251,6 +251,9 @@ public class RigBookings
             return false;
         }
         
+        this.logger.info("Commiting booking to rig " + this.rig.getName() + " on day " + this.dayKey + ", slot " +
+                booking.getStartSlot() + " through " + booking.getEndSlot() + '.');
+        
         int s = booking.getStartSlot();
         if (this.numBookings == 0)
         {
@@ -282,7 +285,7 @@ public class RigBookings
      */
     public MRange getEarlyFit(MBooking mb)
     {
-        int ss = 0, se = 0, rs, re, opt = mb.getNumSlots(), min = (int) Math.ceil(opt / 2);
+        int ss = -1, se = -1, rs, re, opt = mb.getNumSlots(), min = (int) Math.ceil(opt / 2);
         
         MBooking ex = this.getNextBooking(mb.getStartSlot());
         if (ex == null) return null;
@@ -290,7 +293,7 @@ public class RigBookings
         re = ex.getStartSlot() - 1;
         rs = re - min + 1;
         
-        while (rs > 0)
+        while (rs >= 0)
         {
             if (this.areSlotsFree(rs, re))
             {
@@ -303,7 +306,7 @@ public class RigBookings
             else
             {
                 /* If we already have a solution use that, otherwise go earlier. */
-                if (ss != 0) return new MRange(ss, se, this.dayKey);
+                if (ss != -1) return new MRange(ss, se, this.dayKey);
                 
                 ex = this.getNextBooking(rs);
                 if (ex == null) return null;
@@ -312,6 +315,8 @@ public class RigBookings
                 rs = re - min - 1;
             }
         }
+        
+        if (ss != -1) return new MRange(ss, se, this.dayKey);
         
         /* Nothing found. */
         return null;

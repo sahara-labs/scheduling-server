@@ -270,6 +270,8 @@ public class BookingsService implements BookingsInterface
             else
             {
                 status.setSuccess(false);
+                status.setFailureReason("Resource not free.");
+                
                 BookingListType bestFits = new BookingListType();
                 status.setBestFits(bestFits);
                 for (TimePeriod tp : bc.getBestFits())
