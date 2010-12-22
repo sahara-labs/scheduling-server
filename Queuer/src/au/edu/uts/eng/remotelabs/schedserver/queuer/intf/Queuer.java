@@ -251,7 +251,7 @@ public class Queuer implements QueuerSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uid = request.getGetUserQueuePosition();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getUserQueuePosition queue position " +
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getUserQueuePosition " +
         		"request with user id=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + 
         		", user name=" + uid.getUserName() + '.');
         
@@ -318,7 +318,7 @@ public class Queuer implements QueuerSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uid = request.getIsUserInQueue();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "is user in queue request with user id=" + 
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#isUserInQueue request with user id=" + 
                 uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + uid.getUserName() + 
                 '.');
         
