@@ -142,7 +142,7 @@
 							<xsd:element name="canBook"
 								type="xsd:boolean">
 							</xsd:element>
-							<xsd:element name="timeHorizion"
+							<xsd:element name="timeHorizon"
 								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
                             <xsd:element name="maxBookings" type="xsd:int" maxOccurs="1" minOccurs="0">
