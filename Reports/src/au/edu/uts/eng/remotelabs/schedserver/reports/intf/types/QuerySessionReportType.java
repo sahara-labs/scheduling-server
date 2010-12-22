@@ -22,7 +22,7 @@ public class QuerySessionReportType implements org.apache.axis2.databinding.ADBB
     /**
                  * 
                  */
-    private static final long serialVersionUID = -8139632410865313745L;
+    private static final long serialVersionUID = -5121246029757741056L;
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -31,6 +31,35 @@ public class QuerySessionReportType implements org.apache.axis2.databinding.ADBB
             return "ns1";
         }
         return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+    }
+
+    /**
+     * field for Requestor
+     */
+
+    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType localRequestor;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType
+     */
+    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType getRequestor()
+    {
+        return this.localRequestor;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            Requestor
+     */
+    public void setRequestor(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType param)
+    {
+
+        this.localRequestor = param;
+
     }
 
     /**
@@ -356,6 +385,12 @@ public class QuerySessionReportType implements org.apache.axis2.databinding.ADBB
 
         }
 
+        if (this.localRequestor == null)
+        {
+            throw new org.apache.axis2.databinding.ADBException("requestor cannot be null!!");
+        }
+        this.localRequestor.serialize(new javax.xml.namespace.QName("", "requestor"), factory, xmlWriter);
+
         if (this.localQuerySelect == null)
         {
             throw new org.apache.axis2.databinding.ADBException("querySelect cannot be null!!");
@@ -522,6 +557,14 @@ public class QuerySessionReportType implements org.apache.axis2.databinding.ADBB
         final java.util.ArrayList elementList = new java.util.ArrayList();
         final java.util.ArrayList attribList = new java.util.ArrayList();
 
+        elementList.add(new javax.xml.namespace.QName("", "requestor"));
+
+        if (this.localRequestor == null)
+        {
+            throw new org.apache.axis2.databinding.ADBException("requestor cannot be null!!");
+        }
+        elementList.add(this.localRequestor);
+
         elementList.add(new javax.xml.namespace.QName("", "querySelect"));
 
         if (this.localQuerySelect == null)
@@ -639,6 +682,28 @@ public class QuerySessionReportType implements org.apache.axis2.databinding.ADBB
                 new java.util.Vector();
 
                 reader.next();
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "requestor").equals(reader.getName()))
+                {
+
+                    object.setRequestor(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType.Factory
+                            .parse(reader));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+                    // A start element we are not expecting indicates an invalid parameter was passed
+                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
+                            + reader.getLocalName());
+                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {

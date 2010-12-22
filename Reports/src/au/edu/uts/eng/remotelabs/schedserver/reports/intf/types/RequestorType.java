@@ -6,7 +6,6 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
-
 /**
  * RequestorType bean class
  */
@@ -80,39 +79,38 @@ public class RequestorType implements org.apache.axis2.databinding.ADBBean
 
     }
 
-    
     public String getUserName()
     {
         if (this.nsNameSequence != null && this.nsNameSequence.getUserName() != null)
         {
             return this.nsNameSequence.getUserName();
         }
-        
+
         if (this.localUserQName != null)
         {
-            String idParts[] = this.localUserQName.split(RequestorType.QNAME_DELIM, 2);
+            final String idParts[] = this.localUserQName.split(RequestorType.QNAME_DELIM, 2);
             if (idParts.length == 2)
             {
                 return idParts[1];
             }
         }
-        
+
         return null;
     }
-    
+
     public String getUserNamespace()
     {
         if (this.nsNameSequence != null && this.nsNameSequence.getUserNamespace() != null)
         {
             return this.nsNameSequence.getUserNamespace();
         }
-        
+
         if (this.localUserQName != null)
         {
-            String idParts[] = this.localUserQName.split(RequestorType.QNAME_DELIM, 2);
+            final String idParts[] = this.localUserQName.split(RequestorType.QNAME_DELIM, 2);
             return idParts[0];
         }
-        
+
         return null;
     }
 

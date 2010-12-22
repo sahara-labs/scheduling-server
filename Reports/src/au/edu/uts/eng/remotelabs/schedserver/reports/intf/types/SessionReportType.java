@@ -22,7 +22,7 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
     /**
                  * 
                  */
-    private static final long serialVersionUID = -7041279011617374906L;
+    private static final long serialVersionUID = 8215676446095079500L;
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -34,71 +34,190 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
     }
 
     /**
-     * field for SessionReportTypeChoice_type0
-     * This was an Array!
+     * field for User
      */
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[] localSessionReportTypeChoice_type0;
+    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType localUser;
+
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localUserTracker = false;
 
     /**
      * Auto generated getter method
      * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[]
+     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType
      */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[] getSessionReportTypeChoice_type0()
+    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType getUser()
     {
-        return this.localSessionReportTypeChoice_type0;
-    }
-
-    /**
-     * validate the array for SessionReportTypeChoice_type0
-     */
-    protected void validateSessionReportTypeChoice_type0(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[] param)
-    {
-
-        if ((param != null) && (param.length < 1))
-        {
-            throw new java.lang.RuntimeException();
-        }
-
+        return this.localUser;
     }
 
     /**
      * Auto generated setter method
      * 
      * @param param
-     *            SessionReportTypeChoice_type0
+     *            User
      */
-    public void setSessionReportTypeChoice_type0(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[] param)
+    public void setUser(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType param)
     {
 
-        this.validateSessionReportTypeChoice_type0(param);
+        if (param != null)
+        {
+            //update the setting tracker
+            this.localUserTracker = true;
+        }
+        else
+        {
+            this.localUserTracker = false;
 
-        this.localSessionReportTypeChoice_type0 = param;
+        }
+
+        this.localUser = param;
+
     }
 
     /**
-     * Auto generated add method for the array for convenience
+     * field for UserClass
+     */
+
+    protected java.lang.String localUserClass;
+
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localUserClassTracker = false;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return java.lang.String
+     */
+    public java.lang.String getUserClass()
+    {
+        return this.localUserClass;
+    }
+
+    /**
+     * Auto generated setter method
      * 
      * @param param
-     *            au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0
+     *            UserClass
      */
-    public void addSessionReportTypeChoice_type0(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0 param)
+    public void setUserClass(final java.lang.String param)
     {
-        if (this.localSessionReportTypeChoice_type0 == null)
+
+        if (param != null)
         {
-            this.localSessionReportTypeChoice_type0 = new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[] {};
+            //update the setting tracker
+            this.localUserClassTracker = true;
+        }
+        else
+        {
+            this.localUserClassTracker = false;
+
         }
 
-        final java.util.List list = org.apache.axis2.databinding.utils.ConverterUtil
-                .toList(this.localSessionReportTypeChoice_type0);
-        list.add(param);
-        this.localSessionReportTypeChoice_type0 = (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[]) list
-                .toArray(new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[list
-                        .size()]);
+        this.localUserClass = param;
+
+    }
+
+    /**
+     * field for RigType
+     */
+
+    protected java.lang.String localRigType;
+
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localRigTypeTracker = false;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return java.lang.String
+     */
+    public java.lang.String getRigType()
+    {
+        return this.localRigType;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            RigType
+     */
+    public void setRigType(final java.lang.String param)
+    {
+
+        if (param != null)
+        {
+            //update the setting tracker
+            this.localRigTypeTracker = true;
+        }
+        else
+        {
+            this.localRigTypeTracker = false;
+
+        }
+
+        this.localRigType = param;
+
+    }
+
+    /**
+     * field for RigName
+     */
+
+    protected java.lang.String localRigName;
+
+    /*
+     * This tracker boolean wil be used to detect whether the user called the set method
+     * for this attribute. It will be used to determine whether to include this field
+     * in the serialized XML
+     */
+    protected boolean localRigNameTracker = false;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return java.lang.String
+     */
+    public java.lang.String getRigName()
+    {
+        return this.localRigName;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            RigName
+     */
+    public void setRigName(final java.lang.String param)
+    {
+
+        if (param != null)
+        {
+            //update the setting tracker
+            this.localRigNameTracker = true;
+        }
+        else
+        {
+            this.localRigNameTracker = false;
+
+        }
+
+        this.localRigName = param;
 
     }
 
@@ -544,30 +663,143 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
             }
 
         }
-
-        if (this.localSessionReportTypeChoice_type0 != null)
+        if (this.localUserTracker)
         {
-            for (final SessionReportTypeChoice_type0 element : this.localSessionReportTypeChoice_type0)
+            if (this.localUser == null)
             {
-                if (element != null)
+                throw new org.apache.axis2.databinding.ADBException("user cannot be null!!");
+            }
+            this.localUser.serialize(new javax.xml.namespace.QName("", "user"), factory, xmlWriter);
+        }
+        if (this.localUserClassTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+
+                if (prefix == null)
                 {
-                    element.serialize(null, factory, xmlWriter);
+                    prefix = SessionReportType.generatePrefix(namespace);
+
+                    xmlWriter.writeStartElement(prefix, "userClass", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+
                 }
                 else
                 {
-
-                    throw new org.apache.axis2.databinding.ADBException(
-                            "SessionReportTypeChoice_type0 cannot be null!!");
-
+                    xmlWriter.writeStartElement(namespace, "userClass");
                 }
 
             }
-        }
-        else
-        {
-            throw new org.apache.axis2.databinding.ADBException("SessionReportTypeChoice_type0 cannot be null!!");
-        }
+            else
+            {
+                xmlWriter.writeStartElement("userClass");
+            }
 
+            if (this.localUserClass == null)
+            {
+                // write the nil attribute
+
+                throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
+
+            }
+            else
+            {
+
+                xmlWriter.writeCharacters(this.localUserClass);
+
+            }
+
+            xmlWriter.writeEndElement();
+        }
+        if (this.localRigTypeTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+
+                if (prefix == null)
+                {
+                    prefix = SessionReportType.generatePrefix(namespace);
+
+                    xmlWriter.writeStartElement(prefix, "rigType", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "rigType");
+                }
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement("rigType");
+            }
+
+            if (this.localRigType == null)
+            {
+                // write the nil attribute
+
+                throw new org.apache.axis2.databinding.ADBException("rigType cannot be null!!");
+
+            }
+            else
+            {
+
+                xmlWriter.writeCharacters(this.localRigType);
+
+            }
+
+            xmlWriter.writeEndElement();
+        }
+        if (this.localRigNameTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+
+                if (prefix == null)
+                {
+                    prefix = SessionReportType.generatePrefix(namespace);
+
+                    xmlWriter.writeStartElement(prefix, "rigName", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "rigName");
+                }
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement("rigName");
+            }
+
+            if (this.localRigName == null)
+            {
+                // write the nil attribute
+
+                throw new org.apache.axis2.databinding.ADBException("rigName cannot be null!!");
+
+            }
+            else
+            {
+
+                xmlWriter.writeCharacters(this.localRigName);
+
+            }
+
+            xmlWriter.writeEndElement();
+        }
         namespace = "";
         if (!namespace.equals(""))
         {
@@ -1193,34 +1425,55 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
         final java.util.ArrayList elementList = new java.util.ArrayList();
         final java.util.ArrayList attribList = new java.util.ArrayList();
 
-        if (this.localSessionReportTypeChoice_type0 != null)
+        if (this.localUserTracker)
         {
-            for (final SessionReportTypeChoice_type0 element : this.localSessionReportTypeChoice_type0)
+            elementList.add(new javax.xml.namespace.QName("", "user"));
+
+            if (this.localUser == null)
             {
+                throw new org.apache.axis2.databinding.ADBException("user cannot be null!!");
+            }
+            elementList.add(this.localUser);
+        }
+        if (this.localUserClassTracker)
+        {
+            elementList.add(new javax.xml.namespace.QName("", "userClass"));
 
-                if (element != null)
-                {
-                    elementList.add(new javax.xml.namespace.QName(
-                            "http://remotelabs.eng.uts.edu.au/schedserver/reports", "SessionReportTypeChoice_type0"));
-                    elementList.add(element);
-                }
-                else
-                {
-
-                    throw new org.apache.axis2.databinding.ADBException(
-                            "SessionReportTypeChoice_type0 cannot be null !!");
-
-                }
-
+            if (this.localUserClass != null)
+            {
+                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserClass));
+            }
+            else
+            {
+                throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
             }
         }
-        else
+        if (this.localRigTypeTracker)
         {
+            elementList.add(new javax.xml.namespace.QName("", "rigType"));
 
-            throw new org.apache.axis2.databinding.ADBException("SessionReportTypeChoice_type0 cannot be null!!");
-
+            if (this.localRigType != null)
+            {
+                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localRigType));
+            }
+            else
+            {
+                throw new org.apache.axis2.databinding.ADBException("rigType cannot be null!!");
+            }
         }
+        if (this.localRigNameTracker)
+        {
+            elementList.add(new javax.xml.namespace.QName("", "rigName"));
 
+            if (this.localRigName != null)
+            {
+                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localRigName));
+            }
+            else
+            {
+                throw new org.apache.axis2.databinding.ADBException("rigName cannot be null!!");
+            }
+        }
         elementList.add(new javax.xml.namespace.QName("", "aveQueueDuration"));
 
         elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localAveQueueDuration));
@@ -1336,50 +1589,88 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
 
                 reader.next();
 
-                final java.util.ArrayList list1 = new java.util.ArrayList();
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "user").equals(reader.getName()))
+                {
+
+                    object.setUser(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType.Factory
+                            .parse(reader));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+
+                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
 
-                if (reader.isStartElement())
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "userClass").equals(reader.getName()))
                 {
 
-                    // Process the array and step past its final element's end.
-                    list1
-                            .add(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0.Factory
-                                    .parse(reader));
-                    //loop until we find a start element that is not part of this array
-                    boolean loopDone1 = false;
-                    while (!loopDone1)
-                    {
+                    final java.lang.String content = reader.getElementText();
 
-                        // Step to next element event.
-                        while (!reader.isStartElement() && !reader.isEndElement())
-                        {
-                            reader.next();
-                        }
-                        if (reader.isEndElement())
-                        {
-                            //two continuous end elements means we are exiting the xml structure
-                            loopDone1 = true;
-                        }
-                        else
-                        {
-                            list1
-                                    .add(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0.Factory
-                                            .parse(reader));
-                        }
-                    }
-                    // call the converter utility  to convert and set the array
-                    object
-                            .setSessionReportTypeChoice_type0((au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0[]) org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToArray(
-                                            au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTypeChoice_type0.class,
-                                            list1));
+                    object.setUserClass(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+
+                    reader.next();
 
                 } // End of if for expected property start element
+
+                else
+                {
+
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "rigType").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object.setRigType(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new javax.xml.namespace.QName("", "rigName").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object.setRigName(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+
+                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
