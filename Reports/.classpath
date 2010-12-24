@@ -52,5 +52,7 @@
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.3.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-Server/lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
