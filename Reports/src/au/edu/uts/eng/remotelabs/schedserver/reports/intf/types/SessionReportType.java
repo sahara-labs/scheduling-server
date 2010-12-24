@@ -22,7 +22,7 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
     /**
                  * 
                  */
-    private static final long serialVersionUID = 8215676446095079500L;
+    private static final long serialVersionUID = -1066261603037864664L;
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -305,6 +305,35 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
     {
 
         this.localMinQueueDuration = param;
+
+    }
+
+    /**
+     * field for MaxQueueDuration
+     */
+
+    protected float localMaxQueueDuration;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return float
+     */
+    public float getMaxQueueDuration()
+    {
+        return this.localMaxQueueDuration;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            MaxQueueDuration
+     */
+    public void setMaxQueueDuration(final float param)
+    {
+
+        this.localMaxQueueDuration = param;
 
     }
 
@@ -926,6 +955,45 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
             {
                 prefix = SessionReportType.generatePrefix(namespace);
 
+                xmlWriter.writeStartElement(prefix, "maxQueueDuration", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "maxQueueDuration");
+            }
+
+        }
+        else
+        {
+            xmlWriter.writeStartElement("maxQueueDuration");
+        }
+
+        if (java.lang.Float.isNaN(this.localMaxQueueDuration))
+        {
+
+            throw new org.apache.axis2.databinding.ADBException("maxQueueDuration cannot be null!!");
+
+        }
+        else
+        {
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
+                    .convertToString(this.localMaxQueueDuration));
+        }
+
+        xmlWriter.writeEndElement();
+
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+
+            if (prefix == null)
+            {
+                prefix = SessionReportType.generatePrefix(namespace);
+
                 xmlWriter.writeStartElement(prefix, "totalQueueDuration", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
@@ -1486,6 +1554,10 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
 
         elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localMinQueueDuration));
 
+        elementList.add(new javax.xml.namespace.QName("", "maxQueueDuration"));
+
+        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localMaxQueueDuration));
+
         elementList.add(new javax.xml.namespace.QName("", "totalQueueDuration"));
 
         elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localTotalQueueDuration));
@@ -1737,6 +1809,32 @@ public class SessionReportType implements org.apache.axis2.databinding.ADBBean
 
                     object
                             .setMinQueueDuration(org.apache.axis2.databinding.utils.ConverterUtil
+                                    .convertToFloat(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+                    // A start element we are not expecting indicates an invalid parameter was passed
+                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
+                            + reader.getLocalName());
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement()
+                        && new javax.xml.namespace.QName("", "maxQueueDuration").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object
+                            .setMaxQueueDuration(org.apache.axis2.databinding.utils.ConverterUtil
                                     .convertToFloat(content));
 
                     reader.next();

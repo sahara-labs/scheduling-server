@@ -84,6 +84,7 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionRepo
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence;
 
@@ -802,6 +803,9 @@ public class Reports implements ReportsSkeletonInterface
         page.setPageLength(30);
         page.setPageNumber(1);
         respType.setPagination(page);
+        respType.setSessionCount(0);
+        respType.setTotalQueueDuration(0);
+        respType.setTotalSessionDuration(0);
         resp.setQuerySessionReportResponse(respType);
         
         org.hibernate.Session ses = DataAccessActivator.getNewSession();
@@ -820,7 +824,6 @@ public class Reports implements ReportsSkeletonInterface
                         "name=" + uid.getUserName() + '.');
                 return resp;
             }
-            String persona = user.getPersona();
 
             Criteria cri = ses.createCriteria(Session.class);
             // Order by request time
@@ -888,6 +891,8 @@ public class Reports implements ReportsSkeletonInterface
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
+                int totalSessionDuration = 0;
+                int totalQueueDuration = 0;
 
                 if (qSRReq.getPagination() != null)
                 {
@@ -895,6 +900,7 @@ public class Reports implements ReportsSkeletonInterface
                     noPages = pages.getNumberOfPages();
                     pageNumber = pages.getPageNumber();
                     pageLength = pages.getPageLength();
+                    
                 }
 
                 /* ----------------------------------------------------------------
@@ -904,8 +910,43 @@ public class Reports implements ReportsSkeletonInterface
                 for (Entry<User,UserRecord> e : recordMap.entrySet())
                 {
                     recordCount++;
+                    totalQueueDuration += e.getValue().getTotalQueueDuration();
+                    totalSessionDuration += e.getValue().getTotalSessionDuration();
+                    if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
+                    {
+                        SessionReportType reportType = new SessionReportType();
+
+                        //Get user from session object
+                        RequestorType user0 = new RequestorType();
+                        UserNSNameSequence nsSequence = new UserNSNameSequence();
+                        nsSequence.setUserName(e.getKey().getName());
+                        nsSequence.setUserNamespace(e.getKey().getNamespace());
+                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        reportType.setUser(user0);
+
+                        reportType.setRigName(query0.getQueryLike());
+                        
+                        reportType.setAveQueueDuration(e.getValue().getAverageQueueDuration());
+                        reportType.setMedQueueDuration(e.getValue().getMedianQueueDuration());
+                        reportType.setMinQueueDuration(e.getValue().getMinimumQueueDuration());
+                        reportType.setMaxQueueDuration(e.getValue().getMaximumQueueDuration());
+                        reportType.setTotalQueueDuration(e.getValue().getTotalQueueDuration());
+
+                        reportType.setAveSessionDuration(e.getValue().getAverageSessionDuration());
+                        reportType.setMedSessionDuration(e.getValue().getMedianSessionDuration());
+                        reportType.setMinSessionDuration(e.getValue().getMinimumSessionDuration());
+                        reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
+                        reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
+                        
+                        respType.addSessionReport(reportType);
+                    }
                 }
                 
+                respType.setSessionCount(recordCount);
+                respType.setTotalQueueDuration(totalQueueDuration);
+                respType.setTotalSessionDuration(totalSessionDuration);
+                
+                resp.setQuerySessionReportResponse(respType);
             }
         }
         
@@ -913,7 +954,8 @@ public class Reports implements ReportsSkeletonInterface
         {
             ses.close();
         }
-       return null;
+        
+        return resp;
     }
 
     

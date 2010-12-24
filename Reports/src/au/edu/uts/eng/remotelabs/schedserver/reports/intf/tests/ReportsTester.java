@@ -48,6 +48,7 @@ import junit.framework.TestCase;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axis2.databinding.ADBException;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
@@ -74,7 +75,12 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAcce
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessType;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
 
 /**
@@ -1910,10 +1916,956 @@ public class ReportsTester extends TestCase
 
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#querySessionReport(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport)}.
+     * @throws Exception 
      */
-//    public void testQuerySessionReport()
-//    {
-//        fail("Not yet implemented");
-//    }
+    public void testQuerySessionReportRIG() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
 
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -1);
+
+        Date before = cal.getTime();
+        
+        // Queue time 60 min
+        // Session time 120 min
+        Date request = cal.getTime();
+        cal.add(Calendar.HOUR, 1);
+        Date assign = cal.getTime();
+        cal.add(Calendar.HOUR, 2);
+        Date remove = cal.getTime();
+        cal.add(Calendar.HOUR, 1);
+        Date after = cal.getTime();
+        
+        // Queue time 30min
+        // Session time 60 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date assign2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 60);
+        Date remove2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after2 = cal.getTime();
+
+        // Queue time 0 hr
+        // Session time 40 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request3 = cal.getTime();
+        Date assign3 = cal.getTime();
+        cal.add(Calendar.MINUTE, 40);
+        Date remove3 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after3 = cal.getTime();
+
+        // Queue time 20 min
+        // Session time 0 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request4 = cal.getTime();
+        Date assign4 = null;
+        cal.add(Calendar.MINUTE, 20);
+        Date remove4 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after4 = cal.getTime();
+
+        
+        cal.add(Calendar.MONTH, 2);
+        Date later = cal.getTime();
+        
+        db.beginTransaction();
+        
+        User user = new User("testuser1", "REPS", "ACADEMIC");
+        db.persist(user);
+        
+        User user2 = new User("testuser2", "REPS", "USER");
+        db.persist(user2);
+
+        User user3 = new User("testuser3", "REPS", "USER");
+        db.persist(user3);
+
+        UserClass uc1 = new UserClass();
+        uc1.setName("sessclass");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setPriority((short)4);
+        db.persist(uc1);
+        
+        UserClass uc2 = new UserClass();
+        uc2.setName("sessclass2");
+        uc2.setActive(true);
+        uc2.setQueuable(true);
+        uc2.setPriority((short)4);
+        db.persist(uc2);
+
+        AcademicPermission ap1 = new AcademicPermission(user, uc1, true, true, true, true, true);
+        db.persist(ap1);
+
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        db.persist(ass);
+
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user2.getId(), uc1.getId()), uc1, user2);
+        db.persist(ass2);
+
+        UserAssociation ass3 = new UserAssociation(new UserAssociationId(user3.getId(), uc1.getId()), uc1, user3);
+        db.persist(ass3);
+
+        RigType rt = new RigType();
+        rt.setName("Session_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("session,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Session_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(later);
+        p1.setRig(r);
+        p1.setAllowedExtensions((short)10);
+        db.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(after);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(request);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setRemovalReason("Session ended");
+        ses.setRemovalTime(remove);
+        ses.setUser(user2);
+        ses.setUserName(user2.getName());
+        ses.setUserNamespace(user2.getNamespace());
+        ses.setAssignedRigName(r.getName());
+        ses.setAssignmentTime(assign);
+        ses.setRig(r);
+        db.persist(ses);
+        
+        Session ses2 = new Session();
+        ses2.setActive(true);
+        ses2.setReady(true);
+        ses2.setActivityLastUpdated(later);
+        ses2.setExtensions((short) 5);
+        ses2.setPriority((short) 5);
+        ses2.setRequestTime(request2);
+        ses2.setRequestedResourceId(r.getId());
+        ses2.setRequestedResourceName(r.getName());
+        ses2.setResourceType("RIG");
+        ses2.setResourcePermission(p1);
+        ses2.setRemovalTime(remove2);
+        ses2.setRemovalReason("Session ended");
+        ses2.setUser(user3);
+        ses2.setUserName(user3.getName());
+        ses2.setUserNamespace(user3.getNamespace());
+        ses2.setAssignedRigName(r.getName());
+        ses2.setAssignmentTime(assign2);
+        ses2.setRig(r);
+        db.persist(ses2);
+        
+        Session ses3 = new Session();
+        ses3.setActive(true);
+        ses3.setReady(true);
+        ses3.setActivityLastUpdated(later);
+        ses3.setExtensions((short) 5);
+        ses3.setPriority((short) 5);
+        ses3.setRequestTime(request3);
+        ses3.setRequestedResourceId(r.getId());
+        ses3.setRequestedResourceName(r.getName());
+        ses3.setResourceType("RIG");
+        ses3.setResourcePermission(p1);
+        ses3.setRemovalTime(remove3);
+        ses3.setRemovalReason("Session ended");
+        ses3.setUser(user2);
+        ses3.setUserName(user2.getName());
+        ses3.setUserNamespace(user2.getNamespace());
+        ses3.setAssignedRigName(r.getName());
+        ses3.setAssignmentTime(assign3);
+        ses3.setRig(r);
+        db.persist(ses3);
+
+        Session ses4 = new Session();
+        ses4.setActive(true);
+        ses4.setReady(true);
+        ses4.setActivityLastUpdated(later);
+        ses4.setExtensions((short) 5);
+        ses4.setPriority((short) 5);
+        ses4.setRequestTime(request4);
+        ses4.setRequestedResourceId(r.getId());
+        ses4.setRequestedResourceName(r.getName());
+        ses4.setResourceType("RIG");
+        ses4.setResourcePermission(p1);
+        ses4.setRemovalTime(remove4);
+        ses4.setRemovalReason("Session ended");
+        ses4.setUser(user3);
+        ses4.setUserName(user3.getName());
+        ses4.setUserNamespace(user3.getNamespace());
+        ses4.setAssignedRigName(r.getName());
+        ses4.setAssignmentTime(assign4);
+        ses4.setRig(r);
+        db.persist(ses4);
+
+        db.getTransaction().commit();
+
+        db.beginTransaction();
+        db.refresh(uc1);
+        db.refresh(uc2);
+        db.refresh(user);
+        db.refresh(user2);
+        db.refresh(user3);
+        db.refresh(p1);
+        db.refresh(r);
+        db.refresh(rt);
+        db.getTransaction().commit();
+
+        
+        // Set up test parameters
+        QuerySessionReport qSR = new QuerySessionReport();
+        QuerySessionReportType qSRType = new QuerySessionReportType();
+        
+        RequestorType user1 = new RequestorType();
+        user1.setUserQName("REPS:testuser1");
+        qSRType.setRequestor(user1);
+        
+        QueryFilterType qSelect = new QueryFilterType();
+        TypeForQuery type = TypeForQuery.RIG;
+        OperatorType op = OperatorType.AND;
+        qSelect.setTypeForQuery(type);
+        qSelect.setOperator(op);
+        qSelect.setQueryLike("Session_Rig_Test_Rig1");
+        qSRType.setQuerySelect(qSelect);
+
+        Calendar start = Calendar.getInstance();
+        start.add(Calendar.MONTH, -1);
+        qSRType.setStartTime(start);
+        Calendar end = Calendar.getInstance();
+        end.add(Calendar.MONTH, 2);
+        qSRType.setEndTime(end);
+        
+        PaginationType pages = new PaginationType();
+        pages.setNumberOfPages(2);
+        pages.setPageLength(2);
+        pages.setPageNumber(1);
+        qSRType.setPagination(pages);
+
+        qSR.setQuerySessionReport(qSRType);
+        
+        QuerySessionReportResponse response = this.service.querySessionReport(qSR);
+
+        // Delete test data
+        db.beginTransaction();
+        db.delete(ses4);
+        db.delete(ses3);
+        db.delete(ses2);
+        db.delete(ses);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass3);
+        db.delete(ass2);
+        db.delete(ass);
+        db.delete(ap1);
+        db.delete(uc2);
+        db.delete(uc1);
+        db.delete(user3);
+        db.delete(user2);
+        db.delete(user);
+        db.getTransaction().commit();
+
+        assertNotNull(response);
+        QuerySessionReportResponseType resp = response.getQuerySessionReportResponse();
+        assertNotNull(resp);
+        assertEquals(2,resp.getSessionCount());
+        assertEquals(110*60,resp.getTotalQueueDuration());
+        assertEquals(220*60,resp.getTotalSessionDuration());
+        
+        PaginationType page = resp.getPagination();
+        assertNotNull(page);
+        
+        //Only single user, so one record
+        SessionReportType[] rep = resp.getSessionReport();
+        assertNotNull(rep);
+        assertEquals(2,rep.length);
+        
+        //rep[0] session 1 and 3
+        assertEquals((float)30*60, rep[0].getAveQueueDuration());
+        assertEquals((float)60*60, rep[0].getMaxQueueDuration());
+        assertEquals((float)0*60, rep[0].getMinQueueDuration());
+        assertEquals((float)30*60, rep[0].getMedQueueDuration());
+        assertEquals((float)60*60, rep[0].getTotalQueueDuration());
+        
+        assertEquals((float)80*60,rep[0].getAveSessionDuration());
+        assertEquals((float)120*60, rep[0].getMaxSessionDuration());
+        assertEquals((float)40*60, rep[0].getMinSessionDuration());
+        assertEquals((float)80*60, rep[0].getMedSessionDuration());
+        assertEquals((float)160*60, rep[0].getTotalSessionDuration());
+
+        //rep[1] session 2 and 4
+        assertEquals((float)25*60, rep[1].getAveQueueDuration());
+        assertEquals((float)30*60, rep[1].getMaxQueueDuration());
+        assertEquals((float)20*60, rep[1].getMinQueueDuration());
+        assertEquals((float)25*60, rep[1].getMedQueueDuration());
+        assertEquals((float)50*60, rep[1].getTotalQueueDuration());
+        
+        assertEquals((float)30*60,rep[1].getAveSessionDuration());
+        assertEquals((float)60*60, rep[1].getMaxSessionDuration());
+        assertEquals((float)0*60, rep[1].getMinSessionDuration());
+        assertEquals((float)30*60, rep[1].getMedSessionDuration());
+        assertEquals((float)60*60, rep[1].getTotalSessionDuration());
+
+        OMElement ele = response.getOMElement(QuerySessionReportResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+
+    
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#querySessionReport(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport)}.
+     * @throws Exception 
+     */
+    public void testQuerySessionReportRIGPaginationPage1() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -1);
+
+        Date before = cal.getTime();
+        
+        // Queue time 60 min
+        // Session time 120 min
+        Date request = cal.getTime();
+        cal.add(Calendar.HOUR, 1);
+        Date assign = cal.getTime();
+        cal.add(Calendar.HOUR, 2);
+        Date remove = cal.getTime();
+        cal.add(Calendar.HOUR, 1);
+        Date after = cal.getTime();
+        
+        // Queue time 30min
+        // Session time 60 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date assign2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 60);
+        Date remove2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after2 = cal.getTime();
+
+        // Queue time 0 hr
+        // Session time 40 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request3 = cal.getTime();
+        Date assign3 = cal.getTime();
+        cal.add(Calendar.MINUTE, 40);
+        Date remove3 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after3 = cal.getTime();
+
+        // Queue time 20 min
+        // Session time 0 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request4 = cal.getTime();
+        Date assign4 = null;
+        cal.add(Calendar.MINUTE, 20);
+        Date remove4 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after4 = cal.getTime();
+
+        
+        cal.add(Calendar.MONTH, 2);
+        Date later = cal.getTime();
+        
+        db.beginTransaction();
+        
+        User user = new User("testuser1", "REPS", "ACADEMIC");
+        db.persist(user);
+        
+        User user2 = new User("testuser2", "REPS", "USER");
+        db.persist(user2);
+
+        User user3 = new User("testuser3", "REPS", "USER");
+        db.persist(user3);
+
+        UserClass uc1 = new UserClass();
+        uc1.setName("sessclass");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setPriority((short)4);
+        db.persist(uc1);
+        
+        UserClass uc2 = new UserClass();
+        uc2.setName("sessclass2");
+        uc2.setActive(true);
+        uc2.setQueuable(true);
+        uc2.setPriority((short)4);
+        db.persist(uc2);
+
+        AcademicPermission ap1 = new AcademicPermission(user, uc1, true, true, true, true, true);
+        db.persist(ap1);
+
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        db.persist(ass);
+
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user2.getId(), uc1.getId()), uc1, user2);
+        db.persist(ass2);
+
+        UserAssociation ass3 = new UserAssociation(new UserAssociationId(user3.getId(), uc1.getId()), uc1, user3);
+        db.persist(ass3);
+
+        RigType rt = new RigType();
+        rt.setName("Session_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("session,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Session_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(later);
+        p1.setRig(r);
+        p1.setAllowedExtensions((short)10);
+        db.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(after);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(request);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setRemovalReason("Session ended");
+        ses.setRemovalTime(remove);
+        ses.setUser(user2);
+        ses.setUserName(user2.getName());
+        ses.setUserNamespace(user2.getNamespace());
+        ses.setAssignedRigName(r.getName());
+        ses.setAssignmentTime(assign);
+        ses.setRig(r);
+        db.persist(ses);
+        
+        Session ses2 = new Session();
+        ses2.setActive(true);
+        ses2.setReady(true);
+        ses2.setActivityLastUpdated(later);
+        ses2.setExtensions((short) 5);
+        ses2.setPriority((short) 5);
+        ses2.setRequestTime(request2);
+        ses2.setRequestedResourceId(r.getId());
+        ses2.setRequestedResourceName(r.getName());
+        ses2.setResourceType("RIG");
+        ses2.setResourcePermission(p1);
+        ses2.setRemovalTime(remove2);
+        ses2.setRemovalReason("Session ended");
+        ses2.setUser(user3);
+        ses2.setUserName(user3.getName());
+        ses2.setUserNamespace(user3.getNamespace());
+        ses2.setAssignedRigName(r.getName());
+        ses2.setAssignmentTime(assign2);
+        ses2.setRig(r);
+        db.persist(ses2);
+        
+        Session ses3 = new Session();
+        ses3.setActive(true);
+        ses3.setReady(true);
+        ses3.setActivityLastUpdated(later);
+        ses3.setExtensions((short) 5);
+        ses3.setPriority((short) 5);
+        ses3.setRequestTime(request3);
+        ses3.setRequestedResourceId(r.getId());
+        ses3.setRequestedResourceName(r.getName());
+        ses3.setResourceType("RIG");
+        ses3.setResourcePermission(p1);
+        ses3.setRemovalTime(remove3);
+        ses3.setRemovalReason("Session ended");
+        ses3.setUser(user2);
+        ses3.setUserName(user2.getName());
+        ses3.setUserNamespace(user2.getNamespace());
+        ses3.setAssignedRigName(r.getName());
+        ses3.setAssignmentTime(assign3);
+        ses3.setRig(r);
+        db.persist(ses3);
+
+        Session ses4 = new Session();
+        ses4.setActive(true);
+        ses4.setReady(true);
+        ses4.setActivityLastUpdated(later);
+        ses4.setExtensions((short) 5);
+        ses4.setPriority((short) 5);
+        ses4.setRequestTime(request4);
+        ses4.setRequestedResourceId(r.getId());
+        ses4.setRequestedResourceName(r.getName());
+        ses4.setResourceType("RIG");
+        ses4.setResourcePermission(p1);
+        ses4.setRemovalTime(remove4);
+        ses4.setRemovalReason("Session ended");
+        ses4.setUser(user3);
+        ses4.setUserName(user3.getName());
+        ses4.setUserNamespace(user3.getNamespace());
+        ses4.setAssignedRigName(r.getName());
+        ses4.setAssignmentTime(assign4);
+        ses4.setRig(r);
+        db.persist(ses4);
+
+        db.getTransaction().commit();
+
+        db.beginTransaction();
+        db.refresh(uc1);
+        db.refresh(uc2);
+        db.refresh(user);
+        db.refresh(user2);
+        db.refresh(user3);
+        db.refresh(p1);
+        db.refresh(r);
+        db.refresh(rt);
+        db.getTransaction().commit();
+
+        
+        // Set up test parameters
+        QuerySessionReport qSR = new QuerySessionReport();
+        QuerySessionReportType qSRType = new QuerySessionReportType();
+        
+        RequestorType user1 = new RequestorType();
+        user1.setUserQName("REPS:testuser1");
+        qSRType.setRequestor(user1);
+        
+        QueryFilterType qSelect = new QueryFilterType();
+        TypeForQuery type = TypeForQuery.RIG;
+        OperatorType op = OperatorType.AND;
+        qSelect.setTypeForQuery(type);
+        qSelect.setOperator(op);
+        qSelect.setQueryLike("Session_Rig_Test_Rig1");
+        qSRType.setQuerySelect(qSelect);
+
+        Calendar start = Calendar.getInstance();
+        start.add(Calendar.MONTH, -1);
+        qSRType.setStartTime(start);
+        Calendar end = Calendar.getInstance();
+        end.add(Calendar.MONTH, 2);
+        qSRType.setEndTime(end);
+        
+        PaginationType pages = new PaginationType();
+        pages.setNumberOfPages(2);
+        pages.setPageLength(1);
+        pages.setPageNumber(1);
+        qSRType.setPagination(pages);
+
+        qSR.setQuerySessionReport(qSRType);
+        
+        QuerySessionReportResponse response = this.service.querySessionReport(qSR);
+
+        // Delete test data
+        db.beginTransaction();
+        db.delete(ses4);
+        db.delete(ses3);
+        db.delete(ses2);
+        db.delete(ses);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass3);
+        db.delete(ass2);
+        db.delete(ass);
+        db.delete(ap1);
+        db.delete(uc2);
+        db.delete(uc1);
+        db.delete(user3);
+        db.delete(user2);
+        db.delete(user);
+        db.getTransaction().commit();
+
+        assertNotNull(response);
+        QuerySessionReportResponseType resp = response.getQuerySessionReportResponse();
+        assertNotNull(resp);
+        assertEquals(2,resp.getSessionCount());
+        assertEquals(110*60,resp.getTotalQueueDuration());
+        assertEquals(220*60,resp.getTotalSessionDuration());
+        
+        PaginationType page = resp.getPagination();
+        assertNotNull(page);
+        
+        //Only single user, so one record
+        SessionReportType[] rep = resp.getSessionReport();
+        assertNotNull(rep);
+        assertEquals(1,rep.length);
+        
+        //rep[0] session 1 and 3
+        assertEquals((float)30*60, rep[0].getAveQueueDuration());
+        assertEquals((float)60*60, rep[0].getMaxQueueDuration());
+        assertEquals((float)0*60, rep[0].getMinQueueDuration());
+        assertEquals((float)30*60, rep[0].getMedQueueDuration());
+        assertEquals((float)60*60, rep[0].getTotalQueueDuration());
+        
+        assertEquals((float)80*60,rep[0].getAveSessionDuration());
+        assertEquals((float)120*60, rep[0].getMaxSessionDuration());
+        assertEquals((float)40*60, rep[0].getMinSessionDuration());
+        assertEquals((float)80*60, rep[0].getMedSessionDuration());
+        assertEquals((float)160*60, rep[0].getTotalSessionDuration());
+
+        //rep[1] session 2 and 4
+  /*      assertEquals((float)25*60, rep[1].getAveQueueDuration());
+        assertEquals((float)30*60, rep[1].getMaxQueueDuration());
+        assertEquals((float)20*60, rep[1].getMinQueueDuration());
+        assertEquals((float)25*60, rep[1].getMedQueueDuration());
+        assertEquals((float)50*60, rep[1].getTotalQueueDuration());
+        
+        assertEquals((float)30*60,rep[1].getAveSessionDuration());
+        assertEquals((float)60*60, rep[1].getMaxSessionDuration());
+        assertEquals((float)0*60, rep[1].getMinSessionDuration());
+        assertEquals((float)30*60, rep[1].getMedSessionDuration());
+        assertEquals((float)60*60, rep[1].getTotalSessionDuration());
+*/
+        OMElement ele = response.getOMElement(QuerySessionReportResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#querySessionReport(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport)}.
+     * @throws Exception 
+     */
+    public void testQuerySessionReportRIGPaginationPage2() throws Exception
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -1);
+
+        Date before = cal.getTime();
+        
+        // Queue time 60 min
+        // Session time 120 min
+        Date request = cal.getTime();
+        cal.add(Calendar.HOUR, 1);
+        Date assign = cal.getTime();
+        cal.add(Calendar.HOUR, 2);
+        Date remove = cal.getTime();
+        cal.add(Calendar.HOUR, 1);
+        Date after = cal.getTime();
+        
+        // Queue time 30min
+        // Session time 60 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date assign2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 60);
+        Date remove2 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after2 = cal.getTime();
+
+        // Queue time 0 hr
+        // Session time 40 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request3 = cal.getTime();
+        Date assign3 = cal.getTime();
+        cal.add(Calendar.MINUTE, 40);
+        Date remove3 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after3 = cal.getTime();
+
+        // Queue time 20 min
+        // Session time 0 min
+        cal.add(Calendar.MINUTE, 30);
+        Date request4 = cal.getTime();
+        Date assign4 = null;
+        cal.add(Calendar.MINUTE, 20);
+        Date remove4 = cal.getTime();
+        cal.add(Calendar.MINUTE, 30);
+        Date after4 = cal.getTime();
+
+        
+        cal.add(Calendar.MONTH, 2);
+        Date later = cal.getTime();
+        
+        db.beginTransaction();
+        
+        User user = new User("testuser1", "REPS", "ACADEMIC");
+        db.persist(user);
+        
+        User user2 = new User("testuser2", "REPS", "USER");
+        db.persist(user2);
+
+        User user3 = new User("testuser3", "REPS", "USER");
+        db.persist(user3);
+
+        UserClass uc1 = new UserClass();
+        uc1.setName("sessclass");
+        uc1.setActive(true);
+        uc1.setQueuable(true);
+        uc1.setPriority((short)4);
+        db.persist(uc1);
+        
+        UserClass uc2 = new UserClass();
+        uc2.setName("sessclass2");
+        uc2.setActive(true);
+        uc2.setQueuable(true);
+        uc2.setPriority((short)4);
+        db.persist(uc2);
+
+        AcademicPermission ap1 = new AcademicPermission(user, uc1, true, true, true, true, true);
+        db.persist(ap1);
+
+        UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
+        db.persist(ass);
+
+        UserAssociation ass2 = new UserAssociation(new UserAssociationId(user2.getId(), uc1.getId()), uc1, user2);
+        db.persist(ass2);
+
+        UserAssociation ass3 = new UserAssociation(new UserAssociationId(user3.getId(), uc1.getId()), uc1, user3);
+        db.persist(ass3);
+
+        RigType rt = new RigType();
+        rt.setName("Session_Test_Rig_Type");
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("session,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Session_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(later);
+        p1.setRig(r);
+        p1.setAllowedExtensions((short)10);
+        db.persist(p1);
+        
+        Session ses = new Session();
+        ses.setActive(true);
+        ses.setReady(true);
+        ses.setActivityLastUpdated(after);
+        ses.setExtensions((short) 5);
+        ses.setPriority((short) 5);
+        ses.setRequestTime(request);
+        ses.setRequestedResourceId(r.getId());
+        ses.setRequestedResourceName(r.getName());
+        ses.setResourceType("RIG");
+        ses.setResourcePermission(p1);
+        ses.setRemovalReason("Session ended");
+        ses.setRemovalTime(remove);
+        ses.setUser(user2);
+        ses.setUserName(user2.getName());
+        ses.setUserNamespace(user2.getNamespace());
+        ses.setAssignedRigName(r.getName());
+        ses.setAssignmentTime(assign);
+        ses.setRig(r);
+        db.persist(ses);
+        
+        Session ses2 = new Session();
+        ses2.setActive(true);
+        ses2.setReady(true);
+        ses2.setActivityLastUpdated(later);
+        ses2.setExtensions((short) 5);
+        ses2.setPriority((short) 5);
+        ses2.setRequestTime(request2);
+        ses2.setRequestedResourceId(r.getId());
+        ses2.setRequestedResourceName(r.getName());
+        ses2.setResourceType("RIG");
+        ses2.setResourcePermission(p1);
+        ses2.setRemovalTime(remove2);
+        ses2.setRemovalReason("Session ended");
+        ses2.setUser(user3);
+        ses2.setUserName(user3.getName());
+        ses2.setUserNamespace(user3.getNamespace());
+        ses2.setAssignedRigName(r.getName());
+        ses2.setAssignmentTime(assign2);
+        ses2.setRig(r);
+        db.persist(ses2);
+        
+        Session ses3 = new Session();
+        ses3.setActive(true);
+        ses3.setReady(true);
+        ses3.setActivityLastUpdated(later);
+        ses3.setExtensions((short) 5);
+        ses3.setPriority((short) 5);
+        ses3.setRequestTime(request3);
+        ses3.setRequestedResourceId(r.getId());
+        ses3.setRequestedResourceName(r.getName());
+        ses3.setResourceType("RIG");
+        ses3.setResourcePermission(p1);
+        ses3.setRemovalTime(remove3);
+        ses3.setRemovalReason("Session ended");
+        ses3.setUser(user2);
+        ses3.setUserName(user2.getName());
+        ses3.setUserNamespace(user2.getNamespace());
+        ses3.setAssignedRigName(r.getName());
+        ses3.setAssignmentTime(assign3);
+        ses3.setRig(r);
+        db.persist(ses3);
+
+        Session ses4 = new Session();
+        ses4.setActive(true);
+        ses4.setReady(true);
+        ses4.setActivityLastUpdated(later);
+        ses4.setExtensions((short) 5);
+        ses4.setPriority((short) 5);
+        ses4.setRequestTime(request4);
+        ses4.setRequestedResourceId(r.getId());
+        ses4.setRequestedResourceName(r.getName());
+        ses4.setResourceType("RIG");
+        ses4.setResourcePermission(p1);
+        ses4.setRemovalTime(remove4);
+        ses4.setRemovalReason("Session ended");
+        ses4.setUser(user3);
+        ses4.setUserName(user3.getName());
+        ses4.setUserNamespace(user3.getNamespace());
+        ses4.setAssignedRigName(r.getName());
+        ses4.setAssignmentTime(assign4);
+        ses4.setRig(r);
+        db.persist(ses4);
+
+        db.getTransaction().commit();
+
+        db.beginTransaction();
+        db.refresh(uc1);
+        db.refresh(uc2);
+        db.refresh(user);
+        db.refresh(user2);
+        db.refresh(user3);
+        db.refresh(p1);
+        db.refresh(r);
+        db.refresh(rt);
+        db.getTransaction().commit();
+
+        
+        // Set up test parameters
+        QuerySessionReport qSR = new QuerySessionReport();
+        QuerySessionReportType qSRType = new QuerySessionReportType();
+        
+        RequestorType user1 = new RequestorType();
+        user1.setUserQName("REPS:testuser1");
+        qSRType.setRequestor(user1);
+        
+        QueryFilterType qSelect = new QueryFilterType();
+        TypeForQuery type = TypeForQuery.RIG;
+        OperatorType op = OperatorType.AND;
+        qSelect.setTypeForQuery(type);
+        qSelect.setOperator(op);
+        qSelect.setQueryLike("Session_Rig_Test_Rig1");
+        qSRType.setQuerySelect(qSelect);
+
+        Calendar start = Calendar.getInstance();
+        start.add(Calendar.MONTH, -1);
+        qSRType.setStartTime(start);
+        Calendar end = Calendar.getInstance();
+        end.add(Calendar.MONTH, 2);
+        qSRType.setEndTime(end);
+        
+        PaginationType pages = new PaginationType();
+        pages.setNumberOfPages(2);
+        pages.setPageLength(1);
+        pages.setPageNumber(2);
+        qSRType.setPagination(pages);
+
+        qSR.setQuerySessionReport(qSRType);
+        
+        QuerySessionReportResponse response = this.service.querySessionReport(qSR);
+
+        // Delete test data
+        db.beginTransaction();
+        db.delete(ses4);
+        db.delete(ses3);
+        db.delete(ses2);
+        db.delete(ses);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass3);
+        db.delete(ass2);
+        db.delete(ass);
+        db.delete(ap1);
+        db.delete(uc2);
+        db.delete(uc1);
+        db.delete(user3);
+        db.delete(user2);
+        db.delete(user);
+        db.getTransaction().commit();
+
+        assertNotNull(response);
+        QuerySessionReportResponseType resp = response.getQuerySessionReportResponse();
+        assertNotNull(resp);
+        assertEquals(2,resp.getSessionCount());
+        assertEquals(110*60,resp.getTotalQueueDuration());
+        assertEquals(220*60,resp.getTotalSessionDuration());
+        
+        PaginationType page = resp.getPagination();
+        assertNotNull(page);
+        
+        //Only single user, so one record
+        SessionReportType[] rep = resp.getSessionReport();
+        assertNotNull(rep);
+        assertEquals(1,rep.length);
+        
+
+        //rep[0] session 2 and 4
+        assertEquals((float)25*60, rep[0].getAveQueueDuration());
+        assertEquals((float)30*60, rep[0].getMaxQueueDuration());
+        assertEquals((float)20*60, rep[0].getMinQueueDuration());
+        assertEquals((float)25*60, rep[0].getMedQueueDuration());
+        assertEquals((float)50*60, rep[0].getTotalQueueDuration());
+        
+        assertEquals((float)30*60,rep[0].getAveSessionDuration());
+        assertEquals((float)60*60, rep[0].getMaxSessionDuration());
+        assertEquals((float)0*60, rep[0].getMinSessionDuration());
+        assertEquals((float)30*60, rep[0].getMedSessionDuration());
+        assertEquals((float)60*60, rep[0].getTotalSessionDuration());
+
+        OMElement ele = response.getOMElement(QuerySessionReportResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
+        assertNotNull(ele);
+        
+        String xml = ele.toStringWithConsume();
+        assertNotNull(xml);
+    }
 }

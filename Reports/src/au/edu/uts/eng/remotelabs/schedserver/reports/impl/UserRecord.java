@@ -153,4 +153,33 @@ public class UserRecord
         return (this.sessionDuration.get(mid-1) + this.sessionDuration.get(mid))/2;
         
     }
+
+    public int getTotalQueueDuration()
+    {
+        int tot = 0;
+        
+        Iterator<Integer> queueIt = this.queueDuration.iterator();
+        while (queueIt.hasNext())
+        {
+            Integer session = queueIt.next();
+            tot += session;
+        }
+        
+        return tot;
+    }
+
+    public int getTotalSessionDuration()
+    {
+        int tot = 0;
+        
+        Iterator<Integer> sessionIt = this.sessionDuration.iterator();
+        while (sessionIt.hasNext())
+        {
+            Integer session = sessionIt.next();
+            tot += session;
+        }
+        
+        return tot;
+    }
+
 }

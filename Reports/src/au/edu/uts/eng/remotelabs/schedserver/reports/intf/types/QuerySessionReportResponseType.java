@@ -22,7 +22,7 @@ public class QuerySessionReportResponseType implements org.apache.axis2.databind
     /**
                  * 
                  */
-    private static final long serialVersionUID = 8262998913324109889L;
+    private static final long serialVersionUID = -2377591098158314737L;
 
     private static java.lang.String generatePrefix(final java.lang.String namespace)
     {
@@ -141,6 +141,93 @@ public class QuerySessionReportResponseType implements org.apache.axis2.databind
         list.add(param);
         this.localSessionReport = (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportType[]) list
                 .toArray(new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportType[list.size()]);
+
+    }
+
+    /**
+     * field for SessionCount
+     */
+
+    protected int localSessionCount;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return int
+     */
+    public int getSessionCount()
+    {
+        return this.localSessionCount;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            SessionCount
+     */
+    public void setSessionCount(final int param)
+    {
+
+        this.localSessionCount = param;
+
+    }
+
+    /**
+     * field for TotalQueueDuration
+     */
+
+    protected int localTotalQueueDuration;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return int
+     */
+    public int getTotalQueueDuration()
+    {
+        return this.localTotalQueueDuration;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            TotalQueueDuration
+     */
+    public void setTotalQueueDuration(final int param)
+    {
+
+        this.localTotalQueueDuration = param;
+
+    }
+
+    /**
+     * field for TotalSessionDuration
+     */
+
+    protected int localTotalSessionDuration;
+
+    /**
+     * Auto generated getter method
+     * 
+     * @return int
+     */
+    public int getTotalSessionDuration()
+    {
+        return this.localTotalSessionDuration;
+    }
+
+    /**
+     * Auto generated setter method
+     * 
+     * @param param
+     *            TotalSessionDuration
+     */
+    public void setTotalSessionDuration(final int param)
+    {
+
+        this.localTotalSessionDuration = param;
 
     }
 
@@ -281,6 +368,123 @@ public class QuerySessionReportResponseType implements org.apache.axis2.databind
 
             }
         }
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+
+            if (prefix == null)
+            {
+                prefix = QuerySessionReportResponseType.generatePrefix(namespace);
+
+                xmlWriter.writeStartElement(prefix, "sessionCount", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "sessionCount");
+            }
+
+        }
+        else
+        {
+            xmlWriter.writeStartElement("sessionCount");
+        }
+
+        if (this.localSessionCount == java.lang.Integer.MIN_VALUE)
+        {
+
+            throw new org.apache.axis2.databinding.ADBException("sessionCount cannot be null!!");
+
+        }
+        else
+        {
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
+                    .convertToString(this.localSessionCount));
+        }
+
+        xmlWriter.writeEndElement();
+
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+
+            if (prefix == null)
+            {
+                prefix = QuerySessionReportResponseType.generatePrefix(namespace);
+
+                xmlWriter.writeStartElement(prefix, "totalQueueDuration", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "totalQueueDuration");
+            }
+
+        }
+        else
+        {
+            xmlWriter.writeStartElement("totalQueueDuration");
+        }
+
+        if (this.localTotalQueueDuration == java.lang.Integer.MIN_VALUE)
+        {
+
+            throw new org.apache.axis2.databinding.ADBException("totalQueueDuration cannot be null!!");
+
+        }
+        else
+        {
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
+                    .convertToString(this.localTotalQueueDuration));
+        }
+
+        xmlWriter.writeEndElement();
+
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+
+            if (prefix == null)
+            {
+                prefix = QuerySessionReportResponseType.generatePrefix(namespace);
+
+                xmlWriter.writeStartElement(prefix, "totalSessionDuration", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "totalSessionDuration");
+            }
+
+        }
+        else
+        {
+            xmlWriter.writeStartElement("totalSessionDuration");
+        }
+
+        if (this.localTotalSessionDuration == java.lang.Integer.MIN_VALUE)
+        {
+
+            throw new org.apache.axis2.databinding.ADBException("totalSessionDuration cannot be null!!");
+
+        }
+        else
+        {
+            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
+                    .convertToString(this.localTotalSessionDuration));
+        }
+
+        xmlWriter.writeEndElement();
+
         xmlWriter.writeEndElement();
 
     }
@@ -373,6 +577,18 @@ public class QuerySessionReportResponseType implements org.apache.axis2.databind
             }
 
         }
+        elementList.add(new javax.xml.namespace.QName("", "sessionCount"));
+
+        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localSessionCount));
+
+        elementList.add(new javax.xml.namespace.QName("", "totalQueueDuration"));
+
+        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localTotalQueueDuration));
+
+        elementList.add(new javax.xml.namespace.QName("", "totalSessionDuration"));
+
+        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
+                .convertToString(this.localTotalSessionDuration));
 
         return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
                 attribList.toArray());
@@ -525,6 +741,81 @@ public class QuerySessionReportResponseType implements org.apache.axis2.databind
                 else
                 {
 
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement()
+                        && new javax.xml.namespace.QName("", "sessionCount").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object.setSessionCount(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+                    // A start element we are not expecting indicates an invalid parameter was passed
+                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
+                            + reader.getLocalName());
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement()
+                        && new javax.xml.namespace.QName("", "totalQueueDuration").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object
+                            .setTotalQueueDuration(org.apache.axis2.databinding.utils.ConverterUtil
+                                    .convertToInt(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+                    // A start element we are not expecting indicates an invalid parameter was passed
+                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
+                            + reader.getLocalName());
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement()
+                        && new javax.xml.namespace.QName("", "totalSessionDuration").equals(reader.getName()))
+                {
+
+                    final java.lang.String content = reader.getElementText();
+
+                    object.setTotalSessionDuration(org.apache.axis2.databinding.utils.ConverterUtil
+                            .convertToInt(content));
+
+                    reader.next();
+
+                } // End of if for expected property start element
+
+                else
+                {
+                    // A start element we are not expecting indicates an invalid parameter was passed
+                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
+                            + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
