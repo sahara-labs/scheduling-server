@@ -1010,6 +1010,11 @@ public class BookingsService implements BookingsInterface
             if (tzId.startsWith("Etc")) continue;
             if (!tzId.contains("/")) continue;
             if (tzId.startsWith("SystemV")) continue;
+            if (tzId.startsWith("Antarctica")) continue;
+            if (tzId.startsWith("Arctic")) continue;
+            if (tzId.startsWith("Chile")) continue;
+            if (tzId.startsWith("Mideast")) continue;
+            if (tzId.startsWith("Mexico")) continue;
 
             TimeZone tz = TimeZone.getTimeZone(tzId);
             TimezoneType tzt = new TimezoneType();
