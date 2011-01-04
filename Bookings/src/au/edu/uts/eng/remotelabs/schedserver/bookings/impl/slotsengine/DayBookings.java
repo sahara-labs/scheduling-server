@@ -67,13 +67,13 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 public class DayBookings
 {
     /** Loaded rig bookings. */
-    private final Map<Rig, RigBookings> rigBookings;
+    private final Map<String, RigBookings> rigBookings;
     
     /** Type rig targets. */
-    private final Map<RigType, RigBookings> typeTargets;
+    private final Map<String, RigBookings> typeTargets;
     
     /** Loaded request capabilities. */
-    private final Map<RequestCapabilities, RigBookings> capsTargets;
+    private final Map<String, RigBookings> capsTargets;
     
     /** The day key of this day. */
     private final String day;
@@ -92,14 +92,14 @@ public class DayBookings
         this.logger = LoggerActivator.getLogger();
         this.logger.debug("Loading day bookings for day " + day + '.');
         
-        this.rigBookings = new HashMap<Rig, RigBookings>();
+        this.rigBookings = new HashMap<String, RigBookings>();
         
         this.day = day;
         this.dayBegin= TimeUtil.getDayBegin(this.day).getTime();
         this.dayEnd = TimeUtil.getDayEnd(this.day).getTime();
         
-        this.typeTargets = new HashMap<RigType, RigBookings>();
-        this.capsTargets = new HashMap<RequestCapabilities, RigBookings>();
+        this.typeTargets = new HashMap<String, RigBookings>();
+        this.capsTargets = new HashMap<String, RigBookings>();
     }
     
     /**
@@ -131,7 +131,7 @@ public class DayBookings
                 
             case TYPE:
                 RigType rt = mb.getRigType();
-                if ((rb = this.typeTargets.get(rt)) == null)
+                if ((rb = this.typeTargets.get(rt.getName())) == null)
                 {
                     Set<Rig> rigs = rt.getRigs();
                     if (rigs.size() == 0)
@@ -160,13 +160,13 @@ public class DayBookings
                 
             case CAPABILITY:
                 RequestCapabilities caps = mb.getRequestCapabilities();
-                if ((rb = this.capsTargets.get(caps)) == null)
+                if ((rb = this.capsTargets.get(caps.getCapabilities())) == null)
                 {
                     List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
                     capsList.add(caps);
                     this.loadRequestCapabilities(capsList, ses, false);
                     
-                    if ((rb = this.capsTargets.get(caps)) == null)
+                    if ((rb = this.capsTargets.get(caps.getCapabilities())) == null)
                     {
                         this.logger.info("Cannot make a booing for the request capabilities " + caps.getCapabilities() +
                                 " because it has no matching rigs.");
@@ -220,7 +220,7 @@ public class DayBookings
                 break;
                 
             case TYPE:
-                if ((next = rb = this.typeTargets.get(mb.getRigType())) == null)
+                if ((next = rb = this.typeTargets.get(mb.getRigType().getName())) == null)
                 {
                     Set<Rig> rigs = mb.getRigType().getRigs();
                     if (rigs.size() == 0) return Collections.<MRange>emptyList();
@@ -238,13 +238,13 @@ public class DayBookings
                 
             case CAPABILITY:
                 RequestCapabilities caps = mb.getRequestCapabilities();
-                if ((next = rb = this.capsTargets.get(caps)) == null)
+                if ((next = rb = this.capsTargets.get(caps.getCapabilities())) == null)
                 {
                     List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
                     capsList.add(caps);
                     this.loadRequestCapabilities(capsList, ses, false);
                     
-                    if ((next = rb = this.capsTargets.get(caps)) == null) return Collections.<MRange>emptyList();
+                    if ((next = rb = this.capsTargets.get(caps.getCapabilities())) == null) return Collections.<MRange>emptyList();
                 }
 
                 do
@@ -346,7 +346,7 @@ public class DayBookings
     {
         RigBookings ts;
         
-        if (!this.typeTargets.containsKey(rigType))
+        if (!this.typeTargets.containsKey(rigType.getName()))
         {
             Set<Rig> rigs = rigType.getRigs();
             if (rigs.size() == 0)
@@ -360,7 +360,7 @@ public class DayBookings
             
             ts = this.getRigBookings(rigs.iterator().next(), ses);
         }
-        else ts = this.typeTargets.get(rigType);
+        else ts = this.typeTargets.get(rigType.getName());
         
         /* Navigate the type resource loop to find the actual free slots. */
         List<MRange> free = new ArrayList<MRange>();
@@ -398,6 +398,7 @@ public class DayBookings
                 while (innerrs <= outerre)
                 {
                     MBooking bk = next.getNextBooking(innerrs);
+                    if (bk == null) break;
                     
                     /* There isn't much point trying to load balance a type booking,
                      * because in enclosing range, the type loop is saturated. */
@@ -434,14 +435,14 @@ public class DayBookings
     */
     public List<MRange> getFreeSlots(RequestCapabilities reqCaps, int start, int end, int thres, Session ses)
     {
-        if (!this.capsTargets.containsKey(reqCaps))
+        if (!this.capsTargets.containsKey(reqCaps.getCapabilities()))
         {
             List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
             capsList.add(reqCaps);
             this.loadRequestCapabilities(capsList, ses, false);
         }
         
-        RigBookings cs = this.capsTargets.get(reqCaps);
+        RigBookings cs = this.capsTargets.get(reqCaps.getCapabilities());
         if (cs == null)
         {
             /* No rigs match the request capabilities, so there can't be any 
@@ -486,6 +487,7 @@ public class DayBookings
                 while (innerrs <= outerre)
                 {
                     MBooking bk = next.getNextBooking(innerrs);
+                    if (bk == null) break;
                     
                     if (this.innerLoadBalance(next, bk, false))
                     {
@@ -527,10 +529,7 @@ public class DayBookings
         while (fs < end)
         {
             MBooking membooking = rb.getNextBooking(fs);
-            if (membooking == null)
-            {
-                break;
-            }
+            if (membooking == null)  break;
             
             /* If multi-day booking, we can't load balance in this perspective
              * as this could leave the rig in a inconsistent state. */
@@ -596,22 +595,22 @@ public class DayBookings
         {
             case RIG:
                 Rig rig = booking.getBooking().getRig();
-                if (!this.rigBookings.containsKey(rig))
+                if (!this.rigBookings.containsKey(rig.getName()))
                 {
                     /* The rig  isn't loaded, so no need to unload it. */
                     return true;
                 }
-                rb = this.rigBookings.get(rig);
+                rb = this.rigBookings.get(rig.getName());
                 break;
             case TYPE:
                 RigType rigType = booking.getRigType();
-                if (!this.typeTargets.containsKey(rigType))
+                if (!this.typeTargets.containsKey(rigType.getName()))
                 {
                     /* The type isn't loaded so need to remove a booking from
                      * it. */
                     return true;
                 }
-                rb = this.typeTargets.get(rigType);
+                rb = this.typeTargets.get(rigType.getName());
                 RigBookings next = rb;
                 do
                 {
@@ -626,13 +625,13 @@ public class DayBookings
                 break;
             case CAPABILITY:
                 RequestCapabilities reqCaps = booking.getRequestCapabilities();
-                if (!this.capsTargets.containsKey(reqCaps))
+                if (!this.capsTargets.containsKey(reqCaps.getCapabilities()))
                 {
                     /* The capability isn't loaded so no need to remove a 
                      * booking from it. */
                     return true;
                 }
-                rb = this.capsTargets.get(reqCaps);
+                rb = this.capsTargets.get(reqCaps.getCapabilities());
                 next = rb;
                 do
                 {
@@ -668,7 +667,7 @@ public class DayBookings
      */
     private RigBookings getRigBookings(Rig rig, Session ses)
     {
-        if (!this.rigBookings.containsKey(rig))
+        if (!this.rigBookings.containsKey(rig.getName()))
         {
             this.logger.debug("Loaded day bookings for rig '" + rig.getName() + "' on day " + this.day + ".");
             
@@ -676,7 +675,7 @@ public class DayBookings
 
             RigBookings rb = new RigBookings(rig, this.day);
             this.loadRig(rb, rig, ses);
-            this.rigBookings.put(rig, rb);
+            this.rigBookings.put(rig.getName(), rb);
             
             /* Add the capabilities that need to be loaded. */
             for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
@@ -691,7 +690,7 @@ public class DayBookings
             this.loadRequestCapabilities(capsToLoad, ses, true);
         }
         
-        return this.rigBookings.get(rig);
+        return this.rigBookings.get(rig.getName());
     }
     
     /**
@@ -908,11 +907,11 @@ public class DayBookings
             /* Make sure all the rigs are loaded. */
             for (Rig r : matchingRigs)
             {
-                if (!this.rigBookings.containsKey(r))
+                if (!this.rigBookings.containsKey(r.getName()))
                 {
                     RigBookings b = new RigBookings(r, this.day);
                     this.loadRig(b, r, ses);
-                    this.rigBookings.put(r, b);
+                    this.rigBookings.put(r.getName(), b);
                     /* By definition, since a rig wasn't loaded, it's type wasn't 
                      * loaded either. */
                     this.loadRigType(r, ses, capsList);
@@ -920,11 +919,11 @@ public class DayBookings
             }
             
             /* Complete the request capabilities resource loop. */
-            RigBookings first = this.rigBookings.get(matchingRigs.get(0));
+            RigBookings first = this.rigBookings.get(matchingRigs.get(0).getName());
             RigBookings prev = first;
             for (int i = 1; i < matchingRigs.size(); i++)
             {
-                RigBookings next = this.rigBookings.get(matchingRigs.get(i));
+                RigBookings next = this.rigBookings.get(matchingRigs.get(i).getName());
                 prev.setCapsLoopNext(reqCaps, next);
                 prev = next;
             }
@@ -1001,7 +1000,7 @@ public class DayBookings
                 }
             }
             
-            this.capsTargets.put(capsList.remove(0), prev);
+            this.capsTargets.put(capsList.remove(0).getCapabilities(), prev);
         }
     }
 
@@ -1016,12 +1015,14 @@ public class DayBookings
      */
     @SuppressWarnings("unchecked")
     private void loadRigType(Rig rig, Session ses, List<RequestCapabilities> capsToLoad)
-    {
-        RigBookings first = this.rigBookings.get(rig);
+    {   
+        RigBookings first = this.rigBookings.get(rig.getName());
         RigBookings prev = first;
         
         /* Set up the rig type navigation loop. */
         RigType rigType = rig.getRigType();
+        this.logger.debug("Loading rig type " + rigType.getName() + " for day " + this.day + '.');
+        
         Set<Rig> rigs = rigType.getRigs();
         for (Rig r : rigs)
         {
@@ -1039,7 +1040,7 @@ public class DayBookings
 
             RigBookings next = new RigBookings(r, this.day);
             this.loadRig(next, r, ses);
-            this.rigBookings.put(r, next);
+            this.rigBookings.put(r.getName(), next);
             prev.setTypeLoopNext(next);
             prev = next;
         }
@@ -1127,7 +1128,7 @@ public class DayBookings
             }
         }
                     
-        this.typeTargets.put(rigType, first);
+        this.typeTargets.put(rigType.getName(), first);
     }
 
     /**

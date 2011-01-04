@@ -303,7 +303,7 @@ public class SlotBookingEngine implements BookingEngine
                 fp.set(fp.size() - 1, new TimePeriod(fp.get(fp.size() - 1).getStartTime(), period.getEndTime()));
             }
         }
-        
+
         return fp;
     }
     

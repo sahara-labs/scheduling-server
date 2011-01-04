@@ -75,7 +75,7 @@ public class RigBookings
     private RigBookings typeNext;
     
     /** Next mapping caps bookings in resource loop. */
-    private Map<RequestCapabilities, RigBookings> capsNext;
+    private Map<String, RigBookings> capsNext;
     
     /** Logger. */
     private Logger logger;
@@ -92,7 +92,7 @@ public class RigBookings
         this.endSlot = 0;
         this.numBookings = 0;
         
-        this.capsNext = new HashMap<RequestCapabilities, RigBookings>();
+        this.capsNext = new HashMap<String, RigBookings>();
     }
 
     /** 
@@ -244,6 +244,14 @@ public class RigBookings
      */
     public boolean commitBooking(MBooking booking)
     {
+        /* Sanity check to make sure the end is after the beginning. */
+        if (booking.getStartSlot() > booking.getEndSlot())
+        {
+            this.logger.error("Tried to commit a booking which ends before it starts. Some form of data corruption " +
+            		"(manually editting the database?).");
+            return false;
+        }
+        
         /* Sanity check to make sure the rig is free for this time. */
         if (!this.areSlotsFree(booking.getStartSlot(), booking.getEndSlot()))
         {
@@ -251,7 +259,7 @@ public class RigBookings
             return false;
         }
         
-        this.logger.info("Commiting booking to rig " + this.rig.getName() + " on day " + this.dayKey + ", slot " +
+        this.logger.debug("Commiting booking to rig " + this.rig.getName() + " on day " + this.dayKey + ", slot " +
                 booking.getStartSlot() + " through " + booking.getEndSlot() + '.');
         
         int s = booking.getStartSlot();
@@ -466,11 +474,11 @@ public class RigBookings
 
     public RigBookings getCapsLoopNext(RequestCapabilities caps)
     {
-        return this.capsNext.get(caps);
+        return this.capsNext.get(caps.getCapabilities());
     }
 
     public void setCapsLoopNext(RequestCapabilities caps, RigBookings next)
     {
-        this.capsNext.put(caps, next);
+        this.capsNext.put(caps.getCapabilities(), next);
     }
 }   

@@ -2758,10 +2758,10 @@ public class SlotBookingEngineTester extends TestCase
         f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         
-        Map<Rig, RigBookings> bklist = (Map<Rig, RigBookings>)f.get(day);
+        Map<String, RigBookings> bklist = (Map<String, RigBookings>)f.get(day);
         assertNotNull(bklist);
         
-        RigBookings r1b = bklist.get(r1);
+        RigBookings r1b = bklist.get(r1.getName());
         assertNotNull(r1b);
         assertFalse(r1b.hasBooking(new MBooking(bk1, this.dayStr)));
         assertTrue(r1b.areSlotsFree(2, 5));
@@ -3030,10 +3030,10 @@ public class SlotBookingEngineTester extends TestCase
         f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         
-        Map<Rig, RigBookings> bklist = (Map<Rig, RigBookings>)f.get(day);
+        Map<String, RigBookings> bklist = (Map<String, RigBookings>)f.get(day);
         assertNotNull(bklist);
         
-        RigBookings r1b = bklist.get(r1);
+        RigBookings r1b = bklist.get(r1.getName());
         assertNotNull(r1b);
         assertFalse(r1b.hasBooking(new MBooking(bk1, this.dayStr)));
         assertTrue(r1b.areSlotsFree(2, 5));

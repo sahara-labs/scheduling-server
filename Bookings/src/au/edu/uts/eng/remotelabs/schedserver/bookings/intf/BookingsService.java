@@ -55,6 +55,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingCreation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
@@ -242,10 +243,16 @@ public class BookingsService implements BookingsInterface
                  .add(Restrictions.eq("active", Boolean.TRUE))
                  .add(Restrictions.eq("user", user))
                  .add(Restrictions.disjunction()
-                         .add(Restrictions.between("startTime", startDate, endDate))
-                         .add(Restrictions.between("endTime", startDate, endDate))
                          .add(Restrictions.and(
-                                 Restrictions.lt("startTime", startDate),
+                                 Restrictions.gt("startTime", startDate),
+                                 Restrictions.lt("startTime", endDate)
+                         ))       
+                         .add(Restrictions.and(
+                                 Restrictions.gt("endTime", startDate),
+                                 Restrictions.le("endTime", endDate)
+                         ))
+                         .add(Restrictions.and(
+                                 Restrictions.le("startTime", startDate),
                                  Restrictions.gt("endTime", endDate)))
                  ).uniqueResult();
             if (numBookings > 0)
@@ -666,6 +673,19 @@ public class BookingsService implements BookingsInterface
              * ---------------------------------------------------------------- */
             Calendar permStart = Calendar.getInstance();
             permStart.setTime(perm.getStartTime());
+            
+            /* The /actual/ permission start time may either be the permission 
+             * start time or the time horizon time. This is a second offset from
+             * the current time (i.e. it atleast stops bookings being made for
+             * the past. */
+            Calendar horizonTime = Calendar.getInstance();
+            horizonTime.add(Calendar.SECOND, perm.getUserClass().getTimeHorizon());
+            if (horizonTime.after(permStart))
+            {
+                /* Which ever comes later. */
+                permStart = TimeUtil.coerceToNextSlotTime(horizonTime);
+            }
+            
             Calendar permEnd = Calendar.getInstance();
             permEnd.setTime(perm.getExpiryTime());
             if (reqEnd.before(permStart) || reqStart.after(permEnd))
@@ -732,30 +752,59 @@ public class BookingsService implements BookingsInterface
              * -- Populate the resource with free and booked time            --
              * ---------------------------------------------------------------- */
             Calendar c = reqStart;
-            for (TimePeriod period : free)
+            
+            if (free.size() > 0)
             {
-                if (Math.abs(period.getStartTime().getTimeInMillis() - c.getTimeInMillis()) > 60000)
+                for (TimePeriod period : free)
+                {
+                    if (Math.abs(period.getStartTime().getTimeInMillis() - c.getTimeInMillis()) > 60000)
+                    {
+                        /* The difference with the last time and the next time is
+                         * more than a minute, then there should be a booked period. */
+                        TimePeriodType tp = new TimePeriodType();
+                        tp.setStartTime(c);
+                        tp.setEndTime(period.getStartTime());
+                        BookingSlotType slot = new BookingSlotType();
+                        slot.setSlot(tp);
+                        slot.setState(SlotState.BOOKED);
+                        slots.addBookingSlot(slot);
+                    }
+                    
+                    TimePeriodType tp = new TimePeriodType();
+                    tp.setStartTime(period.getStartTime());
+                    tp.setEndTime(period.getEndTime());
+                    BookingSlotType slot = new BookingSlotType();
+                    slot.setSlot(tp);
+                    slot.setState(SlotState.FREE);
+                    slots.addBookingSlot(slot);
+                    
+                    c = period.getEndTime();
+                }
+                
+                /* There is a booked spot at the end. */
+                if (Math.abs(searchEnd.getTimeInMillis() - c.getTimeInMillis()) > 60000)
                 {
                     /* The difference with the last time and the next time is
                      * more than a minute, then there should be a booked period. */
                     TimePeriodType tp = new TimePeriodType();
                     tp.setStartTime(c);
-                    tp.setEndTime(period.getStartTime());
+                    tp.setEndTime(searchEnd);
                     BookingSlotType slot = new BookingSlotType();
                     slot.setSlot(tp);
                     slot.setState(SlotState.BOOKED);
                     slots.addBookingSlot(slot);
                 }
-                
+            }
+            else
+            {
+                /* There is no free times on the day. */
                 TimePeriodType tp = new TimePeriodType();
-                tp.setStartTime(period.getStartTime());
-                tp.setEndTime(period.getEndTime());
+                tp.setStartTime(reqStart);
+                tp.setEndTime(reqEnd);
                 BookingSlotType slot = new BookingSlotType();
                 slot.setSlot(tp);
-                slot.setState(SlotState.FREE);
+                slot.setState(SlotState.BOOKED);
                 slots.addBookingSlot(slot);
-                
-                c = period.getEndTime();
             }
             
             if (reqEnd.after(permEnd))
@@ -966,7 +1015,7 @@ public class BookingsService implements BookingsInterface
             TimezoneType tzt = new TimezoneType();
             tzt.setTimezone(tzId);
 
-            tzt.setOffsetFromSystem(off - tz.getOffset(System.currentTimeMillis()) / 1000);
+            tzt.setOffsetFromSystem(tz.getOffset(System.currentTimeMillis()) / 1000 - off);
             tzList.put(tzId, tzt);
         }
         

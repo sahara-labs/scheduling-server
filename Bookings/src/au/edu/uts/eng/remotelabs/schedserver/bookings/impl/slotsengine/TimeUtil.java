@@ -376,4 +376,54 @@ public class TimeUtil
         
         return days;
     }
+    
+    /**
+     * Coerces a calendar to the next slot threshold time. The same
+     * calendar that is provided is returned.
+     * 
+     * @param cal calendar
+     * @return coerced calendar
+     */
+    public static Calendar coerceToNextSlotTime(Calendar cal)
+    {
+        /* Ignore milliseconds. */
+        cal.set(Calendar.MILLISECOND, 0);
+        
+        /* If there is a second portion to the time, zero it and increment 
+         * minutes. */
+        if (cal.get(Calendar.SECOND) != 0)
+        {
+            cal.set(Calendar.SECOND, 0);
+            cal.add(Calendar.MINUTE, 1);
+        }
+        
+        int mins = cal.get(Calendar.MINUTE);
+        if (mins * 60 % SlotBookingEngine.TIME_QUANTUM == 0)
+        {
+            /* We are at a slot boundary. */
+            return cal;
+        }
+        
+        if ((60 - mins) * 60 < SlotBookingEngine.TIME_QUANTUM)
+        {
+            /* The next slot is in the next hour. */
+            cal.set(Calendar.MINUTE, 0);
+            cal.add(Calendar.HOUR, 1);
+        }
+        else
+        {
+            int sm = SlotBookingEngine.TIME_QUANTUM / 60;
+            while (true)
+            {
+                if (sm > mins)
+                {
+                    cal.set(Calendar.MINUTE, sm);
+                    break;
+                }
+                sm += SlotBookingEngine.TIME_QUANTUM / 60;
+            }
+        }
+        
+        return cal;
+    }
 }

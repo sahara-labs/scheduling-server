@@ -5400,13 +5400,13 @@ public class DayBookingsTester extends TestCase
         f.setAccessible(true);
         
         @SuppressWarnings("unchecked")
-        Map<Rig, RigBookings> bklist = (Map<Rig, RigBookings>)f.get(this.day);
+        Map<String, RigBookings> bklist = (Map<String, RigBookings>)f.get(this.day);
         
-        RigBookings r1b = bklist.get(r1);
+        RigBookings r1b = bklist.get(r1.getName());
         assertNotNull(r1b);
         assertFalse(r1b.hasBooking(new MBooking(bk13, this.dayStr)));
         
-        RigBookings r2b = bklist.get(r2);
+        RigBookings r2b = bklist.get(r2.getName());
         assertNotNull(r2b);
         assertFalse(r2b.hasBooking(new MBooking(bk13, this.dayStr)));
     }
@@ -5699,9 +5699,9 @@ public class DayBookingsTester extends TestCase
         f.setAccessible(true);
         
         @SuppressWarnings("unchecked")
-        Map<Rig, RigBookings> bklist = (Map<Rig, RigBookings>)f.get(this.day);
+        Map<String, RigBookings> bklist = (Map<String, RigBookings>)f.get(this.day);
         
-        RigBookings rb = bklist.get(r2);
+        RigBookings rb = bklist.get(r2.getName());
         assertNotNull(rb);
         assertFalse(rb.hasBooking(new MBooking(bk19, this.dayStr)));
         assertTrue(rb.areSlotsFree(28, 32));
@@ -5996,14 +5996,14 @@ public class DayBookingsTester extends TestCase
         f.setAccessible(true);
         
         @SuppressWarnings("unchecked")
-        Map<Rig, RigBookings> bklist = (Map<Rig, RigBookings>)f.get(this.day);
+        Map<String, RigBookings> bklist = (Map<String, RigBookings>)f.get(this.day);
         
-        RigBookings rb = bklist.get(r1);
+        RigBookings rb = bklist.get(r1.getName());
         assertNotNull(rb);
         assertFalse(rb.hasBooking(new MBooking(bk6, this.dayStr)));
         assertTrue(rb.areSlotsFree(20, 21));
         
-        rb = bklist.get(r2);
+        rb = bklist.get(r2.getName());
         assertNotNull(rb);
         assertFalse(rb.hasBooking(new MBooking(bk6, this.dayStr)));
         assertTrue(rb.areSlotsFree(20, 21));
@@ -6298,9 +6298,9 @@ public class DayBookingsTester extends TestCase
         f.setAccessible(true);
         
         @SuppressWarnings("unchecked")
-        Map<Rig, RigBookings> bklist = (Map<Rig, RigBookings>)f.get(this.day);
+        Map<String, RigBookings> bklist = (Map<String, RigBookings>)f.get(this.day);
         
-        RigBookings r1b = bklist.get(r1);
+        RigBookings r1b = bklist.get(r1.getName());
         assertNotNull(r1b);
         assertFalse(r1b.hasBooking(new MBooking(bk1, this.dayStr)));
         assertTrue(r1b.areSlotsFree(2, 5));

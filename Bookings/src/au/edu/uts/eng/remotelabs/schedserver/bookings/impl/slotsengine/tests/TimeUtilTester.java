@@ -428,4 +428,88 @@ public class TimeUtilTester extends TestCase
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(TimeUtil.getDateStr(cal), keys.get(4));
     }
+    
+    public void testCoerceToNextSlotTime()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 10);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        
+        Calendar co = TimeUtil.coerceToNextSlotTime(cal);
+        assertEquals(10, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(co, cal);
+    }
+    
+    public void testCoerceToNextSlotTimeHourRoll()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 10);
+        cal.set(Calendar.MINUTE, 55);
+        cal.set(Calendar.SECOND, 49);
+        
+        Calendar co = TimeUtil.coerceToNextSlotTime(cal);
+        assertEquals(11, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(co, cal);
+    }
+    
+    public void testCoerceToNextSlotTimeHourRoll2()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 10);
+        cal.set(Calendar.MINUTE, 45);
+        cal.set(Calendar.SECOND, 49);
+        
+        Calendar co = TimeUtil.coerceToNextSlotTime(cal);
+        assertEquals(11, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(co, cal);
+    }
+    
+    public void testCoerceToNextSlotTimeMinRoll()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 10);
+        cal.set(Calendar.MINUTE, 33);
+        cal.set(Calendar.SECOND, 11);
+        
+        Calendar co = TimeUtil.coerceToNextSlotTime(cal);
+        assertEquals(10, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(45, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(co, cal);
+    }
+    
+    public void testCoerceToNextSlotTimeMinRoll2()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 10);
+        cal.set(Calendar.MINUTE, 2);
+        cal.set(Calendar.SECOND, 0);
+        
+        Calendar co = TimeUtil.coerceToNextSlotTime(cal);
+        assertEquals(10, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(15, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(co, cal);
+    }
+    
+    public void testCoerceToNextSlotTimeMinRoll3()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 10);
+        cal.set(Calendar.MINUTE, 15);
+        cal.set(Calendar.SECOND, 1);
+        
+        Calendar co = TimeUtil.coerceToNextSlotTime(cal);
+        assertEquals(10, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(co, cal);
+    }
 }
