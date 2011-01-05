@@ -688,11 +688,13 @@ public class BookingsService implements BookingsInterface
             
             Calendar permEnd = Calendar.getInstance();
             permEnd.setTime(perm.getExpiryTime());
-            if (reqEnd.before(permStart) || reqStart.after(permEnd))
+
+            if (reqEnd.before(permStart) || reqStart.after(permEnd) || permEnd.before(permStart))
             {
-                /* In this case the requested range is either after the end of the 
-                 * permission region or before the start of the permission 
-                 * region. */
+                /* In this case the requested range is, after the end of the 
+                 * permission region, before the start of the permission 
+                 * region or the permission start is after the permission end
+                 * (the permission start is always sliding for horizion). */
                 BookingSlotType slot = new BookingSlotType();
                 slot.setSlot(request.getPeriod());
                 slot.setState(SlotState.NOPERMISSION);
