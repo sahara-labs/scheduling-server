@@ -52,9 +52,12 @@
       				</xsd:element>
                             <xsd:element name="endTime" type="xsd:dateTime">
       				</xsd:element>
-                            <xsd:element name="duration" type="xsd:int" maxOccurs="1" minOccurs="0">
+                            <xsd:element name="duration" type="xsd:int"
+      					maxOccurs="1" minOccurs="0">
       				</xsd:element>
-      				<xsd:element maxOccurs="1" minOccurs="0"
+                            <xsd:element name="displayName" type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+                            <xsd:element maxOccurs="1" minOccurs="0"
       					name="isFinished" type="xsd:boolean">
       				</xsd:element>
       				<xsd:element maxOccurs="1" minOccurs="0"

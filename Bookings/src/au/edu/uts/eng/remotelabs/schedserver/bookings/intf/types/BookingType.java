@@ -85,6 +85,9 @@ public class BookingType extends BookingIDType implements ADBBean
     protected int duration;
     protected boolean durationTracker;
     
+    protected String displayName;
+    protected boolean displayNameTracker;
+    
     protected boolean isFinished;
     protected boolean isFinishedTracker;
 
@@ -170,6 +173,18 @@ public class BookingType extends BookingIDType implements ADBBean
             this.durationTracker = true;
         }
         this.duration = param;
+    }
+    
+    public String getDisplayName()
+    {
+        return this.displayName;
+    }
+    
+    public void setDisplayName(final String param)
+    {
+       this.displayNameTracker = param != null;
+       this.displayName = param;
+            
     }
 
     public boolean getIsFinished()
@@ -454,6 +469,41 @@ public class BookingType extends BookingIDType implements ADBBean
             }
             xmlWriter.writeEndElement();
         }
+        
+        if (this.displayNameTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = BookingType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "displayName", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "displayName");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("displayName");
+            }
+
+            if (this.displayName == null)
+            {
+                throw new ADBException("displayName cannot be null");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(this.displayName);
+            }
+            xmlWriter.writeEndElement();
+        }
+        
         if (this.isFinishedTracker)
         {
             namespace = "";
@@ -665,6 +715,12 @@ public class BookingType extends BookingIDType implements ADBBean
             elementList.add(new QName("", "duration"));
             elementList.add(ConverterUtil.convertToString(this.duration));
         }
+        
+        if (this.displayNameTracker)
+        {
+            elementList.add(new QName("", "displayName"));
+            elementList.add(this.displayName);
+        }
 
         if (this.isFinishedTracker)
         {
@@ -824,6 +880,17 @@ public class BookingType extends BookingIDType implements ADBBean
                     reader.next();
                 }
 
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                
+                if (reader.isStartElement() && new QName("", "displayName").equals(reader.getName()))
+                {
+                    object.setDisplayName(reader.getElementText());
+                    reader.next();
+                }
+                
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();

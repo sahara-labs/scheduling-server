@@ -1103,6 +1103,15 @@ public class BookingsService implements BookingsInterface
         bookingType.setEndTime(end);
         bookingType.setDuration(bookingRecord.getDuration());
         
+        if (bookingRecord.getResourcePermission().getDisplayName() == null)
+        {
+            bookingType.setDisplayName(resource.getResourceName());
+        }
+        else
+        {
+            bookingType.setDisplayName(bookingRecord.getResourcePermission().getDisplayName());
+        }
+        
         bookingType.setIsFinished(!bookingRecord.isActive());
         if (bookingRecord.getCancelReason() == null)
         {
