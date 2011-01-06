@@ -699,17 +699,19 @@ public class DayBookings
      * 
      * @param rb rig to balance to
      * @param mb booling to balance onto rig 
-     * @param dryRun whether to actually commit the changes.
+     * @param doCommit whether to actually commit the changes.
      * @return true if successful
      */
-    private boolean outerLoadBalance(RigBookings rb, MBooking mb, boolean dryRun)
+    private boolean outerLoadBalance(RigBookings rb, MBooking mb, boolean doCommit)
     {
         RigBookings next;
         /* We need to rule a load balance pass to try and free up 
          * space for the booking. */
         MBooking ex = rb.getNextBooking(mb.getStartSlot());
-        while (ex.getStartSlot() <= mb.getEndSlot())
+        boolean found = false;
+        while (ex != null && ex.getStartSlot() <= mb.getEndSlot())
         {
+            found = false;
             switch (ex.getType())
             {
                 case RIG: return false;
@@ -717,32 +719,42 @@ public class DayBookings
                     next = rb.getTypeLoopNext();
                     do
                     {
-                        if (this.innerLoadBalance(next, ex, dryRun))
+                        if (this.innerLoadBalance(next, ex, doCommit))
                         {
-                            rb.removeBooking(ex);
+                            found = true;
+                            if (doCommit)
+                            {
+                                rb.removeBooking(ex);
+                                next.commitBooking(ex);
+                            }
                             break;
                         }
                         next = next.getTypeLoopNext();
                     }
                     while (next != rb);
                     
-                    if (rb.hasBooking(ex)) return false;
+                    if (!found) return false;
                     break;
                     
                 case CAPABILITY:
                     next = rb.getCapsLoopNext(ex.getRequestCapabilities());
                     do
                     {
-                        if (this.innerLoadBalance(next, ex, dryRun))
+                        if (this.innerLoadBalance(next, ex, doCommit))
                         {
-                            rb.removeBooking(ex);
+                            found = true;
+                            if (doCommit)
+                            {
+                                rb.removeBooking(ex);
+                                next.commitBooking(ex);
+                            }
                             break;
                         }
                         next = next.getCapsLoopNext(ex.getRequestCapabilities());
                     }
                     while (next != rb);
                     
-                    if (rb.hasBooking(ex)) return false;
+                    if (!found) return false;
             }
             
             ex = rb.getNextBooking(ex.getEndSlot() + 1);
