@@ -395,6 +395,8 @@ public class RigBookings
      */
     public boolean removeBooking(MBooking booking)
     {
+        this.logger.debug("Removing booking from rig " + this.rig.getName() + " on day " + this.dayKey + ", slot " +
+                booking.getStartSlot() + " through " + booking.getEndSlot() + '.');
         /* Sanity check to make sure this rig has the booking. */
         if (!this.hasBooking(booking))
         {
