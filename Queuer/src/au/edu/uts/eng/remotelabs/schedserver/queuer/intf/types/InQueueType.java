@@ -74,6 +74,7 @@ public class InQueueType implements ADBBean
 
     protected boolean inQueue;
     protected boolean inSession;
+    protected boolean inBooking;
 
     protected boolean queueSuccessful;
     protected boolean queueSuccessfulTracker = false;
@@ -111,6 +112,16 @@ public class InQueueType implements ADBBean
     public void setInSession(final boolean param)
     {
         this.inSession = param;
+    }
+    
+    public boolean getInBooking()
+    {
+        return this.inBooking;
+    }
+    
+    public void setInBooking(final boolean param)
+    {
+        this.inBooking = param;
     }
 
     public boolean getQueueSuccessful()
@@ -286,9 +297,32 @@ public class InQueueType implements ADBBean
         {
             xmlWriter.writeStartElement("inSession");
         }
-
         xmlWriter.writeCharacters(ConverterUtil.convertToString(this.inSession));
         xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = InQueueType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "inBooking", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "inBooking");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("inBooking");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.inBooking));
+        xmlWriter.writeEndElement();
+        
         if (this.queueSuccessfulTracker)
         {
             namespace = "";
@@ -372,8 +406,12 @@ public class InQueueType implements ADBBean
 
         elementList.add(new QName("", "inQueue"));
         elementList.add(ConverterUtil.convertToString(this.inQueue));
+        
         elementList.add(new QName("", "inSession"));
         elementList.add(ConverterUtil.convertToString(this.inSession));
+        
+        elementList.add(new QName("", "inBooking"));
+        elementList.add(ConverterUtil.convertToString(this.inBooking));
         
         if (this.queueSuccessfulTracker)
         {
@@ -464,6 +502,22 @@ public class InQueueType implements ADBBean
                 {
                     final String content = reader.getElementText();
                     object.setInSession(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+
+                if (reader.isStartElement() && new QName("", "inBooking").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setInBooking(ConverterUtil.convertToBoolean(content));
                     reader.next();
                 }
                 else
