@@ -212,4 +212,9 @@ public class User implements java.io.Serializable
     {
         this.sessions = sessions;
     }
+    
+    public String getQName()
+    {
+        return this.namespace + ':' + this.name;
+    }
 }
