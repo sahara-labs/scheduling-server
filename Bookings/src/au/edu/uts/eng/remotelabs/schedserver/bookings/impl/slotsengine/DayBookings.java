@@ -142,6 +142,7 @@ public class DayBookings
                     }
                     rb = this.getRigBookings(rigs.iterator().next(), ses);
                 }
+                this.typeTargets.put(rt.getName(), rb.getTypeLoopNext());
                 
                 next = rb;
                 do
@@ -173,6 +174,7 @@ public class DayBookings
                         return false;
                     }
                 }
+                this.capsTargets.put(caps.getCapabilities(), rb.getCapsLoopNext(caps));
                 
                 next = rb;
                 do 
@@ -361,6 +363,7 @@ public class DayBookings
             ts = this.getRigBookings(rigs.iterator().next(), ses);
         }
         else ts = this.typeTargets.get(rigType.getName());
+        
         
         /* Navigate the type resource loop to find the actual free slots. */
         List<MRange> free = new ArrayList<MRange>();
