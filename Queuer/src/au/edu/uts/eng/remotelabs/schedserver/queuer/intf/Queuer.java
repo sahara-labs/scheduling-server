@@ -37,7 +37,11 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
+import java.util.Calendar;
 import java.util.Date;
+
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
@@ -45,6 +49,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -117,80 +122,105 @@ public class Queuer implements QueuerSkeletonInterface
         
         if (!this.checkPermission(request.getAddUserToQueue()))
         {
-            this.logger.warn("Unable to add user to queue because of invalid permission.");
+            this.logger.warn("Cannot queue user because of invalid permission.");
+            inQu.setFailureReason("Invalid permission.");
             return resp;
         }
         
         org.hibernate.Session db = new UserDao().getSession();
-        QueueEntry entry = new QueueEntry(db);
-        User user;
-        /**********************************************************************
-         ** 1) Load user and continue if they exist.                         **
-         **********************************************************************/
-        if ((user = this.getUserFromUserID(uId, db)) == null)
+        try
         {
-            this.logger.warn("User with with identifier=" + uId.getUserID() + " and name=" + uId.getUserNamespace() + 
-                    ':' + uId.getUserName() + " not found.");
-        }
-        /*********************************************************************
-         ** 2) Check the user isn't in queue and continue if they aren't    **
-         **    already in the queue.                                        **
-         *********************************************************************/
-        else if (entry.isInQueue(user))
-        {
-            this.logger.warn("User with with identifier=" + uId.getUserID() + " and name=" + uId.getUserNamespace() + 
-                    ':' + uId.getUserName() + " already in queue.");
-        }
-        /**********************************************************************
-         ** 3) Check the user has permission to use either the requested     **
-         **    resource permission or requested resource.                    **
-         **********************************************************************/
-        else if ((pId == null || !entry.hasPermission(pId.getPermissionID())) &&
-                 (rId == null || !entry.hasPermission(rId.getType(), rId.getResourceID(), rId.getResourceName())))
-        {            
-            this.logger.warn("User does not have permission to access requested resource permission or resource.");
-        }
-        /**********************************************************************
-         ** 4) Check the user can queue.                                     **
-         **********************************************************************/
-        else if (!entry.canUserQueue())
-        {
-            this.logger.warn("Failed queueing because the user cannot queue. This may be because the requested " +
-            		"resource is offline or the user does not have the queue permission for in use resources.");
-        }
-        /**********************************************************************
-         ** 5) Every pre-queue predicate is satisfied so add the user to the **
-         *     queue.                                                        **
-         **********************************************************************/
-        else
-        {
-            // TODO Queue entry - Upload batch code.
-            inQu.setQueueSuccessful(entry.addToQueue(null));
-        }
-        
-        /* Populate queue return details if successful. */
-        Session activeSes = entry.getActiveSession();
-        if (activeSes != null)
-        {
-            ResourceIDType resource = new ResourceIDType();
-            resource.setType(activeSes.getResourceType());
-            if (activeSes.getRig() == null)
+            QueueEntry entry = new QueueEntry(db);
+            User user;
+            Bookings booking;
+            /**********************************************************************
+             ** 1) Load user and continue if they exist.                         **
+             **********************************************************************/
+            if ((user = this.getUserFromUserID(uId, db)) == null)
             {
-                inQu.setInQueue(true);
-                resource.setResourceID(activeSes.getRequestedResourceId().intValue());
-                resource.setResourceName(activeSes.getRequestedResourceName());
-                inQu.setQueuedResouce(resource);
+                this.logger.warn("Cannot queue user with with identifier=" + uId.getUserID() + " and name=" + 
+                        uId.getUserNamespace() + ':' + uId.getUserName() + " because not found.");
+                inQu.setFailureReason("User not found.");
             }
+            /*********************************************************************
+             ** 2) Check the user isn't in queue and continue if they aren't    **
+             **    already in the queue.                                        **
+             *********************************************************************/
+            else if (entry.isInQueue(user))
+            {
+                this.logger.warn("Cannot queue user " + user.qName() + " because already in queue.");
+                inQu.setFailureReason("Already in queue.");
+            }
+            /**********************************************************************
+             ** 3) Check the user has permission to use either the requested     **
+             **    resource permission or requested resource.                    **
+             **********************************************************************/
+            else if ((pId == null || !entry.hasPermission(pId.getPermissionID())) &&
+                     (rId == null || !entry.hasPermission(rId.getType(), rId.getResourceID(), rId.getResourceName())))
+            {            
+                this.logger.warn("Cannot queue user " + user.qName()  + " because does not have permission to access " +
+                		"requested resource permission or resource.");
+                inQu.setFailureReason("No permission.");
+            }
+            /**********************************************************************
+             ** 4) Check the user doesn't have a booking starting before the     **
+             **    queued session would finish.                                  **
+             **********************************************************************/
+            else if ((booking = this.getNextBooking(user, entry.getResourcePermission().getSessionDuration(), db)) != null)
+            {
+                this.logger.info("Cannot queue user " + user.qName() + " because has a booking starting before queued " +
+                		"session end.");
+                inQu.setFailureReason("Booking starts in " + 
+                        ((booking.getStartTime().getTime() - System.currentTimeMillis()) / 1000) + " seconds.");
+                inQu.setInBooking(true);
+                inQu.setBookingID(booking.getId().intValue());
+            }
+            /**********************************************************************
+             ** 5) Check the user can queue.                                     **
+             **********************************************************************/
+            else if (!entry.canUserQueue())
+            {
+                this.logger.warn("Cannot queue user " + user.qName() + " because the user cannot queue. This may be " +
+                		"because the requested resource is offline or the user does not have the queue permission " +
+                		"for in use resources.");
+                inQu.setFailureReason("Cannot queue.");
+            }
+            /**********************************************************************
+             ** 6) Every pre-queue predicate is satisfied so add the user to the **
+             *     queue.                                                        **
+             **********************************************************************/
             else
             {
-                inQu.setInSession(true);
-                resource.setResourceID(activeSes.getRig().getId().intValue());
-                resource.setResourceName(activeSes.getRig().getName());
-                inQu.setAssignedResource(resource);
+                // TODO Queue entry - Upload batch code.
+                inQu.setQueueSuccessful(entry.addToQueue(null));
+            }
+            
+            /* Populate queue return details if successful. */
+            Session activeSes = entry.getActiveSession();
+            if (activeSes != null)
+            {
+                ResourceIDType resource = new ResourceIDType();
+                resource.setType(activeSes.getResourceType());
+                if (activeSes.getRig() == null)
+                {
+                    inQu.setInQueue(true);
+                    resource.setResourceID(activeSes.getRequestedResourceId().intValue());
+                    resource.setResourceName(activeSes.getRequestedResourceName());
+                    inQu.setQueuedResouce(resource);
+                }
+                else
+                {
+                    inQu.setInSession(true);
+                    resource.setResourceID(activeSes.getRig().getId().intValue());
+                    resource.setResourceName(activeSes.getRig().getName());
+                    inQu.setAssignedResource(resource);
+                }
             }
         }
-        
-        db.close();
+        finally
+        {
+            db.close();
+        }
         return resp;
     }
 
@@ -199,7 +229,7 @@ public class Queuer implements QueuerSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uId = request.getRemoveUserFromQueue();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#removeUserFromQueue request with user id=" + 
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#removeUserFromQueue with params user id=" + 
                 uId.getUserID() + ", user namespace " + uId.getUserNamespace() + ", user name=" + uId.getUserName() + '.');
         
         /* Response parameters. */
@@ -217,32 +247,39 @@ public class Queuer implements QueuerSkeletonInterface
         }
         
         SessionDao dao = new SessionDao();
-        Session ses;
-        User user;
-        
-        if ((user = this.getUserFromUserID(uId, dao.getSession())) == null)
+        try
         {
-            this.logger.warn("Unable to terminate user session because the user was not found.");
-        }
-        else if ((ses = dao.findActiveSession(user)) == null)   
-        {
-            this.logger.warn("Unable to terminate user session because the user does not have an active session.");
-        }
-        else
-        {
-            /* User has an active session so invalidate it. */
-            Queue.getInstance().removeEntry(ses, dao.getSession());
-            ses.setActive(false);
-            ses.setRemovalTime(new Date());
-            ses.setRemovalReason("User request.");
-            dao.flush();
-            inQueue.setQueueSuccessful(true);
+            Session ses;
+            User user;
             
-            /* If the user is assigned to a rig, free the rig. */
-            if (this.notTest) new RigReleaser().release(ses, dao.getSession());            
+            if ((user = this.getUserFromUserID(uId, dao.getSession())) == null)
+            {
+                this.logger.warn("Unable to terminate user session because the user was not found.");
+                inQueue.setFailureReason("User not found.");
+            }
+            else if ((ses = dao.findActiveSession(user)) == null)   
+            {
+                this.logger.warn("Unable to terminate user session because the user does not have an active session.");
+                inQueue.setFailureReason("Not in queue.");
+            }
+            else
+            {
+                /* User has an active session so invalidate it. */
+                Queue.getInstance().removeEntry(ses, dao.getSession());
+                ses.setActive(false);
+                ses.setRemovalTime(new Date());
+                ses.setRemovalReason("User request.");
+                dao.flush();
+                inQueue.setQueueSuccessful(true);
+                
+                /* If the user is assigned to a rig, free the rig. */
+                if (ses.getRig() != null && this.notTest) new RigReleaser().release(ses, dao.getSession());            
+            }
         }
-        
-        dao.closeSession();
+        finally
+        {
+            dao.closeSession();
+        }
         return resp; 
     }
     
@@ -252,7 +289,7 @@ public class Queuer implements QueuerSkeletonInterface
         /* Request parameters. */
         UserIDType uid = request.getGetUserQueuePosition();
         this.logger.debug("Received " + this.getClass().getSimpleName() + "#getUserQueuePosition " +
-        		"request with user id=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + 
+        		"with params user id=" + uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + 
         		", user name=" + uid.getUserName() + '.');
         
         /* Response parameters. */
@@ -265,51 +302,56 @@ public class Queuer implements QueuerSkeletonInterface
         resp.setGetUserQueuePositionResponse(queue);
         
         SessionDao dao = new SessionDao();
-        Session ses;
-        User user;
-        if (!this.checkPermission(uid))
+        try
         {
-            this.logger.warn("Unable to check if user is in queue because of invalid permission.");
-        }
-        else if ((user = this.getUserFromUserID(uid, dao.getSession())) != null &&
-                 (ses = dao.findActiveSession(user)) != null)
-        {
-            /* Update the last contact timestamp. */
-            ses.setActivityLastUpdated(new Date());
-            dao.flush();
-            
-            if (ses.getAssignmentTime() == null)
+            Session ses;
+            User user;
+            if (!this.checkPermission(uid))
             {
-                /* User is currently in queue. */
-                queue.setInQueue(true);
-                queue.setPosition(Queue.getInstance().getEntryPosition(ses, dao.getSession()));
-                queue.setTime(Math.round((System.currentTimeMillis() - ses.getRequestTime().getTime()) / 1000));
+                this.logger.warn("Unable to check if user is in queue because of invalid permission.");
+            }
+            else if ((user = this.getUserFromUserID(uid, dao.getSession())) != null &&
+                     (ses = dao.findActiveSession(user)) != null)
+            {
+                /* Update the last contact timestamp. */
+                ses.setActivityLastUpdated(new Date());
+                dao.flush();
                 
-                /* Add requested resource. */
-                ResourceIDType res = new ResourceIDType();
-                queue.setQueuedResouce(res);
-                res.setType(ses.getResourceType());
-                res.setResourceID(ses.getRequestedResourceId().intValue());
-                res.setResourceName(ses.getRequestedResourceName());
-            
-                queue.setQueue(this.getQueueForPermission(ses.getResourcePermission()));
-            }
-            else
-            {
-                /* User is currently in session. */
-                queue.setInSession(true);
-                queue.setPosition(0);
-                Rig rig = ses.getRig();
-                ResourceIDType res = new ResourceIDType();
-                queue.setAssignedResource(res);
-                res.setType("RIG");
-                res.setResourceID(rig.getId().intValue());
-                res.setResourceName(rig.getName());
-                queue.setTime((Math.round(System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000));
+                if (ses.getAssignmentTime() == null)
+                {
+                    /* User is currently in queue. */
+                    queue.setInQueue(true);
+                    queue.setPosition(Queue.getInstance().getEntryPosition(ses, dao.getSession()));
+                    queue.setTime(Math.round((System.currentTimeMillis() - ses.getRequestTime().getTime()) / 1000));
+                    
+                    /* Add requested resource. */
+                    ResourceIDType res = new ResourceIDType();
+                    queue.setQueuedResouce(res);
+                    res.setType(ses.getResourceType());
+                    res.setResourceID(ses.getRequestedResourceId().intValue());
+                    res.setResourceName(ses.getRequestedResourceName());
+                
+                    queue.setQueue(this.getQueueForPermission(ses.getResourcePermission()));
+                }
+                else
+                {
+                    /* User is currently in session. */
+                    queue.setInSession(true);
+                    queue.setPosition(0);
+                    Rig rig = ses.getRig();
+                    ResourceIDType res = new ResourceIDType();
+                    queue.setAssignedResource(res);
+                    res.setType("RIG");
+                    res.setResourceID(rig.getId().intValue());
+                    res.setResourceName(rig.getName());
+                    queue.setTime((Math.round(System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000));
+                }
             }
         }
-        
-        dao.closeSession();
+        finally
+        {
+            dao.closeSession();
+        }
         return resp;
     }
     
@@ -318,7 +360,7 @@ public class Queuer implements QueuerSkeletonInterface
     {
         /* Request parameters. */
         UserIDType uid = request.getIsUserInQueue();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#isUserInQueue request with user id=" + 
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#isUserInQueue with params user id=" + 
                 uid.getUserID() + ", user namespace=" + uid.getUserNamespace() + ", user name=" + uid.getUserName() + 
                 '.');
         
@@ -328,47 +370,67 @@ public class Queuer implements QueuerSkeletonInterface
         resp.setIsUserInQueueResponse(inQueue);
         inQueue.setInQueue(false);
         inQueue.setInSession(false);
+        inQueue.setInBooking(false);
         
         SessionDao dao = new SessionDao();
-        Session ses;
-        User user;
-        if (!this.checkPermission(uid))
+        try
         {
-            this.logger.warn("Unable to check if user is in queue because of invalid permission.");
-        }
-        else if ((user = this.getUserFromUserID(uid, dao.getSession())) != null &&
-                (ses = dao.findActiveSession(user)) != null)
-        {
-            if (ses.getAssignmentTime() == null)
-            {
-                /* Update the last contact timestamp. */
-                ses.setActivityLastUpdated(new Date());
-                dao.flush();
-                
-                /* User is currently in queue. */
-                inQueue.setInQueue(true);
-            }
-            else
-            {
-                /* User is currently in session. */
-                inQueue.setInSession(true);
-                Rig rig = ses.getRig();
-                ResourceIDType res = new ResourceIDType();
-                inQueue.setAssignedResource(res);
-                res.setType("RIG");
-                res.setResourceID(rig.getId().intValue());
-                res.setResourceName(rig.getName());
-            }
+            User user;
+            Session ses;
+            Bookings booking;
             
-            /* Add requested resource. */
-            ResourceIDType res = new ResourceIDType();
-            inQueue.setQueuedResouce(res);
-            res.setType(ses.getResourceType());
-            res.setResourceID(ses.getRequestedResourceId().intValue());
-            res.setResourceName(ses.getRequestedResourceName());
+            if (!this.checkPermission(uid))
+            {
+                this.logger.warn("Unable to check if user is in queue because of invalid permission.");
+                inQueue.setFailureReason("Invalid permission.");
+            }
+            else if ((user = this.getUserFromUserID(uid, dao.getSession())) == null)
+            {
+                this.logger.debug("Unable to check if user is in queue because user was not found.");
+                inQueue.setFailureReason("User not found.");
+            }
+            else if ((booking = this.getNextBooking(user, 1800, dao.getSession())) != null)
+            {
+                // DODGY This uses half an hour limit probably should be a 
+                // resource permission session duration limit
+                inQueue.setInBooking(true);
+                inQueue.setBookingID(booking.getId().intValue());
+            }
+            else if ((ses = dao.findActiveSession(user)) != null)
+            {
+                if (ses.getAssignmentTime() == null)
+                {
+                    /* Update the last contact timestamp. */
+                    ses.setActivityLastUpdated(new Date());
+                    dao.flush();
+                    
+                    /* User is currently in queue. */
+                    inQueue.setInQueue(true);
+                }
+                else
+                {
+                    /* User is currently in session. */
+                    inQueue.setInSession(true);
+                    Rig rig = ses.getRig();
+                    ResourceIDType res = new ResourceIDType();
+                    inQueue.setAssignedResource(res);
+                    res.setType("RIG");
+                    res.setResourceID(rig.getId().intValue());
+                    res.setResourceName(rig.getName());
+                }
+                
+                /* Add requested resource. */
+                ResourceIDType res = new ResourceIDType();
+                inQueue.setQueuedResouce(res);
+                res.setType(ses.getResourceType());
+                res.setResourceID(ses.getRequestedResourceId().intValue());
+                res.setResourceName(ses.getRequestedResourceName());
+            }
         }
-        
-        dao.closeSession();
+        finally
+        {
+            dao.closeSession();
+        }
         return resp;
     }
 
@@ -378,7 +440,7 @@ public class Queuer implements QueuerSkeletonInterface
         /* Request parameters. */
         PermissionIDType permResp = request.getCheckPermissionAvailability();
         long pId = permResp.getPermissionID();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getCheckPermissionAvailability request " +
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getCheckPermissionAvailability with params " +
         		"with permission identifier=" + pId + '.');
          
         /* Response parameters. */
@@ -391,14 +453,19 @@ public class Queuer implements QueuerSkeletonInterface
         }
         
         ResourcePermissionDao dao = new ResourcePermissionDao();
-        ResourcePermission perm = dao.get(pId);
-        if (perm == null)
+        try
         {
-            this.logger.warn("Permission with id=" + pId + " not found, unable to provide its avaliablity.");
+            ResourcePermission perm = dao.get(pId);
+            if (perm == null)
+            {
+                this.logger.warn("Permission with id=" + pId + " not found, unable to provide its avaliablity.");
+            }
+            resp.setCheckPermissionAvailabilityResponse(this.getQueueForPermission(perm));
         }
-        resp.setCheckPermissionAvailabilityResponse(this.getQueueForPermission(perm));
-        
-        dao.closeSession();
+        finally
+        {
+            dao.closeSession();
+        }
         return resp;
     }
 
@@ -524,7 +591,7 @@ public class Queuer implements QueuerSkeletonInterface
         ResourceIDType resReq = request.getCheckResourceAvailability();
         long rId = resReq.getResourceID();
         String type = resReq.getType(), name = resReq.getResourceName();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#checkResourceAvailability request with " +
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#checkResourceAvailability with params " +
         		"resource type=" + type +", resource identifier=" + rId + ", resource name=" + name + '.');
         
         /* Response parameters. */
@@ -552,109 +619,136 @@ public class Queuer implements QueuerSkeletonInterface
         }
         
         RigDao rigDao = new RigDao();
-        Rig rig;
-        RigTypeDao typeDao = new RigTypeDao(rigDao.getSession());
-        RigType rigType;
-        RequestCapabilitiesDao capsDao = new RequestCapabilitiesDao(rigDao.getSession());
-        RequestCapabilities requestCaps;
-        if (ResourcePermission.RIG_PERMISSION.equals(type) &&
-                ((rId > 0 && (rig = rigDao.get(rId)) != null) || (name != null && (rig = rigDao.findByName(name)) != null)))
+        try
         {
-            /* Rig resource. */
-            resource.setResourceID(rig.getId().intValue());
-            resource.setResourceName(rig.getName());
-            
-            queue.setHasFree(rig.isOnline() && !rig.isInSession());
-            queue.setViable(rig.isOnline());
-
-            /* Code assignable is defined by the rig type of the rig. */
-            queue.setIsCodeAssignable(rig.getRigType().isCodeAssignable());
-
-            /* Only one resource, the actual rig. */
-            QueueTargetType target = new QueueTargetType();
-            target.setViable(rig.isOnline());
-            target.setIsFree(rig.isOnline() && !rig.isInSession());
-            target.setResource(resource);
-            queue.addQueueTarget(target);
-
-        }
-        else if (ResourcePermission.TYPE_PERMISSION.equals(type) && 
-                ((rId > 0 && (rigType = typeDao.get(rId)) != null) || 
-                 (name != null && (rigType = typeDao.findByName(name)) != null)))
-        {
-            /* Rig type resource. */
-            resource.setResourceID(rigType.getId().intValue());
-            resource.setResourceName(rigType.getName());
-            
-            queue.setIsCodeAssignable(rigType.isCodeAssignable());
-
-            /* The targets are the rigs in the rig type. */
-            for (Rig r: rigType.getRigs())
+            Rig rig;
+            RigTypeDao typeDao = new RigTypeDao(rigDao.getSession());
+            RigType rigType;
+            RequestCapabilitiesDao capsDao = new RequestCapabilitiesDao(rigDao.getSession());
+            RequestCapabilities requestCaps;
+            if (ResourcePermission.RIG_PERMISSION.equals(type) &&
+                    ((rId > 0 && (rig = rigDao.get(rId)) != null) || (name != null && (rig = rigDao.findByName(name)) != null)))
             {
-                if (r.isOnline()) queue.setViable(true);
-                if (r.isOnline() && !r.isInSession()) queue.setHasFree(true);
-
+                /* Rig resource. */
+                resource.setResourceID(rig.getId().intValue());
+                resource.setResourceName(rig.getName());
+                
+                queue.setHasFree(rig.isOnline() && !rig.isInSession());
+                queue.setViable(rig.isOnline());
+    
+                /* Code assignable is defined by the rig type of the rig. */
+                queue.setIsCodeAssignable(rig.getRigType().isCodeAssignable());
+    
+                /* Only one resource, the actual rig. */
                 QueueTargetType target = new QueueTargetType();
-                target.setViable(r.isOnline());
-                target.setIsFree(r.isOnline() && !r.isInSession());
-                ResourceIDType resourceRig = new ResourceIDType();
-                resourceRig.setType(ResourcePermission.RIG_PERMISSION);
-                resourceRig.setResourceID(r.getId().intValue());
-                resourceRig.setResourceName(r.getName());
-                target.setResource(resourceRig);
+                target.setViable(rig.isOnline());
+                target.setIsFree(rig.isOnline() && !rig.isInSession());
+                target.setResource(resource);
                 queue.addQueueTarget(target);
+    
             }
-        }
-        else if (ResourcePermission.CAPS_PERMISSION.equals(type) &&
-                ((rId > 0 && (requestCaps = capsDao.get(rId)) != null) || 
-                 (name != null && (requestCaps = capsDao.findCapabilites(name)) != null)))
-        {
-            /* Capabilities resource. */
-            resource.setResourceID(requestCaps.getId().intValue());
-            resource.setResourceName(requestCaps.getCapabilities());
-
-            /* For code assignable to be true, all rigs who match the
-             * request capabilities, must be code assignable. */
-            queue.setIsCodeAssignable(true);
-
-            /* Are all the rigs who have match rig capabilities to the
-             * request capabilities. */
-            for (MatchingCapabilities match : requestCaps.getMatchingCapabilitieses())
+            else if (ResourcePermission.TYPE_PERMISSION.equals(type) && 
+                    ((rId > 0 && (rigType = typeDao.get(rId)) != null) || 
+                     (name != null && (rigType = typeDao.findByName(name)) != null)))
             {
-                for (Rig capRig : match.getRigCapabilities().getRigs())
+                /* Rig type resource. */
+                resource.setResourceID(rigType.getId().intValue());
+                resource.setResourceName(rigType.getName());
+                
+                queue.setIsCodeAssignable(rigType.isCodeAssignable());
+    
+                /* The targets are the rigs in the rig type. */
+                for (Rig r: rigType.getRigs())
                 {
-                    if (!capRig.getRigType().isCodeAssignable()) queue.setIsCodeAssignable(false);
-
-                    /* To be viable, only one rig needs to be online. */
-                    if (capRig.isOnline()) queue.setViable(true);
-
-                    /* To be 'has free', only one rig needs to be free. */
-                    if (capRig.isOnline() && !capRig.isInSession()) queue.setHasFree(true);
-
-                    /* Add target. */
+                    if (r.isOnline()) queue.setViable(true);
+                    if (r.isOnline() && !r.isInSession()) queue.setHasFree(true);
+    
                     QueueTargetType target = new QueueTargetType();
-                    target.setViable(capRig.isOnline());
-                    target.setIsFree(capRig.isOnline() && !capRig.isInSession());
+                    target.setViable(r.isOnline());
+                    target.setIsFree(r.isOnline() && !r.isInSession());
+                    ResourceIDType resourceRig = new ResourceIDType();
+                    resourceRig.setType(ResourcePermission.RIG_PERMISSION);
+                    resourceRig.setResourceID(r.getId().intValue());
+                    resourceRig.setResourceName(r.getName());
+                    target.setResource(resourceRig);
                     queue.addQueueTarget(target);
-                    ResourceIDType resTarget = new ResourceIDType();
-                    resTarget.setType(ResourcePermission.RIG_PERMISSION);
-                    resTarget.setResourceID(capRig.getId().intValue());
-                    resTarget.setResourceName(capRig.getName());
-                    target.setResource(resTarget);
                 }
             }
+            else if (ResourcePermission.CAPS_PERMISSION.equals(type) &&
+                    ((rId > 0 && (requestCaps = capsDao.get(rId)) != null) || 
+                     (name != null && (requestCaps = capsDao.findCapabilites(name)) != null)))
+            {
+                /* Capabilities resource. */
+                resource.setResourceID(requestCaps.getId().intValue());
+                resource.setResourceName(requestCaps.getCapabilities());
+    
+                /* For code assignable to be true, all rigs who match the
+                 * request capabilities, must be code assignable. */
+                queue.setIsCodeAssignable(true);
+    
+                /* Are all the rigs who have match rig capabilities to the
+                 * request capabilities. */
+                for (MatchingCapabilities match : requestCaps.getMatchingCapabilitieses())
+                {
+                    for (Rig capRig : match.getRigCapabilities().getRigs())
+                    {
+                        if (!capRig.getRigType().isCodeAssignable()) queue.setIsCodeAssignable(false);
+    
+                        /* To be viable, only one rig needs to be online. */
+                        if (capRig.isOnline()) queue.setViable(true);
+    
+                        /* To be 'has free', only one rig needs to be free. */
+                        if (capRig.isOnline() && !capRig.isInSession()) queue.setHasFree(true);
+    
+                        /* Add target. */
+                        QueueTargetType target = new QueueTargetType();
+                        target.setViable(capRig.isOnline());
+                        target.setIsFree(capRig.isOnline() && !capRig.isInSession());
+                        queue.addQueueTarget(target);
+                        ResourceIDType resTarget = new ResourceIDType();
+                        resTarget.setType(ResourcePermission.RIG_PERMISSION);
+                        resTarget.setResourceID(capRig.getId().intValue());
+                        resTarget.setResourceName(capRig.getName());
+                        target.setResource(resTarget);
+                    }
+                }
+            }
+            else
+            {
+                this.logger.info("Unable to find resource of type " + type + " with ID " + rId + " and name " + name + '.');
+                resource.setType("NOTFOUND");
+            }
         }
-        else
+        finally
         {
-            this.logger.info("Unable to find resource of type " + type + " with ID " + rId + " and name " + name + '.');
-            resource.setType("NOTFOUND");
+            rigDao.closeSession();
         }
 
-        rigDao.closeSession();
         return resp;
     }
 
-    
+    /**
+     * Gets the next user booking within a specified limit, from now to now
+     * plus limit. If no booking exists within the limit, null is returned.
+     * 
+     * @param user user who has booking
+     * @param sec limit 
+     * @param ses database session
+     * @return booking or null if none exists 
+     */
+    private Bookings getNextBooking(User user, int sec, org.hibernate.Session ses)
+    {
+        Calendar start = Calendar.getInstance();
+        start.add(Calendar.SECOND, sec);
+        
+        return (Bookings) ses.createCriteria(Bookings.class)
+            .add(Restrictions.eq("active", Boolean.TRUE))
+            .add(Restrictions.eq("user", user))
+            .add(Restrictions.lt("startTime", start.getTime()))
+            .setMaxResults(1)
+            .addOrder(Order.asc("startTime"))
+            .uniqueResult();
+    }
     
     /**
      * Gets the user identified by the user id type. 
