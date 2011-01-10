@@ -86,8 +86,8 @@
       	<xsd:sequence>
       		<xsd:element name="inQueue" type="xsd:boolean"></xsd:element>
       		<xsd:element name="inSession" type="xsd:boolean"></xsd:element>
-                    <xsd:element name="inBooking" type="xsd:boolean"></xsd:element>
-                    <xsd:element name="queueSuccessful" type="xsd:boolean"
+      		<xsd:element name="inBooking" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="queueSuccessful" type="xsd:boolean"
       			maxOccurs="1" minOccurs="0">
       		</xsd:element>
       		<xsd:element name="assignedResource"
@@ -96,6 +96,8 @@
       		<xsd:element name="queuedResouce" type="qu:ResourceIDType"
       			maxOccurs="1" minOccurs="0">
       		</xsd:element>
+                    <xsd:element name="bookingID" type="xsd:int" maxOccurs="1" minOccurs="0"></xsd:element>
+                    <xsd:element name="failureReason" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
     

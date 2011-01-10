@@ -84,6 +84,12 @@ public class InQueueType implements ADBBean
 
     protected ResourceIDType queuedResouce;
     protected boolean queuedResouceTracker = false;
+    
+    protected int bookingID;
+    protected boolean bookingIDTracker = false;
+    
+    protected String failureReason;
+    protected boolean failureReasonTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -171,6 +177,28 @@ public class InQueueType implements ADBBean
         }
 
         this.queuedResouce = param;
+    }
+    
+    public int getBookingID()
+    {
+        return this.bookingID;
+    }
+    
+    public void setBookingID(final int param)
+    {
+        this.bookingID = param;
+        this.bookingIDTracker = param != Integer.MIN_VALUE;
+    }
+    
+    public String getFailureReason()
+    {
+        return this.failureReason;
+    }
+    
+    public void setFailureReason(final String param)
+    {
+        this.failureReason = param;
+        this.failureReasonTracker = param != null;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -368,6 +396,60 @@ public class InQueueType implements ADBBean
             this.queuedResouce.serialize(new QName("", "queuedResouce"), factory, xmlWriter);
         }
         
+        if (this.bookingIDTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = InQueueType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "bookingID", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "bookingID");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("bookingID");
+            }
+
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.bookingID));
+            xmlWriter.writeEndElement();
+        }
+        
+        if (this.failureReasonTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = InQueueType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "failureReason", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "failureReason");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("failureReason");
+            }
+
+            xmlWriter.writeCharacters(this.failureReason);
+            xmlWriter.writeEndElement();
+        }
+        
         xmlWriter.writeEndElement();
     }
 
@@ -437,6 +519,18 @@ public class InQueueType implements ADBBean
                 throw new ADBException("queuedResouce cannot be null!!");
             }
             elementList.add(this.queuedResouce);
+        }
+        
+        if (this.bookingIDTracker)
+        {
+            elementList.add(new QName("", "bookingID"));
+            elementList.add(ConverterUtil.convertToString(this.bookingID));
+        }
+        
+        if (this.failureReasonTracker)
+        {
+            elementList.add(new QName("", "failureReason"));
+            elementList.add(this.failureReason);
         }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
@@ -554,6 +648,26 @@ public class InQueueType implements ADBBean
                 if (reader.isStartElement() && new QName("", "queuedResouce").equals(reader.getName()))
                 {
                     object.setQueuedResouce(ResourceIDType.Factory.parse(reader));
+                    reader.next();
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "bookingID").equals(reader.getName()))
+                {
+                    object.setBookingID(ConverterUtil.convertToInt(reader.getElementText()));
+                    reader.next();
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "failureReason").equals(reader.getName()))
+                {
+                    object.setFailureReason(reader.getElementText());
                     reader.next();
                 }
 
