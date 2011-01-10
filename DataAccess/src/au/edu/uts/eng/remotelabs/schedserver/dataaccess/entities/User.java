@@ -213,7 +213,7 @@ public class User implements java.io.Serializable
         this.sessions = sessions;
     }
     
-    public String getQName()
+    public String qName()
     {
         return this.namespace + ':' + this.name;
     }
