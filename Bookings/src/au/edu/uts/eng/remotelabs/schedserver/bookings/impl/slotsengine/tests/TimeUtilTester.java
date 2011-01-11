@@ -61,6 +61,71 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 public class TimeUtilTester extends TestCase
 {
     @Test
+    public void testGetDateStrCompare()
+    {
+        Calendar date = Calendar.getInstance();
+        String dt1 = TimeUtil.getDateStr(date);
+        
+        date.add(Calendar.DAY_OF_MONTH, 1);
+        String dt2 = TimeUtil.getDateStr(date);
+        
+        assertTrue(dt1.compareTo(dt2) < 0);
+        assertTrue(dt2.compareTo(dt1) > 0);
+    }
+    
+    @Test
+    public void testGetDateStrCompareMonth()
+    {
+        Calendar date = Calendar.getInstance();
+        String dt1 = TimeUtil.getDateStr(date);
+        
+        date.add(Calendar.MONTH, 1);
+        String dt2 = TimeUtil.getDateStr(date);
+        
+        assertTrue(dt1.compareTo(dt2) < 0);
+        assertTrue(dt2.compareTo(dt1) > 0);
+    }
+    
+    @Test
+    public void testGetDateStrCompareYear()
+    {
+        Calendar date = Calendar.getInstance();
+        String dt1 = TimeUtil.getDateStr(date);
+        
+        date.add(Calendar.YEAR, 1);
+        String dt2 = TimeUtil.getDateStr(date);
+        
+        assertTrue(dt1.compareTo(dt2) < 0);
+        assertTrue(dt2.compareTo(dt1) > 0);
+    }
+    
+    @Test
+    public void testGetDateStrCompareYear2()
+    {
+        Calendar date = Calendar.getInstance();
+        String dt1 = TimeUtil.getDateStr(date);
+        
+        date.add(Calendar.YEAR, -1);
+        String dt2 = TimeUtil.getDateStr(date);
+        
+        assertTrue(dt1.compareTo(dt2) > 0);
+        assertTrue(dt2.compareTo(dt1) < 0);
+    }
+    
+    @Test
+    public void testGetDateStrCompareEqual()
+    {
+        Calendar date = Calendar.getInstance();
+        String dt1 = TimeUtil.getDateStr(date);
+
+        String dt2 = TimeUtil.getDateStr(date);
+        
+        assertTrue(dt1.compareTo(dt2) == 0);
+        assertTrue(dt2.compareTo(dt1) == 0);
+    }
+    
+    
+    @Test
     public void testGetDateStr()
     {
         Date date = new Date();

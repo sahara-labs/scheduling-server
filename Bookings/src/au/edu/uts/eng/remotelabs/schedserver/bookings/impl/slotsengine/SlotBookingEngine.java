@@ -38,9 +38,9 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -75,7 +75,7 @@ public class SlotBookingEngine implements BookingEngine
     public SlotBookingEngine()
     {
         this.logger = LoggerActivator.getLogger();
-        this.days = new HashMap<String, DayBookings>();
+        this.days = new TreeMap<String, DayBookings>();
     }
     
     @Override

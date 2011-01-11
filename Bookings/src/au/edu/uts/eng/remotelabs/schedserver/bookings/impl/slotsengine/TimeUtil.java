@@ -77,8 +77,10 @@ public class TimeUtil
         StringBuilder dt = new StringBuilder();
         dt.append(cal.get(Calendar.YEAR));
         dt.append('-');
+        if (cal.get(Calendar.MONTH) < 10)  dt.append('0');
         dt.append(cal.get(Calendar.MONTH));
         dt.append('-');
+        if (cal.get(Calendar.DAY_OF_MONTH) < 10) dt.append('0');
         dt.append(cal.get(Calendar.DAY_OF_MONTH));
         return dt.toString();
     }
