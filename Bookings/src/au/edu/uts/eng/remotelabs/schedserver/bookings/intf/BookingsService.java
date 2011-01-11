@@ -737,17 +737,17 @@ public class BookingsService implements BookingsInterface
             if (ResourcePermission.RIG_PERMISSION.equals(perm.getType()))
             {
                 free = this.engine.getFreeTimes(perm.getRig(), new TimePeriod(reqStart, searchEnd),
-                        perm.getSessionDuration(), ses);
+                        perm.getSessionDuration() / 2, ses);
             }
             else if (ResourcePermission.TYPE_PERMISSION.equals(perm.getType()))
             { 
                 free = this.engine.getFreeTimes(perm.getRigType(), new TimePeriod(reqStart, searchEnd),
-                        perm.getSessionDuration(), ses);
+                        perm.getSessionDuration() / 2, ses);
             }
             else if (ResourcePermission.CAPS_PERMISSION.equals(perm.getType()))
             {
                 free = this.engine.getFreeTimes(perm.getRequestCapabilities(), new TimePeriod(reqStart, searchEnd),
-                        perm.getSessionDuration(), ses);
+                        perm.getSessionDuration() / 2, ses);
             }
             
             /* ----------------------------------------------------------------
