@@ -291,7 +291,7 @@ public class ResourcePermission implements java.io.Serializable
         this.expiryTime = expiryTime;
     }
     
-    @Column(name = "maximum_bookings", columnDefinition = "int default '0'")
+    @Column(name = "maximum_bookings", columnDefinition = "int default '0' not null")
     public int getMaximumBookings()
     {
         return this.maximumBookings;

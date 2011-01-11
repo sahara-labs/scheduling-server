@@ -208,7 +208,7 @@ public class UserClass implements java.io.Serializable
         this.active = active;
     }
     
-    @Column(name = "time_horizon", columnDefinition="int default '0'")
+    @Column(name = "time_horizon", columnDefinition="int default '0' not null")
     public int getTimeHorizon()
     {
         return this.timeHorizon;
