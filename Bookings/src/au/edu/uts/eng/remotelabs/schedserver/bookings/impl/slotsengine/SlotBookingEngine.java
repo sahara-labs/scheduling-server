@@ -286,6 +286,9 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     public boolean putQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
             int duration, Session db)
     {
+        
+        
+        
         // TODO Auto-generated method stub
         return false;
     }

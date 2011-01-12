@@ -39,11 +39,13 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.TIME_QUANTUM;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
 /**
  * In-memory representation of a booking.
@@ -64,6 +66,9 @@ public class MBooking
     /** The transient booking of this rig. */
     private Bookings booking;
     
+    /** The transient session of this booking. */
+    private Session session;
+    
     /** The day the booking is located on. */
     private String day;
     
@@ -72,6 +77,12 @@ public class MBooking
     
     /** The booking rigType. */
     private BType bType;
+    
+    /** Booking / session start. */
+    private Date start;
+    
+    /** Booking / session duration. */
+    private int duration;
     
     /** The index of this bookings start slot. */
     private int startSlot;
@@ -94,6 +105,8 @@ public class MBooking
         this.booking = b;
         this.day = day;
         this.isMultiDay = false;
+        this.start = b.getStartTime();
+        this.duration = b.getDuration();
         
         if (ResourcePermission.CAPS_PERMISSION.endsWith(b.getResourceType()))
         {
@@ -145,6 +158,56 @@ public class MBooking
         this.numSlots = this.endSlot - this.startSlot + 1;  
     }
     
+    public MBooking(Session ses, Calendar start, String day)
+    {
+        this.day = day;
+        this.isMultiDay = false;
+        this.start = start.getTime();
+        this.duration = ses.getDuration();
+        
+        /* Must be a rig booking because the session is only ever committed to
+         * a singular system. */
+        this.bType = BType.RIG;
+
+        if (TimeUtil.getDayBegin(this.day).after(start))
+        {
+            /* The booking starts on the previous day and continues today. */
+            this.startSlot = 0;
+            this.isMultiDay = true;
+        }
+        else
+        {
+            /* The start slot is always the slot where the time lies in. */
+            this.startSlot = TimeUtil.getSlotIndex(start);
+        }
+        
+        Calendar end = Calendar.getInstance();
+        end.setTimeInMillis(start.getTimeInMillis());
+        end.add(Calendar.SECOND, this.duration);
+        if (TimeUtil.getDayEnd(this.day).before(end))
+        {
+            /* The booking continues the following day. */
+            this.endSlot = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM - 1;
+            this.isMultiDay = true;
+        }
+        else
+        {
+            /* The end slot may be where the time falls or the preceding slot if
+             * the booking ends exactly when the next slot starts. */
+            this.endSlot = TimeUtil.getSlotIndex(end);
+            
+            if (this.endSlot * TIME_QUANTUM == 
+                end.get(Calendar.HOUR_OF_DAY) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
+            {
+                /* Not point wasting a slot when its time isn't used. */
+                this.endSlot--;
+            }
+        }
+        
+        /* The number of slots between start and end inclusive. */
+        this.numSlots = this.endSlot - this.startSlot + 1;
+    }
+    
     public MBooking(int start, int end, BType type, String day)
     {
         this.startSlot = start;
@@ -152,6 +215,20 @@ public class MBooking
         this.numSlots = this.endSlot - this.startSlot + 1;
         this.bType = type;
         this.day = day;
+    }
+ 
+    /**
+     * Extends the booking by the number of seconds.    
+     * 
+     * @param seconds seconds to extend
+     * @param doCommit whether the extension is internally committed
+     * @return new end slot
+     */
+    public int extendBooking(int seconds, boolean doCommit)
+    {
+        // TODO. 
+        
+        return this.endSlot;
     }
 
     public Bookings getBooking()
@@ -212,6 +289,16 @@ public class MBooking
     public boolean isMultiDay()
     {
         return this.isMultiDay;
+    }
+
+    public void setSession(Session session)
+    {
+        this.session = session;
+    }
+
+    public Session getSession()
+    {
+        return this.session;
     }
 
     @Override

@@ -46,6 +46,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
 /**
  * Tests the {@link MBooking} class.
@@ -74,6 +75,40 @@ public class MBookingTester extends TestCase
         assertEquals(5, m.getStartSlot());
         assertEquals(8, m.getEndSlot());
         assertEquals(4, m.getNumSlots());
+    }
+    
+    @Test
+    public void testMBookingSession()
+    {
+        Session ses = new Session();
+        ses.setDuration(1800);
+        
+        Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
+        start.add(Calendar.MINUTE, 120);
+
+        MBooking m = new MBooking(ses, start, TimeUtil.getDateStr(start));
+
+        assertEquals(BType.RIG, m.getType());
+        assertEquals(8, m.getStartSlot());
+        assertEquals(9, m.getEndSlot());
+        assertEquals(2, m.getNumSlots());
+    }
+    
+    @Test
+    public void testMBookingSession2()
+    {
+        Session ses = new Session();
+        ses.setDuration(3700);
+        
+        Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
+        start.add(Calendar.MINUTE, 119);
+
+        MBooking m = new MBooking(ses, start, TimeUtil.getDateStr(start));
+
+        assertEquals(BType.RIG, m.getType());
+        assertEquals(7, m.getStartSlot());
+        assertEquals(12, m.getEndSlot());
+        assertEquals(6, m.getNumSlots());
     }
     
     @Test
