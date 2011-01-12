@@ -129,6 +129,9 @@ public class Session implements java.io.Serializable
     /** The path to the uploaded code. */
     private String codeReference;
     
+    /** Session duration. */
+    private int duration;
+    
     /** The number of session extensions. */
     private short extensions;
     
@@ -423,6 +426,17 @@ public class Session implements java.io.Serializable
     public void setCodeReference(final String codeReference)
     {
         this.codeReference = codeReference;
+    }
+
+    @Column(name = "duration", nullable = false)
+    public int getDuration()
+    {
+        return this.duration;
+    }
+
+    public void setDuration(final int duration)
+    {
+        this.duration = duration;
     }
 
     @Column(name = "extensions", nullable = false)
