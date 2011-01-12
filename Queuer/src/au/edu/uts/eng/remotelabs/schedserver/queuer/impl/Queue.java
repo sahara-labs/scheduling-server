@@ -47,8 +47,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
@@ -60,6 +62,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
 
 /**
@@ -204,17 +207,31 @@ public class Queue
                 }
             }
         }
-        
-        /**********************************************************************
-         ** 4) If a target is found, assign it.                              **
-         **********************************************************************/
+
         if (targetSes != null)
         {
+            /* Assign the rig. */
+            targetSes = (Session)db.merge(targetSes);
+            
+            /******************************************************************
+             ** 4) Check the rig isn't booked.                               **
+             ******************************************************************/
+            BookingEngineService bookings = QueueActivator.getBookingService();
+            if (bookings != null && 
+                    !bookings.putQueuedSession(rig, targetSes, targetSes.getResourcePermission().getSessionDuration(), db))
+            {
+                /* The rig is booked so we can't assign it to the queued session. */
+                return;
+            }
+            
+            /******************************************************************
+             ** 5) Rig is free and we have a session so assign it.           **
+             ******************************************************************/
             /* Remove them from the inner queue and if the inner queue is then
              * empty, remove the inner queue itself. */
             if (RIG_PERMISSION.equals(queueType))
             {
-                targetSes = this.rigQueues.get(innerQueueId).getHead();
+                this.rigQueues.get(innerQueueId).getHead();
                 if (this.rigQueues.get(innerQueueId).size() == 0)
                 {
                     this.rigQueues.remove(innerQueueId);
@@ -222,7 +239,7 @@ public class Queue
             }
             else if (TYPE_PERMISSION.equals(queueType))
             {
-                targetSes = this.typeQueues.get(innerQueueId).getHead();
+                this.typeQueues.get(innerQueueId).getHead();
                 if (this.typeQueues.get(innerQueueId).size() == 0)
                 {
                     this.typeQueues.remove(innerQueueId);
@@ -230,15 +247,12 @@ public class Queue
             }
             else if (CAPS_PERMISSION.equals(queueType))
             {
-                targetSes = this.capabilityQueues.get(innerQueueId).getHead();
+                this.capabilityQueues.get(innerQueueId).getHead();
                 if (this.capabilityQueues.get(innerQueueId).size() == 0)
                 {
                     this.capabilityQueues.remove(innerQueueId);
                 }
             }
-            
-            /* Assign the rig. */
-            targetSes = (Session)db.merge(targetSes);
             
             targetSes.setAssignmentTime(new Date());
             targetSes.setAssignedRigName(rig.getName());
@@ -281,12 +295,16 @@ public class Queue
              .add(Restrictions.eq("active", true))
              .add(Restrictions.eq("online", true))
              .add(Restrictions.eq("inSession", false))
-             .setMaxResults(1);
+             .addOrder(Order.asc("lastUpdateTimestamp"));
         
-        Rig freeRig;
-        while (this.typeQueues.containsKey(id) && this.typeQueues.get(id).size() > 0 &&
-                (freeRig = (Rig) query.uniqueResult()) != null)
+        @SuppressWarnings("unchecked")
+        List<Rig> freeRigs = query.list();
+        for (Rig freeRig : freeRigs)
         {
+            if (!this.typeQueues.containsKey(id) || this.typeQueues.get(id).size() == 0)
+            {
+                return;
+            }
             this.runRigAssignment(freeRig.getId(), db);
         }
     }
@@ -306,7 +324,7 @@ public class Queue
             RigCapabilities rigCaps = match.getRigCapabilities();
             for (Rig rig : rigCaps.getRigs())
             {
-                if (rig.isOnline() && !rig.isInSession())
+                if (rig.isActive() && rig.isOnline() && !rig.isInSession())
                 {
                     /* When a free rig is found, run rig assignment, which should assign
                      * the rig. */
@@ -417,10 +435,6 @@ public class Queue
                     this.capabilityQueues.remove(rID);
                 } 
             }
-        }
-        else
-        {
-            // TODO rig session logoff.
         }
     }
     

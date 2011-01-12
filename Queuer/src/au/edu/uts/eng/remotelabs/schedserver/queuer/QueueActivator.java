@@ -44,7 +44,9 @@ import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -69,6 +71,9 @@ public class QueueActivator implements BundleActivator
     
     /** Service registration for a rig event listener. */
     private ServiceRegistration rigListenerReg;
+    
+    /** Bookings service. */
+    public static ServiceTracker bookingTracker;
     
     /** Logger. */
     private Logger logger;
@@ -100,6 +105,10 @@ public class QueueActivator implements BundleActivator
         props.put("period", "60");
         this.staleTimeoutTaskReg = context.registerService(Runnable.class.getName(), task, props);
         
+        /* Obtain a service tracker for the booking service. */
+        QueueActivator.bookingTracker = new ServiceTracker(context, BookingEngineService.class.getName(), null);
+        QueueActivator.bookingTracker.open();
+        
         /* Register the rig event listener service. */
         this.rigListenerReg = context.registerService(RigEventListener.class.getName(), new QueueListenerRun(), null);
         
@@ -115,7 +124,21 @@ public class QueueActivator implements BundleActivator
 	{
 	    this.logger.info("Shutting down the queuer bundle.");
 	    this.soapReg.unregister();
+	    QueueActivator.bookingTracker.close();
+	    QueueActivator.bookingTracker = null;
 	    this.staleTimeoutTaskReg.unregister();
 	    this.rigListenerReg.unregister();
+	}
+	
+	/**
+	 * Returns a booking service object or null if not booking service is running.
+	 * 
+	 * @return booking engine service or null
+	 */
+	public static BookingEngineService getBookingService()
+	{
+	    if (QueueActivator.bookingTracker == null) return null;
+	    
+	    return (BookingEngineService) QueueActivator.bookingTracker.getService();
 	}
 }

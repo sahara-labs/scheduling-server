@@ -571,6 +571,7 @@ public class QueueEntry
 
         ses.setCodeReference(code);
         ses.setExtensions(this.resourcePerm.getAllowedExtensions());
+        ses.setDuration(this.resourcePerm.getSessionDuration());
         ses.setPriority(this.resourcePerm.getUserClass().getPriority());
         
         SessionDao sessionDao = new SessionDao(this.db);
