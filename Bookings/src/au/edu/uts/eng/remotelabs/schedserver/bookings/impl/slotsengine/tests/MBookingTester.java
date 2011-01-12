@@ -95,6 +95,32 @@ public class MBookingTester extends TestCase
     }
     
     @Test
+    public void testMBookingExtension()
+    {
+        Session ses = new Session();
+        ses.setDuration(1800);
+        
+        Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
+        start.add(Calendar.MINUTE, 120);
+
+        MBooking m = new MBooking(ses, start, TimeUtil.getDateStr(start));
+        
+        assertEquals(BType.RIG, m.getType());
+        assertEquals(8, m.getStartSlot());
+        assertEquals(9, m.getEndSlot());
+        assertEquals(2, m.getNumSlots());
+        
+        assertEquals(10, m.extensionEnd(15 * 60 - 1));
+        assertEquals(10, m.extensionEnd(15 * 60));
+        assertEquals(11, m.extensionEnd(15 * 60 + 1));
+        assertEquals(11, m.extensionEnd(30 * 60));
+        assertEquals(9, m.getEndSlot());
+        
+        assertEquals(10, m.extendBooking(15 * 60));
+        assertEquals(10, m.getEndSlot());
+    }
+    
+    @Test
     public void testMBookingSession2()
     {
         Session ses = new Session();

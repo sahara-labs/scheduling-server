@@ -216,18 +216,55 @@ public class MBooking
         this.bType = type;
         this.day = day;
     }
+    
+    /**
+     * Returns the slot this booking would occur if it was extend by the 
+     * specified seconds.
+     * 
+     * @param seconds number of seconds to extend booking by
+     * @return end slot
+     */
+    public int extensionEnd(int seconds)
+    {
+        Calendar end = Calendar.getInstance();
+        end.setTime(this.start);
+        end.add(Calendar.SECOND, this.duration + seconds);
+        
+        int extEnd;
+        if (TimeUtil.getDayEnd(this.day).before(end))
+        {
+            /* The booking continues the following day. */
+            extEnd = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM - 1;
+            this.isMultiDay = true;
+        }
+        else
+        {
+            /* The end slot may be where the time falls or the preceding slot if
+             * the booking ends exactly when the next slot starts. */
+            extEnd = TimeUtil.getSlotIndex(end);
+            
+            if (extEnd * TIME_QUANTUM == 
+                end.get(Calendar.HOUR_OF_DAY) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
+            {
+                /* Not point wasting a slot when its time isn't used. */
+                extEnd--;
+            }
+        }
+        
+        return extEnd;
+    }
  
     /**
      * Extends the booking by the number of seconds.    
      * 
      * @param seconds seconds to extend
-     * @param doCommit whether the extension is internally committed
      * @return new end slot
      */
-    public int extendBooking(int seconds, boolean doCommit)
+    public int extendBooking(int seconds)
     {
-        // TODO. 
-        
+        this.endSlot = this.extensionEnd(seconds);
+        this.numSlots = this.endSlot - this.startSlot + 1;
+     
         return this.endSlot;
     }
 
