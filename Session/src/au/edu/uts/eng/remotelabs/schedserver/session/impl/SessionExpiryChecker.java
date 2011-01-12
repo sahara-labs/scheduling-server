@@ -43,6 +43,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -51,6 +52,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueInfo;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigNotifier;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 
 /**
  * Either expires or extends the time of all sessions which are close to 
@@ -58,6 +60,9 @@ import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
  */
 public class SessionExpiryChecker implements Runnable
 {
+    /** Minimum extension duration. */
+    public static final int TIME_EXT = 300;
+    
     /** Logger. */
     private Logger logger;
     
@@ -77,21 +82,18 @@ public class SessionExpiryChecker implements Runnable
         
         try
         {
-            db = DataAccessActivator.getNewSession();        
-            
-            boolean kicked = false;
-            
-            if (db == null)
+            if ((db = DataAccessActivator.getNewSession()) == null)
             {
                 this.logger.warn("Unable to obtain a database session, for rig session status checker. Ensure the " +
                 		"SchedulingServer-DataAccess bundle is installed and active.");
                 return;
             }
             
+            boolean kicked = false;
+            
             Criteria query = db.createCriteria(Session.class);
             query.add(Restrictions.eq("active", Boolean.TRUE))
                  .add(Restrictions.isNotNull("assignmentTime"));
-            
             
             Date now = new Date();
             
@@ -99,9 +101,11 @@ public class SessionExpiryChecker implements Runnable
             for (Session ses : sessions)
             {
                 ResourcePermission perm = ses.getResourcePermission();
-                int remaining = perm.getSessionDuration() + // The allowed session time
+                int remaining = ses.getDuration() + // The session time
                         (perm.getAllowedExtensions() - ses.getExtensions()) * perm.getExtensionDuration() -  // Extension time
                         Math.round((System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000); // In session time
+                
+                int extension = perm.getSessionDuration() - ses.getDuration() >=  TIME_EXT ? TIME_EXT : perm.getExtensionDuration();
     
                 /******************************************************************
                  * For sessions that have been marked for termination, terminate  * 
@@ -132,8 +136,10 @@ public class SessionExpiryChecker implements Runnable
                  ******************************************************************/
                 else if (remaining < ses.getRig().getRigType().getLogoffGraceDuration())
                 {
+                    BookingEngineService service;
+                    
                     /* Need to make a decision whether to extend time or set for termination. */
-                    if (ses.getExtensions() == 0)
+                    if (ses.getExtensions() == 0 && ses.getDuration() == perm.getSessionDuration())
                     {
                         this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
                                 "rig " + ses.getAssignedRigName() + " is expired and cannot be extended. Marking " +
@@ -148,7 +154,9 @@ public class SessionExpiryChecker implements Runnable
                         if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
                         		"Please finish and exit.", ses, db);
                     }
-                    else if (QueueInfo.isQueued(ses.getRig(), db))
+                    else if (QueueInfo.isQueued(ses.getRig(), db) ||
+                            ((service = SessionActivator.getBookingService()) != null && 
+                             !service.extendQueuedSession(ses.getRig(), ses, extension, db)))
                     {
                         this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
                                 "rig " + ses.getAssignedRigName() + " is expired and the rig is queued. Marking " +
@@ -166,8 +174,16 @@ public class SessionExpiryChecker implements Runnable
                     else
                     {
                         this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
-                                "rig " + ses.getAssignedRigName() + " is expired and is having its session time extended.");
-                        ses.setExtensions((short)(ses.getExtensions() - 1));
+                                "rig " + ses.getAssignedRigName() + " is expired and is having its session time " +
+                                "extended by " + extension + " seconds.");
+                        if (perm.getSessionDuration() -  ses.getDuration() >= TIME_EXT)
+                        {
+                            ses.setDuration(ses.getDuration() + extension);
+                        }
+                        else
+                        {
+                            ses.setExtensions((short)(ses.getExtensions() - 1));
+                        }
                         db.beginTransaction();
                         db.flush();
                         db.getTransaction().commit();

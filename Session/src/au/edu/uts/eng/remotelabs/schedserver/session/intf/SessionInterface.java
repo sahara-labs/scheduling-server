@@ -155,7 +155,7 @@ public class SessionInterface implements SessionSkeletonInterface
             ResourcePermission perm = ses.getResourcePermission();
             int time = Math.round((System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000);
             info.setTime(time);
-            int remainingTime = perm.getSessionDuration() + (perm.getAllowedExtensions() - ses.getExtensions()) *  
+            int remainingTime = ses.getDuration() + (perm.getAllowedExtensions() - ses.getExtensions()) *  
                     perm.getExtensionDuration() - time;
             info.setTimeLeft(remainingTime);
             info.setExtensions(ses.getExtensions());

@@ -46,7 +46,9 @@ import org.hibernate.Session;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -70,6 +72,9 @@ public class SessionActivator implements BundleActivator
     /** Shutdown event notifier session terminator service. */
     private ServiceRegistration terminatorService;
     
+    /** Booking service tracker. */
+    private static ServiceTracker bookingsTracker;
+    
     /** Logger. */
     private Logger logger;
     
@@ -78,6 +83,10 @@ public class SessionActivator implements BundleActivator
 	{
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting the Session bunde...");
+        
+        /* Track the bookings service tracker. */
+        SessionActivator.bookingsTracker = new ServiceTracker(context, BookingEngineService.class.getName(), null);
+        SessionActivator.bookingsTracker.open();
         
         /* Register the session timeout checker service. */
         Properties props = new Properties();
@@ -104,6 +113,7 @@ public class SessionActivator implements BundleActivator
 	    this.soapReg.unregister();
 	    this.terminatorService.unregister();
 	    this.sessionCheckerReg.unregister();
+	    SessionActivator.bookingsTracker.close();
 	    
 	    /* Terminate all in progress sessions. */
 	    Session ses = DataAccessActivator.getNewSession();
@@ -122,5 +132,17 @@ public class SessionActivator implements BundleActivator
             this.logger.info("Terminated " + num + " sessions for shutdown.");
             ses.close();
         }
+	}
+	
+	/**
+     * Returns a booking service object or null if not booking service is running.
+     * 
+     * @return booking engine service or null
+     */
+	public static BookingEngineService getBookingService()
+	{
+	    if (SessionActivator.bookingsTracker == null) return null;
+	    
+	    return (BookingEngineService) SessionActivator.bookingsTracker.getService();
 	}
 }
