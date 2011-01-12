@@ -37,12 +37,18 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.bookings;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -55,10 +61,16 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class BookingActivator implements BundleActivator 
 {
     /** SOAP interface hosting server service registration. */
-    private ServiceRegistration soapReg;
+    private ServiceRegistration soapService;
+    
+    /** Engine management service registration tasks. */
+    private Map<ServiceRegistration, BookingManagementTask> engineTasks;
     
     /** Booking engine implementation. */
     private static BookingEngine engine;
+    
+    /** Booking engine service registration. */
+    private ServiceRegistration engineService;
     
     /** Logger. */
     private Logger logger;
@@ -69,21 +81,41 @@ public class BookingActivator implements BundleActivator
 		this.logger = LoggerActivator.getLogger();
 		this.logger.info("Starting bookings bundle...");
 		
-		this.logger.info("Initalising the booking engine.");
 		BookingActivator.engine = new SlotBookingEngine();
-		BookingActivator.engine.init();
 		
+		/* Initalise the booking engine and register the engine management 
+		 * tasks to periodically run. */
+		Properties props = new Properties();
+		this.engineTasks = new HashMap<ServiceRegistration, BookingManagementTask>();
+		for (BookingManagementTask task : BookingActivator.engine.init())
+		{
+		    props.put("period", task.getPeriod());
+		    this.engineTasks.put(context.registerService(Runnable.class.getName(), task, props), task);
+		}
+		
+		/* Register the booking engine service. */
+		this.engineService = context.registerService(BookingEngineService.class.getName(), BookingActivator.engine, null);
+		
+		/* Register the Bookings SOAP service. */
 		this.logger.debug("Registering the Bookings SOAP service.");
 		ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
+	    this.soapService = context.registerService(ServletContainerService.class.getName(), soapService, null);
 	}
 	
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
 	    this.logger.info("Shutting down bookings bundle.");
-		this.soapReg.unregister();
+		this.soapService.unregister();
+		this.engineService.unregister();
+		
+		/* Stop the booking engine management tasks. */
+		for (Entry<ServiceRegistration, BookingManagementTask> s : this.engineTasks.entrySet())
+		{
+		    s.getKey().unregister();
+		    s.getValue().cleanUp();
+		}
 		
 		BookingActivator.engine.cleanUp();
 	}

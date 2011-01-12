@@ -45,7 +45,9 @@ import java.util.TreeMap;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -59,7 +61,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  * The slot booking engine. This is an in-memory booking engine with uses 
  * aligned booking time.
  */
-public class SlotBookingEngine implements BookingEngine
+public class SlotBookingEngine implements BookingEngine, BookingEngineService
 {
     /** The length of each booking slot in seconds. */
     public static final int TIME_QUANTUM = 15 * 60;
@@ -79,11 +81,14 @@ public class SlotBookingEngine implements BookingEngine
     }
     
     @Override
-    public void init()
+    public List<BookingManagementTask> init()
     {
         this.logger.debug("Initalising the slot booking engine...");
         
+        List<BookingManagementTask> tasks = new ArrayList<BookingManagementTask>();
+        
         // TODO init
+        return tasks;
     }
 
     @Override
@@ -275,6 +280,22 @@ public class SlotBookingEngine implements BookingEngine
         ses.getTransaction().commit();
         
         return response;
+    }
+    
+    @Override
+    public boolean putQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
+            int duration, Session db)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean extendQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
+            int duration, Session db)
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
     
     /**

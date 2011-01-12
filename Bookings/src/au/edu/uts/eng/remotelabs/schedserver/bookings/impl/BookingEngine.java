@@ -56,9 +56,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 public interface BookingEngine
 {
     /** 
-     * Initialise the booking engine.
+     * Initialise the booking engine. This returns a list of runnable tasks
+     * needed for engine management.
+     * 
+     * @return list of runnable tasks or an empty list if non-needed
      */
-    public void init();
+    public List<BookingManagementTask> init();
     
     /** 
      * Cleanup the booking engine (for shutdown).
