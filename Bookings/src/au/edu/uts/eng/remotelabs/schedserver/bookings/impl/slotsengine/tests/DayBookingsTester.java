@@ -8302,7 +8302,7 @@ public class DayBookingsTester extends TestCase
 
         
         assertNotNull(range);
-        assertEquals(4, range.size());
+        assertEquals(5, range.size());
         
         MRange mr = range.get(0);
         assertEquals(8, mr.getStartSlot());
@@ -8310,13 +8310,17 @@ public class DayBookingsTester extends TestCase
         
         mr = range.get(1);
         assertEquals(16, mr.getStartSlot());
-        assertEquals(27, mr.getEndSlot());
+        assertEquals(19, mr.getEndSlot());
         
         mr = range.get(2);
+        assertEquals(24, mr.getStartSlot());
+        assertEquals(27, mr.getEndSlot());
+        
+        mr = range.get(3);
         assertEquals(33, mr.getStartSlot());
         assertEquals(35, mr.getEndSlot());
         
-        mr = range.get(3);
+        mr = range.get(4);
         assertEquals(38, mr.getStartSlot());
         assertEquals(95, mr.getEndSlot());
     }
