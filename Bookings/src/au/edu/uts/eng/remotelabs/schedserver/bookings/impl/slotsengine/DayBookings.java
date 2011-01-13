@@ -46,6 +46,7 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
@@ -157,7 +158,17 @@ public class DayBookings
                 
                 /* No directly free slots are found try a load balancing run to
                  * free some slots. */
-                return this.outerLoadBalance(rb, mb, false) && this.outerLoadBalance(rb, mb, true) && rb.commitBooking(mb);
+                next = rb;
+                do 
+                {
+                    if (this.outerLoadBalance(next, mb, false))
+                    {
+                        return this.outerLoadBalance(next, mb, true) && next.commitBooking(mb);
+                    }
+                    next = next.getTypeLoopNext();
+                }
+                while (next != rb);
+                break;
                 
             case CAPABILITY:
                 RequestCapabilities caps = mb.getRequestCapabilities();
@@ -189,7 +200,17 @@ public class DayBookings
 
                 /* No directly free slots are found try a load balancing run to
                  * free some slots. */
-                return this.outerLoadBalance(rb, mb, false) && this.outerLoadBalance(rb, mb, true) && rb.commitBooking(mb);
+                next = rb;
+                do 
+                {
+                    if (this.outerLoadBalance(next, mb, false))
+                    {
+                        return this.outerLoadBalance(next, mb, true) && next.commitBooking(mb);
+                    }
+                    next = next.getCapsLoopNext(caps);
+                }
+                while (next != rb);
+                break;
         }
         
         return false;
@@ -720,6 +741,7 @@ public class DayBookings
                 case RIG: return false;
                 case TYPE:
                     next = rb.getTypeLoopNext();
+                    this.logger.debug("Starting outer load balance with the Rig - " + next.getRig().getName());
                     do
                     {
                         if (this.innerLoadBalance(next, ex, doCommit))
@@ -888,7 +910,8 @@ public class DayBookings
                 .add(Restrictions.eq("requestCapabilities", reqCaps))
                 .add(Restrictions.eq("active", Boolean.TRUE))
                 .add(Restrictions.lt("startTime", this.dayEnd))
-                .add(Restrictions.gt("endTime", this.dayBegin));
+                .add(Restrictions.gt("endTime", this.dayBegin))
+                .addOrder(Order.desc("duration"));
             @SuppressWarnings("unchecked")
             List<Bookings> bookings = qu.list();
             
@@ -1069,7 +1092,8 @@ public class DayBookings
             .add(Restrictions.eq("rigType", rigType))
             .add(Restrictions.eq("active", Boolean.TRUE))
             .add(Restrictions.lt("startTime", this.dayEnd))
-            .add(Restrictions.gt("endTime", this.dayBegin));
+            .add(Restrictions.gt("endTime", this.dayBegin))
+            .addOrder(Order.desc("duration"));
         
         for (Bookings booking : (List<Bookings>)qu.list())
         {
