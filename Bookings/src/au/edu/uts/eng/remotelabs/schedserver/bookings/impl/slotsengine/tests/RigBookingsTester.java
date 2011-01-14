@@ -78,6 +78,40 @@ public class RigBookingsTester extends TestCase
         this.dayKey = TimeUtil.getDateStr(Calendar.getInstance());
     }
     
+    public void testGetSlotBooking() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(76, 77, BType.RIG, this.dayKey);
+        slots[76] = m;
+        slots[77] = m;
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 76);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 77);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 1);
+        
+        for (int i = 0; i < 76; i++)
+        {
+            assertNull(this.bookings.getSlotBooking(i));
+        }
+        
+        assertEquals(m, this.bookings.getSlotBooking(76));
+        assertEquals(m, this.bookings.getSlotBooking(77));
+        
+        for (int i = 78; i < 96; i++)
+        {
+            assertNull(this.bookings.getSlotBooking(i));
+        }
+    }
+    
     public void testGetFreeSlots() throws Throwable
     {
         Field f = RigBookings.class.getDeclaredField("slots");

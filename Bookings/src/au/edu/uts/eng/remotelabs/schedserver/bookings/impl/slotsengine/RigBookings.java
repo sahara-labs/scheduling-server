@@ -449,6 +449,17 @@ public class RigBookings
         return null;
     }
     
+    /**
+     * Returns the booking on the specified slot or null if there is no booking.
+     * 
+     * @param slot slot to get booking from
+     * @return booking on slot or null if none
+     */
+    public MBooking getSlotBooking(int slot)
+    {
+        return this.slots[slot];
+    }
+    
     public int getNumBookings()
     {
         return this.numBookings;

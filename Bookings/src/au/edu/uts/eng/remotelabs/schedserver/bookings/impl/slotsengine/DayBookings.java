@@ -46,7 +46,9 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
@@ -674,6 +676,148 @@ public class DayBookings
     }
     
     /**
+     * Returns the bookings starting on the specified slot and the rigs they
+     * are allocated to.
+     * 
+     * @param slot bookings slots are starting on
+     * @return list of bookings with current assigned rigs
+     */
+    public Map<String, MBooking> getSlotStartingBookings(int slot)
+    {
+        Map<String, MBooking> starting = new HashMap<String, MBooking>();
+        MBooking mb;
+        
+        for (RigBookings rb : this.rigBookings.values())
+        {
+            if ((mb = rb.getSlotBooking(slot)) != null && mb.getStartSlot() == slot && mb.getSession() == null)
+            {
+                starting.put(rb.getRig().getName(), mb);
+            }
+        }
+        
+        return starting;
+    }
+    
+    /**
+     * Loads all the bookings for the day into memory.
+     * 
+     * @return ses database session
+     */
+    @SuppressWarnings("unchecked")
+    public void fullLoad(Session ses)
+    {
+        int num = 0;
+                
+        /* Load all the rigs that have bookings today. */
+        for (Rig rig : (List<Rig>)ses.createCriteria(Rig.class).list())
+        {
+            if (this.rigBookings.containsKey(rig.getName())) continue;
+            
+            if ((num = (Integer) ses.createCriteria(Bookings.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(this.addDayRange())
+                .add(Restrictions.eq("resourceType", ResourcePermission.RIG_PERMISSION))
+                .add(Restrictions.eq("rig", rig))
+                .setProjection(Projections.rowCount())
+                .uniqueResult()) == 0) continue;
+            
+            this.logger.debug("Rig " + rig.getName() + " has " + num + " bookings, so loading it up for full day load.");
+            this.getRigBookings(rig, ses);
+        }
+        
+        /* Load all the rig types that have bookings today. */
+        Criteria qu = ses.createCriteria(RigType.class);
+        if (this.typeTargets.size() > 0) qu.add(Restrictions.not(Restrictions.in("name", this.typeTargets.keySet())));
+        for (RigType type : (List<RigType>) qu.list())
+        {
+            if (this.typeTargets.containsKey(type.getName())) continue;
+            
+            if ((num = (Integer) ses.createCriteria(Bookings.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(this.addDayRange())
+                .add(Restrictions.eq("resourceType", ResourcePermission.TYPE_PERMISSION))
+                .add(Restrictions.eq("rigType", type))
+                .setProjection(Projections.rowCount())
+                .uniqueResult()) == 0) continue;
+            
+            this.logger.debug("Rig type " + type.getName() + " has " + num + " bookings, so loading it up for" +
+            		" full day load.");
+            
+            Set<Rig> rigs = type.getRigs();
+            if (rigs.size() == 0)
+            {
+                this.logger.warn("Rig type " + type.getName() + " has " + num + " bookings but not rigs so they all" +
+                		" will be cancelled.");
+                for (Bookings bk : (List<Bookings>)ses.createCriteria(Bookings.class)
+                        .add(Restrictions.eq("active", Boolean.TRUE))
+                        .add(this.addDayRange())
+                        .add(Restrictions.eq("resourceType", ResourcePermission.TYPE_PERMISSION))
+                        .add(Restrictions.eq("rigType", type)).list())
+                {
+                    this.logger.warn("Cancelling booking for " + bk.getUser().qName() + " because booking rig type " +
+                            type.getName() + " has no rigs.");
+                    bk.setActive(false);
+                    bk.setCancelReason("Booked rig type has no rigs.");
+                    
+                    // TODO cancel notification
+                }
+                ses.beginTransaction();
+                ses.flush();
+                ses.getTransaction().commit();
+                continue;
+            }
+            
+            this.getRigBookings(rigs.iterator().next(), ses);
+        }
+
+        /* Load all the request capabilities that have bookings today. */
+        qu = ses.createCriteria(RequestCapabilities.class);
+        if (this.capsTargets.size() > 0) qu.add(
+                Restrictions.not(Restrictions.in("capabilities", this.capsTargets.keySet())));
+        for (RequestCapabilities caps : (List<RequestCapabilities>) qu.list())
+        {
+            if (this.capsTargets.containsKey(caps.getCapabilities())) continue;
+            
+            if ((num = (Integer) ses.createCriteria(Bookings.class)
+                    .add(Restrictions.eq("active", Boolean.TRUE))
+                    .add(this.addDayRange())
+                    .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
+                    .add(Restrictions.eq("requestCapabilities", caps))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult()) == 0) continue;
+                
+            this.logger.debug("Request capabilities " + caps.getCapabilities() + " has " + num + " bookings, so " +
+            		"loading it up for full day load.");
+            
+            List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
+            capsList.add(caps);
+            this.loadRequestCapabilities(capsList, ses, true);
+            
+            if (!this.capsTargets.containsKey(caps.getCapabilities()))
+            {
+                this.logger.warn("Request capabilities " + caps.getCapabilities() + " has " + num + " bookings but " +
+                		"not any matching rigs so they all will be cancelled.");
+                for (Bookings bk : (List<Bookings>)ses.createCriteria(Bookings.class)
+                        .add(Restrictions.eq("active", Boolean.TRUE))
+                        .add(this.addDayRange())
+                        .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
+                        .add(Restrictions.eq("requestCapabilities", caps)).list())
+                {
+                    this.logger.warn("Cancelling booking for " + bk.getUser().qName() + " because booking request " +
+                    		"capabilities " + caps.getCapabilities() + " has no matching rigs.");
+                    bk.setActive(false);
+                    bk.setCancelReason("Booked request capabilities has no rigs.");
+                    
+                    // TODO Cancel notification
+                }
+                ses.beginTransaction();
+                ses.flush();
+                ses.getTransaction().commit();
+            }
+        }
+    }
+    
+    /**
      * Gets the rig bookings for the rig. If the rig bookings hasn't been 
      * loaded for the rig, it is loaded by:
      * <ul>
@@ -909,8 +1053,7 @@ public class DayBookings
                 .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
                 .add(Restrictions.eq("requestCapabilities", reqCaps))
                 .add(Restrictions.eq("active", Boolean.TRUE))
-                .add(Restrictions.lt("startTime", this.dayEnd))
-                .add(Restrictions.gt("endTime", this.dayBegin))
+                .add(this.addDayRange())
                 .addOrder(Order.desc("duration"));
             @SuppressWarnings("unchecked")
             List<Bookings> bookings = qu.list();
@@ -1091,8 +1234,7 @@ public class DayBookings
             .add(Restrictions.eq("resourceType", ResourcePermission.TYPE_PERMISSION))
             .add(Restrictions.eq("rigType", rigType))
             .add(Restrictions.eq("active", Boolean.TRUE))
-            .add(Restrictions.lt("startTime", this.dayEnd))
-            .add(Restrictions.gt("endTime", this.dayBegin))
+            .add(this.addDayRange())
             .addOrder(Order.desc("duration"));
         
         for (Bookings booking : (List<Bookings>)qu.list())
@@ -1185,8 +1327,7 @@ public class DayBookings
             .add(Restrictions.eq("resourceType", ResourcePermission.RIG_PERMISSION))
             .add(Restrictions.eq("rig", rig))
             .add(Restrictions.eq("active", Boolean.TRUE))
-            .add(Restrictions.lt("startTime", this.dayEnd))
-            .add(Restrictions.gt("endTime", this.dayBegin));
+            .add(this.addDayRange());
 
         for (Bookings booking : (List<Bookings>)qu.list())
         {
@@ -1206,6 +1347,34 @@ public class DayBookings
                 // TODO Cancel notification
             }
         }
+    }
+    
+    /**
+     * Adds a day range constraint to a bookings query so that bookings within
+     * this day are returned.
+     * 
+     * @return restriction
+     */
+    private Criterion addDayRange()
+    {
+        return Restrictions.disjunction()
+                .add(Restrictions.and( // Booking within day
+                        Restrictions.ge("startTime", this.dayBegin),
+                        Restrictions.le("endTime", this.dayEnd)
+                ))
+                .add(Restrictions.and( // Booking starts before day and ends on this day
+                        Restrictions.lt("startTime", this.dayBegin),
+                        Restrictions.gt("endTime", this.dayBegin)
+                ))
+                .add(Restrictions.and( // Booking starts on day and ends after day
+                        Restrictions.lt("startTime", this.dayEnd),
+                        Restrictions.gt("endTime", this.dayEnd)
+                ))
+                .add(Restrictions.and(
+                        Restrictions.le("startTime", this.dayBegin),
+                        Restrictions.gt("endTime", this.dayEnd)
+                )
+          );
     }
     
     public String getDay()

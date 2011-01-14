@@ -93,7 +93,6 @@ public class DayBookingsTester extends TestCase
         this.day = new DayBookings(this.dayStr);
     }
     
-
     public void testFindBestFitsC1() throws Exception
     {        
         Session ses = DataAccessActivator.getNewSession();
@@ -15365,6 +15364,22 @@ public class DayBookingsTester extends TestCase
         bk9.setUserName(us2.getName());
         bk9.setUserNamespace(us2.getNamespace());
         ses.save(bk9);
+        
+        /* Next day. */
+        Bookings bk10 = new Bookings();
+        bk10.setActive(true);
+        bk10.setDuration(7200);
+        end.add(Calendar.HOUR, 2);
+        bk10.setStartTime(end.getTime());
+        end.add(Calendar.HOUR, 2);
+        bk10.setEndTime(end.getTime());
+        bk10.setResourcePermission(perm1);
+        bk10.setResourceType("RIG");
+        bk10.setRig(r1);
+        bk10.setUser(us2);
+        bk10.setUserName(us2.getName());
+        bk10.setUserNamespace(us2.getNamespace());
+        ses.save(bk10);
         ses.getTransaction().commit();
         
         Method m = DayBookings.class.getDeclaredMethod("loadRig", RigBookings.class, Rig.class, Session.class);
@@ -15381,8 +15396,10 @@ public class DayBookingsTester extends TestCase
         ses.refresh(bk7);
         ses.refresh(bk8);
         ses.refresh(bk9);
+        ses.refresh(bk10);
         
         ses.beginTransaction();
+        ses.delete(bk10);
         ses.delete(bk9);
         ses.delete(bk8);
         ses.delete(bk7);
@@ -15411,6 +15428,7 @@ public class DayBookingsTester extends TestCase
         assertFalse(bk7.isActive());
         assertTrue(bk8.isActive());
         assertTrue(bk9.isActive());
+        assertTrue(bk10.isActive());
         
         assertFalse(bookings.hasBooking(new MBooking(bk1, this.dayStr)));
         assertFalse(bookings.hasBooking(new MBooking(bk2, this.dayStr)));
@@ -15421,6 +15439,7 @@ public class DayBookingsTester extends TestCase
         assertFalse(bookings.hasBooking(new MBooking(bk7, this.dayStr)));
         assertTrue(bookings.hasBooking(new MBooking(bk8, this.dayStr)));
         assertTrue(bookings.hasBooking(new MBooking(bk9, this.dayStr)));
+        assertFalse(bookings.hasBooking(new MBooking(bk10, TimeUtil.getDateStr(end))));
         
         assertEquals(5, bookings.getNumBookings());
         assertFalse(bookings.areSlotsFree(0, 8));

@@ -38,16 +38,20 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -66,6 +70,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     /** The length of each booking slot in seconds. */
     public static final int TIME_QUANTUM = 15 * 60;
     
+    /** The number of slots in a day. */
     public static final int NUM_SLOTS = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM;
     
     /** The loaded of day bookings. */
@@ -81,13 +86,38 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     }
     
     @Override
-    public List<BookingManagementTask> init()
+    public synchronized List<BookingManagementTask> init()
     {
         this.logger.debug("Initalising the slot booking engine...");
         
+        Calendar today = Calendar.getInstance();
+        
+        /* Cancel all bookings in the past. */
+        Session db = DataAccessActivator.getNewSession();
+        @SuppressWarnings("unchecked")
+        List<Bookings> bookings = db.createCriteria(Bookings.class)
+            .add(Restrictions.eq("active", Boolean.TRUE))
+            .add(Restrictions.lt("endTime", today.getTime()))
+            .list();
+        for (Bookings bk : bookings)
+        {
+            this.logger.warn("Cancelling booking (" + bk.getId() + ") which expired when the Scheduling Server " +
+            		"wasn't running for user " +   bk.getUser().qName() + " which expired on " + bk.getEndTime() + '.');
+            bk.setActive(false);
+            bk.setCancelReason("Expired when Scheduling Server wasn't running.");
+            
+            // TODO Cancel notification.
+        }
+        if (bookings.size() > 0)
+        {
+            db.beginTransaction();
+            db.flush();
+            db.getTransaction().commit();
+        }
+        
+        /* Initalise the management tasks. */
         List<BookingManagementTask> tasks = new ArrayList<BookingManagementTask>();
         
-        // TODO init
         return tasks;
     }
 
@@ -331,13 +361,6 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         return fp;
     }
     
-    @Override
-    public void cleanUp()
-    {
-        this.logger.debug("Cleaning up the slot booking engine by clearing all days.");
-        this.days.clear();
-    }
-    
     /**
      * Returns the bookings for that day. If that day isn't loaded, it is 
      * loaded.
@@ -345,7 +368,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
      * @param dayKey day key
      * @return bookings
      */
-    private DayBookings getDayBookings(String dayKey)
+    public DayBookings getDayBookings(String dayKey)
     {
         if (!this.days.containsKey(dayKey))
         {
@@ -359,5 +382,25 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         }
         
         return this.days.get(dayKey);
+    }
+    
+    /**
+     * Removes the day from the day listing. 
+     * 
+     * @param day day bookings
+     */
+    public void removeDay(String day)
+    {
+        synchronized (this.days)
+        {
+            this.days.remove(day);
+        }
+    }
+    
+    @Override
+    public void cleanUp()
+    {
+        this.logger.debug("Cleaning up the slot booking engine by clearing all days.");
+        this.days.clear();
     }
 }

@@ -100,6 +100,139 @@ public class SlotBookingEngineTester extends TestCase
     }
     
     @Test
+    public void testInitCancelOldBookings()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1); 
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+
+        /* Expired today. */
+        Calendar now = Calendar.getInstance();
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        now.add(Calendar.HOUR, -2);
+        bk1.setStartTime(now.getTime());
+        now.add(Calendar.HOUR, 1);
+        bk1.setEndTime(now.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+        Bookings bk2 = new Bookings();
+        bk2.setActive(true);
+        bk2.setCancelReason("Test cancel.");
+        bk2.setDuration(1800);
+        now.add(Calendar.DAY_OF_MONTH, -3);
+        bk2.setStartTime(now.getTime());
+        now.add(Calendar.MINUTE, 30);
+        bk2.setEndTime(now.getTime());
+        bk2.setResourcePermission(perm1);
+        bk2.setResourceType("RIG");
+        bk2.setRig(r1);
+        bk2.setUser(us1);
+        bk2.setUserName(us1.getName());
+        bk2.setUserNamespace(us1.getNamespace());
+        ses.save(bk2);
+        Calendar ok = Calendar.getInstance();
+        Bookings bk3 = new Bookings();
+        bk3.setActive(true);
+        bk3.setDuration(7200);
+        ok.add(Calendar.HOUR, -2);
+        bk3.setStartTime(ok.getTime());
+        ok.add(Calendar.HOUR, 2);
+        bk3.setEndTime(ok.getTime());
+        bk3.setResourcePermission(perm1);
+        bk3.setResourceType("RIG");
+        bk3.setRig(r1);
+        bk3.setUser(us1);
+        bk3.setUserName(us1.getName());
+        bk3.setUserNamespace(us1.getNamespace());
+        ses.save(bk3);
+        Bookings bk4 = new Bookings();
+        bk4.setActive(true);
+        bk4.setDuration(7200);
+        ok.add(Calendar.DAY_OF_MONTH, 3);
+        bk4.setStartTime(ok.getTime());
+        ok.add(Calendar.HOUR, 2);
+        bk4.setEndTime(ok.getTime());
+        bk4.setResourcePermission(perm1);
+        bk4.setResourceType("RIG");
+        bk4.setRig(r1);
+        bk4.setUser(us1);
+        bk4.setUserName(us1.getName());
+        bk4.setUserNamespace(us1.getNamespace());
+        ses.save(bk4);
+        ses.getTransaction().commit();
+        
+        this.engine.init();
+        ses.refresh(bk1);
+        ses.refresh(bk2);
+        ses.refresh(bk3);
+        ses.refresh(bk4);
+        
+        ses.beginTransaction();
+        ses.delete(bk4);
+        ses.delete(bk3);
+        ses.delete(bk2);
+        ses.delete(bk1);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertFalse(bk1.isActive());
+        assertNotNull(bk1.getCancelReason());
+        assertFalse(bk2.isActive());
+        assertNotNull(bk2.getCancelReason());
+        assertTrue(bk3.isActive());
+        assertNull(bk3.getCancelReason());
+        assertTrue(bk4.isActive());
+        assertNull(bk4.getCancelReason());
+    }
+    
+    @Test
     public void testCreateBookingBFR1()
     {
         Session ses = DataAccessActivator.getNewSession();
@@ -7305,7 +7438,7 @@ public class SlotBookingEngineTester extends TestCase
         assertTrue(bk19.isActive());
 
         assertNotNull(range);
-        assertEquals(4, range.size());
+        assertEquals(5, range.size());
         
         TimePeriod t = range.get(0);
         Calendar s = t.getStartTime();
@@ -7323,11 +7456,21 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(4, s.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, s.get(Calendar.MINUTE));
         assertEquals(0, s.get(Calendar.SECOND));
-        assertEquals(7, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(5, e.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, e.get(Calendar.MINUTE));
         assertEquals(0, e.get(Calendar.SECOND));
         
         t = range.get(2);
+        s = t.getStartTime();
+        e = t.getEndTime();
+        assertEquals(6, s.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, s.get(Calendar.MINUTE));
+        assertEquals(0, s.get(Calendar.SECOND));
+        assertEquals(7, e.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, e.get(Calendar.MINUTE));
+        assertEquals(0, e.get(Calendar.SECOND));
+        
+        t = range.get(3);
         s = t.getStartTime();
         e = t.getEndTime();
         assertEquals(8, s.get(Calendar.HOUR_OF_DAY));
@@ -7337,7 +7480,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.MINUTE));
         assertEquals(0, e.get(Calendar.SECOND));
         
-        t = range.get(3);
+        t = range.get(4);
         s = t.getStartTime();
         e = t.getEndTime();
         assertEquals(9, s.get(Calendar.HOUR_OF_DAY));

@@ -32,16 +32,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 11th November 2011
+ * @date 13th January 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 
 /**
- * 
+ * Period task which is used to manage the booking engine.
  */
 public interface BookingManagementTask extends Runnable
 {
+    /**
+     * Returns the period in seconds the task should run.
+     * 
+     * @return in runs period
+     */
     public int getPeriod();
     
+    /**
+     * Cleans up the task for shutdown.
+     */
     public void cleanUp();
 }
