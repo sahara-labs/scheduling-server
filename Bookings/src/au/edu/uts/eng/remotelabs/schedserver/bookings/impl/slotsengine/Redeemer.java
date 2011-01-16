@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -76,6 +77,9 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     /** List of bookings that are currently being redeemed. */
     private Map<String, MBooking> redeemingBookings;
     
+    /** List oif bookings that are currently in session. */
+    private Map<String, MBooking> runningBookings;
+    
     /** Logger. */
     private Logger logger;
     
@@ -87,6 +91,8 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         this.logger = LoggerActivator.getLogger();
         
         this.redeemingBookings = new HashMap<String, MBooking>();
+        this.runningBookings = Collections.synchronizedMap(new HashMap<String, MBooking>());
+        
         this.currentDay = startDay;
     }
     
@@ -220,15 +226,28 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     @Override
     public void eventOccurred(RigStateChangeEvent event, Rig rig, org.hibernate.Session db)
     {
+        /* Clean the previous session. */
+        if (this.runningBookings.containsKey(rig.getName()))
+        {
+            MBooking old = this.runningBookings.remove(rig.getName());
+            this.currentDay.removeBooking(old);
+            
+            if (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.NUM_SLOTS - 1)
+            {
+                /* Booking rolls to the next day. */
+            }
+        }
+        
+                
         switch (event)
         {
             case ONLINE:
                 /* Falls through. */
             case FREE:
                 /* Remove the finished session. */                
-                synchronized (this)
+                if (this.redeemingBookings.containsKey(rig.getName()))
                 {
-                    if (this.redeemingBookings.containsKey(rig.getName()))
+                    synchronized (this)
                     {
                         this.redeemBooking(this.redeemingBookings.remove(rig.getName()), rig, db);
                     }
@@ -304,6 +323,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         
         membooking.setBooking(booking);
         membooking.setSession(session);
+        this.runningBookings.put(rig.getName(), membooking);
         
         this.logger.info("Assigned " + session.getUser().qName() + " to rig " + rig.getName() + " (session=" +
                 session.getId() + ").");

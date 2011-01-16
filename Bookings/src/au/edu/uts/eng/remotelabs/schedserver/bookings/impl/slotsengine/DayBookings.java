@@ -87,6 +87,9 @@ public class DayBookings
     /** The end time of this day. */
     private final Date dayEnd;
     
+    /** Whether a full load is needed. */
+    private boolean hasFullLoad = false;
+    
     /** Logger. */
     private Logger logger;
     
@@ -706,6 +709,8 @@ public class DayBookings
     @SuppressWarnings("unchecked")
     public void fullLoad(Session ses)
     {
+        if (this.hasFullLoad) return;
+        
         int num = 0;
                 
         /* Load all the rigs that have bookings today. */
