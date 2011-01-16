@@ -100,10 +100,7 @@ public class UpdateLocalRigStatus
      * @return true if successfully updated the rigs status, false otherwise
      */
     public boolean updateStatus(String name, boolean online, String offlineReason)
-    {
-        this.logger.debug("Updating the status of '" + name + "', setting it to " + (online ? "online" : 
-                "offline with reason " + offlineReason) + '.');
-        
+    {        
         Rig rig = this.rigDao.findByName(name);
         if (rig == null)
         {
