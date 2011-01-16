@@ -78,7 +78,10 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     private Map<String, MBooking> redeemingBookings;
     
     /** List oif bookings that are currently in session. */
-    private Map<String, MBooking> runningBookings;
+    private Map<String, MBooking> runningBookings;    
+    
+    /** The next day string. */
+    private String nextDay;
     
     /** Logger. */
     private Logger logger;
@@ -94,6 +97,10 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         this.runningBookings = Collections.synchronizedMap(new HashMap<String, MBooking>());
         
         this.currentDay = startDay;
+        
+        Calendar next = TimeUtil.getDayBegin(this.currentDay.getDay());
+        next.add(Calendar.DAY_OF_MONTH, 1);
+        this.nextDay = TimeUtil.getDateStr(next);
     }
     
     @Override
@@ -110,7 +117,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                 String nowDay = TimeUtil.getDateStr(now);
                 int nowSlot = TimeUtil.getDaySlotIndex(now, nowDay);
 
-                if (!nowDay.equals(this.currentDay.getDay()))
+                if (now.equals(this.nextDay))
                 {
                     /* The day has rolled over. */
                     this.logger.debug("Rolling day from " + this.currentDay.getDay() + " to " + nowDay + ".");
@@ -123,6 +130,11 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                     /* Set the new day. */
                     this.currentDay = engine.getDayBookings(nowDay);
                     this.currentDay.fullLoad(db);
+                    
+                    /* Set the next day. */
+                    Calendar next = Calendar.getInstance();
+                    next.add(Calendar.DAY_OF_MONTH, 1);
+                    this.nextDay = TimeUtil.getDateStr(next);
                 }
 
                 if (nowSlot != this.currentSlot)
@@ -235,7 +247,16 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             if (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.NUM_SLOTS - 1)
             {
                 /* Booking rolls to the next day. */
+                DayBookings nextBookings = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(this.nextDay);
+                nextBookings.removeBooking(new MBooking(old.getBooking(), this.nextDay));
             }
+            
+            /* If the rig event was free, and the rig isn't booked, we need to 
+             * fire another free broadcast to trigger another queue run. This is
+             * because if the initial broadcast ran before this in queuer, then
+             * the queue attempt would of falsely been blocked by the memory
+             * representation of the terminated session.
+             */
         }
         
                 
