@@ -39,7 +39,9 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
@@ -50,16 +52,17 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
 /**
  * Tasks that converts bookings to sessions (i.e. redeems the booking).
  */
-public class BookingRedeemer implements BookingManagementTask, RigEventListener
+public class Redeemer implements BookingManagementTask, RigEventListener
 {
     /** The number of seconds between redeem runs. */
-    public static final int REDEEM_INTERVAL = 30;
+    public static final int REDEEM_INTERVAL = 10;
     
     /** The current day bookings. */
     private DayBookings currentDay;
@@ -79,8 +82,10 @@ public class BookingRedeemer implements BookingManagementTask, RigEventListener
     /** Flag to specify if this is a test run. */
     private boolean notTest = true;
     
-    public BookingRedeemer(DayBookings startDay)
+    public Redeemer(DayBookings startDay)
     {
+        this.logger = LoggerActivator.getLogger();
+        
         this.redeemingBookings = new HashMap<String, MBooking>();
         this.currentDay = startDay;
     }
@@ -93,66 +98,117 @@ public class BookingRedeemer implements BookingManagementTask, RigEventListener
         {
             db = DataAccessActivator.getNewSession();
             
-            Calendar now = Calendar.getInstance();
-            String nowDay = TimeUtil.getDateStr(now);
-            int nowSlot = TimeUtil.getDaySlotIndex(now, nowDay);
-            
-            if (!nowDay.equals(this.currentDay.getDay()))
+            synchronized (this)
             {
-                /* The day has rolled over. */
-                this.logger.debug("Rolling day from " + this.currentDay.getDay() + " to " + nowDay + ".");
-                
-                /* Clean up the old day bookings. We don't need that resident 
-                 * any more as it is only historical. */
-                SlotBookingEngine engine = (SlotBookingEngine)BookingActivator.getBookingEngine();
-                engine.removeDay(this.currentDay.getDay());
-                
-                /* Set the new day. */
-                this.currentDay = engine.getDayBookings(nowDay);
-                this.currentDay.fullLoad(db);
-            }
-            
-            if (nowSlot != this.currentSlot)
-            {
-                /* The slot is being rolled over. */
-                this.rollTime = now.getTimeInMillis();            
-                this.currentSlot = nowSlot;
-                
-                synchronized (this)
+                Calendar now = Calendar.getInstance();
+                String nowDay = TimeUtil.getDateStr(now);
+                int nowSlot = TimeUtil.getDaySlotIndex(now, nowDay);
+
+                if (!nowDay.equals(this.currentDay.getDay()))
                 {
+                    /* The day has rolled over. */
+                    this.logger.debug("Rolling day from " + this.currentDay.getDay() + " to " + nowDay + ".");
+
+                    /* Clean up the old day bookings. We don't need that resident 
+                     * any more as it is only historical. */
+                    SlotBookingEngine engine = (SlotBookingEngine)BookingActivator.getBookingEngine();
+                    engine.removeDay(this.currentDay.getDay());
+
+                    /* Set the new day. */
+                    this.currentDay = engine.getDayBookings(nowDay);
+                    this.currentDay.fullLoad(db);
+                }
+
+                if (nowSlot != this.currentSlot)
+                {
+                    /* The slot is being rolled over. */
+                    this.rollTime = now.getTimeInMillis();            
+                    this.currentSlot = nowSlot;
+
+
                     /* Cancel the remaining previous slot bookings. */
                     for (MBooking mb : this.redeemingBookings.values())
                     {
                         Bookings b = (Bookings) db.merge(mb.getBooking());
                         b.setActive(false);
                         b.setCancelReason("No resources free to redeem booking too.");
-                        this.logger.debug("Unable to redeem booking (" + b.getId() + ") for " + b.getUser().qName() + 
-                                " because no free resources were found in the slot period.");
+                        this.logger.warn("Unable to redeem booking (" + b.getId() + ") for " + b.getUser().qName() + 
+                        " because no free resources were found in the slot period.");
                     }
-                    
+
                     if (this.redeemingBookings.size() > 0)
                     {
+                        this.logger.warn("Cancelling " + this.redeemingBookings.size() + " bookings that were on " +
+                                this.currentDay.getDay() + ", slot " + (this.currentSlot - 1) + '.');
                         db.beginTransaction();
                         db.flush();
                         db.getTransaction().commit();
                     }
-                    
+
                     /* Get the new list of bookings. */
                     synchronized (this.currentDay)
                     {
                         this.redeemingBookings = this.currentDay.getSlotStartingBookings(this.currentSlot);
                     }
-                    
+
+                    if (this.redeemingBookings.size() == 0)
+                    {
+                        this.logger.debug("No bookings are starting on " + this.currentDay.getDay() + ", slot " + 
+                                this.currentSlot + '.');
+                        return;
+                    }
+
                     RigDao rigDao = new RigDao(db);
-                    // TODO continue
+                    Iterator<Entry<String, MBooking>> it = this.redeemingBookings.entrySet().iterator();
+                    while (it.hasNext())
+                    {
+                        Entry<String, MBooking> e = it.next();
+
+                        Rig rig = rigDao.findByName(e.getKey());
+                        if (rig != null && rig.isActive() && rig.isOnline() && !rig.isInSession())
+                        {
+                            /* Rig is free so assign it. */
+                            this.logger.info("Rig " + rig.getName() + " is free so is having booking redeemed to it.");
+                            this.redeemBooking(e.getValue(), rig, db);
+                            it.remove();
+                        }
+                        else if (rig == null)
+                        {
+                            /* Rig is not found, serious issue. */
+                            this.logger.warn("Booking on " + this.currentDay.getDay() + ", slot " + this.currentSlot + 
+                                    " for rig " + e.getKey() + " that doesn't exist.");
+                        }
+                        else if (!(rig.isActive() && rig.isOnline()))
+                        {
+                            this.logger.debug("Booking on " + this.currentDay.getDay() + ", slot " + this.currentSlot + 
+                                    " for rig " + e.getKey() + " cannot be redeemed because the rig is currently " +
+                                    "offline.");
+                        }
+                        else if (rig.isInSession())
+                        {
+                            this.logger.debug("Booking on " + this.currentDay.getDay() + ", slot " + this.currentSlot + 
+                                    " for rig " + e.getKey() + " cannot be redeemed because the rig is currently " +
+                                    "in session.");
+                        }
+                    }
+                }
+                
+                /* Try to load balance existing booking to a new rig. */
+                Iterator<MBooking> it = this.redeemingBookings.values().iterator();
+                while (it.hasNext())
+                {
+//                    MBooking mb = it.next();
                 }
             }
-            
-
         }
         catch (Throwable thr)
         {
-            // TODO 
+            this.logger.error("Unchecked exception caught in redeemer task. Exception type: " + 
+                    thr.getClass().getName() + ", message: " + thr.getMessage() + '.');
+            
+            // FIXME Remove following
+            thr.printStackTrace();
+            System.exit(-1);
         }
         finally 
         {
@@ -169,14 +225,13 @@ public class BookingRedeemer implements BookingManagementTask, RigEventListener
             case ONLINE:
                 /* Falls through. */
             case FREE:
-                if (this.redeemingBookings.containsKey(rig.getName()))
+                /* Remove the finished session. */                
+                synchronized (this)
                 {
-                    MBooking mb;
-                    synchronized (this)
+                    if (this.redeemingBookings.containsKey(rig.getName()))
                     {
-                        mb = this.redeemingBookings.remove(rig.getName());
+                        this.redeemBooking(this.redeemingBookings.remove(rig.getName()), rig, db);
                     }
-                    this.redeemBooking(mb, rig, db);
                 }
                 break;
             default:
@@ -242,7 +297,8 @@ public class BookingRedeemer implements BookingManagementTask, RigEventListener
         session.setCodeReference(booking.getCodeReference());
         
         db.beginTransaction();
-        db.save(membooking);
+        db.save(session);
+        booking.setActive(false);
         booking.setSession(session);
         db.getTransaction().commit();
         
@@ -261,7 +317,7 @@ public class BookingRedeemer implements BookingManagementTask, RigEventListener
     @Override
     public int getPeriod()
     {
-        return BookingRedeemer.REDEEM_INTERVAL;
+        return Redeemer.REDEEM_INTERVAL;
     }
 
     @Override

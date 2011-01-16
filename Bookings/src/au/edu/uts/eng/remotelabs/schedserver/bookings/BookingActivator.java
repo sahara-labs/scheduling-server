@@ -37,7 +37,9 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.bookings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -52,6 +54,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -65,6 +68,9 @@ public class BookingActivator implements BundleActivator
     
     /** Engine management service registration tasks. */
     private Map<ServiceRegistration, BookingManagementTask> engineTasks;
+    
+    /** Rig event notification tasks. */
+    private List<ServiceRegistration> notifServices;
     
     /** Booking engine implementation. */
     private static BookingEngine engine;
@@ -87,10 +93,18 @@ public class BookingActivator implements BundleActivator
 		 * tasks to periodically run. */
 		Properties props = new Properties();
 		this.engineTasks = new HashMap<ServiceRegistration, BookingManagementTask>();
+		this.notifServices = new ArrayList<ServiceRegistration>();
 		for (BookingManagementTask task : BookingActivator.engine.init())
 		{
-		    props.put("period", task.getPeriod());
+		    props.put("period", String.valueOf(task.getPeriod()));
 		    this.engineTasks.put(context.registerService(Runnable.class.getName(), task, props), task);
+		    
+		    /* If the tasks is a needs rig event notification, broadcast it. */
+		    if (task instanceof RigEventListener)
+		    {
+		        RigEventListener listener = (RigEventListener)task;
+		        this.notifServices.add(context.registerService(RigEventListener.class.getName(), listener, null));
+		    }
 		}
 		
 		/* Register the booking engine service. */
@@ -110,7 +124,8 @@ public class BookingActivator implements BundleActivator
 		this.soapService.unregister();
 		this.engineService.unregister();
 		
-		/* Stop the booking engine management tasks. */
+		for (ServiceRegistration s : this.notifServices) s.unregister();
+		
 		for (Entry<ServiceRegistration, BookingManagementTask> s : this.engineTasks.entrySet())
 		{
 		    s.getKey().unregister();

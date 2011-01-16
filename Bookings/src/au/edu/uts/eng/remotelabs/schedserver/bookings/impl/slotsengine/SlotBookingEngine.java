@@ -38,8 +38,6 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -115,9 +113,13 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             db.getTransaction().commit();
         }
         
+        /* Load up the current day bookings. */
+        DayBookings day = this.getDayBookings(TimeUtil.getDateStr(today));
+        day.fullLoad(db);
+        
         /* Initalise the management tasks. */
         List<BookingManagementTask> tasks = new ArrayList<BookingManagementTask>();
-        
+        tasks.add(new Redeemer(day));
         return tasks;
     }
 
@@ -315,10 +317,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     @Override
     public boolean putQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
             int duration, Session db)
-    {
-        
-        
-        
+    {   
         // TODO Auto-generated method stub
         return false;
     }
