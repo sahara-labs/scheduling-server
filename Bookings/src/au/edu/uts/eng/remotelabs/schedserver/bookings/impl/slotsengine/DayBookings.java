@@ -52,6 +52,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -737,7 +738,67 @@ public class DayBookings
      */
     public Rig findViableRig(String current, MBooking mb, Session ses)
     {
-        // TODO
+        /* Rig bookings cannot be balanced to other rigs, so we can immediately
+         * give a no success response. */
+        if (mb.getType() == BType.RIG) return null;
+        
+        RigDao dao = new RigDao(ses);
+        Rig currentRig = dao.findByName(current);
+        if (currentRig == null)
+        {
+            this.logger.error("Attempt to find a viable rig for booking failed because rig " + current + " was not " +
+            		"found. Serious state loss.");
+            return null;
+        }
+        
+        RigBookings rb = this.getRigBookings(currentRig, ses), next;
+        switch (mb.getType())
+        {
+            case TYPE:
+                next = rb.getTypeLoopNext();
+                while (next != rb)
+                {
+                    if (this.outerLoadBalance(next, mb, false))
+                    {
+                        Rig viable = (Rig)ses.merge(next.getRig());
+                        ses.refresh(viable);
+                        if (viable.isActive() && viable.isOnline() && !viable.isInSession())
+                        {
+                            this.logger.debug("Viable load balancing found rig " + viable.getName() + " can satisfy " +
+                            	"booking for rig type " + mb.getRigType().getName() + '.');
+                            this.outerLoadBalance(next, mb, true);
+                            next.commitBooking(mb);
+                            rb.removeBooking(mb);
+                            return viable;
+                        }
+                    }
+                    next = next.getTypeLoopNext();
+                }
+                break;
+                
+            case CAPABILITY:
+                next = rb.getCapsLoopNext(mb.getRequestCapabilities());
+                while (next != rb)
+                {
+                    if (this.outerLoadBalance(next, mb, false))
+                    {
+                        Rig viable = (Rig)ses.merge(next.getRig());
+                        if (viable.isActive() && viable.isOnline() && !viable.isInSession())
+                        {
+                            this.logger.debug("Viable load balancing found rig " + viable.getName() + " can satisfy " +
+                                    "booking for request capabilities " + 
+                                    mb.getRequestCapabilities().getCapabilities() + '.');
+                            this.outerLoadBalance(next, mb, true);
+                            next.commitBooking(mb);
+                            rb.removeBooking(mb);
+                            return viable;
+                        }
+                    }
+                    next = next.getCapsLoopNext(mb.getRequestCapabilities());
+                }
+                break;
+        }
+        
         return null;
     }
     
@@ -907,7 +968,7 @@ public class DayBookings
     }
     
     /**
-     * Outer load balance. Load balancing is trying to fit the specifed booking
+     * Outer load balance. Load balancing is trying to fit the specified booking
      * onto the rig.
      * 
      * @param rb rig to balance to
@@ -1006,6 +1067,10 @@ public class DayBookings
              * cross day bookings need to be balancing in sequence with
              * the other days rigs. */
             if (ex.isMultiDay()) return false;
+            
+            /* We will not balance bookings that have already been redeemed, 
+             * because they (obviously) can't be moved. */
+            if (ex.getSession() != null) return false;
             
             boolean hasBalanced = false;
             RigBookings next;

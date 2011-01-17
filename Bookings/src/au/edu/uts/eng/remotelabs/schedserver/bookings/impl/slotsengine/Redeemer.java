@@ -341,7 +341,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     {
         Date now = new Date();
         Bookings booking = (Bookings)db.merge(membooking.getBooking());
-        this.logger.info("Redeeming a booking (" + booking.getId() + ") for " + booking.getUser().qName() + " using rig" + 
+        this.logger.info("Redeeming a booking (" + booking.getId() + ") for " + booking.getUser().qName() + " using rig " + 
                 rig.getName() + " at " + now + ".");
 
         Session session = new Session();
@@ -361,7 +361,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         session.setResourcePermission(booking.getResourcePermission());
         
         /* We need to remove the lag in redeeming the booking so we don't
-         * propogate the lag to other bookings. */
+         * propagate the lag to other bookings. */
         session.setDuration(booking.getDuration() - (int)(now.getTime() - this.rollTime) / 1000);
         session.setExtensions(booking.getResourcePermission().getAllowedExtensions());
         
