@@ -90,6 +90,15 @@ public class User implements java.io.Serializable
     
     /** Persona of the user which may be 'ADMIN', 'ACADEMIC', 'USER', 'DEMO'. */
     private String persona;
+        
+    /** The users first name. */
+    private String firstName;
+    
+    /** The users last name. */
+    private String lastName;
+    
+    /** The email address of the user. */
+    private String email;
     
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
     private Set<AcademicPermission> academicPermissions = new HashSet<AcademicPermission>(0);
@@ -167,6 +176,39 @@ public class User implements java.io.Serializable
     public void setPersona(final String persona)
     {
         this.persona = persona;
+    }
+
+    @Column(name = "first_name", nullable = true, length = 64)
+    public String getFirstName()
+    {
+        return this.firstName;
+    }
+
+    public void setFirstName(String firstName)
+    {
+        this.firstName = firstName;
+    }
+
+    @Column(name = "last_name", nullable = true, length = 64)
+    public String getLastName()
+    {
+        return this.lastName;
+    }
+
+    public void setLastName(String lastName)
+    {
+        this.lastName = lastName;
+    }
+
+    @Column(name = "email", nullable = true, length = 255)
+    public String getEmail()
+    {
+        return this.email;
+    }
+
+    public void setEmail(final String email)
+    {
+        this.email = email;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
