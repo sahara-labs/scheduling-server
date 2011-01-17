@@ -1,0 +1,10 @@
+Dear ${firstname} ${lastname},
+
+The reservation for '${resource}' that started on ${starttime} has been 
+cancelled by the system. The reason for cancellation is ${cancelreason}.
+
+Please accept my apology and blame the poor developer who created me.
+I encourage to send complaints to ${complaints}.
+
+Cheers,
+Your Cheerful Scheduling Server

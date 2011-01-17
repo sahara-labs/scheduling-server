@@ -41,9 +41,13 @@ package au.edu.uts.eng.remotelabs.schedserver.messenger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.messenger.impl.Messenger;
 
 /**
  * Activator for the Messenger bundle.
@@ -53,6 +57,15 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class MessengerActivator implements BundleActivator 
 {
+    /** Messenger. */
+    private Messenger messenger;
+    
+    /** Service registration for the messenger service. */
+    private ServiceRegistration messengerReg;
+    
+    /** Configuration service tracker. */
+    private ServiceTracker configTracker;
+    
     /** Logger. */
 	private Logger logger;
 
@@ -61,6 +74,24 @@ public class MessengerActivator implements BundleActivator
 	{
 	    this.logger = LoggerActivator.getLogger();
 	    this.logger.debug("Starting the Messenger bundle.");
+
+	    /* Set up the messenger. */
+	    this.messenger = new Messenger();
+	    
+	    this.configTracker = new ServiceTracker(context, Config.class.getName(), null);
+	    Config config = (Config) this.configTracker.waitForService(5000);
+	    if (config == null)
+	    {
+	        this.logger.error("Configuration service not loaded, unable to correctly configure the messenger service. " +
+	        		"Notification messages will NOT be sent out.");
+	    }
+	    else
+	    {
+	        this.messenger.init(config);
+	    }
+
+	    /* Broadcast it as a service for others to use. */
+	    this.messengerReg = context.registerService(MessengerService.class.getName(), this.messenger, null);
 	}
 
 	
@@ -68,6 +99,8 @@ public class MessengerActivator implements BundleActivator
 	public void stop(BundleContext context) throws Exception 
 	{
 	    this.logger.debug("Stopping the Messenger bundle.");
+	    
+	    this.messengerReg.unregister();
+	    this.messenger.cleanUp();
 	}
-
 }

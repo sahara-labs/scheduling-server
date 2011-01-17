@@ -1,0 +1,5 @@
+Directory for Scheduling Server Messenger libraries. The required libraries are:
+
+  - JavaMail - JavaMail (http://kenai.com/projects/javamail)
+               Reference implementation of the JavaMailAPI.
+               License: CDDL and GPLv2 with Classpath Exception
