@@ -149,7 +149,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         List<String> dayKeys = TimeUtil.getDayKeys(start.getTime(), end.getTime());
         if (dayKeys.size() == 1)
         {
-            /* Single day booking so we can procede normally creating the booking. */
+            /* Single day booking so we can proceed normally creating the booking. */
             String day = dayKeys.get(0);
             
             bk.setResourceType(perm.getType());
@@ -318,7 +318,23 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     public boolean putQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
             int duration, Session db)
     {   
-        // TODO Auto-generated method stub
+        Calendar now = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        end.add(Calendar.SECOND, duration);
+        
+        if (now.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH))
+        {
+            /* All on the same day. */
+        }
+        else
+        {
+            List<String> dayKeys = TimeUtil.getDayKeys(now.getTime(), end.getTime());
+            
+        }
+        
+        
+        
+        
         return false;
     }
 
