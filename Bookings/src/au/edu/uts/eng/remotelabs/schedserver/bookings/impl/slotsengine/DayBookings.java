@@ -108,6 +108,10 @@ public class DayBookings
         this.capsTargets = new HashMap<String, RigBookings>();
     }
     
+    /* =========================================================================
+     * == Booking creation and management.                                    ==
+     * ========================================================================= */
+    
     /**
      * Creates a booking for the rig. This methods assumes it has free rein 
      * to choose which rig that matches the booked resoruce may be scheduled 
@@ -678,6 +682,10 @@ public class DayBookings
         return rb.removeBooking(booking);
     }
     
+    /* =========================================================================
+     * == Booking redeeming operations.                                       ==
+     * ========================================================================= */
+    
     /**
      * Returns the bookings starting on the specified slot and the rigs they
      * are allocated to.
@@ -699,6 +707,38 @@ public class DayBookings
         }
         
         return starting;
+    }
+    
+    /**
+     * Gets the booking on the specified rig and slot. 
+     * 
+     * @param rig rig to get booking
+     * @param slot the slot to get booking from
+     * @return booking or null if non-exists
+     */
+    public MBooking getBookingOnSlot(Rig rig, int slot)
+    {
+        if (this.rigBookings.containsKey(rig.getName()))
+        {
+            return this.rigBookings.get(rig.getName()).getSlotBooking(slot);
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Finds a rig that matches the booking constraints and is viable (i.e. is
+     * ready to be allocated to a session.                                   
+     * 
+     * @param current rig assigned to booking which is assumed to be offline
+     * @param mb memory booking
+     * @param ses database session
+     * @return viable matching rig or null if not found
+     */
+    public Rig findViableRig(String current, MBooking mb, Session ses)
+    {
+        // TODO
+        return null;
     }
     
     /**

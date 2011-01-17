@@ -63,7 +63,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 public class Redeemer implements BookingManagementTask, RigEventListener
 {
     /** The number of seconds between redeem runs. */
-    public static final int REDEEM_INTERVAL = 10;
+    public static final int REDEEM_INTERVAL = 60;
     
     /** The current day bookings. */
     private DayBookings currentDay;
@@ -77,11 +77,8 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     /** List of bookings that are currently being redeemed. */
     private Map<String, MBooking> redeemingBookings;
     
-    /** List oif bookings that are currently in session. */
+    /** List off bookings that are currently in session. */
     private Map<String, MBooking> runningBookings;    
-    
-    /** The next day string. */
-    private String nextDay;
     
     /** Logger. */
     private Logger logger;
@@ -97,10 +94,6 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         this.runningBookings = Collections.synchronizedMap(new HashMap<String, MBooking>());
         
         this.currentDay = startDay;
-        
-        Calendar next = TimeUtil.getDayBegin(this.currentDay.getDay());
-        next.add(Calendar.DAY_OF_MONTH, 1);
-        this.nextDay = TimeUtil.getDateStr(next);
     }
     
     @Override
@@ -117,9 +110,11 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                 String nowDay = TimeUtil.getDateStr(now);
                 int nowSlot = TimeUtil.getDaySlotIndex(now, nowDay);
 
-                if (now.equals(this.nextDay))
+                /* The later check is to stop time going backwards, which can
+                 * occur during daylight saving time changes. */
+                if (!this.currentDay.getDay().equals(nowDay) && System.currentTimeMillis() > this.rollTime)
                 {
-                    /* The day has rolled over. */
+                    /* The day has rolled to the next day. */
                     this.logger.debug("Rolling day from " + this.currentDay.getDay() + " to " + nowDay + ".");
 
                     /* Clean up the old day bookings. We don't need that resident 
@@ -128,16 +123,14 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                     engine.removeDay(this.currentDay.getDay());
 
                     /* Set the new day. */
-                    this.currentDay = engine.getDayBookings(nowDay);
-                    this.currentDay.fullLoad(db);
-                    
-                    /* Set the next day. */
-                    Calendar next = Calendar.getInstance();
-                    next.add(Calendar.DAY_OF_MONTH, 1);
-                    this.nextDay = TimeUtil.getDateStr(next);
+                    synchronized (this.currentDay = engine.getDayBookings(nowDay))
+                    {
+                        this.currentDay.fullLoad(db);
+                    };
                 }
 
-                if (nowSlot != this.currentSlot)
+                /* Time must always go forwards... */
+                if (nowSlot != this.currentSlot && System.currentTimeMillis() > this.rollTime)
                 {
                     /* The slot is being rolled over. */
                     this.rollTime = now.getTimeInMillis();            
@@ -176,6 +169,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                         return;
                     }
 
+                    /* Redeem the bookings for rigs that are free. */
                     RigDao rigDao = new RigDao(db);
                     Iterator<Entry<String, MBooking>> it = this.redeemingBookings.entrySet().iterator();
                     while (it.hasNext())
@@ -212,10 +206,21 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                 }
                 
                 /* Try to load balance existing booking to a new rig. */
-                Iterator<MBooking> it = this.redeemingBookings.values().iterator();
-                while (it.hasNext())
+                if (this.redeemingBookings.size() > 0 && System.currentTimeMillis() - this.rollTime > 60000)
                 {
-//                    MBooking mb = it.next();
+                    Iterator<Entry<String, MBooking>> it = this.redeemingBookings.entrySet().iterator();
+                    while (it.hasNext())
+                    {
+                        synchronized (this.currentDay)
+                        {
+                            Entry<String, MBooking> e = it.next();
+                            Rig rig = this.currentDay.findViableRig(e.getKey(), e.getValue(), db);
+                            if (rig  != null)
+                            {
+                                this.redeemBooking(e.getValue(), rig, db);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -223,52 +228,81 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         {
             this.logger.error("Unchecked exception caught in redeemer task. Exception type: " + 
                     thr.getClass().getName() + ", message: " + thr.getMessage() + '.');
-            
-            // FIXME Remove following
-            thr.printStackTrace();
-            System.exit(-1);
         }
         finally 
         {
             if (db != null) db.close();
         }
-        
     }
     
     @Override
     public void eventOccurred(RigStateChangeEvent event, Rig rig, org.hibernate.Session db)
     {
-        /* Clean the previous session. */
+        /* Clean the previous session. */        
         if (this.runningBookings.containsKey(rig.getName()))
         {
             MBooking old = this.runningBookings.remove(rig.getName());
             this.currentDay.removeBooking(old);
             
-            if (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.NUM_SLOTS - 1)
+            Calendar cal = null;
+            while (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.NUM_SLOTS - 1)
             {
+                if (cal == null) cal = Calendar.getInstance();
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+                String dayStr = TimeUtil.getDateStr(cal);
+
                 /* Booking rolls to the next day. */
-                DayBookings nextBookings = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(this.nextDay);
-                nextBookings.removeBooking(new MBooking(old.getBooking(), this.nextDay));
+                old = new MBooking(old.getBooking(), dayStr);
+                ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(dayStr).removeBooking(old);
             }
             
-            /* If the rig event was free, and the rig isn't booked, we need to 
-             * fire another free broadcast to trigger another queue run. This is
-             * because if the initial broadcast ran before this in queuer, then
-             * the queue attempt would of falsely been blocked by the memory
-             * representation of the terminated session.
-             */
+            /* If the rig event was free, and the rig isn't booked (i.e. next
+             * slot is free), we need to fire another free broadcast to trigger
+             * another queue run. This is because if the initial notification 
+             * fired before this in queuer, then the queue attempt would of 
+             * falsely been blocked by the memory representation of the terminated 
+             * session. Removing the finished booking then notifying again makes 
+             * sure the queue attempt will run. */
+            if (!this.redeemingBookings.containsKey(rig.getName()) && event == RigStateChangeEvent.FREE)
+            {   
+                if (this.currentSlot + 1 < SlotBookingEngine.NUM_SLOTS)
+                {
+                    /* Next slot on current day and no booking in next slot. */
+                    if (this.currentDay.getBookingOnSlot(rig, this.currentSlot + 1) == null)
+                    {
+                        this.fireFreeEvent(rig, db);
+                    }
+                }
+                else
+                {
+                    /* Next booking is on next day. */
+                    cal = Calendar.getInstance();
+                    cal.add(Calendar.DAY_OF_MONTH, 1);
+                    DayBookings nextBookings = 
+                        ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(TimeUtil.getDateStr(cal));
+                    
+                    synchronized (nextBookings)
+                    {
+                        nextBookings.fullLoad(db);
+                    }
+                    
+                    if (nextBookings.getBookingOnSlot(rig, 0) == null)
+                    {
+                        this.fireFreeEvent(rig, db);
+                    }
+                }
+            }
         }
-        
-                
+
         switch (event)
         {
             case ONLINE:
                 /* Falls through. */
             case FREE:
-                /* Remove the finished session. */                
-                if (this.redeemingBookings.containsKey(rig.getName()))
+                /* Remove the finished session. */
+                synchronized (this)
                 {
-                    synchronized (this)
+                    if (this.redeemingBookings.containsKey(rig.getName()))
                     {
                         this.redeemBooking(this.redeemingBookings.remove(rig.getName()), rig, db);
                     }
@@ -277,7 +311,23 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             default:
                 /* Don't care about the other states. */
         }
-        
+    }
+
+    /**
+     * Fires an online event to us.
+     * 
+     * @param rig rig event refers to
+     * @param db database session
+     */
+    private void fireFreeEvent(Rig rig, org.hibernate.Session db)
+    {
+        /* Fire event the rig is online. */
+        for (RigEventListener evt : BookingActivator.getRigEventListeners())
+        {
+            /* Check so we don't fire event to us. */
+            if (evt == this) continue;
+            evt.eventOccurred(RigStateChangeEvent.FREE, rig, db);
+        }
     }
     
     /**

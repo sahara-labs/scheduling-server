@@ -47,10 +47,14 @@ import java.util.Properties;
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -78,6 +82,9 @@ public class BookingActivator implements BundleActivator
     /** Booking engine service registration. */
     private ServiceRegistration engineService;
     
+    /** Rig event listeners list. */
+    private static List<RigEventListener> listenerList;
+    
     /** Logger. */
     private Logger logger;
 
@@ -89,7 +96,7 @@ public class BookingActivator implements BundleActivator
 		
 		BookingActivator.engine = new SlotBookingEngine();
 		
-		/* Initalise the booking engine and register the engine management 
+		/* Initialise the booking engine and register the engine management 
 		 * tasks to periodically run. */
 		Properties props = new Properties();
 		this.engineTasks = new HashMap<ServiceRegistration, BookingManagementTask>();
@@ -106,6 +113,20 @@ public class BookingActivator implements BundleActivator
 		        this.notifServices.add(context.registerService(RigEventListener.class.getName(), listener, null));
 		    }
 		}
+		
+		listenerList = new ArrayList<RigEventListener>();
+		RigEventServiceListener servListener = new RigEventServiceListener(listenerList, context);
+        context.addServiceListener(servListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
+        
+        /* Fire pseudo events for all registered services. */
+        ServiceReference refs[] = context.getServiceReferences(RigEventListener.class.getName(), null);
+        if (refs != null)
+        {
+            for (ServiceReference ref : refs)
+            {
+                servListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+            }
+        }
 		
 		/* Register the booking engine service. */
 		this.engineService = context.registerService(BookingEngineService.class.getName(), BookingActivator.engine, null);
@@ -132,6 +153,8 @@ public class BookingActivator implements BundleActivator
 		    s.getValue().cleanUp();
 		}
 		
+		listenerList = null;
+		
 		BookingActivator.engine.cleanUp();
 	}
 	
@@ -144,4 +167,22 @@ public class BookingActivator implements BundleActivator
 	{
 	    return BookingActivator.engine;
 	}
+	
+	/**
+     * Returns the list of registered rig state change event listeners.
+     * 
+     * @return list of event listeners
+     */
+    public static RigEventListener[] getRigEventListeners()
+    {
+        if (listenerList == null)
+        {
+            return new RigEventListener[0];
+        }
+        
+        synchronized (listenerList)
+        {
+            return listenerList.toArray(new RigEventListener[listenerList.size()]);
+        }
+    }
 }
