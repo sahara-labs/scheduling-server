@@ -11,12 +11,13 @@
 	<entry key="B2">SchedulingServer-Logger</entry>
 	<entry key="B3">SchedulingServer-TaskScheduler</entry>
 	<entry key="B4">SchedulingServer-DataAccess</entry>
-	<entry key="B5">SchedulingServer-RigProvider</entry>
-	<entry key="B6">SchedulingServer-RigProxy</entry>
-	<entry key="B7">SchedulingServer-RigOperations</entry>
-	<entry key="B8">SchedulingServer-Permissions</entry>
-	<entry key="B9">SchedulingServer-Bookings</entry>
-	<entry key="B10">SchedulingServer-Queuer</entry>
-	<entry key="B11">SchedulingServer-Session</entry>
-	<entry key="B12">SchedulingServer-Server</entry>
+	<entry key="B5">SchedulingServer-Messenger</entry>
+	<entry key="B6">SchedulingServer-RigProvider</entry>
+	<entry key="B7">SchedulingServer-RigProxy</entry>
+	<entry key="B8">SchedulingServer-RigOperations</entry>
+	<entry key="B9">SchedulingServer-Permissions</entry>
+	<entry key="B10">SchedulingServer-Bookings</entry>
+	<entry key="B11">SchedulingServer-Queuer</entry>
+	<entry key="B12">SchedulingServer-Session</entry>
+	<entry key="B13">SchedulingServer-Server</entry>
 </properties>
