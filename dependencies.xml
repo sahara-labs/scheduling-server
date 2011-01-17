@@ -130,4 +130,10 @@ Date: 28th December 2009
 	<target name="bookingsBundle" if="missing.bookings">
 		<buildRequiredBundle bundle="SchedulingServer-Bookings.jar" bundleProject="Bookings" />
 	</target>
+	
+	<!-- ### Messenger Bundle. -->
+	<detectIfBundlePresent property="missing.messenger" bundle="SchedulingServer-Messenger.jar" />
+	<target name="messengerBundle" if="missing.messenger">
+		<buildRequiredBundle bundle="SchedulingServer-Messenger.jar" bundleProject="Messenger" />
+	</target>
 </project>

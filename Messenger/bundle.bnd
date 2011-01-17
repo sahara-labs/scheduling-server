@@ -1,0 +1,11 @@
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.messenger
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.messenger.impl
+Include-Resource: 
+Import-Package: !com.sun.*,!javax.*, !org.w3c.dom, !org.xml.sax.*, *
+Bundle-Name: Messenger
+Bundle-SymbolicName: SchedulingServer-Messenger
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerActivator
+Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .
