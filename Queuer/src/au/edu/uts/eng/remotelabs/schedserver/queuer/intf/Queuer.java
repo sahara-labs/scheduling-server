@@ -389,13 +389,6 @@ public class Queuer implements QueuerSkeletonInterface
                 this.logger.debug("Unable to check if user is in queue because user was not found.");
                 inQueue.setFailureReason("User not found.");
             }
-            else if ((booking = this.getNextBooking(user, 1800, dao.getSession())) != null)
-            {
-                // DODGY This uses half an hour limit probably should be a 
-                // resource permission session duration limit
-                inQueue.setInBooking(true);
-                inQueue.setBookingID(booking.getId().intValue());
-            }
             else if ((ses = dao.findActiveSession(user)) != null)
             {
                 if (ses.getAssignmentTime() == null)
@@ -425,6 +418,13 @@ public class Queuer implements QueuerSkeletonInterface
                 res.setType(ses.getResourceType());
                 res.setResourceID(ses.getRequestedResourceId().intValue());
                 res.setResourceName(ses.getRequestedResourceName());
+            }
+            else if ((booking = this.getNextBooking(user, 1800, dao.getSession())) != null)
+            {
+                // DODGY This uses half an hour limit probably should be a 
+                // resource permission session duration limit
+                inQueue.setInBooking(true);
+                inQueue.setBookingID(booking.getId().intValue());
             }
         }
         finally
