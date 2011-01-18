@@ -93,7 +93,7 @@ public class SMTPSender
         if ((tmp = config.getProperty("From_Address")) != null)
         {
             tmp = tmp.trim();
-            props.put("mail.smtp.host", tmp);
+            props.put("mail.smtp.from", tmp);
             this.logger.info("Loaded system generated email address as '" + tmp + "'.");
         }
         

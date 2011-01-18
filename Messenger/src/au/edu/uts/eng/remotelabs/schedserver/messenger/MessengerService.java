@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.messenger;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
@@ -64,16 +65,16 @@ public interface MessengerService
     /**
      * Sends a templated message. 
      * 
-     * @param users list of recipents
-     * @param templateId template identifer
+     * @param users list of recipients
+     * @param templateId template identifier
      * @param macros marco list of inject into template
      */
-    public void sendTemplatedMessage(User users[], String templateId, Map<String, String> macros);
+    public void sendTemplatedMessage(List<User> users, String templateId, Map<String, String> macros);
     
     /**
      * Sends a templated message to the configured administration users. 
      * 
-     * @param templateId template identifer
+     * @param templateId template identifier
      * @param macros marco list of inject into template
      */
     public void sendAdminTemplatedMessage(String templateId, Map<String, String> macros);
@@ -81,11 +82,11 @@ public interface MessengerService
     /**
      * Sends a templated message. 
      * 
-     * @param users list of recipents
+     * @param users list of recipients
      * @param template URI to template
      * @param macros marco list of inject into template
      */
-    public void sendTemplatedMessage(User users[], URL template, Map<String, String> macros);
+    public void sendTemplatedMessage(List<User> users, URL template, Map<String, String> macros);
     
     /**
      * Sends a templated message to the configured administration users. 

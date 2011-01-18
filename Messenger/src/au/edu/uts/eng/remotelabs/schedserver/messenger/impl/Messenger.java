@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.messenger.impl;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
@@ -87,23 +88,48 @@ public class Messenger implements MessengerService
     }
 
     @Override
-    public void sendTemplatedMessage(User[] users, String templateId, Map<String, String> macros)
+    public void sendTemplatedMessage(List<User> users, String templateId, Map<String, String> macros)
     {
-        // TODO Auto-generated method stub
-        
+        URL template = this.getClass().getResource("/META-INF/templates/" + templateId);
+        if (template == null)
+        {
+            this.logger.error("Unable to send email with template '" + templateId + "' because the " +
+            		"template was not found.");
+        }
+        else
+        {
+            this.sendTemplatedMessage(users, template, macros);
+        }
     }
 
     @Override
     public void sendAdminTemplatedMessage(String templateId, Map<String, String> macros)
     {
-        // TODO Auto-generated method stub
-        
+        URL template = this.getClass().getResource("/META-INF/templates/" + templateId);
+        if (template == null)
+        {
+            this.logger.error("Unable to send email with template '" + templateId + "' because the " +
+            		"template was not found.");
+        }
+        else
+        {
+            this.sendAdminTemplatedMessage(template, macros);
+        }
     }
 
     @Override
-    public void sendTemplatedMessage(User[] users, URL template, Map<String, String> macros)
+    public void sendTemplatedMessage(List<User> users, URL template, Map<String, String> macros)
     {
-        // TODO Auto-generated method stub
+        try
+        {
+            Message m = new Templator(template, macros).generate();
+            m.setRecipient(users);
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         
     }
 
