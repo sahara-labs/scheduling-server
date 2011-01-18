@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import java.util.Map.Entry;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
@@ -63,7 +65,11 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 public class Redeemer implements BookingManagementTask, RigEventListener
 {
     /** The number of seconds between redeem runs. */
-    public static final int REDEEM_INTERVAL = 60;
+    public static final int REDEEM_INTERVAL = 30;
+    
+    /** The number of slots before a booking starts to send a reminder
+     *  notification out. */
+    public static final int NOTIF_SLOTS = 4;
     
     /** The current day bookings. */
     private DayBookings currentDay;
@@ -145,6 +151,8 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                         b.setCancelReason("No resources free to redeem booking too.");
                         this.logger.warn("Unable to redeem booking (" + b.getId() + ") for " + b.getUser().qName() + 
                         " because no free resources were found in the slot period.");
+                        
+                        new BookingNotification(b).notifyCancel();
                     }
 
                     if (this.redeemingBookings.size() > 0)
@@ -202,6 +210,35 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                                     " for rig " + e.getKey() + " cannot be redeemed because the rig is currently " +
                                     "in session.");
                         }
+                    }
+                    
+                    /* Notify the users of whose bookings are going to start soon. */
+                    int notifSlot = this.currentSlot + NOTIF_SLOTS;
+                    Collection<MBooking> starting;
+                    if (notifSlot < SlotBookingEngine.NUM_SLOTS)
+                    {
+                        synchronized (this.currentDay)
+                        {
+                            starting = this.currentDay.getSlotStartingBookings(notifSlot).values();
+                        }
+                    }
+                    else
+                    {
+                        Calendar next = Calendar.getInstance();
+                        next.add(Calendar.DAY_OF_MONTH, 1);
+                        
+                        DayBookings nextDay = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(
+                                TimeUtil.getDateStr(next));
+                        synchronized (nextDay)
+                        {
+                            nextDay.fullLoad(db);
+                            starting = nextDay.getSlotStartingBookings(notifSlot - SlotBookingEngine.NUM_SLOTS).values();
+                        }
+                    }
+                    
+                    for (MBooking mb : starting)
+                    {
+                        new BookingNotification((Bookings)db.merge(mb.getBooking())).notifyStarting();
                     }
                 }
                 
