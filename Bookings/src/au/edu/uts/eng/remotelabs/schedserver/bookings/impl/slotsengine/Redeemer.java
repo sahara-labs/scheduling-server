@@ -174,6 +174,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                     {
                         this.logger.debug("No bookings are starting on " + this.currentDay.getDay() + ", slot " + 
                                 this.currentSlot + '.');
+                        this.startBookingNotification(db);
                         return;
                     }
 
@@ -212,34 +213,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                         }
                     }
                     
-                    /* Notify the users of whose bookings are going to start soon. */
-                    int notifSlot = this.currentSlot + NOTIF_SLOTS;
-                    Collection<MBooking> starting;
-                    if (notifSlot < SlotBookingEngine.NUM_SLOTS)
-                    {
-                        synchronized (this.currentDay)
-                        {
-                            starting = this.currentDay.getSlotStartingBookings(notifSlot).values();
-                        }
-                    }
-                    else
-                    {
-                        Calendar next = Calendar.getInstance();
-                        next.add(Calendar.DAY_OF_MONTH, 1);
-                        
-                        DayBookings nextDay = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(
-                                TimeUtil.getDateStr(next));
-                        synchronized (nextDay)
-                        {
-                            nextDay.fullLoad(db);
-                            starting = nextDay.getSlotStartingBookings(notifSlot - SlotBookingEngine.NUM_SLOTS).values();
-                        }
-                    }
-                    
-                    for (MBooking mb : starting)
-                    {
-                        new BookingNotification((Bookings)db.merge(mb.getBooking())).notifyStarting();
-                    }
+                    this.startBookingNotification(db);
                 }
                 
                 /* Try to load balance existing booking to a new rig. */
@@ -270,6 +244,43 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         finally 
         {
             if (db != null) db.close();
+        }
+    }
+
+    /**
+     * Provides notification that a booking is going to start in the recent future.
+     * 
+     * @param db database connection
+     */
+    private void startBookingNotification(org.hibernate.Session db)
+    {
+        /* Notify the users of whose bookings are going to start soon. */
+        int notifSlot = this.currentSlot + NOTIF_SLOTS;
+        Collection<MBooking> starting;
+        if (notifSlot < SlotBookingEngine.NUM_SLOTS)
+        {
+            synchronized (this.currentDay)
+            {
+                starting = this.currentDay.getSlotStartingBookings(notifSlot).values();
+            }
+        }
+        else
+        {
+            Calendar next = Calendar.getInstance();
+            next.add(Calendar.DAY_OF_MONTH, 1);
+            
+            DayBookings nextDay = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(
+                    TimeUtil.getDateStr(next));
+            synchronized (nextDay)
+            {
+                nextDay.fullLoad(db);
+                starting = nextDay.getSlotStartingBookings(notifSlot - SlotBookingEngine.NUM_SLOTS).values();
+            }
+        }
+        
+        for (MBooking mb : starting)
+        {
+            new BookingNotification((Bookings)db.merge(mb.getBooking())).notifyStarting();
         }
     }
     
