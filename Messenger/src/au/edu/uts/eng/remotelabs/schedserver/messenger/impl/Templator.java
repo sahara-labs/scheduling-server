@@ -111,8 +111,9 @@ public class Templator
             
             if (line.length() > 80)
             {
-                body.append(line.substring(0, 80));
-                prevLine = line.substring(81);
+                int brk = line.lastIndexOf(' ', 80);
+                body.append(line.substring(0, brk));
+                prevLine = line.substring(brk + 1);
             }
             else
             {
