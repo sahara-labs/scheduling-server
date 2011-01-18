@@ -51,6 +51,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
@@ -865,7 +866,7 @@ public class DayBookings
                     bk.setActive(false);
                     bk.setCancelReason("Booked rig type has no rigs.");
                     
-                    // TODO cancel notification
+                    new BookingNotification(bk).notifyCancel();
                 }
                 ses.beginTransaction();
                 ses.flush();
@@ -914,7 +915,7 @@ public class DayBookings
                     bk.setActive(false);
                     bk.setCancelReason("Booked request capabilities has no rigs.");
                     
-                    // TODO Cancel notification
+                    new BookingNotification(bk).notifyCancel();
                 }
                 ses.beginTransaction();
                 ses.flush();
@@ -1287,7 +1288,7 @@ public class DayBookings
                     ses.flush();
                     ses.getTransaction().commit();
          
-                    // TODO Cancel notification
+                    new BookingNotification(booking).notifyCancel();
                 }
             }
             
@@ -1415,7 +1416,7 @@ public class DayBookings
                 ses.flush();
                 ses.getTransaction().commit();
    
-                // TODO Cancel notification
+                new BookingNotification(booking).notifyCancel();
             }
         }
                     
@@ -1454,7 +1455,7 @@ public class DayBookings
                 ses.flush();
                 ses.getTransaction().commit();
 
-                // TODO Cancel notification
+                new BookingNotification(booking).notifyCancel();
             }
         }
     }

@@ -49,6 +49,7 @@ import org.hibernate.criterion.Restrictions;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -104,7 +105,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             bk.setActive(false);
             bk.setCancelReason("Expired when Scheduling Server wasn't running.");
             
-            // TODO Cancel notification.
+            new BookingNotification(bk).notifyCancel();
         }
         if (bookings.size() > 0)
         {

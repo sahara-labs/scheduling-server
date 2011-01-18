@@ -55,6 +55,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingCreation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
@@ -273,6 +274,8 @@ public class BookingsService implements BookingsInterface
                 BookingIDType bid = new BookingIDType();
                 bid.setBookingID(bc.getBooking().getId().intValue());
                 status.setBookingID(bid);
+                
+                new BookingNotification(bc.getBooking()).notifyCreation();
             }
             else
             {
@@ -357,7 +360,6 @@ public class BookingsService implements BookingsInterface
              * -- Check whether the booking can get canceled and if the     --
              * -- user has permission to cancel it.                          --
              * ---------------------------------------------------------------- */
-            boolean sendNotif = false;
             if (!booking.isActive())
             {
                 this.logger.info("Unable to delete booking because the booking has already been canceled or redeemed.");
@@ -402,13 +404,11 @@ public class BookingsService implements BookingsInterface
                 
                 this.logger.debug("Academic " + user.getNamespace() + ':' + user.getName() + " has permission to " +
                 		"cancel booking " + bid + " from user class" + userClass.getName() + '.');
-                sendNotif = true;
             }
             else if (User.ADMIN.equals(persona))
             {
                 this.logger.debug("Admin " + user.getNamespace() + ':' + user.getName() + " canceling booking " + 
                         bid + '.');
-                sendNotif = true;
             }
             else if (!(User.ACADEMIC.equals(persona) || User.ADMIN.equals(persona) || User.USER.equals(persona)))
             {
@@ -428,9 +428,17 @@ public class BookingsService implements BookingsInterface
             else
             {
                 status.setSuccess(true);
-                if (sendNotif)
+                
+                /* Provide notification. */
+                if (user.getId().equals(booking.getUser().getId()))
                 {
-                    // TODO Send notification of cancellation
+                    /* User cancelling their own booking. */
+                    new BookingNotification(booking).notifyUserCancel();
+                }
+                else
+                {
+                    /* Admin cancelling their another users booking. */
+                    new BookingNotification(booking).notifyCancel();
                 }
             }   
         }
