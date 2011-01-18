@@ -1,5 +1,7 @@
-Oh no, the rig ${rig} has gone offline. The reason for this inexcusable
-transgression is ${reason}.
+Rig ${rig} hhas gone offline.
+
+Oh no, the rig ${rig} has gone offline. The reason for going offline
+${reason}.
 
 Until further notice the rig will not accept any sessions and any
 assigned reservations will be cancelled at redemption time if 

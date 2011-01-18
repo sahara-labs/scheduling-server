@@ -86,6 +86,21 @@ public class Messenger implements MessengerService
     {
         this.sender.sendAdmin(message);
     }
+    
+    @Override
+    public void sendTemplatedMessage(User user, String templateId, Map<String, String> macros)
+    {
+        URL template = this.getClass().getResource("/META-INF/templates/" + templateId);
+        if (template == null)
+        {
+            this.logger.error("Unable to send email with template '" + templateId + "' because the " +
+                    "template was not found.");
+        }
+        else
+        {
+            this.sendTemplatedMessage(user, template, macros);
+        }
+    }
 
     @Override
     public void sendTemplatedMessage(List<User> users, String templateId, Map<String, String> macros)
@@ -118,26 +133,50 @@ public class Messenger implements MessengerService
     }
 
     @Override
+    public void sendTemplatedMessage(User user, URL template, Map<String, String> macros)
+    {
+        try
+        {
+            Message message = new Templator(template, macros).generate();
+            message.addRecipent(user);
+            this.sender.send(message);
+        }
+        catch (Exception e)
+        {
+            this.logger.error("Failed to send email because of exception: " + e.getClass().getSimpleName() + 
+                    ", message: " + e.getMessage() + ".");
+        }
+    }
+    
+    @Override
     public void sendTemplatedMessage(List<User> users, URL template, Map<String, String> macros)
     {
         try
         {
-            Message m = new Templator(template, macros).generate();
-            m.setRecipient(users);
+            Message message = new Templator(template, macros).generate();
+            message.setRecipient(users);
+            this.sender.send(message);
         }
         catch (Exception e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
+            this.logger.error("Failed to send email because of exception: " + e.getClass().getSimpleName() + 
+                    ", message: " + e.getMessage() + ".");
+        } 
     }
 
     @Override
     public void sendAdminTemplatedMessage(URL template, Map<String, String> macros)
     {
-        // TODO Auto-generated method stub
-        
+        try
+        {
+            Message message = new Templator(template, macros).generate();
+            this.sender.sendAdmin(message);
+        }
+        catch (Exception e)
+        {
+            this.logger.error("Failed to send email because of exception: " + e.getClass().getSimpleName() + 
+                    ", message: " + e.getMessage() + ".");
+        } 
     }
 
     /**
@@ -147,4 +186,6 @@ public class Messenger implements MessengerService
     {
         /* Does nothing currently. */
     }
+
+   
 }

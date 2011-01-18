@@ -64,6 +64,21 @@ public interface MessengerService
     
     /**
      * Sends a templated message. 
+     * <br />
+     * If the template contains a macro with a value not supplied in the macro 
+     * list, the macro value will be loaded from configuration.
+     * 
+     * @param users list of recipients
+     * @param templateId template identifier
+     * @param macros marco list of inject into template
+     */
+    public void sendTemplatedMessage(User users, String templateId, Map<String, String> macros);
+    
+    /**
+     * Sends a templated message. 
+     * <br />
+     * If the template contains a macro with a value not supplied in the macro 
+     * list, the macro value will be loaded from configuration.
      * 
      * @param users list of recipients
      * @param templateId template identifier
@@ -73,6 +88,9 @@ public interface MessengerService
     
     /**
      * Sends a templated message to the configured administration users. 
+     * <br />
+     * If the template contains a macro with a value not supplied in the macro 
+     * list, the macro value will be loaded from configuration.
      * 
      * @param templateId template identifier
      * @param macros marco list of inject into template
@@ -81,6 +99,21 @@ public interface MessengerService
     
     /**
      * Sends a templated message. 
+     * <br />
+     * If the template contains a macro with a value not supplied in the macro 
+     * list, the macro value will be loaded from configuration.
+     * 
+     * @param users recipient
+     * @param template URI to template
+     * @param macros marco list of inject into template
+     */
+    public void sendTemplatedMessage(User user, URL template, Map<String, String> macros);
+    
+    /**
+     * Sends a templated message. 
+     * <br />
+     * If the template contains a macro with a value not supplied in the macro 
+     * list, the macro value will be loaded from configuration.
      * 
      * @param users list of recipients
      * @param template URI to template
@@ -90,6 +123,9 @@ public interface MessengerService
     
     /**
      * Sends a templated message to the configured administration users. 
+     * <br />
+     * If the template contains a macro with a value not supplied in the macro 
+     * list, the macro value will be loaded from configuration.
      * 
      * @param template URI to template
      * @param macros marco list of inject into template

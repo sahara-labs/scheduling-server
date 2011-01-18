@@ -101,7 +101,7 @@ public class SMTPSender
         {
             tmp = tmp.trim();
             props.put("mail.smtp.host", tmp);
-            this.logger.info("loaded SMTP mail server address as '" + tmp + "'.");
+            this.logger.info("Loaded SMTP mail server address as '" + tmp + "'.");
         }
         
         if ((tmp = config.getProperty("SMTP_Port")) != null)

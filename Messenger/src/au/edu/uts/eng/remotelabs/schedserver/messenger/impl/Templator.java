@@ -36,23 +36,130 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.messenger.impl;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.Message;
+import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerActivator;
 
 /**
  * Generates messages from templates.
+ * <br />
+ * The template format is:<br />
+ * <pre>
+ * &lt;Subject line&gt;
+
+ * &lt;Body line 1&gt;
+ * ...
+ * &lt;Body line n&gt;
+ * </pre>
+ * Template lines can contain macros in the format <tt>${macro}</tt>. These are
+ * replaced with a value from the supplied macro list or if the macro isn't in
+ * the list, it is loaded from configuration.
  */
 public class Templator
 {
-    public Templator(URL url, Map<String, String> macros)
+    /** URL to template. */
+    private URL templateUrl;
+    
+    /** Macro list. */
+    private Map<String, String> macros;
+    
+    /** Configuration. */
+    private Config config;
+    
+    public Templator(URL template, Map<String, String> macros)
     {
-        
+        this.templateUrl = template;
+        this.macros = macros;
+        this.config = MessengerActivator.getConfiguration();
     }
     
+    /**
+     * Generate the templated message.
+     * 
+     * @return message
+     * @throws Exception error generating message
+     */
     public Message generate() throws Exception
     {
-        return null;
+        Message message = new Message();
+        
+        BufferedReader reader = new BufferedReader(new InputStreamReader(this.templateUrl.openStream()));
+        
+        /* First line a subject line. */
+        message.setSubject(this.replaceMacros(reader.readLine()));
+        
+        /* Next line is subject, body delimiter. */
+        reader.readLine();
+        
+        /* The rest is body. */
+        StringBuilder body = new StringBuilder();
+        String line, prevLine = null;
+        while ((line = reader.readLine()) != null)
+        {
+            line = this.replaceMacros(line);
+            
+            /* Prepend the previous lines content if they exist. */
+            if (prevLine != null)
+            {
+                line = prevLine + ' ' + line;
+            }
+            
+            if (line.length() > 80)
+            {
+                body.append(line.substring(0, 80));
+                prevLine = line.substring(81);
+            }
+            else
+            {
+                body.append(line);
+                prevLine = null;
+            }
+            
+            body.append('\n');
+        }
+        
+        message.setBody(body.toString());
+        return message;
+    }
+    
+    /**
+     * Replaces macros with values.
+     * 
+     * @param line line
+     * @return line with macros replaced with values
+     */
+    private String replaceMacros(String line)
+    {
+        line = line.trim();
+        
+        /* No macros. */
+        if (!line.contains("${")) return line;
+        
+        StringBuilder tokLine = new StringBuilder();
+        
+        for (String t : line.split("\\$\\{"))
+        {
+            if (t.contains("}"))
+            {
+                int ei =  t.indexOf("}");
+                
+                String macro = t.substring(0, ei);
+                if (this.macros.containsKey(macro))  tokLine.append(this.macros.get(macro));
+                else tokLine.append(this.config.getProperty(macro, ""));
+                
+                if (ei < t.length() - 1) tokLine.append(t.substring(ei + 1));
+            }
+            else
+            {
+                tokLine.append(t);
+            }
+        }
+        
+        return tokLine.toString();
     }
 }

@@ -12,3 +12,4 @@ Import-Package: au.edu.uts.eng.remotelabs.schedserver.config,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: lib/mail.jar,
  .
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.messenger

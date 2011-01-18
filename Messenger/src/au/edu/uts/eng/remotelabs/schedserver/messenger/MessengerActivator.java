@@ -64,7 +64,7 @@ public class MessengerActivator implements BundleActivator
     private ServiceRegistration messengerReg;
     
     /** Configuration service tracker. */
-    private ServiceTracker configTracker;
+    private static ServiceTracker configTracker;
     
     /** Logger. */
 	private Logger logger;
@@ -78,8 +78,9 @@ public class MessengerActivator implements BundleActivator
 	    /* Set up the messenger. */
 	    this.messenger = new Messenger();
 	    
-	    this.configTracker = new ServiceTracker(context, Config.class.getName(), null);
-	    Config config = (Config) this.configTracker.waitForService(5000);
+	    MessengerActivator.configTracker = new ServiceTracker(context, Config.class.getName(), null);
+	    MessengerActivator.configTracker.open();
+	    Config config = (Config) MessengerActivator.configTracker.waitForService(5000);
 	    if (config == null)
 	    {
 	        this.logger.error("Configuration service not loaded, unable to correctly configure the messenger service. " +
@@ -102,5 +103,23 @@ public class MessengerActivator implements BundleActivator
 	    
 	    this.messengerReg.unregister();
 	    this.messenger.cleanUp();
+	    MessengerActivator.configTracker.close();
+	    MessengerActivator.configTracker = null;
+	}
+	
+	/**
+	 * Returns a configuration map.
+	 * 
+	 * @return configuration map
+	 */
+	public static Config getConfiguration()
+	{
+	    if (MessengerActivator.configTracker == null)
+	    {
+	        return null;
+	    }
+	    
+
+	    return (Config)MessengerActivator.configTracker.getService();
 	}
 }
