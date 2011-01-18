@@ -178,7 +178,7 @@ public class User implements java.io.Serializable
         this.persona = persona;
     }
 
-    @Column(name = "first_name", nullable = true, length = 64)
+    @Column(name = "first_name", nullable = true, length = 50)
     public String getFirstName()
     {
         return this.firstName;
@@ -189,7 +189,7 @@ public class User implements java.io.Serializable
         this.firstName = firstName;
     }
 
-    @Column(name = "last_name", nullable = true, length = 64)
+    @Column(name = "last_name", nullable = true, length = 50)
     public String getLastName()
     {
         return this.lastName;
@@ -200,7 +200,7 @@ public class User implements java.io.Serializable
         this.lastName = lastName;
     }
 
-    @Column(name = "email", nullable = true, length = 255)
+    @Column(name = "email", nullable = true, length = 100)
     public String getEmail()
     {
         return this.email;
