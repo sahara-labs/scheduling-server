@@ -231,7 +231,7 @@ public interface BookingEngine
             return this.tasks;
         }
 
-        public void addListeners(RigEventListener listener)
+        public void addListener(RigEventListener listener)
         {
             this.listeners.add(listener);
         }

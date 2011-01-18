@@ -83,7 +83,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     /** List of bookings that are currently being redeemed. */
     private Map<String, MBooking> redeemingBookings;
     
-    /** List off bookings that are currently in session. */
+    /** List of bookings that are currently in session. */
     private Map<String, MBooking> runningBookings;    
     
     /** Logger. */
@@ -439,6 +439,8 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         db.save(session);
         booking.setActive(false);
         booking.setSession(session);
+        rig.setInSession(true);
+        rig.setSession(session);
         db.getTransaction().commit();
         
         membooking.setBooking(booking);
@@ -452,6 +454,17 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         {
             new RigAllocator().allocate(session, db);
         }
+    }
+    
+    /**
+     * Puts a running booking to session.
+     * 
+     * @param rig rig that is allocated
+     * @param mb booking or puesdo booking of session
+     */
+    public void putRunningSession(Rig rig, MBooking mb)
+    {
+        this.runningBookings.put(rig.getName(), mb);
     }
     
     @Override

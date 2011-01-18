@@ -74,6 +74,9 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     /** The loaded of day bookings. */
     private Map<String, DayBookings> days;
     
+    /** Redeemer which redeems and cleans bookings. */
+    private Redeemer redeemer;
+    
     /** Logger. */
     private Logger logger;
     
@@ -119,9 +122,9 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         
         /* Initalise the management tasks. */
         BookingInit init = new BookingInit();
-        Redeemer redeemer = new Redeemer(day);
-        init.addTask(redeemer);
-        init.addListeners(redeemer);
+        this.redeemer = new Redeemer(day);
+        init.addTask(this.redeemer);
+        init.addListener(this.redeemer);
         return init;
     }
 
@@ -376,6 +379,14 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         }
 
         return fp;
+    }
+    
+    /**
+     * A rig has been registered so deal with any changes that could occur.
+     */
+    public void rigRegistered(Rig rig, Session db)
+    {
+        // TODO 
     }
     
     /**

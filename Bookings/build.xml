@@ -40,7 +40,7 @@ Date: 22nd October 2010
 	<property name="service.archive.name" value="Bookings.aar" />
 	
     <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,
-								rigOperationsBundle,serverBundle">
+  					messengerBundle,rigOperationsBundle,serverBundle">
         <buildProject/>
     </target>
 </project>
