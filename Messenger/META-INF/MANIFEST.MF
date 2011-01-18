@@ -13,3 +13,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: lib/mail.jar,
  .
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.messenger
+Require-Bundle: org.junit

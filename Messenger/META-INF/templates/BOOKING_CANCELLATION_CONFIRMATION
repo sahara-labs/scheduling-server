@@ -1,0 +1,9 @@
+Reservation cancelled for ${resource}.
+
+Dear ${firstname} ${lastname},
+
+The reservation for ${resource} was successfully created that was to 
+start on ${starttime} has been successfully cancelled.
+
+Cheers,
+Scheduling System

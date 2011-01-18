@@ -1,0 +1,10 @@
+Reservation created for ${resource}.
+
+Dear ${firstname} ${lastname},
+
+A reservation for ${resource} was successfully created. This reservation
+will start on ${starttime}. If your are not logged in to ${address} at 
+this time your reservation may be cancelled.
+
+Cheers,
+Scheduling System

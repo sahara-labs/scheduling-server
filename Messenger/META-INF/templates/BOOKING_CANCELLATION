@@ -2,10 +2,12 @@ Reservation for ${resource} has been cancelled.
 
 Dear ${firstname} ${lastname},
 
-The reservation for '${resource}' that started on ${starttime} has been 
-cancelled by the system. The reason for cancellation is ${cancelreason}.
+The reservation for '${resource}' that would have started on ${starttime} has been 
+cancelled by the system. 
 
-Please fell free to create another reservaton. 
+The reason for cancellation is: ${cancelreason}
 
-Cheers,
-Your Cheerful Scheduling Server
+Please feel free to create another reservaton. 
+
+Regards,
+Scheduling System
