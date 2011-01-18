@@ -54,6 +54,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingInit;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
@@ -106,23 +107,23 @@ public class BookingActivator implements BundleActivator
 		/* Initialise the booking engine and register the engine management 
 		 * tasks to periodically run. */
 		BookingActivator.engine = new SlotBookingEngine();
-		Properties props = new Properties();
+		BookingInit init = BookingActivator.engine.init();
+		
 		this.engineTasks = new HashMap<ServiceRegistration, BookingManagementTask>();
-		this.notifServices = new ArrayList<ServiceRegistration>();
-		for (BookingManagementTask task : BookingActivator.engine.init())
+		Properties props = new Properties();
+		for (BookingManagementTask task : init.getTasks())
 		{
 		    props.put("period", String.valueOf(task.getPeriod()));
 		    this.engineTasks.put(context.registerService(Runnable.class.getName(), task, props), task);
-		    
-		    /* If the tasks is a needs rig event notification, broadcast it. */
-		    if (task instanceof RigEventListener)
-		    {
-		        RigEventListener listener = (RigEventListener)task;
-		        this.notifServices.add(context.registerService(RigEventListener.class.getName(), listener, null));
-		    }
 		}
 		
-		listenerList = new ArrayList<RigEventListener>();
+		this.notifServices = new ArrayList<ServiceRegistration>();
+		for (RigEventListener listener : init.getListeners())
+		{
+		    this.notifServices.add(context.registerService(RigEventListener.class.getName(), listener, null));		    
+		}
+		
+		BookingActivator.listenerList = new ArrayList<RigEventListener>();
 		RigEventServiceListener servListener = new RigEventServiceListener(listenerList, context);
         context.addServiceListener(servListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         

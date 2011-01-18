@@ -48,7 +48,6 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
@@ -85,7 +84,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     }
     
     @Override
-    public synchronized List<BookingManagementTask> init()
+    public synchronized BookingInit init()
     {
         this.logger.debug("Initalising the slot booking engine...");
         
@@ -119,9 +118,11 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         day.fullLoad(db);
         
         /* Initalise the management tasks. */
-        List<BookingManagementTask> tasks = new ArrayList<BookingManagementTask>();
-        tasks.add(new Redeemer(day));
-        return tasks;
+        BookingInit init = new BookingInit();
+        Redeemer redeemer = new Redeemer(day);
+        init.addTask(redeemer);
+        init.addListeners(redeemer);
+        return init;
     }
 
     @Override

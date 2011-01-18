@@ -48,6 +48,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
 
 /**
@@ -61,7 +62,7 @@ public interface BookingEngine
      * 
      * @return list of runnable tasks or an empty list if non-needed
      */
-    public List<BookingManagementTask> init();
+    public BookingInit init();
     
     /** 
      * Cleanup the booking engine (for shutdown).
@@ -199,6 +200,45 @@ public interface BookingEngine
         public List<TimePeriod> getBestFits()
         {
             return this.bestFits;
+        }
+    }
+    
+    /**
+     * Initialisation response, containing with management tasks and rig 
+     * event listeners.
+     */
+    public static class BookingInit
+    {
+        /** Management tasks. */
+        private List<BookingManagementTask> tasks;
+        
+        /** Rig event listeners. */
+        private List<RigEventListener> listeners;
+        
+        public BookingInit()
+        {
+            this.tasks = new ArrayList<BookingManagementTask>();
+            this.listeners = new ArrayList<RigEventListener>();
+        }
+
+        public void addTask(BookingManagementTask task)
+        {
+            this.tasks.add(task);
+        }
+        
+        public List<BookingManagementTask> getTasks()
+        {
+            return this.tasks;
+        }
+
+        public void addListeners(RigEventListener listener)
+        {
+            this.listeners.add(listener);
+        }
+
+        public List<RigEventListener> getListeners()
+        {
+            return this.listeners;
         }
     }
 }
