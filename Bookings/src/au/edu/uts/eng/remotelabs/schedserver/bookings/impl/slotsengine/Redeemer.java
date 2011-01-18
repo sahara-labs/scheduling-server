@@ -218,6 +218,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                             if (rig  != null)
                             {
                                 this.redeemBooking(e.getValue(), rig, db);
+                                it.remove();
                             }
                         }
                     }
