@@ -34,6 +34,10 @@
 # @author Michael Diponio (mdiponio)
 # @date 5th January 2009
 #
+# @author Herbert Yeung 
+# @date 10th August 2010
+#
+# Changelog: Added parameters/properties for LabConnector and ScormPackager
 ###############################################################################
 #                                                                             #
 # Scheduling Server core configuration file. Format of each item is:          #
@@ -252,7 +256,7 @@ Default_Log_Format [__LEVEL__] - [__ISO8601__] - [__TID__]: __MESSAGE__ (__SOURC
 DEBUG_Log_Format [DEBUG] - [__ISO8601__] - [__TID__]  __MESSAGE__ (__SOURCE__:__LINE_NUM__) {__CLASS__->__METHOD__}
 
 ###############################################################################
-## Local rig configuration                                                   ##
+## Local rig  parameters                                                     ##
 ###############################################################################
 
 # The period within a rig must provide a status update in seconds. If they do 
@@ -279,7 +283,7 @@ Default_Rig_Type_Logoff_Grace 180
 Default_Rig_Type_Is_Code_Assignable false
 
 ###############################################################################
-## Rig client proxy configuration                                            ##
+## Rig client proxy options                                                  ##
 ###############################################################################
 
 # The timeout of seconds before a async SOAP operation fails. This is important
@@ -288,35 +292,33 @@ Default_Rig_Type_Is_Code_Assignable false
 # Rig_Client_Async_Timeout 60 seconds
 Rig_Client_Async_Timeout 60
 
-################################################################################
-## Messenger configuration                                                    ##
-################################################################################
+###############################################################################
+## LabConnector Remote Host identification                                   ##
+###############################################################################
+# LabConnector Hostname - the LabConnector on the remote end
+# labconnector_remotehost <String>
+labconnector_remotehost ilabs-test.eng.uts.edu.au
 
-# The list of administrator email address that should receive system 
-# notifications about the system such as rigs going offline. Multiple 
-# emails can be configured, separating each with a semi-column.
-# Admin_Email <email>;<email>
-Admin_Email mdiponio@eng.uts.edu.au;michael.diponio@eng.uts.edu.au
+# LabConnector PortNum - the LabConnector port number on the remote end
+# labconnector_port <Integer>
+labconnector_port 7070
 
-# The from address of system generated emails.
-# From_Address <email>
-# From_Address <saharalabs@hostname.com>
-From_Address saharalabs@eng.uts.edu.au
+# LabConnector Web Service Link - the LabConnector web service path
+# labconnector_wspath <String>
+labconnector_wspath /LabConnector/LabConnector.asmx
 
-# The site address to put in notification emails. 
-#
-# Site_Address <URL>
-# Site_Address http://remotelabs.eng.uts.edu.au
-Site_Address http://remotelabs.eng.uts.edu.au
+# LabConnector Experiment Storage Location - the expt storage location path
+# labconnector_storeloc <String>
+labconnector_storeloc /Users
 
-# The host name of the SMTP server. 
-# SMTP_Host <hostname>
-# SMTP_Host postoffice.hostname.com
-SMTP_Host postoffice.eng.uts.edu.au
+###############################################################################
+## ScormPackager SCO Properties/Identifiers                                  ##
+###############################################################################
 
-# The port number for the SMTP server. If not specified the default SMTP port
-# (25) is used.
-# SMTP_Port <int>
-# SMTP_Port 25
-#SMTP_Port
+# SCO File Path - SCOs storage location
+# scormpackager_scopath <String>
+scormpackager_scopath /SCOs
 
+# SCO Lesson/Experiment Title  - The title used by the manifest 
+# scormpackager_scotitle <String>
+scormpackager_scotitle "Generic Title"
