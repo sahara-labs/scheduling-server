@@ -125,6 +125,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         this.redeemer = new Redeemer(day);
         init.addTask(this.redeemer);
         init.addListener(this.redeemer);
+        init.addListener(new RigRegisteredListener());
         return init;
     }
 
@@ -382,11 +383,25 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     }
     
     /**
-     * A rig has been registered so deal with any changes that could occur.
+     * A rig has been registered. So notify each day to update
+     * the resource loop mappings.
+     * 
+     * @param rig rig that was registered
+     * @param db database session
      */
     public void rigRegistered(Rig rig, Session db)
     {
-        // TODO 
+        this.logger.debug("Received rig " + rig.getName() + " registered event.");
+        synchronized (this.days)
+        {
+            for (DayBookings day : this.days.values())
+            {
+                synchronized (day)
+                {
+                    day.rigRegistered(rig, db);
+                }
+            }
+        }
     }
     
     /**

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -803,6 +804,10 @@ public class DayBookings
         return null;
     }
     
+    /* ========================================================================
+     * == Resource mappings management.                                      ==
+     * ======================================================================== */
+    
     /**
      * Loads all the bookings for the day into memory.
      * 
@@ -923,51 +928,7 @@ public class DayBookings
             }
         }
     }
-    
-    /**
-     * Gets the rig bookings for the rig. If the rig bookings hasn't been 
-     * loaded for the rig, it is loaded by:
-     * <ul>
-     *  <li>Loading the rig and its booking for the day.</li>
-     *  <li>Loading all the rigs in the rig type and their bookings.</li>
-     *  <li>Linking the rig type resource loop.</li>
-     *  <li>Loading the rig type bookings and assigning them to a rig.</li>
-     *  <li>Loading the request capabilities resource loops for those that
-     *  have at least one booking.</li>
-     *  <li>Loading the request capabilities bookings.</li>
-     * </ul>
-     * 
-     * @param rig rig to find bookings of
-     * @return rig bookings
-     */
-    private RigBookings getRigBookings(Rig rig, Session ses)
-    {
-        if (!this.rigBookings.containsKey(rig.getName()))
-        {
-            this.logger.debug("Loaded day bookings for rig '" + rig.getName() + "' on day " + this.day + ".");
-            
-            List<RequestCapabilities> capsToLoad = new ArrayList<RequestCapabilities>();
 
-            RigBookings rb = new RigBookings(rig, this.day);
-            this.loadRig(rb, rig, ses);
-            this.rigBookings.put(rig.getName(), rb);
-            
-            /* Add the capabilities that need to be loaded. */
-            for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
-            {
-                capsToLoad.add(match.getRequestCapabilities());
-            }
-
-            this.loadRigType(rig, ses, capsToLoad);
-            
-            /* Load the request capabilities resource loops for those that have 
-             * bookings. */
-            this.loadRequestCapabilities(capsToLoad, ses, true);
-        }
-        
-        return this.rigBookings.get(rig.getName());
-    }
-    
     /**
      * Outer load balance. Load balancing is trying to fit the specified booking
      * onto the rig.
@@ -1144,6 +1105,231 @@ public class DayBookings
         }
         
         return true;
+    }
+    
+    /**
+     * Gets the rig bookings for the rig. If the rig bookings hasn't been 
+     * loaded for the rig, it is loaded by:
+     * <ul>
+     *  <li>Loading the rig and its booking for the day.</li>
+     *  <li>Loading all the rigs in the rig type and their bookings.</li>
+     *  <li>Linking the rig type resource loop.</li>
+     *  <li>Loading the rig type bookings and assigning them to a rig.</li>
+     *  <li>Loading the request capabilities resource loops for those that
+     *  have at least one booking.</li>
+     *  <li>Loading the request capabilities bookings.</li>
+     * </ul>
+     * 
+     * @param rig rig to find bookings of
+     * @return rig bookings
+     */
+    private RigBookings getRigBookings(Rig rig, Session ses)
+    {
+        if (!this.rigBookings.containsKey(rig.getName()))
+        {
+            this.logger.debug("Loaded day bookings for rig '" + rig.getName() + "' on day " + this.day + ".");
+            
+            List<RequestCapabilities> capsToLoad = new ArrayList<RequestCapabilities>();
+
+            RigBookings rb = new RigBookings(rig, this.day);
+            this.loadRig(rb, rig, ses);
+            this.rigBookings.put(rig.getName(), rb);
+            
+            /* Add the capabilities that need to be loaded. */
+            for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
+            {
+                capsToLoad.add(match.getRequestCapabilities());
+            }
+
+            this.loadRigType(rig, ses, capsToLoad);
+            
+            /* Load the request capabilities resource loops for those that have 
+             * bookings. */
+            this.loadRequestCapabilities(capsToLoad, ses, true);
+        }
+        
+        return this.rigBookings.get(rig.getName());
+    }
+    
+    /**
+     * A rig has been registered. A registered rig may:
+     * <ul>
+     *  <li>Be newly registered.</li>
+     *  <li>Have a changed type or rig capabilities from a previous registration.</li>
+     *  <li>Be the same as a previous registration.</li>
+     * <ul>
+     * 
+     * @param rig rig that was registered
+     * @param ses database session
+     */    
+    public void rigRegistered(Rig rig, Session ses)
+    {
+        String rigName = rig.getName();
+        String rigType = rig.getRigType().getName();
+        List<RequestCapabilities> rigCaps = new ArrayList<RequestCapabilities>();
+        for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses()) 
+        {
+            rigCaps.add(match.getRequestCapabilities());
+        }
+        
+        if (this.rigBookings.containsKey(rigName))
+        {
+            RigBookings rb = this.rigBookings.get(rigName);
+            
+            /* Check the type loop to see whether we are member of the correct type
+             * loop. */
+            if (!rb.getRigType().equals(rigType))
+            {
+                /* The rig changed type so we must remove the rig from it current type
+                 * resource loop and it add it to the new rig resource loop. */
+                this.logger.debug("Registered rig " + rigName + " has a different type then when it was last " +
+                		"registered so changing type mapping.");
+                
+                if (rb.getTypeLoopNext() == rb)
+                {
+                    /* The type just contains the rig so remove the type loop all together. */
+                    this.typeTargets.remove(rb.getRigType());
+                    
+                    /* All type bookings assigned to the rig need to be cancelled 
+                     * because the type no longer exists. */
+                    List<MBooking> typeb = rb.getTypeBookings();
+                    for (MBooking mb : typeb)
+                    {
+                        /* In session type bookings have already been allocated 
+                         * to the rig so cannot be moved. */
+                        if (mb.getSession() != null) continue;
+                        
+                        this.logger.warn("Cancelling type booking (" + mb.getBooking().getId() + ") because the " +
+                            "previous assigned rig " + rigName + " has changed type.");
+                        
+                        rb.removeBooking(mb);
+                        Bookings b = (Bookings)ses.merge(mb.getBooking());
+                        b.setActive(false);
+                        b.setCancelReason("Rig no longer in rig type.");
+                        new BookingNotification(b).notifyCancel();
+                    }
+                    if (typeb.size() > 0)
+                    {
+                        ses.beginTransaction();
+                        ses.flush();
+                        ses.getTransaction().commit();
+                    }
+                }
+                else
+                {
+                    RigBookings prev = rb.getTypeLoopNext(), next = prev.getTypeLoopNext();
+                    while (next != rb)
+                    {
+                        prev = next;
+                        next = next.getTypeLoopNext();
+                    }
+                    prev.setTypeLoopNext(rb.getTypeLoopNext());
+                    if (this.typeTargets.get(prev.getRigType()) == rb) this.typeTargets.put(prev.getRigType(), prev);
+                    
+                    /* For all the type bookings,  try to put the booking on
+                     * a different rig. */
+                    List<MBooking> typeb = rb.getTypeBookings();
+                    boolean requiresFlush = false;
+                    for (MBooking mb : typeb)
+                    {
+                        /* In session type bookings have already been allocated 
+                         * to the rig so cannot be moved. */
+                        if (mb.getSession() != null) continue;
+                        
+                        rb.removeBooking(mb);
+                        
+                        Bookings b = (Bookings)ses.merge(mb.getBooking());
+                        mb.setBooking(b); 
+                        if (!this.createBooking(mb, ses))
+                        {
+                            requiresFlush = true;
+                            b.setActive(false);
+                            b.setCancelReason("Type over booked because rig no longer in rig type.");
+                            new BookingNotification(b).notifyCancel();
+                        }
+                    }
+                    if (requiresFlush)
+                    {
+                        ses.beginTransaction();
+                        ses.flush();
+                        ses.getTransaction().commit();
+                    }
+                }
+                
+                rb.setRigType(rigType);
+                
+            }
+
+        }
+        else
+        {
+            RigBookings rb = new RigBookings(rig, this.day);
+            
+            /* The rig isn't registered so may either be new *OR* the resource 
+             * loops it is a member of aren't loaded. */
+            
+            if (this.typeTargets.containsKey(rigType))
+            {
+                /* The type is loaded so the rig is a new rig. This means we can
+                 * safely insert the rig into its matching resource loop because
+                 * there can be no incorrect mappings. */
+                this.rigBookings.put(rigName, rb);
+                
+                this.logger.debug("Registered rig " + rig.getName() + " is new and has its type resource loop loaded " +
+                		"so inserting it into the type resource loop.");
+                
+                /* Insert the rig into the type resource loop. */
+                RigBookings typerb = this.typeTargets.get(rigType);
+                rb.setTypeLoopNext(typerb.getTypeLoopNext());
+                typerb.setTypeLoopNext(rb);
+                
+                /* If any of the request capabilities are loaded, add to rig 
+                 * to them. */
+                for (RequestCapabilities caps : rigCaps)
+                {
+                    if (this.capsTargets.containsKey(caps.getCapabilities()))
+                    {
+                        this.logger.debug("Registered rig " + rigName + " is new and has its matching capability '" +
+                        		caps.getCapabilities() + "' resource loop loaded so inserting the rig in the " +
+                        		"capability resource loop.");
+                        RigBookings capsrb = this.capsTargets.get(caps.getCapabilities());
+                        rb.setCapsLoopNext(caps, capsrb.getCapsLoopNext(caps));
+                        capsrb.setCapsLoopNext(caps, rb);
+                    }
+                }
+            }
+            else
+            {
+                /* The rig can be either new or existing but unloaded in this day.
+                 * Either way, we check the capabilities loops and if the rig matches
+                 * at least one, we add the rig to it and do a load of the type. */
+                boolean hasMatch = false;
+                Iterator<RequestCapabilities> it = rigCaps.iterator();
+                while (it.hasNext())
+                {
+                    RequestCapabilities caps = it.next();
+                    if (this.capsTargets.containsKey(caps.getCapabilities()))
+                    {
+                        this.logger.debug("Registered rig " + rigName + " is new and has its matching capability '" +
+                                caps.getCapabilities() + "' resource loop loaded so inserting the rig in the " +
+                                "capability resource loop.");
+                        
+                        hasMatch = true;
+                        RigBookings capsrb = this.capsTargets.get(caps.getCapabilities());
+                        rb.setCapsLoopNext(caps, capsrb.getCapsLoopNext(caps));
+                        capsrb.setCapsLoopNext(caps, rb);
+                        it.remove();
+                    }
+                }
+                
+                if (hasMatch)
+                {
+                    this.rigBookings.put(rigName, rb);
+                    this.loadRigType(rig, ses, rigCaps);
+                    this.loadRequestCapabilities(rigCaps, ses, true);
+                }
+            }
+        }
     }
 
     /**
@@ -1458,6 +1644,8 @@ public class DayBookings
                 new BookingNotification(booking).notifyCancel();
             }
         }
+        
+        
     }
     
     /**

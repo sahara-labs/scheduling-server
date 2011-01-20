@@ -247,7 +247,7 @@ public class MRange implements Comparable<MRange>
         
         MRange mr = (MRange)o;
         return mr.getStartSlot() == this.getStartSlot() && mr.getEndSlot() == this.endSlot && 
-                this.dayKey.equals(this.dayKey);
+                this.dayKey.equals(mr.getDayKey());
     }
     
     @Override

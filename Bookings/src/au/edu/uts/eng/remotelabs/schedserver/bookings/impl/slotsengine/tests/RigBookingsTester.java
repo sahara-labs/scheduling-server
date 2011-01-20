@@ -53,6 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 
 /**
@@ -70,12 +71,107 @@ public class RigBookingsTester extends TestCase
     @Before
     public void setUp() throws Exception
     {
-        this.bookings = new RigBookings(new Rig(), TimeUtil.getDateStr(new Date()));
+        Rig r = new Rig();
+        RigType rt = new RigType();
+        r.setRigType(rt);
+        
+        this.bookings = new RigBookings(r, TimeUtil.getDateStr(new Date()));
         Field f = RigBookings.class.getDeclaredField("logger");
         f.setAccessible(true);
         f.set(this.bookings, new SystemErrLogger());
         
         this.dayKey = TimeUtil.getDateStr(Calendar.getInstance());
+    }
+    
+    public void testGetTypeBookings() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 20, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        MBooking mb = new MBooking(30, 40, BType.TYPE, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = mb;
+        }
+        
+        m = new MBooking(50, 70, BType.RIG, this.dayKey);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        List<MBooking> tb = this.bookings.getTypeBookings();
+        assertNotNull(tb);
+        assertEquals(1, tb.size());
+        assertEquals(tb.get(0).getType(), BType.TYPE);
+        assertEquals(tb.get(0).getStartSlot(), 30);
+        assertEquals(tb.get(0).getEndSlot(), 40);
+        assertEquals(tb.get(0), mb);
+    }
+    
+    public void testGetTypeBookingsNoRig() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 20, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(30, 40, BType.RIG, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = m;
+        }
+        
+        m = new MBooking(50, 70, BType.RIG, this.dayKey);
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        List<MBooking> tb = this.bookings.getTypeBookings();
+        assertNotNull(tb);
+        assertEquals(0, tb.size());
+    }
+    
+    public void testGetTypeBookingsNoBookings() throws Throwable
+    {
+        List<MBooking> tb = this.bookings.getTypeBookings();
+        assertNotNull(tb);
+        assertEquals(0, tb.size());
     }
     
     public void testGetSlotBooking() throws Throwable
