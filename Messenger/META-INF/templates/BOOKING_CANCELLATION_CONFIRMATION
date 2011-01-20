@@ -2,7 +2,7 @@ Reservation cancelled for ${resource}.
 
 Dear ${firstname} ${lastname},
 
-You have successfully cancelled your reservation for '${resource}' at 
+You have successfully cancelled your reservation for '${resource}' on 
 '${starttime}'.
 
 Cheers,
