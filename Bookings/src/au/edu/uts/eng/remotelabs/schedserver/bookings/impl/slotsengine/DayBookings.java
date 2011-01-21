@@ -1382,7 +1382,7 @@ public class DayBookings
                 this.rigBookings.put(rigName, rb);
                 
                 this.logger.debug("Registered rig " + rig.getName() + " is new and has its type resource loop loaded " +
-                		"so inserting it into the type resource loop.");
+                		"so inserting it into the type resource loop for day " + this.day + ".");
                 
                 /* Insert the rig into the type resource loop. */
                 RigBookings typerb = this.typeTargets.get(rigType);
@@ -1397,7 +1397,7 @@ public class DayBookings
                     {
                         this.logger.debug("Registered rig " + rigName + " is new and has its matching capability '" +
                         		caps.getCapabilities() + "' resource loop loaded so inserting the rig in the " +
-                        		"capability resource loop.");
+                        		"capability resource loop for day " + this.day + ".");
                         RigBookings capsrb = this.capsTargets.get(caps.getCapabilities());
                         rb.setCapsLoopNext(caps, capsrb.getCapsLoopNext(caps));
                         capsrb.setCapsLoopNext(caps, rb);
