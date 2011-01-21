@@ -1256,10 +1256,116 @@ public class DayBookings
                     }
                 }
                 
+                /* Add the rig to the type resource loop. */
                 rb.setRigType(rigType);
-                
+                if (this.typeTargets.containsKey(rigType))
+                {
+                    /* The rig type loop already exists so add the registered
+                     * rig to it. */
+                    RigBookings tt = this.typeTargets.get(rigType);
+                    rb.setTypeLoopNext(tt.getTypeLoopNext());
+                    tt.setTypeLoopNext(rb);
+                }
+                else
+                {
+                    this.loadRigType(rig, ses, new ArrayList<RequestCapabilities>());
+                }
             }
-
+            
+            /* Make sure all the capabilitiy resource loops are correct for the
+             * registered rig. */
+            List<String> currentCaps = rb.getCapabilities();
+            Iterator<RequestCapabilities> it = rigCaps.iterator();
+            while (it.hasNext())
+            {
+                RequestCapabilities reqCaps = it.next();
+                if (currentCaps.contains(reqCaps.getCapabilities()))
+                {
+                    it.remove();
+                    currentCaps.remove(reqCaps.getCapabilities());
+                }
+            }
+            
+            /* Remove the capabilities the rig is no longer a member of. */
+            if (currentCaps.size() > 0)
+            {
+                for (String cc : currentCaps)
+                {
+                    this.logger.debug("Rig " + rigName + " no longer has capability " + cc + " so removing it from " +
+                            "the " + cc + " resource loop.");
+                    
+                    List<MBooking> capsb = rb.getCapabilitiesBookings(cc); 
+                    if (rb.getCapsLoopNext(cc) == rb)
+                    {
+                        this.capsTargets.remove(cc);
+                        
+                        /* Need to cancel all of the capabilities bookings because
+                         * the request capabilites has no more rigs. */
+                        for (MBooking mb : capsb)
+                        {
+                            if (mb.getSession() != null) continue;
+                            
+                            rb.removeBooking(mb);
+                            Bookings b = (Bookings)ses.merge(mb.getBooking());
+                            b.setActive(false);
+                            b.setCancelReason("Capabilities over booked because rig no longer matches capability.");
+                            new BookingNotification(b).notifyCancel();
+                        }
+                        
+                        if (capsb.size() > 0)
+                        {
+                            ses.beginTransaction();
+                            ses.flush();
+                            ses.getTransaction().commit();
+                        }
+                    }
+                    else
+                    {
+                        /* Remove the rig for the capabilities loop. */
+                        RigBookings prev = rb.getCapsLoopNext(cc), next = prev.getCapsLoopNext(cc);
+                        while (next != rb)
+                        {
+                            prev = next;
+                            next = next.getCapsLoopNext(cc);
+                        }
+                        prev.setCapsLoopNext(cc, rb.getCapsLoopNext(cc));
+                        
+                        /* First attempt to put the booking oto another rig. */
+                        boolean requiresFlush = false;
+                        for (MBooking mb : capsb)
+                        {
+                            if (mb.getSession() != null) continue;
+                            
+                            rb.removeBooking(mb);
+                            Bookings b = (Bookings)ses.merge(mb.getBooking());
+                            mb.setBooking(b);
+                            
+                            if (!this.createBooking(mb, ses))
+                            {
+                                b.setActive(false);
+                                b.setCancelReason("Capabilities over booked because rig no longer matches capability.");
+                                new BookingNotification(b).notifyCancel();
+                                requiresFlush = true;
+                            }
+                        }
+                        
+                        if (requiresFlush)
+                        {
+                            ses.beginTransaction();
+                            ses.flush();
+                            ses.getTransaction().commit();
+                        }
+                    }
+                    
+                    rb.removeCapsLoopNext(cc);
+                }
+            }
+            
+            /* Make sure all the remaining capabilities are loaded. */
+            if (rigCaps.size() > 0)
+            {
+                this.loadRequestCapabilities(rigCaps, ses, true);
+            }
         }
         else
         {
@@ -1267,7 +1373,7 @@ public class DayBookings
             
             /* The rig isn't registered so may either be new *OR* the resource 
              * loops it is a member of aren't loaded. */
-            
+       
             if (this.typeTargets.containsKey(rigType))
             {
                 /* The type is loaded so the rig is a new rig. This means we can
@@ -1343,6 +1449,10 @@ public class DayBookings
         while (capsList.size() > 0)
         {
             RequestCapabilities reqCaps = capsList.get(0);
+            
+            /* This protection is for a registered rig doing a partial load. */
+            if (this.capsTargets.containsKey(reqCaps.getCapabilities())) continue;
+            
             this.logger.debug("Attempting to load bookings for request capabilities " + reqCaps.getCapabilities() + '.');
             
 

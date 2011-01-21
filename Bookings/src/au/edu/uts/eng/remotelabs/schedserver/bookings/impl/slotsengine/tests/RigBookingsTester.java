@@ -52,6 +52,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.RigBookin
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
@@ -170,6 +171,171 @@ public class RigBookingsTester extends TestCase
     public void testGetTypeBookingsNoBookings() throws Throwable
     {
         List<MBooking> tb = this.bookings.getTypeBookings();
+        assertNotNull(tb);
+        assertEquals(0, tb.size());
+    }
+    
+    public void testGetCapsBookingsS() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 20, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        MBooking mb = new MBooking(30, 40, BType.TYPE, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = mb;
+        }
+        
+        m = new MBooking(50, 70, BType.CAPABILITY, this.dayKey);
+        f = MBooking.class.getDeclaredField("reqCaps");
+        f.setAccessible(true);
+        f.set(m, new RequestCapabilities("foo,foo"));
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        List<MBooking> tb = this.bookings.getCapabilitiesBookings("foo,foo");
+        assertNotNull(tb);
+        assertEquals(1, tb.size());
+        assertEquals(tb.get(0).getType(), BType.CAPABILITY);
+        assertEquals(tb.get(0).getStartSlot(), 50);
+        assertEquals(tb.get(0).getEndSlot(), 70);
+        assertEquals(tb.get(0), m);
+    }
+    
+    public void testGetCapsBookingsTwoS() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 20, BType.CAPABILITY, this.dayKey);
+        f = MBooking.class.getDeclaredField("reqCaps");
+        f.setAccessible(true);
+        f.set(m, new RequestCapabilities("foo,bar"));
+        for (int i = 10; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        MBooking mb = new MBooking(30, 40, BType.CAPABILITY, this.dayKey);
+        f = MBooking.class.getDeclaredField("reqCaps");
+        f.setAccessible(true);
+        f.set(mb, new RequestCapabilities("foo,foo"));
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = mb;
+        }
+        
+        m = new MBooking(50, 70, BType.CAPABILITY, this.dayKey);
+        f = MBooking.class.getDeclaredField("reqCaps");
+        f.setAccessible(true);
+        f.set(m, new RequestCapabilities("foo,foo"));
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        List<MBooking> tb = this.bookings.getCapabilitiesBookings("foo,foo");
+        assertNotNull(tb);
+        assertEquals(2, tb.size());
+        assertEquals(tb.get(0).getType(), BType.CAPABILITY);
+        assertEquals(tb.get(0).getStartSlot(), 30);
+        assertEquals(tb.get(0).getEndSlot(), 40);
+        assertEquals(tb.get(0), mb);
+        assertEquals(tb.get(1).getType(), BType.CAPABILITY);
+        assertEquals(tb.get(1).getStartSlot(), 50);
+        assertEquals(tb.get(1).getEndSlot(), 70);
+        assertEquals(tb.get(1), m);
+    }
+    
+    public void testGetCapsBookings() throws Throwable
+    {
+        Field f = RigBookings.class.getDeclaredField("slots");
+        f.setAccessible(true);
+        MBooking slots[] = (MBooking[]) f.get(this.bookings);
+        
+        MBooking m = new MBooking(10, 20, BType.RIG, this.dayKey);
+        for (int i = 10; i <= 20; i++)
+        {
+            slots[i] = m;
+        }
+        
+        MBooking mb = new MBooking(30, 40, BType.TYPE, this.dayKey);
+        for (int i = 30; i <= 40; i++)
+        {
+            slots[i] = mb;
+        }
+        
+        m = new MBooking(50, 70, BType.CAPABILITY, this.dayKey);
+        f = MBooking.class.getDeclaredField("reqCaps");
+        f.setAccessible(true);
+        f.set(m, new RequestCapabilities("foo,foo"));
+        for (int i = 50; i <= 70; i++)
+        {
+            slots[i] = m;
+        }
+        
+        
+        f = RigBookings.class.getDeclaredField("startSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 10);
+        f = RigBookings.class.getDeclaredField("endSlot");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 70);
+        f = RigBookings.class.getDeclaredField("numBookings");
+        f.setAccessible(true);
+        f.setInt(this.bookings, 3);
+        
+        List<MBooking> tb = this.bookings.getCapabilitiesBookings(new RequestCapabilities("foo,foo"));
+        assertNotNull(tb);
+        assertEquals(1, tb.size());
+        assertEquals(tb.get(0).getType(), BType.CAPABILITY);
+        assertEquals(tb.get(0).getStartSlot(), 50);
+        assertEquals(tb.get(0).getEndSlot(), 70);
+        assertEquals(tb.get(0), m);
+    }
+    
+    public void testGetTypeCapsBookingsNoBookings() throws Throwable
+    {
+        List<MBooking> tb = this.bookings.getCapabilitiesBookings(new RequestCapabilities("foo,bar,baz"));
+        assertNotNull(tb);
+        assertEquals(0, tb.size());
+    }
+    
+    public void testGetTypeCapsBookingsNoBookingsS() throws Throwable
+    {
+        List<MBooking> tb = this.bookings.getCapabilitiesBookings("foo,bar,baz");
         assertNotNull(tb);
         assertEquals(0, tb.size());
     }

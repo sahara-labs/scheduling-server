@@ -36,10 +36,9 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
-import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.TIME_QUANTUM;
+import static au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine.NUM_SLOTS;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +92,7 @@ public class RigBookings
         this.rig = rig;
         this.dayKey = day;
         
-        this.slots = new MBooking[(24 * 60 * 60) / TIME_QUANTUM];
+        this.slots = new MBooking[NUM_SLOTS];
         this.startSlot = 0;
         this.endSlot = 0;
         this.numBookings = 0;
@@ -488,6 +487,54 @@ public class RigBookings
     }
     
     /**
+     * Returns a list of the specified capabilities bookings assigned to this
+     * rig. 
+     * 
+     * @param caps request capabilities
+     * @return capabilities bookings
+     */
+    public List<MBooking> getCapabilitiesBookings(RequestCapabilities caps)
+    {
+        return this.getCapabilitiesBookings(caps.getCapabilities());
+    }
+    
+    /**
+     * Returns a list of the specified capabilities bookings assigned to this
+     * rig. 
+     * 
+     * @param caps request capabilities
+     * @return capabilities bookings
+     */
+    public List<MBooking> getCapabilitiesBookings(String caps)
+    {
+        if (this.numBookings == 0)
+        {
+            return Collections.emptyList();
+        }
+        
+        List<MBooking> cb = new ArrayList<MBooking>();
+        
+        int ss = this.startSlot;
+        MBooking mb;
+        while (ss <= this.endSlot)
+        {
+            if ((mb = this.slots[ss]) == null)
+            {
+               ss++;
+               continue;
+            }
+            
+            if (mb.getType() == BType.CAPABILITY  && mb.getRequestCapabilities().getCapabilities().equals(caps))
+            {
+                cb.add(mb);
+            }
+            ss = mb.getEndSlot() + 1;
+        }
+        
+        return cb;
+    }
+    
+    /**
      * Returns the booking on the specified slot or null if there is no booking.
      * 
      * @param slot slot to get booking from
@@ -533,19 +580,39 @@ public class RigBookings
         this.typeNext = next;
     }
 
-    public List<String> getCaps()
+    public List<String> getCapabilities()
     {
-        return Arrays.asList(this.capsNext.keySet().toArray(new String[this.capsNext.size()]));
+        return new ArrayList<String>(this.capsNext.keySet());
     }
 
     public RigBookings getCapsLoopNext(RequestCapabilities caps)
     {
         return this.capsNext.get(caps.getCapabilities());
     }
+    
+    public RigBookings getCapsLoopNext(String caps)
+    {
+        return this.capsNext.get(caps);
+    }
 
     public void setCapsLoopNext(RequestCapabilities caps, RigBookings next)
     {
         this.capsNext.put(caps.getCapabilities(), next);
+    }
+    
+    public void setCapsLoopNext(String caps, RigBookings next)
+    {
+        this.capsNext.put(caps, next);
+    }
+    
+    public void removeCapsLoopNext(RequestCapabilities caps)
+    {
+        this.capsNext.remove(caps.getCapabilities());
+    }
+    
+    public void removeCapsLoopNext(String caps)
+    {
+        this.capsNext.remove(caps);
     }
     
     public void clearCapsLoopNext(RequestCapabilities caps)
