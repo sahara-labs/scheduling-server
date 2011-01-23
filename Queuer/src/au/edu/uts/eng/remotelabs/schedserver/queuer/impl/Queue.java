@@ -217,8 +217,7 @@ public class Queue
              ** 4) Check the rig isn't booked.                               **
              ******************************************************************/
             BookingEngineService bookings = QueueActivator.getBookingService();
-            if (bookings != null && 
-                    !bookings.putQueuedSession(rig, targetSes, targetSes.getResourcePermission().getSessionDuration(), db))
+            if (bookings != null && !bookings.putQueuedSession(rig, targetSes, db))
             {
                 /* The rig is booked so we can't assign it to the queued session. */
                 return;
