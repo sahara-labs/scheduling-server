@@ -132,7 +132,7 @@ public class DayBookings
         switch (mb.getType())
         {
             case RIG:
-                rb = this.getRigBookings(mb.getBooking().getRig(), ses);
+                rb = this.getRigBookings(mb.getRig(), ses);
                 if (rb.areSlotsFree(mb))
                 {
                     return rb.commitBooking(mb);
@@ -249,7 +249,7 @@ public class DayBookings
         switch (mb.getType())
         {
             case RIG:
-                rb = this.getRigBookings(mb.getBooking().getRig(), ses);
+                rb = this.getRigBookings(mb.getRig(), ses);
                 ef = rb.getEarlyFit(mb);
                 lf = rb.getLateFit(mb);
                 break;
@@ -630,7 +630,7 @@ public class DayBookings
         switch (booking.getType())
         {
             case RIG:
-                Rig rig = booking.getBooking().getRig();
+                Rig rig = booking.getRig();
                 if (!this.rigBookings.containsKey(rig.getName()))
                 {
                     /* The rig  isn't loaded, so no need to unload it. */
@@ -1272,7 +1272,7 @@ public class DayBookings
                 }
             }
             
-            /* Make sure all the capabilitiy resource loops are correct for the
+            /* Make sure all the capability resource loops are correct for the
              * registered rig. */
             List<String> currentCaps = rb.getCapabilities();
             Iterator<RequestCapabilities> it = rigCaps.iterator();
@@ -1300,7 +1300,7 @@ public class DayBookings
                         this.capsTargets.remove(cc);
                         
                         /* Need to cancel all of the capabilities bookings because
-                         * the request capabilites has no more rigs. */
+                         * the request capabilities has no more rigs. */
                         for (MBooking mb : capsb)
                         {
                             if (mb.getSession() != null) continue;
@@ -1361,7 +1361,18 @@ public class DayBookings
                 }
             }
             
-            /* Make sure all the remaining capabilities are loaded. */
+            /* Make sure all the remaining capabilities are loaded. For loaded 
+             * capabilities loops, insert the rig into them. */
+            it = rigCaps.iterator();
+            while (it.hasNext())
+            {
+                RequestCapabilities reqCaps = it.next();
+                RigBookings capsb = this.capsTargets.get(reqCaps.getCapabilities());
+                rb.setCapsLoopNext(reqCaps, capsb.getCapsLoopNext(reqCaps));
+                capsb.setCapsLoopNext(reqCaps, rb);
+                it.remove();
+            }
+
             if (rigCaps.size() > 0)
             {
                 this.loadRequestCapabilities(rigCaps, ses, true);
@@ -1448,14 +1459,9 @@ public class DayBookings
     {
         while (capsList.size() > 0)
         {
-            RequestCapabilities reqCaps = capsList.get(0);
-            
-            /* This protection is for a registered rig doing a partial load. */
-            if (this.capsTargets.containsKey(reqCaps.getCapabilities())) continue;
-            
+            RequestCapabilities reqCaps = capsList.get(0);            
             this.logger.debug("Attempting to load bookings for request capabilities " + reqCaps.getCapabilities() + '.');
             
-
             Criteria qu = ses.createCriteria(Bookings.class)
                 .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
                 .add(Restrictions.eq("requestCapabilities", reqCaps))

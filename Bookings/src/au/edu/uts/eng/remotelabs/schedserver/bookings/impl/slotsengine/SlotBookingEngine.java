@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -182,7 +183,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                                 " on ";
                         switch (mb.getType())
                         {
-                            case RIG:        info += "rig " + mb.getBooking().getRig().getName(); break;
+                            case RIG:        info += "rig " + mb.getRig().getName(); break;
                             case TYPE:       info += "rig type " + mb.getRigType().getName(); break;
                             case CAPABILITY: info += "capabilities " + mb.getRequestCapabilities().getCapabilities(); break;
                         }
@@ -322,26 +323,44 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     
     @Override
     public boolean putQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
-            int duration, Session db)
+           Session db)
     {   
         Calendar now = Calendar.getInstance();
-        Calendar end = Calendar.getInstance();
-        end.add(Calendar.SECOND, duration);
+        String dayKey = TimeUtil.getDateStr(now);
+        MBooking mb = new MBooking(ses, rig, now, dayKey);
+        boolean success = false;
         
-        if (now.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH))
+        DayBookings dayb;
+        if (mb.isMultiDay())
         {
-            /* All on the same day. */
+            Calendar end = Calendar.getInstance();
+            end.add(Calendar.SECOND, ses.getDuration());
+            
+            Map<String, MBooking> allocs = new HashMap<String, MBooking>();
+            for (String day : TimeUtil.getDayKeys(now.getTime(), end.getTime()))
+            {
+                synchronized (dayb = this.getDayBookings(dayKey))
+                {
+                    if (!dayKey.equals(day)) mb = new MBooking(ses, rig, TimeUtil.getDayBegin(day), day);
+                    
+                }
+            }
         }
         else
         {
-            List<String> dayKeys = TimeUtil.getDayKeys(now.getTime(), end.getTime());
-            
+            /* The booking is only on a single day so we don't need to go 
+             * across days. */
+            synchronized (dayb = this.getDayBookings(dayKey))
+            {
+                success = dayb.createBooking(mb, db);
+            }
         }
         
-        
-        
-        
-        return false;
+        if (success)
+        {
+            this.redeemer.putRunningSession(rig, mb);
+        }
+        return success;
     }
 
     @Override

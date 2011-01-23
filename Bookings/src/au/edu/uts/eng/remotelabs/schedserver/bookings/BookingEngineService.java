@@ -52,11 +52,10 @@ public interface BookingEngineService
      * 
      * @param rig rig to put a booking to
      * @param ses session to put
-     * @param duration length of session
      * @param db database
      * @return true if session is put to rig
      */
-    public boolean putQueuedSession(Rig rig, Session ses, int duration, org.hibernate.Session db);
+    public boolean putQueuedSession(Rig rig, Session ses, org.hibernate.Session db);
     
     /**
      * Attempts to extend an existing session on the rig,

@@ -44,6 +44,7 @@ import java.util.Date;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
@@ -100,6 +101,9 @@ public class MBooking
      * booking. */
     private RequestCapabilities reqCaps;
     
+    /** The rig of this booking, if it is a rig booking. */
+    private Rig rig;
+    
     public MBooking(Bookings b, String day)
     {
         this.booking = b;
@@ -118,7 +122,11 @@ public class MBooking
             this.bType = BType.TYPE;
             this.rigType = b.getRigType();
         }
-        else this.bType = BType.RIG;
+        else 
+        {
+            this.bType = BType.RIG;
+            this.rig = b.getRig();
+        }
 
         if (TimeUtil.getDayBegin(this.day).getTime().after(b.getStartTime()))
         {
@@ -158,7 +166,7 @@ public class MBooking
         this.numSlots = this.endSlot - this.startSlot + 1;  
     }
     
-    public MBooking(Session ses, Calendar start, String day)
+    public MBooking(Session ses, Rig rig, Calendar start, String day)
     {
         this.day = day;
         this.isMultiDay = false;
@@ -168,6 +176,7 @@ public class MBooking
         /* Must be a rig booking because the session is only ever committed to
          * a singular system. */
         this.bType = BType.RIG;
+        this.rig = rig;
 
         if (TimeUtil.getDayBegin(this.day).after(start))
         {
@@ -281,10 +290,13 @@ public class MBooking
         {
             this.rigType = b.getRigType();
         }
-        
-        if (this.bType == BType.CAPABILITY)
+        else if (this.bType == BType.CAPABILITY)
         {
             this.reqCaps = b.getRequestCapabilities();
+        }
+        else
+        {
+            this.rig = b.getRig();
         }
     }
 
@@ -306,6 +318,11 @@ public class MBooking
     public int getNumSlots()
     {
         return this.numSlots;
+    }
+    
+    public Rig getRig()
+    {
+        return this.rig;
     }
     
     public RigType getRigType()
@@ -342,6 +359,7 @@ public class MBooking
     public boolean equals(Object o)
     {
         if (o == null) return false;
+        if (o == this) return true;
         if (!(o instanceof MBooking)) return false;
         
         if (this.booking == null || this.day == null || this.getBooking().getId() == null)

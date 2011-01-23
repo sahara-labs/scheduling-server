@@ -46,6 +46,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
 /**
@@ -86,7 +87,7 @@ public class MBookingTester extends TestCase
         Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
         start.add(Calendar.MINUTE, 120);
 
-        MBooking m = new MBooking(ses, start, TimeUtil.getDateStr(start));
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
 
         assertEquals(BType.RIG, m.getType());
         assertEquals(8, m.getStartSlot());
@@ -103,7 +104,7 @@ public class MBookingTester extends TestCase
         Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
         start.add(Calendar.MINUTE, 120);
 
-        MBooking m = new MBooking(ses, start, TimeUtil.getDateStr(start));
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
         
         assertEquals(BType.RIG, m.getType());
         assertEquals(8, m.getStartSlot());
@@ -129,7 +130,7 @@ public class MBookingTester extends TestCase
         Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
         start.add(Calendar.MINUTE, 119);
 
-        MBooking m = new MBooking(ses, start, TimeUtil.getDateStr(start));
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
 
         assertEquals(BType.RIG, m.getType());
         assertEquals(7, m.getStartSlot());
