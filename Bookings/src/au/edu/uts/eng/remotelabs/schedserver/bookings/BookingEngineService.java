@@ -45,6 +45,18 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 public interface BookingEngineService
 {
     /**
+     * Checks whether the rig is free for the specified duration. The rig is 
+     * free if there are no booking on the rig between now and now plus the
+     * duration. 
+     * 
+     * @param rig rig to check for freeness
+     * @param duration duration to check from now
+     * @param db database connection
+     * @return true if the rig is free
+     */
+    public boolean isFreeFor(Rig rig, int duration, org.hibernate.Session db);
+    
+    /**
      * Attempts to put a queued session to a rig. This returns <tt>true</tt> if
      * the rig is free for the duration and the session can be put to it. If it
      * returns <tt>false</tt> the rig cannot be allocated to the session because

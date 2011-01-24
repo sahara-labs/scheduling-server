@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -320,6 +321,22 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         ses.getTransaction().commit();
         
         return response;
+    }
+    
+    @Override
+    public boolean isFreeFor(Rig rig, int duration, org.hibernate.Session db)
+    {
+        Calendar now = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        end.add(Calendar.SECOND, duration);
+
+        for (String day : TimeUtil.getDayKeys(now.getTime(), end.getTime()))
+        {
+               if (!this.getDayBookings(day).isRigFree(rig, TimeUtil.getDaySlotIndex(now, day), 
+                    TimeUtil.getDaySlotIndex(end, day), db)) return false;
+        }
+
+        return true;
     }
     
     @Override

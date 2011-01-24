@@ -618,6 +618,33 @@ public class DayBookings
     }
     
     /**
+     * Checks whether the rig is free between the start and end slots (inclusive).
+     * <br />
+     * This method is thread safe and does not require this to be externally 
+     * synchronized.
+     * 
+     * @param rig rig to check
+     * @param start start slot to check
+     * @param end end slot to check
+     * @param ses database connection
+     * @return true if rig is free
+     */
+    public boolean isRigFree(Rig rig, int start, int end, Session ses)
+    {
+        RigBookings rb;
+        if (!this.rigBookings.containsKey(rig.getName()))
+        {
+            synchronized (this)
+            {
+                rb = this.getRigBookings(rig, ses);
+            }
+        }
+        else rb = this.rigBookings.get(rig.getName());
+        
+        return rb.areSlotsFree(start, end);
+    }
+    
+    /**
      * Removes the booking from this day bookings. 
      * 
      * @param booking booking to remove
