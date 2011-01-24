@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.hibernate.HibernateException;
@@ -327,7 +328,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     {   
         Calendar now = Calendar.getInstance();
         String dayKey = TimeUtil.getDateStr(now);
-        MBooking mb = new MBooking(ses, rig, now, dayKey);
+        MBooking mb = new MBooking(ses, rig, now, dayKey), nb = mb;
         boolean success = false;
         
         DayBookings dayb;
@@ -339,10 +340,24 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             Map<String, MBooking> allocs = new HashMap<String, MBooking>();
             for (String day : TimeUtil.getDayKeys(now.getTime(), end.getTime()))
             {
-                synchronized (dayb = this.getDayBookings(dayKey))
+                if (!dayKey.equals(day)) nb = new MBooking(ses, rig, now, day);
+                synchronized (dayb = this.getDayBookings(day))
                 {
-                    if (!dayKey.equals(day)) mb = new MBooking(ses, rig, TimeUtil.getDayBegin(day), day);
-                    
+                    if ((success = dayb.createBooking(nb, db))) allocs.put(day, nb);
+                    else break;
+                }
+            }
+            
+            /* If one of the days failed to be assigned. We need to roll back
+             * the current allocations. */
+            if (!success && allocs.size() > 0)
+            {
+                for (Entry<String, MBooking> e : allocs.entrySet())
+                {
+                    synchronized (dayb = this.getDayBookings(e.getKey()))
+                    {
+                        dayb.removeBooking(e.getValue());
+                    }
                 }
             }
         }

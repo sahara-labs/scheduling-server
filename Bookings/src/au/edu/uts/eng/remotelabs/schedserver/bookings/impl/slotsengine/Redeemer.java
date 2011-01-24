@@ -296,12 +296,26 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             Calendar cal = null;
             while (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.NUM_SLOTS - 1)
             {
-                if (cal == null) cal = Calendar.getInstance();
+                /* Booking rolls to the next day. */
+                
+                 if (cal == null) cal = Calendar.getInstance();
                 cal.add(Calendar.DAY_OF_MONTH, 1);
                 String dayStr = TimeUtil.getDateStr(cal);
-
-                /* Booking rolls to the next day. */
-                old = new MBooking(old.getBooking(), dayStr);
+                
+                if (old.getBooking() != null)
+                {
+                    /* Old is a booking session. */
+                    old = new MBooking(old.getBooking(), dayStr);
+                }
+                else if (old.getSession() != null)
+                {
+                    old = new MBooking(old.getSession(), old.getRig(), old.getStart(), dayStr);
+                }
+                else
+                {
+                    this.logger.error("BUG: Unknown MBooking type being removed. Please report.");
+                }
+                
                 ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(dayStr).removeBooking(old);
             }
             

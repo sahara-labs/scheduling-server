@@ -70,23 +70,26 @@ public class MBooking
     /** The transient session of this booking. */
     private Session session;
     
+    /** Whether this booking is in session. */
+    private boolean inSession;
+    
     /** The day the booking is located on. */
-    private String day;
+    private final String day;
     
     /** Whether this booking spans multiple day. */
     private boolean isMultiDay;
     
     /** The booking rigType. */
-    private BType bType;
+    private final BType bType;
     
     /** Booking / session start. */
-    private Date start;
+    private final Date start;
     
     /** Booking / session duration. */
-    private int duration;
+    private final int duration;
     
     /** The index of this bookings start slot. */
-    private int startSlot;
+    private final int startSlot;
     
     /** The index of the last slot used by this booking. */
     private int endSlot;
@@ -111,6 +114,7 @@ public class MBooking
         this.isMultiDay = false;
         this.start = b.getStartTime();
         this.duration = b.getDuration();
+        this.inSession = false;
         
         if (ResourcePermission.CAPS_PERMISSION.endsWith(b.getResourceType()))
         {
@@ -172,6 +176,8 @@ public class MBooking
         this.isMultiDay = false;
         this.start = start.getTime();
         this.duration = ses.getDuration();
+        this.inSession = true;
+        this.session = ses;
         
         /* Must be a rig booking because the session is only ever committed to
          * a singular system. */
@@ -224,6 +230,8 @@ public class MBooking
         this.numSlots = this.endSlot - this.startSlot + 1;
         this.bType = type;
         this.day = day;
+        this.start = TimeUtil.getCalendarFromSlot(this.day, start).getTime();
+        this.duration = (end - start + 1) * SlotBookingEngine.TIME_QUANTUM;
     }
     
     /**
@@ -347,12 +355,33 @@ public class MBooking
 
     public void setSession(Session session)
     {
+        this.inSession = true;
         this.session = session;
+    }
+    
+    public boolean isInSession()
+    {
+        return this.inSession;
     }
 
     public Session getSession()
     {
         return this.session;
+    }
+    
+    public Calendar getStart()
+    {
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(this.start);
+        return startCal;
+    }
+    
+    public Calendar getEnd()
+    {
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(this.start);
+        endCal.add(Calendar.SECOND, this.duration);
+        return endCal;
     }
 
     @Override
@@ -362,26 +391,45 @@ public class MBooking
         if (o == this) return true;
         if (!(o instanceof MBooking)) return false;
         
-        if (this.booking == null || this.day == null || this.getBooking().getId() == null)
+        MBooking m = (MBooking)o;
+        if (this.inSession != m.isInSession()) return false;
+        if (!this.day.equals(m.getDay())) return false;
+        
+        if (this.inSession)
         {
-            return o == this;
+            if (this.session != null && m.getSession() != null) 
+            {
+                return this.session.getId().equals(m.getSession().getId());
+            }
+        }
+        else
+        {
+            if (this.booking != null && m.getBooking() != null)
+            {
+                return this.getBooking().getId().equals(m.booking.getId());
+            }
         }
         
-        MBooking m = (MBooking)o;
-        return m.getBooking().getId().equals(this.booking.getId()) && this.day.equals(m.getDay());
+        return false;
     }
     
     @Override
     public int hashCode()
     {
-        if (this.booking == null || this.day == null || this.booking.getId() == null)
+        int result = 23;
+        result = result * 17 + this.day.hashCode();
+        
+        if (this.inSession)
         {
-            return super.hashCode();
+            if (this.session == null) return super.hashCode();
+            result = result * 17 + this.session.getId().hashCode();
+        }
+        else
+        {
+            if (this.booking == null) return super.hashCode();
+            result = result * 17 + this.booking.getId().hashCode();
         }
         
-        int result = 23;
-        result = result * 17 + this.booking.getId().hashCode();
-        result = result * 17 + this.day.hashCode();
         return result;
     }
 }
