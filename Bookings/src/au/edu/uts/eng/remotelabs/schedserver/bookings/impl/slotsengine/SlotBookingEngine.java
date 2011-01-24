@@ -343,7 +343,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 if (!dayKey.equals(day)) nb = new MBooking(ses, rig, now, day);
                 synchronized (dayb = this.getDayBookings(day))
                 {
-                    if ((success = dayb.createBooking(nb, db))) allocs.put(day, nb);
+                    if ((success = dayb.putQueuedSession(nb, db))) allocs.put(day, nb);
                     else break;
                 }
             }
@@ -367,7 +367,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
              * across days. */
             synchronized (dayb = this.getDayBookings(dayKey))
             {
-                success = dayb.createBooking(mb, db);
+                success = dayb.putQueuedSession(mb, db);
             }
         }
         
@@ -382,6 +382,23 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     public boolean extendQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
             int duration, Session db)
     {
+        MBooking mb = this.redeemer.getRunningSession(rig);
+        if (mb == null)
+        {
+            this.logger.error("Trying to extend a session that doesn't exist. Failing...");
+            return false;
+        }
+        
+        if (mb.isMultiDay())
+        {
+            
+        }
+        else
+        {
+            
+        }
+        
+        
         // TODO Auto-generated method stub
         return false;
     }

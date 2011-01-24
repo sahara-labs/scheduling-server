@@ -471,6 +471,17 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     }
     
     /**
+     * Gets the session running on the rig.
+     * 
+     * @param rig rig that is running
+     * @return running session, or null if none exists
+     */
+    public MBooking getRunningSession(Rig rig)
+    {
+        return this.runningBookings.get(rig.getName());
+    }
+    
+    /**
      * Puts a running booking to session.
      * 
      * @param rig rig that is allocated
