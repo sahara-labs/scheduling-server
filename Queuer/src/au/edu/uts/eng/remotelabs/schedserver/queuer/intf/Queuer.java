@@ -90,6 +90,9 @@ import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
  */
 public class Queuer implements QueuerSkeletonInterface
 {
+    /** The booking stand off in seconds. */
+    public static final int BOOKING_STANDOFF = 1800;
+    
     /** Logger. */
     private Logger logger;
     
@@ -173,8 +176,8 @@ public class Queuer implements QueuerSkeletonInterface
              **********************************************************************/
             else if ((booking = this.getNextBooking(user, entry.getResourcePermission().getSessionDuration(), db)) != null)
             {
-                this.logger.info("Cannot queue user " + user.qName() + " because has a bookingService starting before queued " +
-                		"session end.");
+                this.logger.info("Cannot queue user " + user.qName() + " because has a booking starting before queued " +
+                		"session would end.");
                 inQu.setFailureReason("Booking starts in " + 
                         ((booking.getStartTime().getTime() - System.currentTimeMillis()) / 1000) + " seconds.");
                 inQu.setInBooking(true);
@@ -424,7 +427,7 @@ public class Queuer implements QueuerSkeletonInterface
                 res.setResourceID(ses.getRequestedResourceId().intValue());
                 res.setResourceName(ses.getRequestedResourceName());
             }
-            else if ((booking = this.getNextBooking(user, 1800, dao.getSession())) != null)
+            else if ((booking = this.getNextBooking(user, Queuer.BOOKING_STANDOFF, dao.getSession())) != null)
             {
                 // DODGY This uses half an hour limit probably should be a 
                 // resource permission session duration limit
