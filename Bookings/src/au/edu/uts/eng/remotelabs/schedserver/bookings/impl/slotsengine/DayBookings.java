@@ -717,23 +717,6 @@ public class DayBookings
      * ========================================================================= */
     
     /**
-     * Puts a session that came from the queue onto the booking rig. The booking
-     * must by a <em>RIG</em> booking and must have the rig set. 
-     * <br />
-     * This does not try to load balance the rig's bookings in any way. It will
-     * only succeed if the rig can be directly assigned to the rig.
-     * 
-     * @param mb memory RIG booking
-     * @param ses database connection
-     * @return true if session assigned
-     */
-    public boolean putQueuedSession(MBooking mb, Session ses)
-    {
-        RigBookings rb = this.getRigBookings(mb.getRig(), ses);
-        return rb.areSlotsFree(mb) && rb.commitBooking(mb);
-    }
-    
-    /**
      * Returns the bookings starting on the specified slot and the rigs they
      * are allocated to.
      * 

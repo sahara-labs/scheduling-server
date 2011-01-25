@@ -38,7 +38,6 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -360,7 +359,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 if (!dayKey.equals(day)) nb = new MBooking(ses, rig, now, day);
                 synchronized (dayb = this.getDayBookings(day))
                 {
-                    if ((success = dayb.putQueuedSession(nb, db))) allocs.put(day, nb);
+                    if ((success = dayb.createBooking(nb, db))) allocs.put(day, nb);
                     else break;
                 }
             }
@@ -384,7 +383,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
              * across days. */
             synchronized (dayb = this.getDayBookings(dayKey))
             {
-                success = dayb.putQueuedSession(mb, db);
+                success = dayb.createBooking(mb, db);
             }
         }
         
