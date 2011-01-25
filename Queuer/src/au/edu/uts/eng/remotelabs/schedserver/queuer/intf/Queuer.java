@@ -178,8 +178,8 @@ public class Queuer implements QueuerSkeletonInterface
             {
                 this.logger.info("Cannot queue user " + user.qName() + " because has a booking starting before queued " +
                 		"session would end.");
-                inQu.setFailureReason("Booking starts in " + 
-                        ((booking.getStartTime().getTime() - System.currentTimeMillis()) / 1000) + " seconds.");
+                inQu.setFailureReason("Booking: " + ((booking.getStartTime().getTime() - System.currentTimeMillis()) / 1000) + 
+                        " seconds until booking starts.");
                 inQu.setInBooking(true);
                 inQu.setBookingID(booking.getId().intValue());
             }
