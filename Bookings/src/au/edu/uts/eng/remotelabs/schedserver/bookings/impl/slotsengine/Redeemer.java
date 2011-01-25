@@ -291,7 +291,17 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         if (this.runningBookings.containsKey(rig.getName()))
         {
             MBooking old = this.runningBookings.remove(rig.getName());
-            this.currentDay.removeBooking(old);
+            
+            if (this.currentDay.getDay().equals(old.getDay()))
+            {
+                this.currentDay.removeBooking(old);
+            }
+            else
+            {
+                /* The day has rolled when the booking was in progress. */
+                old = new MBooking(old.getSession(), old.getRig(), old.getStart(), this.currentDay.getDay());
+                this.currentDay.removeBooking(old);
+            }
             
             Calendar cal = null;
             while (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.NUM_SLOTS - 1)
