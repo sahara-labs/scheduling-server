@@ -74,7 +74,7 @@ public class DayBookingsTwoTester extends TestCase
 {
     /** Object of class under test. */
     private DayBookings day;
-    
+
     /** The day string for today. */
     private String dayStr;
 
@@ -82,15 +82,585 @@ public class DayBookingsTwoTester extends TestCase
     public void setUp() throws Exception
     {
         DataAccessTestSetup.setup();
-        
+
         Field f = LoggerActivator.class.getDeclaredField("logger");
         f.setAccessible(true);
         f.set(null, new SystemErrLogger());
-        
+
         this.dayStr = TimeUtil.getDateStr(Calendar.getInstance());
         this.day = new DayBookings(this.dayStr);
     }
+
+    public void testIsRigFreeNotFree()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+
+        /* #### BOOKINGS FOR R1 ########################################### */
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        r1tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(r1tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+        Bookings bk2 = new Bookings();
+        bk2.setActive(true);
+        bk2.setCancelReason("Test cancel.");
+        bk2.setDuration(1800);
+        /* Slots 8 - 9. */
+        r1tm.add(Calendar.MINUTE, 30);
+        bk2.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.MINUTE, 30);
+        bk2.setEndTime(r1tm.getTime());
+        bk2.setResourcePermission(perm1);
+        bk2.setResourceType("RIG");
+        bk2.setRig(r1);
+        bk2.setUser(us1);
+        bk2.setUserName(us1.getName());
+        bk2.setUserNamespace(us1.getNamespace());
+        ses.save(bk2);
+        Bookings bk3 = new Bookings();
+        bk3.setActive(true);
+        bk3.setDuration(7200);
+        /* Slots 36 - 43. */
+        r1tm.add(Calendar.MINUTE, 30);
+        r1tm.add(Calendar.HOUR, 6);
+        bk3.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.HOUR, 2);
+        bk3.setEndTime(r1tm.getTime());
+        bk3.setResourcePermission(perm1);
+        bk3.setResourceType("RIG");
+        bk3.setRig(r1);
+        bk3.setUser(us1);
+        bk3.setUserName(us1.getName());
+        bk3.setUserNamespace(us1.getNamespace());
+        ses.save(bk3);
+
+        /* #### Type bookings for RigType1 ####################################*/
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk4 = new Bookings();
+        bk4.setActive(true);
+        bk4.setDuration(1800);
+        /* Slots 0 - 1. */
+        bk4.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.MINUTE, 30);
+        bk4.setEndTime(rt1tm.getTime());
+        bk4.setResourcePermission(perm1);
+        bk4.setResourceType("TYPE");
+        bk4.setRigType(rigType1);
+        bk4.setUser(us1);
+        bk4.setUserName(us1.getName());
+        bk4.setUserNamespace(us1.getNamespace());
+        ses.save(bk4);
+
+        Bookings bk5 = new Bookings();
+        bk5.setActive(true);
+        bk5.setDuration(3600);
+        /* Slots 20 - 23. */
+        rt1tm.add(Calendar.HOUR, 3);
+        bk5.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        bk5.setEndTime(rt1tm.getTime());
+        bk5.setResourcePermission(perm1);
+        bk5.setResourceType("TYPE");
+        bk5.setRigType(rigType1);
+        bk5.setUser(us1);
+        bk5.setUserName(us1.getName());
+        bk5.setUserNamespace(us1.getNamespace());
+        ses.save(bk5);
+
+        Bookings bk14 = new Bookings();
+        bk14.setActive(true);
+        bk14.setDuration(3600);
+        /* Slots 24 - 27. */
+        bk14.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        bk14.setEndTime(rt1tm.getTime());
+        bk14.setResourcePermission(perm1);
+        bk14.setResourceType("TYPE");
+        bk14.setRigType(rigType1);
+        bk14.setUser(us1);
+        bk14.setUserName(us1.getName());
+        bk14.setUserNamespace(us1.getNamespace());
+        ses.save(bk14);
+
+        Bookings bk15 = new Bookings();
+        bk15.setActive(true);
+        bk15.setDuration(5400);
+        /* Slots 52 - 58. */
+        rt1tm.add(Calendar.HOUR, 6);
+        bk15.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        rt1tm.add(Calendar.MINUTE, 30);
+        bk15.setEndTime(rt1tm.getTime());
+        bk15.setResourcePermission(perm1);
+        bk15.setResourceType("TYPE");
+        bk15.setRigType(rigType1);
+        bk15.setUser(us1);
+        bk15.setUserName(us1.getName());
+        bk15.setUserNamespace(us1.getNamespace());
+        ses.save(bk15);
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+
+        boolean free = this.day.isRigFree(r1, 0, 4, ses);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk2);
+        ses.delete(bk3);
+        ses.delete(bk4);
+        ses.delete(bk5);
+        ses.delete(bk14);
+        ses.delete(bk15);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+
+        assertTrue(bk1.isActive());
+        assertTrue(bk2.isActive());
+        assertTrue(bk3.isActive());
+        assertTrue(bk4.isActive());
+        assertTrue(bk5.isActive());
+        assertTrue(bk14.isActive());
+        assertTrue(bk15.isActive());
+
+        assertFalse(free);
+    }
     
+    public void testIsRigFree()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+
+        /* #### BOOKINGS FOR R1 ########################################### */
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        r1tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(r1tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+        Bookings bk2 = new Bookings();
+        bk2.setActive(true);
+        bk2.setCancelReason("Test cancel.");
+        bk2.setDuration(1800);
+        /* Slots 8 - 9. */
+        r1tm.add(Calendar.MINUTE, 30);
+        bk2.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.MINUTE, 30);
+        bk2.setEndTime(r1tm.getTime());
+        bk2.setResourcePermission(perm1);
+        bk2.setResourceType("RIG");
+        bk2.setRig(r1);
+        bk2.setUser(us1);
+        bk2.setUserName(us1.getName());
+        bk2.setUserNamespace(us1.getNamespace());
+        ses.save(bk2);
+        Bookings bk3 = new Bookings();
+        bk3.setActive(true);
+        bk3.setDuration(7200);
+        /* Slots 36 - 43. */
+        r1tm.add(Calendar.MINUTE, 30);
+        r1tm.add(Calendar.HOUR, 6);
+        bk3.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.HOUR, 2);
+        bk3.setEndTime(r1tm.getTime());
+        bk3.setResourcePermission(perm1);
+        bk3.setResourceType("RIG");
+        bk3.setRig(r1);
+        bk3.setUser(us1);
+        bk3.setUserName(us1.getName());
+        bk3.setUserNamespace(us1.getNamespace());
+        ses.save(bk3);
+
+        /* #### Type bookings for RigType1 ####################################*/
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk4 = new Bookings();
+        bk4.setActive(true);
+        bk4.setDuration(1800);
+        /* Slots 0 - 1. */
+        bk4.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.MINUTE, 30);
+        bk4.setEndTime(rt1tm.getTime());
+        bk4.setResourcePermission(perm1);
+        bk4.setResourceType("TYPE");
+        bk4.setRigType(rigType1);
+        bk4.setUser(us1);
+        bk4.setUserName(us1.getName());
+        bk4.setUserNamespace(us1.getNamespace());
+        ses.save(bk4);
+
+        Bookings bk5 = new Bookings();
+        bk5.setActive(true);
+        bk5.setDuration(3600);
+        /* Slots 14 - 17. */
+        rt1tm.add(Calendar.HOUR, 3);
+        bk5.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        bk5.setEndTime(rt1tm.getTime());
+        bk5.setResourcePermission(perm1);
+        bk5.setResourceType("TYPE");
+        bk5.setRigType(rigType1);
+        bk5.setUser(us1);
+        bk5.setUserName(us1.getName());
+        bk5.setUserNamespace(us1.getNamespace());
+        ses.save(bk5);
+
+        Bookings bk14 = new Bookings();
+        bk14.setActive(true);
+        bk14.setDuration(3600);
+        /* Slots 18 - 21. */
+        bk14.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        bk14.setEndTime(rt1tm.getTime());
+        bk14.setResourcePermission(perm1);
+        bk14.setResourceType("TYPE");
+        bk14.setRigType(rigType1);
+        bk14.setUser(us1);
+        bk14.setUserName(us1.getName());
+        bk14.setUserNamespace(us1.getNamespace());
+        ses.save(bk14);
+
+        Bookings bk15 = new Bookings();
+        bk15.setActive(true);
+        bk15.setDuration(5400);
+        /* Slots 52 - 58. */
+        rt1tm.add(Calendar.HOUR, 6);
+        bk15.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        rt1tm.add(Calendar.MINUTE, 30);
+        bk15.setEndTime(rt1tm.getTime());
+        bk15.setResourcePermission(perm1);
+        bk15.setResourceType("TYPE");
+        bk15.setRigType(rigType1);
+        bk15.setUser(us1);
+        bk15.setUserName(us1.getName());
+        bk15.setUserNamespace(us1.getNamespace());
+        ses.save(bk15);
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+
+        boolean free = this.day.isRigFree(r1, 10, 13, ses);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk2);
+        ses.delete(bk3);
+        ses.delete(bk4);
+        ses.delete(bk5);
+        ses.delete(bk14);
+        ses.delete(bk15);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+
+        assertTrue(bk1.isActive());
+        assertTrue(bk2.isActive());
+        assertTrue(bk3.isActive());
+        assertTrue(bk4.isActive());
+        assertTrue(bk5.isActive());
+        assertTrue(bk14.isActive());
+        assertTrue(bk15.isActive());
+
+        assertTrue(free);
+    }
+    
+    public void testIsRigFree2()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+
+        /* #### BOOKINGS FOR R1 ########################################### */
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        r1tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(r1tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+        Bookings bk2 = new Bookings();
+        bk2.setActive(true);
+        bk2.setCancelReason("Test cancel.");
+        bk2.setDuration(1800);
+        /* Slots 8 - 9. */
+        r1tm.add(Calendar.MINUTE, 30);
+        bk2.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.MINUTE, 30);
+        bk2.setEndTime(r1tm.getTime());
+        bk2.setResourcePermission(perm1);
+        bk2.setResourceType("RIG");
+        bk2.setRig(r1);
+        bk2.setUser(us1);
+        bk2.setUserName(us1.getName());
+        bk2.setUserNamespace(us1.getNamespace());
+        ses.save(bk2);
+        Bookings bk3 = new Bookings();
+        bk3.setActive(true);
+        bk3.setDuration(7200);
+        /* Slots 36 - 43. */
+        r1tm.add(Calendar.MINUTE, 30);
+        r1tm.add(Calendar.HOUR, 6);
+        bk3.setStartTime(r1tm.getTime());
+        r1tm.add(Calendar.HOUR, 2);
+        bk3.setEndTime(r1tm.getTime());
+        bk3.setResourcePermission(perm1);
+        bk3.setResourceType("RIG");
+        bk3.setRig(r1);
+        bk3.setUser(us1);
+        bk3.setUserName(us1.getName());
+        bk3.setUserNamespace(us1.getNamespace());
+        ses.save(bk3);
+
+        /* #### Type bookings for RigType1 ####################################*/
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Bookings bk4 = new Bookings();
+        bk4.setActive(true);
+        bk4.setDuration(1800);
+        /* Slots 0 - 1. */
+        bk4.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.MINUTE, 30);
+        bk4.setEndTime(rt1tm.getTime());
+        bk4.setResourcePermission(perm1);
+        bk4.setResourceType("TYPE");
+        bk4.setRigType(rigType1);
+        bk4.setUser(us1);
+        bk4.setUserName(us1.getName());
+        bk4.setUserNamespace(us1.getNamespace());
+        ses.save(bk4);
+
+        Bookings bk5 = new Bookings();
+        bk5.setActive(true);
+        bk5.setDuration(3600);
+        /* Slots 20 - 23. */
+        rt1tm.add(Calendar.HOUR, 3);
+        bk5.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        bk5.setEndTime(rt1tm.getTime());
+        bk5.setResourcePermission(perm1);
+        bk5.setResourceType("TYPE");
+        bk5.setRigType(rigType1);
+        bk5.setUser(us1);
+        bk5.setUserName(us1.getName());
+        bk5.setUserNamespace(us1.getNamespace());
+        ses.save(bk5);
+
+        Bookings bk14 = new Bookings();
+        bk14.setActive(true);
+        bk14.setDuration(3600);
+        /* Slots 24 - 27. */
+        bk14.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        bk14.setEndTime(rt1tm.getTime());
+        bk14.setResourcePermission(perm1);
+        bk14.setResourceType("TYPE");
+        bk14.setRigType(rigType1);
+        bk14.setUser(us1);
+        bk14.setUserName(us1.getName());
+        bk14.setUserNamespace(us1.getNamespace());
+        ses.save(bk14);
+
+        Bookings bk15 = new Bookings();
+        bk15.setActive(true);
+        bk15.setDuration(5400);
+        /* Slots 52 - 58. */
+        rt1tm.add(Calendar.HOUR, 6);
+        bk15.setStartTime(rt1tm.getTime());
+        rt1tm.add(Calendar.HOUR, 1);
+        rt1tm.add(Calendar.MINUTE, 30);
+        bk15.setEndTime(rt1tm.getTime());
+        bk15.setResourcePermission(perm1);
+        bk15.setResourceType("TYPE");
+        bk15.setRigType(rigType1);
+        bk15.setUser(us1);
+        bk15.setUserName(us1.getName());
+        bk15.setUserNamespace(us1.getNamespace());
+        ses.save(bk15);
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+
+        boolean free = this.day.isRigFree(r1, 6, 7, ses);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(bk2);
+        ses.delete(bk3);
+        ses.delete(bk4);
+        ses.delete(bk5);
+        ses.delete(bk14);
+        ses.delete(bk15);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+
+        assertTrue(bk1.isActive());
+        assertTrue(bk2.isActive());
+        assertTrue(bk3.isActive());
+        assertTrue(bk4.isActive());
+        assertTrue(bk5.isActive());
+        assertTrue(bk14.isActive());
+        assertTrue(bk15.isActive());
+
+        assertTrue(free);
+    }
+
     @SuppressWarnings("unchecked")
     public void testRigRegistered() throws Exception
     {        
@@ -178,7 +748,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -228,7 +798,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -246,7 +816,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -262,7 +832,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -280,7 +850,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -296,7 +866,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -312,7 +882,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -329,7 +899,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -345,7 +915,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -361,7 +931,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -376,7 +946,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -393,7 +963,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -412,7 +982,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -430,7 +1000,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -445,7 +1015,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -461,7 +1031,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -479,7 +1049,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -498,7 +1068,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -514,7 +1084,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -531,9 +1101,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -548,7 +1118,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -566,9 +1136,9 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-        
+
         this.day.rigRegistered(r1, ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -619,7 +1189,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -641,21 +1211,21 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertFalse(rbMap.containsKey(r5.getName()));
-        
+
         RigBookings rb = rbMap.get(r1.getName());
         assertNotNull(rb);
         assertNotNull(rb.getTypeLoopNext());
-        
+
         List<RigBookings> loop = new ArrayList<RigBookings>();
         RigBookings next = rb;
         for (int i = 0; i < 2; i++)
@@ -666,11 +1236,11 @@ public class DayBookingsTwoTester extends TestCase
             loop.add(next);
             next = next.getTypeLoopNext();
         }
-        
+
         assertTrue(loop.contains(rb));
         assertTrue(loop.contains(rbMap.get(r1.getName())));
         assertTrue(loop.contains(rbMap.get(r2.getName())));
-        
+
         f = DayBookings.class.getDeclaredField("typeTargets");
         f.setAccessible(true);
         Map<String, RigBookings> ttMap = (Map<String, RigBookings>)f.get(this.day);
@@ -678,21 +1248,21 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(ttMap.containsKey(rigType2.getName()));
         assertTrue(ttMap.containsKey(rigType3.getName()));
         assertFalse(ttMap.containsKey(rigType4.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> cpMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(cpMap.containsKey(rcaps1.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps2.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps3.getCapabilities()));
         assertFalse(cpMap.containsKey(rcaps4.getCapabilities()));
-        
+
         assertNotNull(rb.getCapsLoopNext(rcaps1));
         assertNotNull(rb.getCapsLoopNext(rcaps2));
         assertNull(rb.getCapsLoopNext(rcaps3));
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testRigRegisteredChangedCaps() throws Exception
     {        
@@ -780,7 +1350,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -830,7 +1400,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -848,7 +1418,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -864,7 +1434,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -882,7 +1452,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -898,7 +1468,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -914,7 +1484,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -931,7 +1501,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -947,7 +1517,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -963,7 +1533,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -978,7 +1548,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -995,7 +1565,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -1014,7 +1584,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -1032,7 +1602,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -1047,7 +1617,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -1063,7 +1633,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -1081,7 +1651,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -1100,7 +1670,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -1116,7 +1686,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -1133,9 +1703,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -1150,7 +1720,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -1168,14 +1738,14 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-        
+
         r2.setRigCapabilities(caps1);
         ses.beginTransaction();
         ses.flush();
         ses.getTransaction().commit();
-        
+
         this.day.rigRegistered(r2, ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -1226,7 +1796,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -1248,31 +1818,31 @@ public class DayBookingsTwoTester extends TestCase
         assertFalse(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertFalse(rbMap.containsKey(r5.getName()));
-        
+
         RigBookings rb = rbMap.get(r2.getName());
         assertNotNull(rb);        
         List<String> capsLoops = rb.getCapabilities();
         assertTrue(capsLoops.contains(rcaps1.getCapabilities()));
         assertTrue(capsLoops.contains(rcaps2.getCapabilities()));
         assertFalse(capsLoops.contains(rcaps3.getCapabilities()));
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> capsTargets = (Map<String, RigBookings>)f.get(this.day);
         assertTrue(capsTargets.containsKey(rcaps1.getCapabilities()));
         assertTrue(capsTargets.containsKey(rcaps2.getCapabilities()));
         assertFalse(capsTargets.containsKey(rcaps3.getCapabilities()));
-        
+
         RigBookings cb = capsTargets.get(rcaps2.getCapabilities());
         List<RigBookings> cl = new ArrayList<RigBookings>();
         for (int i = 0; i < 3; i++)
@@ -1281,10 +1851,10 @@ public class DayBookingsTwoTester extends TestCase
             cl.add(cb);
             cb = cb.getCapsLoopNext(rcaps2);
         }
-        
+
         assertTrue(cl.contains(rb));
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testRigRegisteredChangedType() throws Exception
     {        
@@ -1372,7 +1942,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -1422,7 +1992,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -1440,7 +2010,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -1456,7 +2026,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -1474,7 +2044,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -1490,7 +2060,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -1506,7 +2076,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -1523,7 +2093,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -1539,7 +2109,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -1555,7 +2125,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -1570,7 +2140,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -1587,7 +2157,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -1606,7 +2176,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -1624,7 +2194,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -1639,7 +2209,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -1655,7 +2225,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -1673,7 +2243,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -1692,7 +2262,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -1708,7 +2278,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -1725,9 +2295,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -1742,7 +2312,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -1760,14 +2330,14 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-        
+
         r3.setRigType(rigType1);
         ses.beginTransaction();
         ses.flush();
         ses.getTransaction().commit();
-        
+
         this.day.rigRegistered(r3, ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -1818,7 +2388,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -1840,21 +2410,21 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertFalse(rbMap.containsKey(r5.getName()));
-        
+
         RigBookings rb = rbMap.get(r3.getName());
         assertNotNull(rb);
         assertNotNull(rb.getTypeLoopNext());
-        
+
         List<RigBookings> loop = new ArrayList<RigBookings>();
         RigBookings next = rb;
         for (int i = 0; i < 3; i++)
@@ -1865,12 +2435,12 @@ public class DayBookingsTwoTester extends TestCase
             loop.add(next);
             next = next.getTypeLoopNext();
         }
-        
+
         assertTrue(loop.contains(rb));
         assertTrue(loop.contains(rbMap.get(r1.getName())));
         assertTrue(loop.contains(rbMap.get(r2.getName())));
         assertTrue(loop.contains(rbMap.get(r3.getName())));
-        
+
         f = DayBookings.class.getDeclaredField("typeTargets");
         f.setAccessible(true);
         Map<String, RigBookings> ttMap = (Map<String, RigBookings>)f.get(this.day);
@@ -1878,21 +2448,21 @@ public class DayBookingsTwoTester extends TestCase
         assertFalse(ttMap.containsKey(rigType2.getName()));
         assertTrue(ttMap.containsKey(rigType3.getName()));
         assertFalse(ttMap.containsKey(rigType4.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> cpMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(cpMap.containsKey(rcaps1.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps2.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps3.getCapabilities()));
         assertFalse(cpMap.containsKey(rcaps4.getCapabilities()));
-        
+
         assertNotNull(rb.getCapsLoopNext(rcaps1));
         assertNotNull(rb.getCapsLoopNext(rcaps2));
         assertNull(rb.getCapsLoopNext(rcaps3));
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testRigRegisteredChangedType2() throws Exception
     {        
@@ -1980,7 +2550,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -2030,7 +2600,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -2048,7 +2618,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -2064,7 +2634,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -2082,7 +2652,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -2098,7 +2668,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -2114,7 +2684,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -2131,7 +2701,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -2147,7 +2717,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -2163,7 +2733,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -2178,7 +2748,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -2195,7 +2765,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -2214,7 +2784,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -2232,7 +2802,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -2247,7 +2817,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -2263,7 +2833,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -2281,7 +2851,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -2300,7 +2870,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -2316,7 +2886,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -2333,9 +2903,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -2350,7 +2920,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -2368,15 +2938,15 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-        
+
         r1.setRigType(rigType2);
         ses.beginTransaction();
         ses.flush();
         ses.getTransaction().commit();
-        
+
         this.day.rigRegistered(r1, ses);
         ses.refresh(bk2);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -2427,7 +2997,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -2449,21 +3019,21 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertFalse(rbMap.containsKey(r5.getName()));
-        
+
         RigBookings rb = rbMap.get(r1.getName());
         assertNotNull(rb);
         assertNotNull(rb.getTypeLoopNext());
-        
+
         List<RigBookings> loop = new ArrayList<RigBookings>();
         RigBookings next = rb;
         for (int i = 0; i < 2; i++)
@@ -2474,14 +3044,14 @@ public class DayBookingsTwoTester extends TestCase
             loop.add(next);
             next = next.getTypeLoopNext();
         }
-        
+
         assertTrue(loop.contains(rb));
         assertTrue(loop.contains(rbMap.get(r1.getName())));
         assertTrue(loop.contains(rbMap.get(r3.getName())));
-        
+
         RigBookings rb2 = rbMap.get(r2.getName());
         assertTrue(rb2 == rb2.getTypeLoopNext());
-       
+
         f = DayBookings.class.getDeclaredField("typeTargets");
         f.setAccessible(true);
         Map<String, RigBookings> ttMap = (Map<String, RigBookings>)f.get(this.day);
@@ -2490,21 +3060,21 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(ttMap.containsKey(rigType3.getName()));
         assertFalse(ttMap.containsKey(rigType4.getName()));
         assertTrue(ttMap.get(rigType1.getName()) == rb2);
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> cpMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(cpMap.containsKey(rcaps1.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps2.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps3.getCapabilities()));
         assertFalse(cpMap.containsKey(rcaps4.getCapabilities()));
-        
+
         assertNotNull(rb.getCapsLoopNext(rcaps1));
         assertNotNull(rb.getCapsLoopNext(rcaps2));
         assertNull(rb.getCapsLoopNext(rcaps3));
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testRigRegisteredNewMatch() throws Exception
     {        
@@ -2592,7 +3162,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -2642,7 +3212,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -2660,7 +3230,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -2676,7 +3246,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -2694,7 +3264,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -2710,7 +3280,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -2726,7 +3296,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -2743,7 +3313,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -2759,7 +3329,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -2775,7 +3345,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -2790,7 +3360,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -2807,7 +3377,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -2826,7 +3396,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -2844,7 +3414,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -2859,7 +3429,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -2875,7 +3445,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -2893,7 +3463,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -2912,7 +3482,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -2928,7 +3498,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -2945,9 +3515,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -2962,7 +3532,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -2980,7 +3550,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-        
+
         ses.beginTransaction();
         Rig r6 = new Rig();
         r6.setName("bkrig6");
@@ -2989,9 +3559,9 @@ public class DayBookingsTwoTester extends TestCase
         r6.setRigCapabilities(caps2);
         ses.save(r6);
         ses.getTransaction().commit();
-        
+
         this.day.rigRegistered(r6, ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -3043,7 +3613,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -3065,22 +3635,22 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertFalse(rbMap.containsKey(r5.getName()));
         assertTrue(rbMap.containsKey(r6.getName()));
-        
+
         RigBookings rb = rbMap.get(r6.getName());
         assertNotNull(rb);
         assertNotNull(rb.getTypeLoopNext());
-        
+
         List<RigBookings> loop = new ArrayList<RigBookings>();
         RigBookings next = rb;
         for (int i = 0; i < 3; i++)
@@ -3091,11 +3661,11 @@ public class DayBookingsTwoTester extends TestCase
             loop.add(next);
             next = next.getTypeLoopNext();
         }
-        
+
         assertTrue(loop.contains(rb));
         assertTrue(loop.contains(rbMap.get(r1.getName())));
         assertTrue(loop.contains(rbMap.get(r2.getName())));
-        
+
         f = DayBookings.class.getDeclaredField("typeTargets");
         f.setAccessible(true);
         Map<String, RigBookings> ttMap = (Map<String, RigBookings>)f.get(this.day);
@@ -3103,26 +3673,26 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(ttMap.containsKey(rigType2.getName()));
         assertTrue(ttMap.containsKey(rigType3.getName()));
         assertFalse(ttMap.containsKey(rigType4.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> cpMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(cpMap.containsKey(rcaps1.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps2.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps3.getCapabilities()));
         assertFalse(cpMap.containsKey(rcaps4.getCapabilities()));
-        
+
         assertNotNull(rb.getCapsLoopNext(rcaps3));
-        
+
         RigBookings rb2 = rbMap.get(r2.getName());
         assertEquals(rb.getCapsLoopNext(rcaps3), rb2);
         assertEquals(rb, rb2.getCapsLoopNext(rcaps3));
-        
+
         assertNotNull(rb.getCapsLoopNext(rcaps1));
         assertNull(rb.getCapsLoopNext(rcaps2));
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testRigRegisteredNewNoMatch() throws Exception
     {        
@@ -3210,7 +3780,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -3260,7 +3830,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -3278,7 +3848,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -3294,7 +3864,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -3312,7 +3882,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -3328,7 +3898,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -3344,7 +3914,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -3361,7 +3931,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -3377,7 +3947,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -3393,7 +3963,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -3408,7 +3978,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -3425,7 +3995,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -3444,7 +4014,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -3462,7 +4032,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -3477,7 +4047,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -3493,7 +4063,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -3511,7 +4081,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -3530,7 +4100,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -3546,7 +4116,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -3563,9 +4133,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -3580,7 +4150,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -3598,7 +4168,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-        
+
         ses.beginTransaction();
         Rig r6 = new Rig();
         r6.setName("bkrig6");
@@ -3607,9 +4177,9 @@ public class DayBookingsTwoTester extends TestCase
         r6.setRigCapabilities(caps5);
         ses.save(r6);
         ses.getTransaction().commit();
-        
+
         this.day.rigRegistered(r6, ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -3661,7 +4231,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -3683,18 +4253,18 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertFalse(rbMap.containsKey(r5.getName()));
         assertFalse(rbMap.containsKey(r6.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("typeTargets");
         f.setAccessible(true);
         Map<String, RigBookings> ttMap = (Map<String, RigBookings>)f.get(this.day);
@@ -3702,17 +4272,17 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(ttMap.containsKey(rigType2.getName()));
         assertTrue(ttMap.containsKey(rigType3.getName()));
         assertFalse(ttMap.containsKey(rigType4.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> cpMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(cpMap.containsKey(rcaps1.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps2.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps3.getCapabilities()));
         assertFalse(cpMap.containsKey(rcaps4.getCapabilities()));
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testRigRegisteredExistingNoLoad() throws Exception
     {        
@@ -3805,7 +4375,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -3855,7 +4425,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -3873,7 +4443,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -3889,7 +4459,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -3907,7 +4477,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -3923,7 +4493,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -3939,7 +4509,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -3956,7 +4526,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -3972,7 +4542,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -3988,7 +4558,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -4003,7 +4573,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -4020,7 +4590,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -4039,7 +4609,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -4057,7 +4627,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -4072,7 +4642,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -4088,7 +4658,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -4106,7 +4676,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -4125,7 +4695,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -4141,7 +4711,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -4158,9 +4728,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -4175,7 +4745,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -4193,13 +4763,13 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-       
+
         ses.beginTransaction();
         r6.setRigCapabilities(caps2);
         ses.getTransaction().commit();
-        
+
         this.day.rigRegistered(r6, ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -4251,7 +4821,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -4273,22 +4843,22 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertTrue(rbMap.containsKey(r5.getName()));
         assertTrue(rbMap.containsKey(r6.getName()));
-        
+
         RigBookings rb = rbMap.get(r6.getName());
         assertNotNull(rb);
         assertNotNull(rb.getTypeLoopNext());
-        
+
         f = DayBookings.class.getDeclaredField("typeTargets");
         f.setAccessible(true);
         Map<String, RigBookings> ttMap = (Map<String, RigBookings>)f.get(this.day);
@@ -4296,26 +4866,26 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(ttMap.containsKey(rigType2.getName()));
         assertTrue(ttMap.containsKey(rigType3.getName()));
         assertTrue(ttMap.containsKey(rigType4.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> cpMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(cpMap.containsKey(rcaps1.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps2.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps3.getCapabilities()));
         assertFalse(cpMap.containsKey(rcaps4.getCapabilities()));
-        
+
         assertNotNull(rb.getCapsLoopNext(rcaps3));
-        
+
         RigBookings rb2 = rbMap.get(r2.getName());
         assertEquals(rb.getCapsLoopNext(rcaps3), rb2);
         assertEquals(rb, rb2.getCapsLoopNext(rcaps3));
-        
+
         assertNotNull(rb.getCapsLoopNext(rcaps1));
         assertNull(rb.getCapsLoopNext(rcaps2));
     }
-    
+
     public void testFullLoadTypeNoRig() throws Exception
     {        
         Session ses = DataAccessActivator.getNewSession();
@@ -4364,7 +4934,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -4380,7 +4950,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -4396,13 +4966,13 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         ses.getTransaction().commit();
 
         ses.refresh(rigType1);
 
         this.day.fullLoad(ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk4);
         ses.delete(bk5);
@@ -4412,7 +4982,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertFalse(bk4.isActive());
         assertNotNull(bk4.getCancelReason());
         assertFalse(bk5.isActive());
@@ -4420,7 +4990,7 @@ public class DayBookingsTwoTester extends TestCase
         assertFalse(bk13.isActive());
         assertNotNull(bk13.getCancelReason());
     }
-    
+
 
     @SuppressWarnings("unchecked")
     public void testFullLoad() throws Exception
@@ -4509,7 +5079,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -4559,7 +5129,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -4577,7 +5147,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -4593,7 +5163,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -4611,7 +5181,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -4627,7 +5197,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -4643,7 +5213,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -4660,7 +5230,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -4676,7 +5246,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -4692,7 +5262,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -4707,7 +5277,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -4724,7 +5294,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -4743,7 +5313,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -4761,7 +5331,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -4776,7 +5346,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -4792,7 +5362,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -4810,7 +5380,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -4829,7 +5399,7 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         Bookings bk20 = new Bookings();
         bk20.setActive(true);
         bk20.setDuration(4500);
@@ -4845,7 +5415,7 @@ public class DayBookingsTwoTester extends TestCase
         bk20.setUserName(us1.getName());
         bk20.setUserNamespace(us1.getNamespace());
         ses.save(bk20);
-        
+
         /* Tomorrow. */
         Bookings bk21 = new Bookings();
         bk21.setActive(true);
@@ -4862,9 +5432,9 @@ public class DayBookingsTwoTester extends TestCase
         bk21.setUserName(us1.getName());
         bk21.setUserNamespace(us1.getNamespace());
         ses.save(bk21);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -4879,7 +5449,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -4897,7 +5467,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType4);
 
         this.day.fullLoad(ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk21);
         ses.delete(bk20);
@@ -4948,7 +5518,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -4970,17 +5540,17 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk19.isActive());
         assertTrue(bk20.isActive());
         assertTrue(bk21.isActive());
-        
+
         Field f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
         Map<String, RigBookings> rbMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(rbMap.containsKey(r1.getName()));
         assertTrue(rbMap.containsKey(r2.getName()));
         assertTrue(rbMap.containsKey(r3.getName()));
         assertTrue(rbMap.containsKey(r4.getName()));
         assertFalse(rbMap.containsKey(r5.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("typeTargets");
         f.setAccessible(true);
         Map<String, RigBookings> ttMap = (Map<String, RigBookings>)f.get(this.day);
@@ -4988,17 +5558,17 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(ttMap.containsKey(rigType2.getName()));
         assertTrue(ttMap.containsKey(rigType3.getName()));
         assertFalse(ttMap.containsKey(rigType4.getName()));
-        
+
         f = DayBookings.class.getDeclaredField("capsTargets");
         f.setAccessible(true);
         Map<String, RigBookings> cpMap = (Map<String, RigBookings>)f.get(this.day);
-        
+
         assertTrue(cpMap.containsKey(rcaps1.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps2.getCapabilities()));
         assertTrue(cpMap.containsKey(rcaps3.getCapabilities()));
         assertFalse(cpMap.containsKey(rcaps4.getCapabilities()));
     }
-    
+
     public void testFullLoadCapsNoRig() throws Exception
     {        
         Session ses = DataAccessActivator.getNewSession();
@@ -5047,7 +5617,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -5063,12 +5633,12 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         ses.getTransaction().commit();
 
 
         this.day.fullLoad(ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk4);
         ses.delete(bk13);
@@ -5077,13 +5647,13 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertFalse(bk4.isActive());
         assertNotNull(bk4.getCancelReason());
         assertFalse(bk13.isActive());
         assertNotNull(bk13.getCancelReason());
     }
-    
+
     public void testGetSlotStartingBookings() throws Exception
     {        
         Session ses = DataAccessActivator.getNewSession();
@@ -5148,7 +5718,7 @@ public class DayBookingsTwoTester extends TestCase
         perm1.setExpiryTime(new Date());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
-        
+
         /* #### BOOKINGS FOR R1 ########################################### */
         Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk1 = new Bookings();
@@ -5198,7 +5768,7 @@ public class DayBookingsTwoTester extends TestCase
         bk3.setUserName(us1.getName());
         bk3.setUserNamespace(us1.getNamespace());
         ses.save(bk3);
-        
+
         /* #### BOOKINGS FOR R2 ########################################### */
         Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk8 = new Bookings();
@@ -5216,7 +5786,7 @@ public class DayBookingsTwoTester extends TestCase
         bk8.setUserName(us1.getName());
         bk8.setUserNamespace(us1.getNamespace());
         ses.save(bk8);
-        
+
         Bookings bk9 = new Bookings();
         bk9.setActive(true);
         bk9.setDuration(1800);
@@ -5232,7 +5802,7 @@ public class DayBookingsTwoTester extends TestCase
         bk9.setUserName(us1.getName());
         bk9.setUserNamespace(us1.getNamespace());
         ses.save(bk9);
-        
+
         /* #### BOOKINGS FOR R3 ########################################### */
         Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk10 = new Bookings();
@@ -5250,7 +5820,7 @@ public class DayBookingsTwoTester extends TestCase
         bk10.setUserName(us1.getName());
         bk10.setUserNamespace(us1.getNamespace());
         ses.save(bk10);
-        
+
         Bookings bk11 = new Bookings();
         bk11.setActive(true);
         bk11.setDuration(3600);
@@ -5266,7 +5836,7 @@ public class DayBookingsTwoTester extends TestCase
         bk11.setUserName(us1.getName());
         bk11.setUserNamespace(us1.getNamespace());
         ses.save(bk11);
-        
+
         Bookings bk12 = new Bookings();
         bk12.setActive(true);
         bk12.setDuration(3600);
@@ -5282,7 +5852,7 @@ public class DayBookingsTwoTester extends TestCase
         bk12.setUserName(us1.getName());
         bk12.setUserNamespace(us1.getNamespace());
         ses.save(bk12);
-        
+
         /* #### Type bookings for RigType1 ####################################*/
         Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk4 = new Bookings();
@@ -5299,7 +5869,7 @@ public class DayBookingsTwoTester extends TestCase
         bk4.setUserName(us1.getName());
         bk4.setUserNamespace(us1.getNamespace());
         ses.save(bk4);
-        
+
         Bookings bk13 = new Bookings();
         bk13.setActive(true);
         bk13.setDuration(7200);
@@ -5315,7 +5885,7 @@ public class DayBookingsTwoTester extends TestCase
         bk13.setUserName(us1.getName());
         bk13.setUserNamespace(us1.getNamespace());
         ses.save(bk13);
-        
+
         Bookings bk5 = new Bookings();
         bk5.setActive(true);
         bk5.setDuration(3600);
@@ -5331,7 +5901,7 @@ public class DayBookingsTwoTester extends TestCase
         bk5.setUserName(us1.getName());
         bk5.setUserNamespace(us1.getNamespace());
         ses.save(bk5);
-        
+
         Bookings bk14 = new Bookings();
         bk14.setActive(true);
         bk14.setDuration(3600);
@@ -5346,7 +5916,7 @@ public class DayBookingsTwoTester extends TestCase
         bk14.setUserName(us1.getName());
         bk14.setUserNamespace(us1.getNamespace());
         ses.save(bk14);
-        
+
         Bookings bk15 = new Bookings();
         bk15.setActive(true);
         bk15.setDuration(5400);
@@ -5363,7 +5933,7 @@ public class DayBookingsTwoTester extends TestCase
         bk15.setUserName(us1.getName());
         bk15.setUserNamespace(us1.getNamespace());
         ses.save(bk15);
-        
+
         /* #### Type bookings for RigType2 ####################################*/
         Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk16 = new Bookings();
@@ -5382,7 +5952,7 @@ public class DayBookingsTwoTester extends TestCase
         bk16.setUserName(us1.getName());
         bk16.setUserNamespace(us1.getNamespace());
         ses.save(bk16);
-        
+
         /* #### Bookings for Request Caps 1. #################################*/
         Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk6 = new Bookings();
@@ -5400,7 +5970,7 @@ public class DayBookingsTwoTester extends TestCase
         bk6.setUserName(us1.getName());
         bk6.setUserNamespace(us1.getNamespace());
         ses.save(bk6);
-        
+
         Bookings bk7 = new Bookings();
         bk7.setActive(true);
         bk7.setDuration(1800);
@@ -5415,7 +5985,7 @@ public class DayBookingsTwoTester extends TestCase
         bk7.setUserName(us1.getName());
         bk7.setUserNamespace(us1.getNamespace());
         ses.save(bk7);
-        
+
         Bookings bk17 = new Bookings();
         bk17.setActive(true);
         bk17.setDuration(1800);
@@ -5431,7 +6001,7 @@ public class DayBookingsTwoTester extends TestCase
         bk17.setUserName(us1.getName());
         bk17.setUserNamespace(us1.getNamespace());
         ses.save(bk17);
-        
+
         /* #### Bookings for Request Caps 2. #################################*/
         Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk18 = new Bookings();
@@ -5449,7 +6019,7 @@ public class DayBookingsTwoTester extends TestCase
         bk18.setUserName(us1.getName());
         bk18.setUserNamespace(us1.getNamespace());
         ses.save(bk18);
-        
+
         /* #### Bookings for Request Caps 3. #################################*/
         Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
         Bookings bk19 = new Bookings();
@@ -5468,9 +6038,9 @@ public class DayBookingsTwoTester extends TestCase
         bk19.setUserName(us1.getName());
         bk19.setUserNamespace(us1.getNamespace());
         ses.save(bk19);
-        
+
         ses.getTransaction().commit();
-        
+
         ses.beginTransaction();
         MatchingCapabilities mat1 = new MatchingCapabilities(rcaps1, caps1);
         ses.save(mat1);
@@ -5485,7 +6055,7 @@ public class DayBookingsTwoTester extends TestCase
         MatchingCapabilities mat6 = new MatchingCapabilities(rcaps3, caps2);
         ses.save(mat6);
         ses.getTransaction().commit();
-        
+
         ses.refresh(rcaps1);
         ses.refresh(rcaps2);
         ses.refresh(rcaps3);
@@ -5499,7 +6069,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.refresh(rigType2);
 
         this.day.fullLoad(ses);
-        
+
         ses.beginTransaction();
         ses.delete(bk1);
         ses.delete(bk2);
@@ -5541,7 +6111,7 @@ public class DayBookingsTwoTester extends TestCase
         ses.delete(us1);
         ses.delete(uclass1);
         ses.getTransaction().commit();
-        
+
         assertTrue(bk1.isActive());
         assertTrue(bk2.isActive());
         assertTrue(bk3.isActive());
@@ -5561,42 +6131,42 @@ public class DayBookingsTwoTester extends TestCase
         assertTrue(bk17.isActive());
         assertTrue(bk18.isActive());
         assertTrue(bk19.isActive());
-        
+
         Map<String, MBooking> st = this.day.getSlotStartingBookings(0);
         assertNotNull(st);
         assertEquals(2, st.size());
-        
+
         assertTrue(st.containsKey(r1.getName()));
         assertTrue(st.containsKey(r2.getName()));
         assertFalse(st.containsKey(r3.getName()));
-        
+
         for (MBooking m : st.values())
         {
             assertEquals(0, m.getStartSlot());
             assertEquals(BType.TYPE, m.getType());
         }
-        
+
         st = this.day.getSlotStartingBookings(1);
         assertNotNull(st);
         assertEquals(0, st.size());
-        
+
         st = this.day.getSlotStartingBookings(2);
         assertNotNull(st);
         assertEquals(2, st.size());
         assertTrue(st.containsKey(r1.getName()));
         assertFalse(st.containsKey(r2.getName()));
         assertTrue(st.containsKey(r3.getName()));
-        
+
         for (MBooking m : st.values())
         {
             assertEquals(2, m.getStartSlot());
             assertEquals(BType.RIG, m.getType());
         }
-        
+
         st = this.day.getSlotStartingBookings(21);
         assertNotNull(st);
         assertEquals(0, st.size());
-        
+
         st = this.day.getSlotStartingBookings(22);
         assertEquals(1, st.size());
         MBooking m = st.values().iterator().next();

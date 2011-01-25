@@ -100,6 +100,172 @@ public class SlotBookingEngineTester extends TestCase
     }
     
     @Test
+    public void testIsFreeFor()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+
+        /* #### BOOKINGS FOR R1 ########################################### */
+        Calendar tm = Calendar.getInstance();
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        tm.add(Calendar.MINUTE, 30);
+        bk1.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+       
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+
+        boolean free = this.engine.isFreeFor(r1, 3600, ses);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+
+        assertTrue(bk1.isActive());
+
+        assertFalse(free);
+    }
+    
+    @Test
+    public void testIsFreeFor2()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("booktestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+        User us1 = new User();
+        us1.setName("bktestuser1");
+        us1.setNamespace("BKNS");
+        us1.setPersona("USER");
+        ses.save(us1);
+        RigType rigType1 = new RigType("booktestrigtype", 300, false);
+        ses.save(rigType1);
+        RigCapabilities caps1 = new RigCapabilities("book,test,foo");
+        ses.save(caps1);
+        Rig r1 = new Rig();
+        r1.setName("bkrig1");
+        r1.setRigType(rigType1);
+        r1.setLastUpdateTimestamp(new Date());
+        r1.setRigCapabilities(caps1);
+        ses.save(r1);
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("RIG");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRig(r1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("bookperm");
+        ses.save(perm1);
+
+        /* #### BOOKINGS FOR R1 ########################################### */
+        Calendar tm = Calendar.getInstance();
+        Bookings bk1 = new Bookings();
+        bk1.setActive(true);
+        bk1.setDuration(3600);
+        /* Slots 2 - 5. */
+        tm.add(Calendar.HOUR, 2);
+        bk1.setStartTime(tm.getTime());
+        tm.add(Calendar.HOUR, 1);
+        bk1.setEndTime(tm.getTime());
+        bk1.setResourcePermission(perm1);
+        bk1.setResourceType("RIG");
+        bk1.setRig(r1);
+        bk1.setUser(us1);
+        bk1.setUserName(us1.getName());
+        bk1.setUserNamespace(us1.getNamespace());
+        ses.save(bk1);
+       
+        ses.getTransaction().commit();
+
+        ses.refresh(caps1);
+        ses.refresh(r1);
+        ses.refresh(rigType1);
+
+        boolean free = this.engine.isFreeFor(r1, 3600, ses);
+
+        ses.beginTransaction();
+        ses.delete(bk1);
+        ses.delete(perm1);
+        ses.delete(r1);
+        ses.delete(caps1);
+        ses.delete(rigType1);
+        ses.delete(us1);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+
+        assertTrue(bk1.isActive());
+
+        assertTrue(free);
+    }
+    
+    @Test
     public void testInitCancelOldBookings()
     {
         Session ses = DataAccessActivator.getNewSession();

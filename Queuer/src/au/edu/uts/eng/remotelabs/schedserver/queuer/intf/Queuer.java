@@ -43,6 +43,7 @@ import java.util.Date;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
@@ -59,6 +60,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
@@ -90,6 +92,9 @@ public class Queuer implements QueuerSkeletonInterface
 {
     /** Logger. */
     private Logger logger;
+    
+    /** The bookings engine service. */
+    private BookingEngineService bookingService;
     
     /** Flag for unit testing to disable rig client communication. */ 
     private boolean notTest = true;
@@ -163,12 +168,12 @@ public class Queuer implements QueuerSkeletonInterface
                 inQu.setFailureReason("No permission.");
             }
             /**********************************************************************
-             ** 4) Check the user doesn't have a booking starting before the     **
+             ** 4) Check the user doesn't have a bookingService starting before the     **
              **    queued session would finish.                                  **
              **********************************************************************/
             else if ((booking = this.getNextBooking(user, entry.getResourcePermission().getSessionDuration(), db)) != null)
             {
-                this.logger.info("Cannot queue user " + user.qName() + " because has a booking starting before queued " +
+                this.logger.info("Cannot queue user " + user.qName() + " because has a bookingService starting before queued " +
                 		"session end.");
                 inQu.setFailureReason("Booking starts in " + 
                         ((booking.getStartTime().getTime() - System.currentTimeMillis()) / 1000) + " seconds.");
@@ -331,7 +336,7 @@ public class Queuer implements QueuerSkeletonInterface
                     res.setResourceID(ses.getRequestedResourceId().intValue());
                     res.setResourceName(ses.getRequestedResourceName());
                 
-                    queue.setQueue(this.getQueueForPermission(ses.getResourcePermission()));
+                    queue.setQueue(this.getQueueForPermission(ses.getResourcePermission(), dao.getSession()));
                 }
                 else
                 {
@@ -460,7 +465,7 @@ public class Queuer implements QueuerSkeletonInterface
             {
                 this.logger.warn("Permission with id=" + pId + " not found, unable to provide its avaliablity.");
             }
-            resp.setCheckPermissionAvailabilityResponse(this.getQueueForPermission(perm));
+            resp.setCheckPermissionAvailabilityResponse(this.getQueueForPermission(perm, dao.getSession()));
         }
         finally
         {
@@ -473,9 +478,10 @@ public class Queuer implements QueuerSkeletonInterface
      * Gets queue information for the specified resource permission.
      * 
      * @param perm resource permission
+     * @param ses database session
      * @return queue information
      */
-    private QueueType getQueueForPermission(ResourcePermission perm)
+    private QueueType getQueueForPermission(ResourcePermission perm, org.hibernate.Session ses)
     {
         /* Default values. */
         QueueType queue = new QueueType();
@@ -493,9 +499,10 @@ public class Queuer implements QueuerSkeletonInterface
         /* Queuable is based on the resource class. */
         queue.setIsQueuable(perm.getUserClass().isQueuable());
         queue.setIsBookable(perm.getUserClass().isBookable());
-        
+               
         String type = perm.getType();
         resource.setType(type);
+        boolean free = false;
         if (ResourcePermission.RIG_PERMISSION.equals(type))
         {
             /* Rig resource. */
@@ -503,7 +510,7 @@ public class Queuer implements QueuerSkeletonInterface
             resource.setResourceID(rig.getId().intValue());
             resource.setResourceName(rig.getName());
 
-            queue.setHasFree(rig.isOnline() && !rig.isInSession());
+            queue.setHasFree(this.isRigFree(rig, perm, ses));
             queue.setViable(rig.isOnline());
             
             /* Code assignable is defined by the rig type of the rig. */
@@ -512,7 +519,7 @@ public class Queuer implements QueuerSkeletonInterface
             /* Only one resource, the actual rig. */
             QueueTargetType target = new QueueTargetType();
             target.setViable(rig.isOnline());
-            target.setIsFree(rig.isOnline() && !rig.isInSession());
+            target.setIsFree(this.isRigFree(rig, perm, ses));
             target.setResource(resource);
             queue.addQueueTarget(target);
             
@@ -529,11 +536,11 @@ public class Queuer implements QueuerSkeletonInterface
             for (Rig rig : rigType.getRigs())
             {
                 if (rig.isOnline()) queue.setViable(true);
-                if (rig.isOnline() && !rig.isInSession()) queue.setHasFree(true);
+                if (free = this.isRigFree(rig, perm, ses)) queue.setHasFree(true);
                 
                 QueueTargetType target = new QueueTargetType();
                 target.setViable(rig.isOnline());
-                target.setIsFree(rig.isOnline() && !rig.isInSession());
+                target.setIsFree(free);
                 ResourceIDType resourceRig = new ResourceIDType();
                 resourceRig.setType(ResourcePermission.RIG_PERMISSION);
                 resourceRig.setResourceID(rig.getId().intValue());
@@ -565,12 +572,12 @@ public class Queuer implements QueuerSkeletonInterface
                     if (capRig.isOnline()) queue.setViable(true);
                     
                     /* To be 'has free', only one rig needs to be free. */
-                    if (capRig.isOnline() && !capRig.isInSession()) queue.setHasFree(true);
+                    if (free = this.isRigFree(capRig, perm, ses)) queue.setHasFree(true);
                     
                     /* Add target. */
                     QueueTargetType target = new QueueTargetType();
                     target.setViable(capRig.isOnline());
-                    target.setIsFree(capRig.isOnline() && !capRig.isInSession());
+                    target.setIsFree(free);
                     queue.addQueueTarget(target);
                     ResourceIDType resTarget = new ResourceIDType();
                     resTarget.setType(ResourcePermission.RIG_PERMISSION);
@@ -728,13 +735,13 @@ public class Queuer implements QueuerSkeletonInterface
     }
 
     /**
-     * Gets the next user booking within a specified limit, from now to now
-     * plus limit. If no booking exists within the limit, null is returned.
+     * Gets the next user bookingService within a specified limit, from now to now
+     * plus limit. If no bookingService exists within the limit, null is returned.
      * 
-     * @param user user who has booking
+     * @param user user who has bookingService
      * @param sec limit 
      * @param ses database session
-     * @return booking or null if none exists 
+     * @return bookingService or null if none exists 
      */
     private Bookings getNextBooking(User user, int sec, org.hibernate.Session ses)
     {
@@ -748,6 +755,34 @@ public class Queuer implements QueuerSkeletonInterface
             .setMaxResults(1)
             .addOrder(Order.asc("startTime"))
             .uniqueResult();
+    }
+    
+    /**
+     * Returns true if the rig is not booked for the specified duration. A free 
+     * rig is one which:
+     * <ul>
+     *  <li>Is active and alive.</li>
+     *  <li>Is online.</li>
+     *  <li>Not in session.</li>
+     *  <li>Not booked for the duration of the guaranteed permission time</li>
+     * 
+     * @param rig rig to check
+     * @param perm permission to obtain duration for
+     * @param ses database session
+     * @return true if not booked
+     */
+    private boolean isRigFree(Rig rig, ResourcePermission perm, org.hibernate.Session ses)
+    {
+        if (!rig.isActive() || !rig.isOnline() || rig.isInSession()) return false;
+        
+        if (this.bookingService == null && (this.bookingService = QueueActivator.getBookingService()) == null)
+        {
+            this.logger.debug("Returning rig " + rig.getName() + " is not booked because the bookings service does " +
+            		"not appear to be running.");
+            return true;
+        }
+        
+        return this.bookingService.isFreeFor(rig, perm.getSessionDuration(), ses);
     }
     
     /**
