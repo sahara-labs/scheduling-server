@@ -203,9 +203,25 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 else
                 {
                     response.setWasCreated(false);
+                    
+                    long rs;
                     for (MRange range : db.findBestFits(mb, ses))
                     {
-                        response.addBestFit(new TimePeriod(range.getStart(), range.getEnd()));
+                        if ((rs = range.getStart().getTimeInMillis()) < perm.getStartTime().getTime() ||
+                             rs < System.currentTimeMillis())
+                        {
+                            this.logger.info("Excluding best fit option which was to start at " + range.getStart().getTime() +
+                                    " because it would be before the permission start or is in the past .");
+                        }
+                        else if (range.getEnd().getTimeInMillis() > perm.getExpiryTime().getTime())
+                        {
+                            this.logger.info("Excluding best fit option which was to end at " + range.getEnd().getTime() +
+                                    " because it would finish after the permission end time.");
+                        }
+                        else
+                        {                       
+                            response.addBestFit(new TimePeriod(range.getStart(), range.getEnd()));
+                        }
                     }
                 }
             }

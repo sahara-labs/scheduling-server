@@ -96,7 +96,9 @@ public class SlotBookingEngineTester extends TestCase
         f.set(this.engine, new SystemErrLogger());
         this.engine.init();
         
-        this.dayStr = TimeUtil.getDateStr(Calendar.getInstance());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        this.dayStr = TimeUtil.getDateStr(cal);
     }
     
     @Test
@@ -459,8 +461,11 @@ public class SlotBookingEngineTester extends TestCase
         perm1.setExtensionDuration(300);
         perm1.setMaximumBookings(10);
         perm1.setRig(r1);
-        perm1.setStartTime(new Date());
-        perm1.setExpiryTime(new Date());
+        Calendar permTime = Calendar.getInstance();
+        permTime.add(Calendar.DAY_OF_MONTH, -10);
+        perm1.setStartTime(permTime.getTime());
+        permTime.add(Calendar.DAY_OF_MONTH, 20);
+        perm1.setExpiryTime(permTime.getTime());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
         
@@ -990,8 +995,11 @@ public class SlotBookingEngineTester extends TestCase
         perm1.setExtensionDuration(300);
         perm1.setMaximumBookings(10);
         perm1.setRigType(rigType2);
-        perm1.setStartTime(new Date());
-        perm1.setExpiryTime(new Date());
+        Calendar permTime = Calendar.getInstance();
+        permTime.add(Calendar.DAY_OF_MONTH, -10);
+        perm1.setStartTime(permTime.getTime());
+        permTime.add(Calendar.DAY_OF_MONTH, 20);
+        perm1.setExpiryTime(permTime.getTime());
         perm1.setDisplayName("bookperm");
         ses.save(perm1);
         
