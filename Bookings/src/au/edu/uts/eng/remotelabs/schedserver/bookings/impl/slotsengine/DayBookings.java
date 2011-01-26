@@ -831,6 +831,19 @@ public class DayBookings
         return null;
     }
     
+    /**
+     * Extends the existing booking on the rig.
+     *  
+     * @param rig rig which has the booking
+     * @param mb booking that is extended
+     * @param ses database session
+     * @return true if successful
+     */
+    public boolean extendBooking(Rig rig, MBooking mb, Session ses)
+    {
+        return this.getRigBookings(rig, ses).extendBooking(mb);
+    }
+    
     /* ========================================================================
      * == Resource mappings management.                                      ==
      * ======================================================================== */

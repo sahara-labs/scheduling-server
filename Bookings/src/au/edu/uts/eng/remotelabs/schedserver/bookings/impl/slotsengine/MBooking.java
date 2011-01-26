@@ -86,7 +86,7 @@ public class MBooking
     private final Date start;
     
     /** Booking / session duration. */
-    private final int duration;
+    private int duration;
     
     /** The index of this bookings start slot. */
     private final int startSlot;
@@ -235,54 +235,25 @@ public class MBooking
     }
     
     /**
-     * Returns the slot this booking would occur if it was extend by the 
-     * specified seconds.
-     * 
-     * @param seconds number of seconds to extend booking by
-     * @return end slot
-     */
-    public int extensionEnd(int seconds)
-    {
-        Calendar end = Calendar.getInstance();
-        end.setTime(this.start);
-        end.add(Calendar.SECOND, this.duration + seconds);
-        
-        int extEnd;
-        if (TimeUtil.getDayEnd(this.day).before(end))
-        {
-            /* The booking continues the following day. */
-            extEnd = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM - 1;
-            this.isMultiDay = true;
-        }
-        else
-        {
-            /* The end slot may be where the time falls or the preceding slot if
-             * the booking ends exactly when the next slot starts. */
-            extEnd = TimeUtil.getSlotIndex(end);
-            
-            if (extEnd * TIME_QUANTUM == 
-                end.get(Calendar.HOUR_OF_DAY) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
-            {
-                /* Not point wasting a slot when its time isn't used. */
-                extEnd--;
-            }
-        }
-        
-        return extEnd;
-    }
- 
-    /**
      * Extends the booking by the number of seconds.    
      * 
      * @param seconds seconds to extend
      * @return new end slot
      */
-    public int extendBooking(int seconds)
+    public boolean extendBooking(int seconds)
     {
-        this.endSlot = this.extensionEnd(seconds);
+        this.duration += seconds;
+        Calendar end = this.getEnd();
+        this.endSlot = TimeUtil.getDaySlotIndex(end, this.day);
         this.numSlots = this.endSlot - this.startSlot + 1;
-     
-        return this.endSlot;
+        
+        if (!this.isMultiDay && this.endSlot == SlotBookingEngine.NUM_SLOTS - 1 && !this.day.equals(TimeUtil.getDateStr(end)))
+        {
+            /* The session has been extended over a day. */
+            this.isMultiDay = true;
+        }
+         
+        return true;
     }
 
     public Bookings getBooking()

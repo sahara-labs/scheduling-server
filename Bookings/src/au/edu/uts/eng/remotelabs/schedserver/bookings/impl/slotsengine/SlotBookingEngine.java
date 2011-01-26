@@ -421,17 +421,31 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             return false;
         }
         
-        if (mb.isMultiDay())
+        /* Work out the new end time and where this falls. */
+        Calendar end = mb.getEnd();
+        end.add(Calendar.SECOND, duration);
+        String extDay = TimeUtil.getDateStr(end);
+        int extEnd = TimeUtil.getSlotIndex(end);
+        
+        DayBookings dayb;
+        if (mb.getDay().equals(extDay))
         {
+            /* If we are still in the same slot as before, allow the time extension. */
+            if (mb.getEndSlot() == extEnd) return mb.extendBooking(duration);
             
+            /* Otherwise, attempt to extend the existing mbooking on the day. */
+            synchronized (dayb = this.getDayBookings(extDay))
+            {
+                /* Check whether the booking can be extended. */
+                return dayb.isRigFree(ses.getRig(), mb.getEndSlot() + 1, extEnd, db) && 
+                       mb.extendBooking(duration) && dayb.extendBooking(rig, mb, db); // Extend and commit the extension
+            }
         }
         else
         {
             
         }
-        
-        
-        // TODO Auto-generated method stub
+
         return false;
     }
     

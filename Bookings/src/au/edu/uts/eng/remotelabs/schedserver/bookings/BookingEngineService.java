@@ -70,7 +70,7 @@ public interface BookingEngineService
     public boolean putQueuedSession(Rig rig, Session ses, org.hibernate.Session db);
     
     /**
-     * Attempts to extend an existing session on the rig,
+     * Attempts to extend an existing session on the rig.
      * 
      * @param rig rig to extend rig on
      * @param ses session to extend

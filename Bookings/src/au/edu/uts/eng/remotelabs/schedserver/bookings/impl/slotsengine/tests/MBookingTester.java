@@ -99,26 +99,37 @@ public class MBookingTester extends TestCase
     public void testMBookingExtension()
     {
         Session ses = new Session();
-        ses.setDuration(1800);
+        ses.setDuration(3600);
         
         Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
         start.add(Calendar.MINUTE, 120);
 
         MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
+        m.extendBooking(3600);
         
         assertEquals(BType.RIG, m.getType());
         assertEquals(8, m.getStartSlot());
-        assertEquals(9, m.getEndSlot());
-        assertEquals(2, m.getNumSlots());
+        assertEquals(16, m.getEndSlot());
+    }
+    
+    @Test
+    public void testMBookingExtension2()
+    {
+        Session ses = new Session();
+        ses.setDuration(3600);
         
-        assertEquals(10, m.extensionEnd(15 * 60 - 1));
-        assertEquals(10, m.extensionEnd(15 * 60));
-        assertEquals(11, m.extensionEnd(15 * 60 + 1));
-        assertEquals(11, m.extensionEnd(30 * 60));
-        assertEquals(9, m.getEndSlot());
+        Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
+        start.add(Calendar.HOUR, 22);
+        start.add(Calendar.MINUTE, 30);
+
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
+        m.extendBooking(3600);
         
-        assertEquals(10, m.extendBooking(15 * 60));
-        assertEquals(10, m.getEndSlot());
+        assertEquals(BType.RIG, m.getType());
+        assertEquals(90, m.getStartSlot());
+        assertEquals(95, m.getEndSlot());
+        assertEquals(6, m.getNumSlots());
+        assertTrue(m.isMultiDay());
     }
     
     @Test

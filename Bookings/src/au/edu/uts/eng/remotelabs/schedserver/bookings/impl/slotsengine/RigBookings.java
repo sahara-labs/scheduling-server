@@ -394,6 +394,27 @@ public class RigBookings
     }
     
     /**
+     * Extends an existing booking.
+     * 
+     * @param booking booking to extend
+     * @return true if successful
+     */
+    public boolean extendBooking(MBooking booking)
+    {
+        if (!this.hasBooking(booking))
+        {
+            this.logger.error("Attempted to extend of booking on rig " + this.rig.getName() + " which doesn't have the " +
+            		"booking.");
+            return false;
+        }
+        
+        int s = booking.getStartSlot();
+        while (s++ <= booking.getEndSlot()) this.slots[s] = booking;
+        if (this.endSlot < booking.getEndSlot()) this.endSlot = booking.getEndSlot();
+        return true;
+    }
+    
+    /**
      * Removes a booking from a rig.
      * 
      * @param booking to remove
