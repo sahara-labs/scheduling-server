@@ -73,6 +73,9 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     /** The number of slots in a day. */
     public static final int NUM_SLOTS = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM;
     
+    /** The last slot number in a day. */
+    public static final int END_SLOT = SlotBookingEngine.NUM_SLOTS - 1;
+    
     /** The loaded of day bookings. */
     private Map<String, DayBookings> days;
     
@@ -434,21 +437,145 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             if (mb.getEndSlot() == extEnd) return mb.extendBooking(duration);
             
             /* Otherwise, attempt to extend the existing mbooking on the day. */
-            synchronized (dayb = this.getDayBookings(extDay))
+            dayb = this.getDayBookings(extDay);
+            if (dayb.isRigFree(rig, mb.getEndSlot() + 1, extEnd, db))
             {
                 /* Check whether the booking can be extended. */
-                return dayb.isRigFree(ses.getRig(), mb.getEndSlot() + 1, extEnd, db) && 
+                synchronized (dayb)
+                {
+                    return dayb.isRigFree(ses.getRig(), mb.getEndSlot() + 1, extEnd, db) && 
                        mb.extendBooking(duration) && dayb.extendBooking(rig, mb, db); // Extend and commit the extension
+                }
             }
         }
         else
         {
-            
+            MBooking extDayMB = this.getDayBookings(extDay).getBookingOnSlot(rig, 0);
+            if (extDayMB == null)
+            {
+                /* ---- Some preconditions must hold before extending bookings:
+                 *  1) If the booking on the start day doesn't finish at the end of the day
+                 *     it must be extendable to the end day, provided the day hasn't elapsed. */
+                if (mb.getEndSlot() != END_SLOT && this.days.containsKey(mb.getDay()) &&
+                    this.getDayBookings(mb.getDay()).isRigFree(rig, mb.getEndSlot() + 1, END_SLOT, db))
+                {
+                    /* The current day cannot be extended, so the time extension can't be allowed. */
+                    return false;
+                }
+                
+                /*  2) Any days between the extension end and the current end must be extendable.
+                 *     This for the exceptional case that the total extension duration is greater
+                 *     than a day. */
+                Calendar dayScroll = Calendar.getInstance();
+                dayScroll.setTimeInMillis(end.getTimeInMillis());
+                dayScroll.add(Calendar.DAY_OF_MONTH, -1);
+                String scrollDay;
+                MBooking scrollmb;
+                
+                while (!mb.getDay().equals(scrollDay = TimeUtil.getDateStr(dayScroll)))
+                {
+                    dayScroll.add(Calendar.DAY_OF_MONTH, -1);
+                    
+                    /* Day unloaded so in the past therefore we can ignore it. */
+                    if (!this.days.containsKey(scrollDay)) continue;
+                    
+                    dayb = this.getDayBookings(scrollDay);
+                    if ((scrollmb = dayb.getBookingOnSlot(rig, 0)) == null)
+                    {
+                        if (!dayb.isRigFree(rig, 0, END_SLOT, db)) return false;
+                    }
+                    else
+                    {
+                        if (scrollmb.getEndSlot() != END_SLOT && 
+                                !dayb.isRigFree(rig, scrollmb.getEndSlot() + 1, END_SLOT, db)) return false;
+                    }
+                }
+                
+                /*  3) The extension day must be free for the extension slots. */
+                if (!this.getDayBookings(extDay).isRigFree(rig, 0, extEnd, db)) return false;
+
+
+                /*---- Preconditions are satisfied so we can commit the extension.
+                 *  1) Extend the current day booking provided it is free. */
+                if (mb.getEndSlot() != END_SLOT && this.days.containsKey(mb.getDay()))
+                {
+                    synchronized (dayb = this.getDayBookings(mb.getDay()))
+                    {
+                        /* Double check to prevent a race condition. */
+                        if (!(dayb.isRigFree(rig, mb.getEndSlot() + 1, END_SLOT, db) && 
+                                mb.extendBooking(duration) && dayb.extendBooking(rig, mb, db))) return false;
+                    }
+                }
+                else mb.extendBooking(duration);
+                
+                /*  2) Commit the intermediary day bookings. */
+                dayScroll.setTimeInMillis(end.getTimeInMillis());
+                dayScroll.add(Calendar.DAY_OF_MONTH, -1);
+                while (!mb.getDay().equals(scrollDay = TimeUtil.getDateStr(dayScroll)))
+                {
+                    dayScroll.add(Calendar.DAY_OF_MONTH, -1);
+                    
+                    /* Day unloaded so in the past therefore we can ignore it. */
+                    if (!this.days.containsKey(scrollDay)) continue;
+                    
+                    synchronized (dayb = this.getDayBookings(scrollDay))
+                    {
+                        if ((scrollmb = dayb.getBookingOnSlot(rig, 0)) == null)
+                        {
+                            scrollmb = new MBooking(mb.getSession(), rig, mb.getStart(), scrollDay);
+                            scrollmb.extendBooking(mb.getDuration() - scrollmb.getDuration());
+                            if (!(dayb.isRigFree(rig, 0, NUM_SLOTS - 1, db) && dayb.createBooking(scrollmb, db))) return false;
+                        }
+                        else
+                        {
+                            if (!(dayb.isRigFree(rig, scrollmb.getEndSlot() + 1, NUM_SLOTS - 1, db) && 
+                                    scrollmb.extendBooking(duration) && dayb.removeBooking(scrollmb))) return false;
+                        }
+                    }
+                }
+                
+                /*  3) Commit the booking on the extension end day. */
+                synchronized (dayb = this.getDayBookings(extDay))
+                {
+                    MBooking extmb = new MBooking(mb.getSession(), rig, mb.getStart(), extDay);
+                    extmb.extendBooking(mb.getDuration() - extmb.getDuration());
+                    return dayb.isRigFree(rig, 0, extEnd, db) && dayb.createBooking(extmb, db);
+                }
+            }
+            else
+            {
+                if (extDayMB.getSession() == null || !extDayMB.getSession().getId().equals(mb.getSession().getId()))
+                {
+                    /* The booking on the slot is not the session getting extended, 
+                     * so we cannot extend the session because another booking is
+                     * going to start on it. */
+                    return false;
+                }
+                
+                
+                if (extDayMB.getEndSlot() == extEnd)
+                {
+                    /* The extension is still in same slot. */
+                    return mb.extendBooking(duration) && extDayMB.extendBooking(duration);
+                }
+                
+                dayb = this.getDayBookings(extDay);
+                if (dayb.isRigFree(rig, extDayMB.getEndSlot() + 1, extEnd, db))
+                {
+                    /* Check whether the booking can be extended. */
+                    synchronized (dayb)
+                    {
+                        return dayb.isRigFree(ses.getRig(), extDayMB.getEndSlot() + 1, extEnd, db) && 
+                           mb.extendBooking(duration) && extDayMB.extendBooking(duration) && 
+                           dayb.extendBooking(rig, extDayMB, db); // Extend and commit the extension
+                    }
+                }
+            }
         }
 
         return false;
     }
-    
+
     /**
      * Checks the range of the time period such that the first time period starts 
      * later or equal to the specified period start and ends earlier or equal to

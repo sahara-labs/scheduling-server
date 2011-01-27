@@ -347,6 +347,11 @@ public class MBooking
         return startCal;
     }
     
+    public int getDuration()
+    {
+        return this.duration;
+    }
+    
     public Calendar getEnd()
     {
         Calendar endCal = Calendar.getInstance();

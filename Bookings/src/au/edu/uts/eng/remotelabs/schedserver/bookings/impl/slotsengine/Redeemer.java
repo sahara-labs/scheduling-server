@@ -291,6 +291,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         if (this.runningBookings.containsKey(rig.getName()))
         {
             MBooking old = this.runningBookings.remove(rig.getName());
+            int duration = old.getDuration();
             
             if (this.currentDay.getDay().equals(old.getDay()))
             {
@@ -300,15 +301,15 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             {
                 /* The day has rolled when the booking was in progress. */
                 old = new MBooking(old.getSession(), old.getRig(), old.getStart(), this.currentDay.getDay());
+                old.extendBooking(duration - old.getDuration());
                 this.currentDay.removeBooking(old);
             }
             
             Calendar cal = null;
-            while (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.NUM_SLOTS - 1)
+            while (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.END_SLOT)
             {
-                /* Booking rolls to the next day. */
-                
-                 if (cal == null) cal = Calendar.getInstance();
+                /* Booking rolls to the next day. */         
+                if (cal == null) cal = Calendar.getInstance();
                 cal.add(Calendar.DAY_OF_MONTH, 1);
                 String dayStr = TimeUtil.getDateStr(cal);
                 
@@ -316,10 +317,12 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                 {
                     /* Old is a booking session. */
                     old = new MBooking(old.getBooking(), dayStr);
+                    old.extendBooking(duration - old.getDuration());
                 }
                 else if (old.getSession() != null)
                 {
                     old = new MBooking(old.getSession(), old.getRig(), old.getStart(), dayStr);
+                    old.extendBooking(duration - old.getDuration());
                 }
                 else
                 {
