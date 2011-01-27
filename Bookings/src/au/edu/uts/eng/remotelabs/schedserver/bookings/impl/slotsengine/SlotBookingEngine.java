@@ -637,7 +637,20 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
      */
     public DayBookings getDayBookings(String dayKey)
     {
-        if (!this.days.containsKey(dayKey))
+        return this.getDayBookings(dayKey, true);
+    }
+    
+    /**
+     * Returns the bookings for that day. The load parameter specifies whether
+     * the day should be loaded if it is currently unloaded.
+     * 
+     * @param dayKey day key
+     * @param load 
+     * @return bookings
+     */
+    public DayBookings getDayBookings(String dayKey, boolean load)
+    {
+        if (!this.days.containsKey(dayKey) && load)
         {
             synchronized (this.days)
             {

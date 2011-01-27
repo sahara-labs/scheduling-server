@@ -291,45 +291,38 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         if (this.runningBookings.containsKey(rig.getName()))
         {
             MBooking old = this.runningBookings.remove(rig.getName());
-            int duration = old.getDuration();
-            
-            if (this.currentDay.getDay().equals(old.getDay()))
+            if (old.isMultiDay() || !this.currentDay.getDay().equals(old.getDay()))
             {
-                this.currentDay.removeBooking(old);
+                DayBookings dayb;
+                MBooking oldNext;
+                for (String day : TimeUtil.getDayKeys(old.getStart().getTime(), old.getEnd().getTime()))
+                {
+                    /* If a day isn't loaded we aren't going to load it. */
+                    if ((dayb = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(day, false)) != null)
+                    {
+                        synchronized (dayb)
+                        {
+                            if (dayb.getDay().equals(old.getDay())) dayb.removeBooking(old);
+                            else if ((oldNext = dayb.getBookingOnSlot(rig, 0)) != null && // Session must be continuous
+                                      oldNext.getSession() != null &&                     // Must be assigned a session
+                                      /* Must be the same session. */
+                                      oldNext.getSession().getId().equals(old.getSession().getId()))
+                            {
+                                /* If the next day starting booking is an extension
+                                 * of the current booking, then remove it. */
+                                dayb.removeBooking(oldNext);
+                            }
+                        }
+                    }
+                }
             }
             else
             {
-                /* The day has rolled when the booking was in progress. */
-                old = new MBooking(old.getSession(), old.getRig(), old.getStart(), this.currentDay.getDay());
-                old.extendBooking(duration - old.getDuration());
-                this.currentDay.removeBooking(old);
-            }
-            
-            Calendar cal = null;
-            while (old.isMultiDay() && old.getEndSlot() == SlotBookingEngine.END_SLOT)
-            {
-                /* Booking rolls to the next day. */         
-                if (cal == null) cal = Calendar.getInstance();
-                cal.add(Calendar.DAY_OF_MONTH, 1);
-                String dayStr = TimeUtil.getDateStr(cal);
-                
-                if (old.getBooking() != null)
+                /* The booking was only on today so it can be safely reaped. */
+                synchronized (this.currentDay) 
                 {
-                    /* Old is a booking session. */
-                    old = new MBooking(old.getBooking(), dayStr);
-                    old.extendBooking(duration - old.getDuration());
+                    this.currentDay.removeBooking(old);
                 }
-                else if (old.getSession() != null)
-                {
-                    old = new MBooking(old.getSession(), old.getRig(), old.getStart(), dayStr);
-                    old.extendBooking(duration - old.getDuration());
-                }
-                else
-                {
-                    this.logger.error("BUG: Unknown MBooking type being removed. Please report.");
-                }
-                
-                ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(dayStr).removeBooking(old);
             }
             
             /* If the rig event was free, and the rig isn't booked (i.e. next
@@ -352,7 +345,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                 else
                 {
                     /* Next booking is on next day. */
-                    cal = Calendar.getInstance();
+                    Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, 1);
                     DayBookings nextBookings = 
                         ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(TimeUtil.getDateStr(cal));
