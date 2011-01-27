@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,7 +78,10 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     public static final int END_SLOT = SlotBookingEngine.NUM_SLOTS - 1;
     
     /** The loaded of day bookings. */
-    private Map<String, DayBookings> days;
+    private final Map<String, DayBookings> days;
+    
+    /** The amount of hits the day has had. */
+    private final Map<String, Integer> dayHitCounts;
     
     /** Redeemer which redeems and cleans bookings. */
     private Redeemer redeemer;
@@ -89,6 +93,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     {
         this.logger = LoggerActivator.getLogger();
         this.days = new TreeMap<String, DayBookings>();
+        this.dayHitCounts = new HashMap<String, Integer>();
     }
     
     @Override
@@ -131,6 +136,8 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         init.addTask(this.redeemer);
         init.addListener(this.redeemer);
         init.addListener(new RigRegisteredListener());
+        init.addTask(new MemoryCleaner());
+        
         return init;
     }
 
@@ -657,23 +664,46 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 if (!this.days.containsKey(dayKey))
                 {
                     this.days.put(dayKey, new DayBookings(dayKey));
+                    this.dayHitCounts.put(dayKey, 1);
                 }
             }
         }
         
+        this.dayHitCounts.put(dayKey, this.dayHitCounts.get(dayKey) + 1);
         return this.days.get(dayKey);
+    }
+    
+    /**
+     * Remove stale days from the current days loaded list. Stale days are
+     * those which:
+     * <ul>
+     *  <li>Days in the past.</li>
+     *  <li>Days in the <em>not</em> near future that haven't been used 
+     *  much.</li>
+     * </ul>
+     * NOTE: This should run infrequently as it requires an exclusive lock
+     * on the whole booking engine.
+     */
+    public void removeStaleDays()
+    {
+        synchronized (this.days)
+        {
+            Iterator<Entry<String, DayBookings>> day = this.days.entrySet().iterator();
+            
+        }
     }
     
     /**
      * Removes the day from the day listing. 
      * 
-     * @param day day bookings
+     * @param dayKey day bookings
      */
-    public void removeDay(String day)
+    public void removeDay(String dayKey)
     {
         synchronized (this.days)
         {
-            this.days.remove(day);
+            this.days.remove(dayKey);
+            this.dayHitCounts.remove(dayKey);
         }
     }
     

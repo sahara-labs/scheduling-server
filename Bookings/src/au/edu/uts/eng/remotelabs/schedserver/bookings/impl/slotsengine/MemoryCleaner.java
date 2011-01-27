@@ -36,22 +36,31 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
-import org.hibernate.Session;
-
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 
 /**
- * Cleans finished bookings.
+ * Memory cleaner which invokes the slots booking engine to remove stale
+ * days from the engine. This saves memory.
  */
-public class Cleaner implements RigEventListener
+public class MemoryCleaner implements BookingManagementTask
 {
-
     @Override
-    public void eventOccurred(RigStateChangeEvent event, Rig rig, Session db)
+    public void run()
     {
-        // TODO Auto-generated method stub
-
+        ((SlotBookingEngine)BookingActivator.getBookingEngine()).removeStaleDays();
     }
 
+    @Override
+    public int getPeriod()
+    {
+        /* This only needs to run infrequently - once a day. */
+        return 24 * 60 * 60;
+    }
+
+    @Override
+    public void cleanUp()
+    {
+        /* Nothing to clean. */
+    }
 }
