@@ -228,8 +228,7 @@ public class TimeUtil
      */
     public static int getSlotIndex(Calendar cal)
     {
-        return (int)Math.ceil(
-                cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) / TIME_QUANTUM;
+        return  (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) / TIME_QUANTUM;
     }
     
     /**

@@ -299,7 +299,7 @@ public class RigBookings
      */
     public MRange getEarlyFit(MBooking mb)
     {
-        int ss = -1, se = -1, rs, re, opt = mb.getNumSlots(), min = (int) Math.ceil(opt / 2);
+        int ss = -1, se = -1, rs, re, opt = mb.getNumSlots(), min = opt / 2;
         
         MBooking ex = this.getNextBooking(mb.getStartSlot());
         if (ex == null) return null;
@@ -345,7 +345,7 @@ public class RigBookings
      */
     public MRange getLateFit(MBooking mb)
     {
-        int ss = 0, se = 0, rs, re, opt = mb.getNumSlots(), min = (int) Math.ceil(opt / 2);
+        int ss = 0, se = 0, rs, re, opt = mb.getNumSlots(), min = opt / 2;
         
         MBooking ex = this.getNextBooking(mb.getStartSlot());
         if (ex == null) return null;

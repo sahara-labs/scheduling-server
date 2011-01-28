@@ -252,7 +252,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     public List<TimePeriod> getFreeTimes(Rig rig, TimePeriod period, int minDuration, Session ses)
     {
         /* Work out the slots that the minimum duration requires. */
-        int minSlots = (int)Math.ceil(minDuration / TIME_QUANTUM);
+        int minSlots = minDuration / TIME_QUANTUM;
         
         /* Which days this falls across. */
         List<String> dayKeys = TimeUtil.getDayKeys(period);
@@ -276,7 +276,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     @Override
     public List<TimePeriod> getFreeTimes(RigType rigType, TimePeriod period, int minDuration, Session ses)
     {
-        int minSlots = (int)Math.ceil(minDuration / TIME_QUANTUM);
+        int minSlots = minDuration / TIME_QUANTUM;
         List<String> dayKeys = TimeUtil.getDayKeys(period);
         List<MRange> free = new ArrayList<MRange>();
         
@@ -298,7 +298,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     @Override
     public List<TimePeriod> getFreeTimes(RequestCapabilities caps, TimePeriod period, int minDuration, Session ses)
     {
-        int minSlots = (int)Math.ceil(minDuration / TIME_QUANTUM);
+        int minSlots = minDuration / TIME_QUANTUM;
         List<String> dayKeys = TimeUtil.getDayKeys(period);
         List<MRange> free = new ArrayList<MRange>();
         
