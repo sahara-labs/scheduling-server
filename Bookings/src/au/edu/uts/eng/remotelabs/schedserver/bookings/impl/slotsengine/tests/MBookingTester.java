@@ -69,7 +69,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.HOUR, 1);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
+        MBooking m = new MBooking(b, TimeUtil.getDayKey(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
@@ -87,7 +87,7 @@ public class MBookingTester extends TestCase
         Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
         start.add(Calendar.MINUTE, 120);
 
-        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDayKey(start));
 
         assertEquals(BType.RIG, m.getType());
         assertEquals(8, m.getStartSlot());
@@ -104,7 +104,7 @@ public class MBookingTester extends TestCase
         Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
         start.add(Calendar.MINUTE, 120);
 
-        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDayKey(start));
         m.extendBooking(3600);
         
         assertEquals(BType.RIG, m.getType());
@@ -122,7 +122,7 @@ public class MBookingTester extends TestCase
         start.add(Calendar.HOUR, 22);
         start.add(Calendar.MINUTE, 30);
 
-        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDayKey(start));
         m.extendBooking(3600);
         
         assertEquals(BType.RIG, m.getType());
@@ -141,7 +141,7 @@ public class MBookingTester extends TestCase
         Calendar start = TimeUtil.getDayBegin(Calendar.getInstance());
         start.add(Calendar.MINUTE, 119);
 
-        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDateStr(start));
+        MBooking m = new MBooking(ses, new Rig(), start, TimeUtil.getDayKey(start));
 
         assertEquals(BType.RIG, m.getType());
         assertEquals(7, m.getStartSlot());
@@ -165,7 +165,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.MINUTE, 30);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
+        MBooking m = new MBooking(b, TimeUtil.getDayKey(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
@@ -190,7 +190,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.MINUTE, 30);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
+        MBooking m = new MBooking(b, TimeUtil.getDayKey(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
@@ -216,7 +216,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.SECOND, 1);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
+        MBooking m = new MBooking(b, TimeUtil.getDayKey(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());
@@ -242,7 +242,7 @@ public class MBookingTester extends TestCase
         cal.add(Calendar.SECOND, 59);
         b.setEndTime(cal.getTime());
         
-        MBooking m = new MBooking(b, TimeUtil.getDateStr(cal));
+        MBooking m = new MBooking(b, TimeUtil.getDayKey(cal));
  
         assertEquals(b, m.getBooking());
         assertEquals(BType.RIG, m.getType());

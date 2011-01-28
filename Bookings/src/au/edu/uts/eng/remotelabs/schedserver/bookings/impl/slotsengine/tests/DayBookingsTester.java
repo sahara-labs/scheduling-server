@@ -89,7 +89,7 @@ public class DayBookingsTester extends TestCase
         f.setAccessible(true);
         f.set(null, new SystemErrLogger());
         
-        this.dayStr = TimeUtil.getDateStr(Calendar.getInstance());
+        this.dayStr = TimeUtil.getDayKey(Calendar.getInstance());
         this.day = new DayBookings(this.dayStr);
     }
     
@@ -15439,7 +15439,7 @@ public class DayBookingsTester extends TestCase
         assertFalse(bookings.hasBooking(new MBooking(bk7, this.dayStr)));
         assertTrue(bookings.hasBooking(new MBooking(bk8, this.dayStr)));
         assertTrue(bookings.hasBooking(new MBooking(bk9, this.dayStr)));
-        assertFalse(bookings.hasBooking(new MBooking(bk10, TimeUtil.getDateStr(end))));
+        assertFalse(bookings.hasBooking(new MBooking(bk10, TimeUtil.getDayKey(end))));
         
         assertEquals(5, bookings.getNumBookings());
         assertFalse(bookings.areSlotsFree(0, 8));

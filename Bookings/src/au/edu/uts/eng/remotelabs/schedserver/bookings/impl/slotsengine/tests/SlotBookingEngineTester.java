@@ -77,8 +77,8 @@ public class SlotBookingEngineTester extends TestCase
     /** Object of class under test. */
     private SlotBookingEngine engine;
     
-    /** The day string for today. */
-    private String dayStr;
+    /** The day string for tomorrow. */
+    private String dayKey;
     
     @Override
     @Before
@@ -98,7 +98,118 @@ public class SlotBookingEngineTester extends TestCase
         
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        this.dayStr = TimeUtil.getDateStr(cal);
+        this.dayKey = TimeUtil.getDayKey(cal);
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testCleanStaleDays() throws Exception
+    {
+        Field f = SlotBookingEngine.class.getDeclaredField("days");
+        f.setAccessible(true);
+        Map<String, DayBookings> days = (Map<String, DayBookings>)f.get(this.engine);
+        
+        f = SlotBookingEngine.class.getDeclaredField("dayHitCounts");
+        f.setAccessible(true);
+        Map<String, Integer> dayHits = (Map<String, Integer>)f.get(this.engine);
+        
+        Calendar cal = Calendar.getInstance();
+        String day = TimeUtil.getDayKey(cal);
+        days.put(day, new DayBookings(day));
+        dayHits.put(day, 0);
+        
+        /* Past days. */
+        for (int i = 1; i <= 5; i++)
+        {
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            day = TimeUtil.getDayKey(cal);
+            days.put(day, new DayBookings(day));
+            dayHits.put(day, 0);
+        }
+        
+        /* Future days. */
+        cal.setTimeInMillis(System.currentTimeMillis());
+        for (int i = 1; i <= 100; i++)
+        {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            day = TimeUtil.getDayKey(cal);
+            days.put(day, new DayBookings(day));
+            dayHits.put(day, 0);
+        }
+        
+        this.engine.cleanStaleDays();
+        
+        cal.setTimeInMillis(System.currentTimeMillis());
+        for (String dk : days.keySet())
+        {
+            Calendar dkend = TimeUtil.getDayEnd(dk);
+            if (dkend.before(cal)) fail("Old day " + dk);
+            else if (dkend.get(Calendar.DAY_OF_MONTH) - cal.get(Calendar.DAY_OF_MONTH) > SlotBookingEngine.HOT_DAYS)
+            {
+                fail("Non-hot day " + dk);
+            }
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testCleanStaleDays2() throws Exception
+    {
+        Field f = SlotBookingEngine.class.getDeclaredField("days");
+        f.setAccessible(true);
+        Map<String, DayBookings> days = (Map<String, DayBookings>)f.get(this.engine);
+        
+        f = SlotBookingEngine.class.getDeclaredField("dayHitCounts");
+        f.setAccessible(true);
+        Map<String, Integer> dayHits = (Map<String, Integer>)f.get(this.engine);
+        
+        Calendar cal = Calendar.getInstance();
+        String day = TimeUtil.getDayKey(cal);
+        days.put(day, new DayBookings(day));
+        dayHits.put(day, 5);
+        
+        /* Past days. */
+        for (int i = 1; i <= 5; i++)
+        {
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            day = TimeUtil.getDayKey(cal);
+            days.put(day, new DayBookings(day));
+            dayHits.put(day, 5);
+        }
+        
+        /* Future days. */
+        cal.setTimeInMillis(System.currentTimeMillis());
+        for (int i = 1; i <= 100; i++)
+        {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            day = TimeUtil.getDayKey(cal);
+            days.put(day, new DayBookings(day));
+            dayHits.put(day, 5);
+        }
+        
+        this.engine.cleanStaleDays();
+        
+        cal.setTimeInMillis(System.currentTimeMillis());
+        for (String dk : days.keySet())
+        {
+            Calendar dkend = TimeUtil.getDayEnd(dk);
+            if (dkend.before(cal))
+            {
+                fail("Old day " + dk);
+            }
+            else if (dkend.get(Calendar.DAY_OF_MONTH) - cal.get(Calendar.DAY_OF_MONTH) > SlotBookingEngine.MAX_DAYS)
+            {
+                fail("Non-hot day " + dk);
+            }
+            else if (dkend.get(Calendar.DAY_OF_MONTH) - cal.get(Calendar.DAY_OF_MONTH) > SlotBookingEngine.HOT_DAYS)
+            {
+                assertEquals(2, dayHits.get(dk).intValue());
+            }
+            
+            dayHits.remove(dk);
+        }
+        
+        assertEquals(0, dayHits.size());
     }
     
     @Test
@@ -470,7 +581,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -520,7 +631,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -554,7 +665,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -604,7 +715,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -685,7 +796,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -704,7 +815,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -753,7 +864,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -771,7 +882,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -819,12 +930,12 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType2);
         
         /* Force a load. */
-        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayStr), 
-                TimeUtil.getDayEnd(this.dayStr)), 3600, ses);
+        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayKey), 
+                TimeUtil.getDayEnd(this.dayKey)), 3600, ses);
         
-        Calendar bkSt = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkSt = TimeUtil.getDayBegin(this.dayKey);
         bkSt.add(Calendar.HOUR, 2);
-        Calendar bkEd = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkEd = TimeUtil.getDayBegin(this.dayKey);
         bkEd.add(Calendar.HOUR, 3);
         TimePeriod tp = new TimePeriod(bkSt, bkEd);
         BookingCreation cre = this.engine.createBooking(us1, perm1, tp, ses);
@@ -1004,7 +1115,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -1054,7 +1165,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -1088,7 +1199,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -1138,7 +1249,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -1219,7 +1330,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -1238,7 +1349,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -1287,7 +1398,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -1305,7 +1416,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -1353,12 +1464,12 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType2);
         
         /* Force a load. */
-        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayStr), 
-                TimeUtil.getDayEnd(this.dayStr)), 3600, ses);
+        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayKey), 
+                TimeUtil.getDayEnd(this.dayKey)), 3600, ses);
         
-        Calendar bkSt = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkSt = TimeUtil.getDayBegin(this.dayKey);
         bkSt.add(Calendar.MINUTE, 30);
-        Calendar bkEd = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkEd = TimeUtil.getDayBegin(this.dayKey);
         bkEd.add(Calendar.HOUR, 1);
         bkEd.add(Calendar.MINUTE, 30);
         TimePeriod tp = new TimePeriod(bkSt, bkEd);
@@ -1536,7 +1647,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -1586,7 +1697,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -1620,7 +1731,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -1670,7 +1781,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -1751,7 +1862,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -1770,7 +1881,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -1819,7 +1930,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -1837,7 +1948,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -1885,12 +1996,12 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType2);
         
         /* Force a load. */
-        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayStr), 
-                TimeUtil.getDayEnd(this.dayStr)), 3600, ses);
+        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayKey), 
+                TimeUtil.getDayEnd(this.dayKey)), 3600, ses);
         
-        Calendar bkSt = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkSt = TimeUtil.getDayBegin(this.dayKey);
         bkSt.add(Calendar.HOUR, 5);
-        Calendar bkEd = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkEd = TimeUtil.getDayBegin(this.dayKey);
         bkEd.add(Calendar.HOUR, 6);
         TimePeriod tp = new TimePeriod(bkSt, bkEd);
         BookingCreation cre = this.engine.createBooking(us1, perm1, tp, ses);
@@ -2034,7 +2145,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -2084,7 +2195,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -2118,7 +2229,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -2168,7 +2279,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -2249,7 +2360,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -2268,7 +2379,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -2317,7 +2428,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -2335,7 +2446,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -2383,12 +2494,12 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType2);
         
         /* Force a load. */
-        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayStr), 
-                TimeUtil.getDayEnd(this.dayStr)), 3600, ses);
+        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayKey), 
+                TimeUtil.getDayEnd(this.dayKey)), 3600, ses);
         
-        Calendar bkSt = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkSt = TimeUtil.getDayBegin(this.dayKey);
         bkSt.add(Calendar.HOUR, 5);
-        Calendar bkEd = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkEd = TimeUtil.getDayBegin(this.dayKey);
         bkEd.add(Calendar.HOUR, 7);
         TimePeriod tp = new TimePeriod(bkSt, bkEd);
         BookingCreation cre = this.engine.createBooking(us1, perm1, tp, ses);
@@ -2524,7 +2635,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -2558,7 +2669,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk2);
 
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -2576,7 +2687,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk8);
 
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -2609,7 +2720,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk13);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -2642,7 +2753,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk7);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -2660,7 +2771,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -2706,12 +2817,12 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         
         /* Force a load. */
-        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayStr), 
-                TimeUtil.getDayEnd(this.dayStr)), 3600, ses);
+        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayKey), 
+                TimeUtil.getDayEnd(this.dayKey)), 3600, ses);
         
-        Calendar bkSt = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkSt = TimeUtil.getDayBegin(this.dayKey);
         bkSt.add(Calendar.MINUTE, 90);
-        Calendar bkEd = TimeUtil.getDayBegin(this.dayStr);
+        Calendar bkEd = TimeUtil.getDayBegin(this.dayKey);
         bkEd.add(Calendar.HOUR, 2);
         TimePeriod tp = new TimePeriod(bkSt, bkEd);
         BookingCreation cre = this.engine.createBooking(us1, perm1, tp, ses);
@@ -2826,7 +2937,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -2860,7 +2971,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk2);
 
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -2878,7 +2989,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk8);
 
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -2911,7 +3022,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk13);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -2944,7 +3055,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk7);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -2962,7 +3073,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -3008,8 +3119,8 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         
         /* Force a load. */
-        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayStr), 
-                TimeUtil.getDayEnd(this.dayStr)), 3600, ses);
+        this.engine.getFreeTimes(rigType1, new TimePeriod(TimeUtil.getDayBegin(this.dayKey), 
+                TimeUtil.getDayEnd(this.dayKey)), 3600, ses);
         
         boolean status = this.engine.cancelBooking(bk1, "Foo", ses);
         
@@ -3060,7 +3171,7 @@ public class SlotBookingEngineTester extends TestCase
         Map<String, DayBookings> days = (Map<String, DayBookings>) f.get(this.engine);
         assertNotNull(days);
         
-        DayBookings day = days.get(this.dayStr);
+        DayBookings day = days.get(this.dayKey);
         assertNotNull(day);
         f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
@@ -3070,7 +3181,7 @@ public class SlotBookingEngineTester extends TestCase
         
         RigBookings r1b = bklist.get(r1.getName());
         assertNotNull(r1b);
-        assertFalse(r1b.hasBooking(new MBooking(bk1, this.dayStr)));
+        assertFalse(r1b.hasBooking(new MBooking(bk1, this.dayKey)));
         assertTrue(r1b.areSlotsFree(2, 5));
     }
     
@@ -3134,7 +3245,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -3152,7 +3263,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk1);
 
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -3170,7 +3281,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk8);
 
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -3203,7 +3314,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk13);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -3236,7 +3347,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk7);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -3282,8 +3393,8 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         
         /* Force a load. */
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_WEEK, 6);
         this.engine.getFreeTimes(rigType1, new TimePeriod(start, end), 3600, ses);
         
@@ -3332,7 +3443,7 @@ public class SlotBookingEngineTester extends TestCase
         Map<String, DayBookings> days = (Map<String, DayBookings>) f.get(this.engine);
         assertNotNull(days);
         
-        DayBookings day = days.get(this.dayStr);
+        DayBookings day = days.get(this.dayKey);
         assertNotNull(day);
         f = DayBookings.class.getDeclaredField("rigBookings");
         f.setAccessible(true);
@@ -3342,7 +3453,7 @@ public class SlotBookingEngineTester extends TestCase
         
         RigBookings r1b = bklist.get(r1.getName());
         assertNotNull(r1b);
-        assertFalse(r1b.hasBooking(new MBooking(bk1, this.dayStr)));
+        assertFalse(r1b.hasBooking(new MBooking(bk1, this.dayKey)));
         assertTrue(r1b.areSlotsFree(2, 5));
     }
     
@@ -3366,8 +3477,8 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(r1);
         ses.refresh(rigType1);
 
-        Calendar s = TimeUtil.getDayBegin(this.dayStr);
-        Calendar e = TimeUtil.getDayEnd(this.dayStr);
+        Calendar s = TimeUtil.getDayBegin(this.dayKey);
+        Calendar e = TimeUtil.getDayEnd(this.dayKey);
         e.add(Calendar.DAY_OF_MONTH, 2);
         TimePeriod t = new TimePeriod(s, e);
         
@@ -3471,7 +3582,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -3521,7 +3632,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -3555,7 +3666,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -3605,7 +3716,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -3686,7 +3797,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -3705,7 +3816,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -3754,7 +3865,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -3772,7 +3883,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -3819,8 +3930,8 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_MONTH, 1);
         
         TimePeriod tp = new TimePeriod(start, end);
@@ -3923,7 +4034,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.SECOND));
         
         
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
+        Calendar cal = TimeUtil.getDayBegin(this.dayKey);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
@@ -4000,7 +4111,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -4050,7 +4161,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -4084,7 +4195,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -4134,7 +4245,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -4215,7 +4326,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -4234,7 +4345,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -4283,7 +4394,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -4301,7 +4412,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -4348,8 +4459,8 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_MONTH, 1);
         TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(r3, tp, 600, ses);
@@ -4462,7 +4573,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.SECOND));
         
         
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
+        Calendar cal = TimeUtil.getDayBegin(this.dayKey);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
@@ -4539,7 +4650,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -4589,7 +4700,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -4623,7 +4734,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -4673,7 +4784,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -4754,7 +4865,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -4773,7 +4884,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -4822,7 +4933,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -4840,7 +4951,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -4887,8 +4998,8 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_MONTH, 1);
         TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(r2, tp, 600, ses);
@@ -4999,7 +5110,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.SECOND));
         
         
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
+        Calendar cal = TimeUtil.getDayBegin(this.dayKey);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
@@ -5076,7 +5187,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -5126,7 +5237,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -5160,7 +5271,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -5210,7 +5321,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -5291,7 +5402,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -5310,7 +5421,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -5359,7 +5470,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -5377,7 +5488,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -5424,7 +5535,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayStr), TimeUtil.getDayEnd(this.dayStr));
+        TimePeriod tp = new TimePeriod(TimeUtil.getDayBegin(this.dayKey), TimeUtil.getDayEnd(this.dayKey));
         List<TimePeriod> range = this.engine.getFreeTimes(rigType1, tp, 600, ses);
         
         ses.beginTransaction();
@@ -5590,7 +5701,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -5640,7 +5751,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -5674,7 +5785,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -5724,7 +5835,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -5805,7 +5916,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -5824,7 +5935,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -5873,7 +5984,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -5891,7 +6002,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -5938,9 +6049,9 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
         start.add(Calendar.MINUTE, 10);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_MONTH, 1);
         
         TimePeriod tp = new TimePeriod(start, end);
@@ -6063,7 +6174,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.MINUTE));
         assertEquals(0, e.get(Calendar.SECOND));
         
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
+        Calendar cal = TimeUtil.getDayBegin(this.dayKey);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
@@ -6140,7 +6251,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -6190,7 +6301,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -6224,7 +6335,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -6274,7 +6385,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -6355,7 +6466,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -6374,7 +6485,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -6423,7 +6534,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -6441,7 +6552,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -6488,9 +6599,9 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
         start.add(Calendar.MINUTE, 16);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_MONTH, 1);
         TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(rcaps1, tp, 600, ses);
@@ -6590,7 +6701,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.MINUTE));
         assertEquals(0, e.get(Calendar.SECOND));
         
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
+        Calendar cal = TimeUtil.getDayBegin(this.dayKey);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
@@ -6667,7 +6778,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -6717,7 +6828,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -6751,7 +6862,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -6801,7 +6912,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -6882,7 +6993,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -6901,7 +7012,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -6950,7 +7061,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -6968,7 +7079,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -7015,8 +7126,8 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_MONTH, 1);
         TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(rcaps2, tp, 600, ses);
@@ -7116,7 +7227,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.MINUTE));
         assertEquals(0, e.get(Calendar.SECOND));
         
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
+        Calendar cal = TimeUtil.getDayBegin(this.dayKey);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));
@@ -7194,7 +7305,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(perm1);
         
         /* #### BOOKINGS FOR R1 ########################################### */
-        Calendar r1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk1 = new Bookings();
         bk1.setActive(true);
         bk1.setDuration(3600);
@@ -7244,7 +7355,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk3);
         
         /* #### BOOKINGS FOR R2 ########################################### */
-        Calendar r2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk8 = new Bookings();
         bk8.setActive(true);
         bk8.setDuration(3600);
@@ -7278,7 +7389,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk9);
         
         /* #### BOOKINGS FOR R3 ########################################### */
-        Calendar r3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar r3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk10 = new Bookings();
         bk10.setActive(true);
         bk10.setDuration(1800);
@@ -7328,7 +7439,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk12);
         
         /* #### Type bookings for RigType1 ####################################*/
-        Calendar rt1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk4 = new Bookings();
         bk4.setActive(true);
         bk4.setDuration(1800);
@@ -7409,7 +7520,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk15);
         
         /* #### Type bookings for RigType2 ####################################*/
-        Calendar rt2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rt2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk16 = new Bookings();
         bk16.setActive(true);
         bk16.setDuration(3600);
@@ -7428,7 +7539,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk16);
         
         /* #### Bookings for Request Caps 1. #################################*/
-        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap1tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk6 = new Bookings();
         bk6.setActive(true);
         bk6.setDuration(1800);
@@ -7477,7 +7588,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk17);
         
         /* #### Bookings for Request Caps 2. #################################*/
-        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap2tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk18 = new Bookings();
         bk18.setActive(true);
         bk18.setDuration(1800);
@@ -7495,7 +7606,7 @@ public class SlotBookingEngineTester extends TestCase
         ses.save(bk18);
         
         /* #### Bookings for Request Caps 3. #################################*/
-        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayStr);
+        Calendar rcap3tm = TimeUtil.getDayBegin(this.dayKey);
         Bookings bk19 = new Bookings();
         bk19.setActive(true);
         bk19.setDuration(4500);
@@ -7542,9 +7653,9 @@ public class SlotBookingEngineTester extends TestCase
         ses.refresh(rigType1);
         ses.refresh(rigType2);
         
-        Calendar start = TimeUtil.getDayBegin(this.dayStr);
+        Calendar start = TimeUtil.getDayBegin(this.dayKey);
         start.add(Calendar.MINUTE, 3);
-        Calendar end = TimeUtil.getDayBegin(this.dayStr);
+        Calendar end = TimeUtil.getDayBegin(this.dayKey);
         end.add(Calendar.DAY_OF_MONTH, 1);
         TimePeriod tp = new TimePeriod(start, end);
         List<TimePeriod> range = this.engine.getFreeTimes(rcaps3, tp, 600, ses);
@@ -7664,7 +7775,7 @@ public class SlotBookingEngineTester extends TestCase
         assertEquals(0, e.get(Calendar.MINUTE));
         assertEquals(0, e.get(Calendar.SECOND));
         
-        Calendar cal = TimeUtil.getDayBegin(this.dayStr);
+        Calendar cal = TimeUtil.getDayBegin(this.dayKey);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(cal.get(Calendar.DAY_OF_MONTH), e.get(Calendar.DAY_OF_MONTH));
         assertEquals(cal.get(Calendar.MONTH), e.get(Calendar.MONTH));

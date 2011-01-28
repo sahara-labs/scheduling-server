@@ -87,7 +87,7 @@ public class DayBookingsTwoTester extends TestCase
         f.setAccessible(true);
         f.set(null, new SystemErrLogger());
 
-        this.dayStr = TimeUtil.getDateStr(Calendar.getInstance());
+        this.dayStr = TimeUtil.getDayKey(Calendar.getInstance());
         this.day = new DayBookings(this.dayStr);
     }
 

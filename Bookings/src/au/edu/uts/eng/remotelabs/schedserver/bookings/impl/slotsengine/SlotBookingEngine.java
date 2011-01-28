@@ -127,7 +127,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         }
         
         /* Load up the current day bookings. */
-        DayBookings day = this.getDayBookings(TimeUtil.getDateStr(today));
+        DayBookings day = this.getDayBookings(TimeUtil.getDayKey(today));
         day.fullLoad(db);
         
         /* Initalise the management tasks. */
@@ -136,7 +136,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         init.addTask(this.redeemer);
         init.addListener(this.redeemer);
         init.addListener(new RigRegisteredListener());
-        init.addTask(new MemoryCleaner());
+        init.addTask(new DayCleaner());
         
         return init;
     }
@@ -369,7 +369,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
            Session db)
     {   
         Calendar now = Calendar.getInstance();
-        String dayKey = TimeUtil.getDateStr(now);
+        String dayKey = TimeUtil.getDayKey(now);
         MBooking mb = new MBooking(ses, rig, now, dayKey), nb = mb;
         boolean success = false;
         
@@ -434,7 +434,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         /* Work out the new end time and where this falls. */
         Calendar end = mb.getEnd();
         end.add(Calendar.SECOND, duration);
-        String extDay = TimeUtil.getDateStr(end);
+        String extDay = TimeUtil.getDayKey(end);
         int extEnd = TimeUtil.getSlotIndex(end);
         
         DayBookings dayb;
@@ -479,7 +479,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 String scrollDay;
                 MBooking scrollmb;
                 
-                while (!mb.getDay().equals(scrollDay = TimeUtil.getDateStr(dayScroll)))
+                while (!mb.getDay().equals(scrollDay = TimeUtil.getDayKey(dayScroll)))
                 {
                     dayScroll.add(Calendar.DAY_OF_MONTH, -1);
                     
@@ -518,7 +518,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 /*  2) Commit the intermediary day bookings. */
                 dayScroll.setTimeInMillis(end.getTimeInMillis());
                 dayScroll.add(Calendar.DAY_OF_MONTH, -1);
-                while (!mb.getDay().equals(scrollDay = TimeUtil.getDateStr(dayScroll)))
+                while (!mb.getDay().equals(scrollDay = TimeUtil.getDayKey(dayScroll)))
                 {
                     dayScroll.add(Calendar.DAY_OF_MONTH, -1);
                     
@@ -673,25 +673,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         return this.days.get(dayKey);
     }
     
-    /**
-     * Remove stale days from the current days loaded list. Stale days are
-     * those which:
-     * <ul>
-     *  <li>Days in the past.</li>
-     *  <li>Days in the <em>not</em> near future that haven't been used 
-     *  much.</li>
-     * </ul>
-     * NOTE: This should run infrequently as it requires an exclusive lock
-     * on the whole booking engine.
-     */
-    public void removeStaleDays()
-    {
-        synchronized (this.days)
-        {
-            Iterator<Entry<String, DayBookings>> day = this.days.entrySet().iterator();
-            
-        }
-    }
+    
     
     /**
      * Removes the day from the day listing. 
@@ -704,6 +686,71 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         {
             this.days.remove(dayKey);
             this.dayHitCounts.remove(dayKey);
+        }
+    }
+    
+    /** The number of days to not unload from the current days. */
+    public static final int HOT_DAYS = 10;
+    
+    /** The maximum number of days to keep in memory. */
+    public static final int MAX_DAYS = 90;
+    
+    /**
+     * Remove stale days from the current days loaded list. Stale days are
+     * those which:
+     * <ul>
+     *  <li>Days in the past.</li>
+     *  <li>Days in the <em>not</em> near future that haven't been used 
+     *  much.</li>
+     * </ul>
+     * NOTE: This should run infrequently as it requires an exclusive lock
+     * on the whole booking engine.
+     */
+    public void cleanStaleDays()
+    {
+        Calendar cal = Calendar.getInstance();
+        String currentDay = TimeUtil.getDayKey(cal);
+        cal.add(Calendar.DAY_OF_MONTH, HOT_DAYS);
+        String hotDayThres = TimeUtil.getDayKey(cal);
+        cal.add(Calendar.DAY_OF_MONTH, MAX_DAYS - HOT_DAYS);
+        String maxDayThres = TimeUtil.getDayKey(cal);
+        
+        this.logger.info("Running booking engine stale day clean. Clean thresholds are: current day=" + currentDay +
+        		", hot days=" + hotDayThres + ", max days=" + maxDayThres);
+        
+        synchronized (this.days)
+        {
+            Iterator<String> daysIt = this.days.keySet().iterator();
+            while (daysIt.hasNext())
+            {
+                String day = daysIt.next();
+                if  (day.compareTo(currentDay) < 0)
+                {
+                    /* Day in the past. */
+                    daysIt.remove();
+                    this.dayHitCounts.remove(day);
+                }
+                else if (day.compareTo(hotDayThres) <= 0) continue; // Day in hot range.
+                else if (day.compareTo(maxDayThres) <= 0)
+                {
+                    /* In this time region only remove days that are infrequently 
+                     * used. */
+                    int dc = this.dayHitCounts.get(day);
+                    if (dc < 3)
+                    {
+                        daysIt.remove();
+                        this.dayHitCounts.remove(day);
+                    }
+                    else this.dayHitCounts.put(day, dc / 2);
+                }
+                else
+                {
+                    /* Day in future past max days. */
+                    daysIt.remove();
+                    this.dayHitCounts.remove(day);
+                }
+                
+            }
         }
     }
     

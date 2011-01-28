@@ -76,12 +76,12 @@ public class RigBookingsTester extends TestCase
         RigType rt = new RigType();
         r.setRigType(rt);
         
-        this.bookings = new RigBookings(r, TimeUtil.getDateStr(new Date()));
+        this.bookings = new RigBookings(r, TimeUtil.getDayKey(new Date()));
         Field f = RigBookings.class.getDeclaredField("logger");
         f.setAccessible(true);
         f.set(this.bookings, new SystemErrLogger());
         
-        this.dayKey = TimeUtil.getDateStr(Calendar.getInstance());
+        this.dayKey = TimeUtil.getDayKey(Calendar.getInstance());
     }
     
     public void testGetTypeBookings() throws Throwable

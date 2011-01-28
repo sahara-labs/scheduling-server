@@ -47,32 +47,38 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePer
 
 /**
  * Date / Time utility to convert dates between different formats.
+ * <br />
+ * Many of the methods of this class use or refer to 'day keys'. These are 
+ * strings are contain a date (no time) and having the following properties:
+ * <ul>
+ *  <li>Has the format &lt;year&gt;-&lt;month&gt;-&lt;day&gt;</li>
+ *  <li>The strings themselves are comparable to determine which of the compared
+ *  day strings is the earlier day.</li>
+ * </ul>
  */
 public class TimeUtil
 {
     /**
-     * Converts a date object to a date string without time portion in the form 
-     * &lt;year&gt;-&lt;month&gt;-&lt;day&gt;.
+     * Converts a date object to a day key string.
      * 
      * @param date date to convert
-     * @return string date
+     * @return string day key
      */
-    public static String getDateStr(Date date)
+    public static String getDayKey(Date date)
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         
-        return TimeUtil.getDateStr(cal);
+        return TimeUtil.getDayKey(cal);
     }
     
     /**
-     * Converts a calendar object to a date string without time portion in the form 
-     * &lt;year&gt;-&lt;month&gt;-&lt;day&gt;.
+     * Converts a calendar object to a day key string.
      * 
      * @param cal calendar to convert
-     * @return string date
+     * @return string day key
      */
-    public static String getDateStr(Calendar cal)
+    public static String getDayKey(Calendar cal)
     {        
         StringBuilder dt = new StringBuilder();
         dt.append(cal.get(Calendar.YEAR));
@@ -88,12 +94,12 @@ public class TimeUtil
     /**
      * Gets a date which is at the beginning of a day.
      * 
-     * @param dateStr day key
+     * @param dayKey day key
      * @return start date
      */
-    public static Calendar getDayBegin(String dateStr)
+    public static Calendar getDayBegin(String dayKey)
     {
-        String parts[] = dateStr.split("-");
+        String parts[] = dayKey.split("-");
         
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, Integer.parseInt(parts[0]));
@@ -108,7 +114,7 @@ public class TimeUtil
     }
     
     /**
-     * Gets a date which is at the beginning of a day.
+     * Gets a calendar which is at the beginning of a day.
      * 
      * @param date a date
      * @return start date
@@ -146,12 +152,12 @@ public class TimeUtil
     /**
      * Gets a date which is at the end of a day.
      * 
-     * @param dateStr day key
+     * @param dayKey day key
      * @return end date
      */
-    public static Calendar getDayEnd(String dateStr)
+    public static Calendar getDayEnd(String dayKey)
     {
-        String parts[] = dateStr.split("-");
+        String parts[] = dayKey.split("-");
         
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, Integer.parseInt(parts[0]));
@@ -258,13 +264,13 @@ public class TimeUtil
     /**
      * Gets a date generated from a date string and a slot index.
      * 
-     * @param dateStr date
+     * @param dayKey date
      * @param slot quantum slot
      * @return date
      */
-    public static Calendar getCalendarFromSlot(String dateStr, int slot)
+    public static Calendar getCalendarFromSlot(String dayKey, int slot)
     {
-        String parts[] = dateStr.split("-");
+        String parts[] = dayKey.split("-");
         Calendar cal = Calendar.getInstance();
         
         cal.set(Calendar.YEAR, Integer.parseInt(parts[0]));
@@ -343,11 +349,11 @@ public class TimeUtil
         start.setTimeInMillis(period.getStartTime().getTimeInMillis());
         Calendar end = period.getEndTime();
         
-        days.add(TimeUtil.getDateStr(start));
+        days.add(TimeUtil.getDayKey(start));
         while (end.compareTo(start) < 86.4e6 && start.get(Calendar.DAY_OF_YEAR) != end.get(Calendar.DAY_OF_YEAR))
         {
             start.add(Calendar.DAY_OF_MONTH, 1);
-            days.add(TimeUtil.getDateStr(start));
+            days.add(TimeUtil.getDayKey(start));
         }
         
         return days;
@@ -369,11 +375,11 @@ public class TimeUtil
         Calendar endCal = Calendar.getInstance();
         endCal.setTime(end);
         
-        days.add(TimeUtil.getDateStr(start));
+        days.add(TimeUtil.getDayKey(start));
         while (end.compareTo(start) < 86.4e6 && startCal.get(Calendar.DAY_OF_YEAR) != endCal.get(Calendar.DAY_OF_YEAR))
         {
             startCal.add(Calendar.DAY_OF_MONTH, 1);
-            days.add(TimeUtil.getDateStr(startCal));
+            days.add(TimeUtil.getDayKey(startCal));
         }
         
         return days;

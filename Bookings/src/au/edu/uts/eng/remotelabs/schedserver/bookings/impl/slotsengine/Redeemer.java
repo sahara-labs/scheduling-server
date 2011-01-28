@@ -113,7 +113,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             synchronized (this)
             {
                 Calendar now = Calendar.getInstance();
-                String nowDay = TimeUtil.getDateStr(now);
+                String nowDay = TimeUtil.getDayKey(now);
                 int nowSlot = TimeUtil.getDaySlotIndex(now, nowDay);
 
                 /* The later check is to stop time going backwards, which can
@@ -270,7 +270,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             next.add(Calendar.DAY_OF_MONTH, 1);
             
             DayBookings nextDay = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(
-                    TimeUtil.getDateStr(next));
+                    TimeUtil.getDayKey(next));
             synchronized (nextDay)
             {
                 nextDay.fullLoad(db);
@@ -348,7 +348,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, 1);
                     DayBookings nextBookings = 
-                        ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(TimeUtil.getDateStr(cal));
+                        ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(TimeUtil.getDayKey(cal));
                     
                     synchronized (nextBookings)
                     {

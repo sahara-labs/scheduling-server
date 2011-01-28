@@ -247,7 +247,7 @@ public class MBooking
         this.endSlot = TimeUtil.getDaySlotIndex(end, this.day);
         this.numSlots = this.endSlot - this.startSlot + 1;
         
-        if (!this.isMultiDay && this.endSlot == SlotBookingEngine.NUM_SLOTS - 1 && !this.day.equals(TimeUtil.getDateStr(end)))
+        if (!this.isMultiDay && this.endSlot == SlotBookingEngine.NUM_SLOTS - 1 && !this.day.equals(TimeUtil.getDayKey(end)))
         {
             /* The session has been extended over a day. */
             this.isMultiDay = true;

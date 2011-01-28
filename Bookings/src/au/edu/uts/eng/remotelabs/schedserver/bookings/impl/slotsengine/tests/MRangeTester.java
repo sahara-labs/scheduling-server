@@ -57,7 +57,7 @@ public class MRangeTester extends TestCase
     @Override
     public void setUp() throws Exception
     {
-        this.day = TimeUtil.getDateStr(Calendar.getInstance());
+        this.day = TimeUtil.getDayKey(Calendar.getInstance());
     }
     
     public void testComplement()
@@ -348,7 +348,7 @@ public class MRangeTester extends TestCase
     
     public void testRangeToTimePeriod()
     {
-        String dk = TimeUtil.getDateStr(Calendar.getInstance());
+        String dk = TimeUtil.getDayKey(Calendar.getInstance());
         List<MRange> range = new ArrayList<MRange>();
         range.add(new MRange(1, 4, dk));
         range.add(new MRange(11, 14, dk));
@@ -364,8 +364,8 @@ public class MRangeTester extends TestCase
             MRange m = range.get(i);
             TimePeriod t = times.get(i);
             
-            assertEquals(m.getDayKey(), TimeUtil.getDateStr(t.getStartTime()));
-            assertEquals(m.getDayKey(), TimeUtil.getDateStr(t.getEndTime()));
+            assertEquals(m.getDayKey(), TimeUtil.getDayKey(t.getStartTime()));
+            assertEquals(m.getDayKey(), TimeUtil.getDayKey(t.getEndTime()));
             assertEquals(m.getStartSlot(), TimeUtil.getSlotIndex(t.getStartTime()));
             
             /* Duration. */
@@ -377,11 +377,11 @@ public class MRangeTester extends TestCase
     {
         Calendar cal = Calendar.getInstance();
         List<MRange> range = new ArrayList<MRange>();
-        range.add(new MRange(0, 95, TimeUtil.getDateStr(cal)));
+        range.add(new MRange(0, 95, TimeUtil.getDayKey(cal)));
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        range.add(new MRange(0, 95, TimeUtil.getDateStr(cal)));
+        range.add(new MRange(0, 95, TimeUtil.getDayKey(cal)));
         cal.add(Calendar.DAY_OF_MONTH, 2);
-        range.add(new MRange(0, 95, TimeUtil.getDateStr(cal)));
+        range.add(new MRange(0, 95, TimeUtil.getDayKey(cal)));
         
         
         List<TimePeriod> times = MRange.rangeToTimePeriod(range);

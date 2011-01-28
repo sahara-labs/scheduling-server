@@ -40,15 +40,14 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 
 /**
- * Memory cleaner which invokes the slots booking engine to remove stale
- * days from the engine. This saves memory.
+ * Infrequently invokes the slot booking engine day cleaner.
  */
-public class MemoryCleaner implements BookingManagementTask
+public class DayCleaner implements BookingManagementTask
 {
     @Override
     public void run()
     {
-        ((SlotBookingEngine)BookingActivator.getBookingEngine()).removeStaleDays();
+        ((SlotBookingEngine)BookingActivator.getBookingEngine()).cleanStaleDays();
     }
 
     @Override

@@ -118,7 +118,7 @@ public class BookingsServiceTester extends TestCase
         
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        this.dayStr = TimeUtil.getDateStr(cal);
+        this.dayStr = TimeUtil.getDayKey(cal);
         
         Field f = BookingsService.class.getDeclaredField("engine");
         f.setAccessible(true);

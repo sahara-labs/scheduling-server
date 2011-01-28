@@ -64,10 +64,10 @@ public class TimeUtilTester extends TestCase
     public void testGetDateStrCompare()
     {
         Calendar date = Calendar.getInstance();
-        String dt1 = TimeUtil.getDateStr(date);
+        String dt1 = TimeUtil.getDayKey(date);
         
         date.add(Calendar.DAY_OF_MONTH, 1);
-        String dt2 = TimeUtil.getDateStr(date);
+        String dt2 = TimeUtil.getDayKey(date);
         
         assertTrue(dt1.compareTo(dt2) < 0);
         assertTrue(dt2.compareTo(dt1) > 0);
@@ -77,10 +77,10 @@ public class TimeUtilTester extends TestCase
     public void testGetDateStrCompareMonth()
     {
         Calendar date = Calendar.getInstance();
-        String dt1 = TimeUtil.getDateStr(date);
+        String dt1 = TimeUtil.getDayKey(date);
         
         date.add(Calendar.MONTH, 1);
-        String dt2 = TimeUtil.getDateStr(date);
+        String dt2 = TimeUtil.getDayKey(date);
         
         assertTrue(dt1.compareTo(dt2) < 0);
         assertTrue(dt2.compareTo(dt1) > 0);
@@ -90,10 +90,10 @@ public class TimeUtilTester extends TestCase
     public void testGetDateStrCompareYear()
     {
         Calendar date = Calendar.getInstance();
-        String dt1 = TimeUtil.getDateStr(date);
+        String dt1 = TimeUtil.getDayKey(date);
         
         date.add(Calendar.YEAR, 1);
-        String dt2 = TimeUtil.getDateStr(date);
+        String dt2 = TimeUtil.getDayKey(date);
         
         assertTrue(dt1.compareTo(dt2) < 0);
         assertTrue(dt2.compareTo(dt1) > 0);
@@ -103,10 +103,10 @@ public class TimeUtilTester extends TestCase
     public void testGetDateStrCompareYear2()
     {
         Calendar date = Calendar.getInstance();
-        String dt1 = TimeUtil.getDateStr(date);
+        String dt1 = TimeUtil.getDayKey(date);
         
         date.add(Calendar.YEAR, -1);
-        String dt2 = TimeUtil.getDateStr(date);
+        String dt2 = TimeUtil.getDayKey(date);
         
         assertTrue(dt1.compareTo(dt2) > 0);
         assertTrue(dt2.compareTo(dt1) < 0);
@@ -116,9 +116,9 @@ public class TimeUtilTester extends TestCase
     public void testGetDateStrCompareEqual()
     {
         Calendar date = Calendar.getInstance();
-        String dt1 = TimeUtil.getDateStr(date);
+        String dt1 = TimeUtil.getDayKey(date);
 
-        String dt2 = TimeUtil.getDateStr(date);
+        String dt2 = TimeUtil.getDayKey(date);
         
         assertTrue(dt1.compareTo(dt2) == 0);
         assertTrue(dt2.compareTo(dt1) == 0);
@@ -130,7 +130,7 @@ public class TimeUtilTester extends TestCase
     {
         Date date = new Date();
         
-        String dt = TimeUtil.getDateStr(date);
+        String dt = TimeUtil.getDayKey(date);
         assertNotNull(dt);
         String parts[] = dt.split("-");
         assertEquals(3, parts.length);
@@ -349,7 +349,7 @@ public class TimeUtilTester extends TestCase
         cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 35);
         cal.set(Calendar.SECOND, 10);
-        String day = TimeUtil.getDateStr(cal);
+        String day = TimeUtil.getDayKey(cal);
         
         assertEquals(6, TimeUtil.getDaySlotIndex(cal, day));
     }
@@ -357,7 +357,7 @@ public class TimeUtilTester extends TestCase
     public void testDaySlotEngineAfter()
     {
         Calendar cal = Calendar.getInstance();
-        String day = TimeUtil.getDateStr(cal);
+        String day = TimeUtil.getDayKey(cal);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         
         assertEquals(95, TimeUtil.getDaySlotIndex(cal, day));
@@ -366,7 +366,7 @@ public class TimeUtilTester extends TestCase
     public void testDaySlotEngineBefore()
     {
         Calendar cal = Calendar.getInstance();
-        String day = TimeUtil.getDateStr(cal);
+        String day = TimeUtil.getDayKey(cal);
         cal.add(Calendar.DAY_OF_MONTH, -1);
         
         assertEquals(0, TimeUtil.getDaySlotIndex(cal, day));
@@ -428,7 +428,7 @@ public class TimeUtilTester extends TestCase
         List<String> keys = TimeUtil.getDayKeys(period);
         assertNotNull(keys);
         assertEquals(1, keys.size());
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(0));
     }
     
    
@@ -448,9 +448,9 @@ public class TimeUtilTester extends TestCase
         List<String> keys = TimeUtil.getDayKeys(period);
         assertNotNull(keys);
         assertEquals(2, keys.size());
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(0));
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(1));
     }
     
     public void testGetDayKeysFiveDays() throws Exception
@@ -463,15 +463,15 @@ public class TimeUtilTester extends TestCase
         List<String> keys = TimeUtil.getDayKeys(period);
         assertNotNull(keys);
         assertEquals(5, keys.size());
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(0));
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(1));
                 cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(2));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(2));
                 cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(3));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(3));
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(4));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(4));
     }
     
     public void testGetDayKeysFiveDaysDate() throws Exception
@@ -483,15 +483,15 @@ public class TimeUtilTester extends TestCase
         List<String> keys = TimeUtil.getDayKeys(cal.getTime(), next.getTime());
         assertNotNull(keys);
         assertEquals(5, keys.size());
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(0));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(0));
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(1));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(1));
                 cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(2));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(2));
                 cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(3));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(3));
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(TimeUtil.getDateStr(cal), keys.get(4));
+        assertEquals(TimeUtil.getDayKey(cal), keys.get(4));
     }
     
     public void testCoerceToNextSlotTime()
