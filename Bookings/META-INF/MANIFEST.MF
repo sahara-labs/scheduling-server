@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Bookings
 Bundle-SymbolicName: SchedulingServer-Bookings
-Bundle-Version: 1.0.0.alpha
+Bundle-Version: 1.0.0.beta
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator
 Bundle-Vendor: Labshare
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
