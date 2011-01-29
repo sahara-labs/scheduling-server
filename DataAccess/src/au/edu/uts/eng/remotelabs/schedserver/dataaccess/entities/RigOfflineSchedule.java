@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2011, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 31st May 2010
+ * @date 29th January 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
@@ -50,51 +50,37 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Logs the state changes off a rig. The states a rig may be in are:
- * <ul>
- *  <li>ONLINE - The rig is registered and online.</li>
- *  <li>OFFLINE - The rig is registered and offline.</li>
- *  <li>NOT_REGISTERED - Rig was previously registered but is no
- *  longer active.</li>
- * </ul>
- * <strong>NOTE:</strong> The free or in-use states are not logged
- * here, but are logged in the {@link Session} table.
+ * Rig off-line entity which contains the times the rig should be put off-line. 
  */
 @Entity
-@Table(name = "rig_log")
-public class RigLog implements Serializable
+@Table(name = "rig_offline_schedule")
+public class RigOfflineSchedule implements Serializable
 {
-    private static final long serialVersionUID = -3129829396037723954L;
+    /** Serializable class. */
+    private static final long serialVersionUID = -3898298550014627814L;
     
-    /** Registered online state (active, online). */
-    public static final String ONLINE = "ONLINE";
-    
-    /** Registered offline state (active, offline). */
-    public static final String OFFLINE = "OFFLINE";
-    
-    /** Not registered (inactive). */
-    public static final String NOT_REGISTERED = "NOT_REGISTERED";
-
-    /** Record primary key. */
+    /** Primary key. */
     private Long id;
     
-    /** Rig this log relates too. */
+    /** Rig this off-line period refers to. */
     private Rig rig;
     
-    /** The rig state before this log event. */
-    private String oldState;
+    /** The time at which this off-line period starts. */
+    private Date start;
     
-    /** The rig state after this log event. */
-    private String newState;
+    /** The time at which this on-line period ends. */
+    private Date end;
     
-    /** Reason this event occured. */
+    /** The reason for being off-line. */
     private String reason;
-    
-    /** Time stamp of this event. */
-    private Date timeStamp;
 
+    public RigOfflineSchedule()
+    {
+        /* Bean constructor. */
+    }
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
     public Long getId()
     {
@@ -118,29 +104,29 @@ public class RigLog implements Serializable
         this.rig = rig;
     }
 
-    @Column(name = "old_state", nullable = false, length = 20)
-    public String getOldState()
+    @Column(name = "start_time", nullable = true)
+    public Date getStart()
     {
-        return this.oldState;
+        return this.start;
+    }
+    
+    public void setStart(Date start)
+    {
+        this.start = start;
     }
 
-    public void setOldState(String oldState)
+    @Column(name = "end_time", nullable = true)
+    public Date getEnd()
     {
-        this.oldState = oldState;
+        return this.end;
     }
 
-    @Column(name = "new_state", nullable = false, length = 20)
-    public String getNewState()
+    public void setEnd(Date end)
     {
-        return this.newState;
+        this.end = end;
     }
 
-    public void setNewState(String newState)
-    {
-        this.newState = newState;
-    }
-
-    @Column(name = "reason", nullable = false, length = 255)
+    @Column(name = "reason", nullable = true, length = 255)
     public String getReason()
     {
         return this.reason;
@@ -149,16 +135,5 @@ public class RigLog implements Serializable
     public void setReason(String reason)
     {
         this.reason = reason;
-    }
-
-    @Column(name = "timestamp", nullable = false)
-    public Date getTimeStamp()
-    {
-        return this.timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp)
-    {
-        this.timeStamp = timeStamp;
     }
 }
