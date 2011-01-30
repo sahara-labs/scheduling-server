@@ -83,6 +83,7 @@ public class RigOfflineScheduleDao extends GenericDao<RigOfflineSchedule>
     {
         Date now = new Date();
         return (Integer)this.session.createCriteria(this.clazz)
+            .add(Restrictions.eq("rig", rig))
             .add(Restrictions.lt("startTime", now))
             .add(Restrictions.gt("endTime", now))
             .setProjection(Projections.rowCount()).uniqueResult() > 0;

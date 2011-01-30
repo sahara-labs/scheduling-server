@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serviceGroup>
+    <service name="RigManagement">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagementMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="putRigOffline" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOffline</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/putRigOfflineResponse</outputActionMapping>
+        </operation>
+        <operation name="freeRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/freeRig</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/freeRigResponse</outputActionMapping>
+        </operation>
+        <operation name="getRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/getRig</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/getRigResponse</outputActionMapping>
+        </operation>
+        <operation name="getTypeStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/NewOperation</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/getTypeStatusResponse</outputActionMapping>
+        </operation>
+        <operation name="getTypes" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/getTypes</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/getTypesResponse</outputActionMapping>
+        </operation>
+        <operation name="putRigOnline" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOnline</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/putRigOnlineResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

@@ -136,4 +136,10 @@ Date: 28th December 2009
 	<target name="messengerBundle" if="missing.messenger">
 		<buildRequiredBundle bundle="SchedulingServer-Messenger.jar" bundleProject="Messenger" />
 	</target>
+	
+	<!-- ### Rig Management Bundle. -->
+	<detectIfBundlePresent property="missing.rigmanagement" bundle="SchedulingServer-RigManagement.jar" />
+	<target name="rigManagementBundle" if="missing.rigmanagement">
+		<buildRequiredBundle bundle="SchedulingServer-RigManagement.jar" bundleProject="RigManagement" />
+	</target>
 </project>

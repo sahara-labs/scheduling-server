@@ -37,31 +37,46 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.rigmanagement;
 
+import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * Activator for the rig management bundle.
  */
 public class RigManagementActivator implements BundleActivator 
 {
+    /** SOAP servlet service registration. */
+    private ServiceRegistration soapService;
+    
     /** Logger. */
     private Logger logger;
     
     @Override
-	public void start(BundleContext bundleContext) throws Exception 
+	public void start(BundleContext context) throws Exception 
 	{
         this.logger = LoggerActivator.getLogger();
         this.logger.info("The rig management bundle is starting up.");
+        
+        /* Register the Rig Management SOAP service. */
+        this.logger.debug("Registering the Rig Management SOAP service.");
+        ServletContainerService soapService = new ServletContainerService();
+        soapService.addServlet(new ServletContainer(new AxisServlet(), true));
+        this.soapService = context.registerService(ServletContainerService.class.getName(), soapService, null);
 	}
 
 	@Override
-	public void stop(BundleContext bundleContext) throws Exception 
+	public void stop(BundleContext context) throws Exception 
 	{
 		this.logger.info("The rig management bundle is shutting down.");
+		
+		this.soapService.unregister();
 	}
 
 }

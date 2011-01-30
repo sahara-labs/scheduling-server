@@ -1,20 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<wsdl:definitions xmlns:rman="http://remotelabs.eng.uts.edu.au/rigmanagement"
-	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="RigManagement"
-	targetNamespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
-	<wsdl:types>
-		<xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
-			<xsd:element name="getTypeStatus" type="rman:RigTypeIDType" />
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="RigManagement" targetNamespace="http://remotelabs.eng.uts.edu.au/rigmanagement" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:rman="http://remotelabs.eng.uts.edu.au/rigmanagement" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
+			<xsd:element name="getTypeStatus" type="rman:RigTypeIDType"/>
 
-			<xsd:element name="getTypeStatusResponse"
-				type="rman:RigTypeType">
+			<xsd:element name="getTypeStatusResponse" type="rman:RigTypeType">
 			</xsd:element>
-			<xsd:element name="putRigOffline"
-				type="rman:PutRigOfflineType">
+			<xsd:element name="putRigOffline" type="rman:PutRigOfflineType">
 			</xsd:element>
-			<xsd:element name="putRigOfflineResponse"
-				type="rman:OperationResponseType">
+			<xsd:element name="putRigOfflineResponse" type="rman:OperationResponseType">
 			</xsd:element>
 			<xsd:element name="getRig" type="rman:RigIDType">
 			</xsd:element>
@@ -23,31 +17,27 @@
 
 			<xsd:complexType name="RigTypeIDType">
 				<xsd:sequence>
-					<xsd:element name="name" type="xsd:string"></xsd:element>
+					<xsd:element name="name" type="xsd:string"/>
 				</xsd:sequence>
 			</xsd:complexType>
 
 			<xsd:complexType name="OperationRequestType">
 		<xsd:sequence>
-			<xsd:element name="requestorID" type="xsd:int" maxOccurs="1"
-				minOccurs="0"/>
+			<xsd:element maxOccurs="1" minOccurs="0" name="requestorID" type="xsd:int"/>
 			<xsd:sequence maxOccurs="1" minOccurs="0">
-				<xsd:element name="requestorName" type="xsd:string"
-					maxOccurs="1" minOccurs="0"/>
+				<xsd:element maxOccurs="1" minOccurs="0" name="requestorName" type="xsd:string"/>
 				
-				<xsd:element name="requestorNameSpace" type="xsd:string"
-					maxOccurs="1" minOccurs="0"/>
+				<xsd:element maxOccurs="1" minOccurs="0" name="requestorNameSpace" type="xsd:string"/>
 				
 			</xsd:sequence>
 
-			<xsd:element name="requestorQName" type="xsd:string"
-				maxOccurs="1" minOccurs="0"/>
+			<xsd:element maxOccurs="1" minOccurs="0" name="requestorQName" type="xsd:string"/>
 		</xsd:sequence>
 	</xsd:complexType>
         
 			<xsd:complexType name="RigIDType">
 				<xsd:sequence>
-					<xsd:element name="name" type="xsd:string"></xsd:element>
+					<xsd:element name="name" type="xsd:string"/>
 				</xsd:sequence>
 			</xsd:complexType>
 		
@@ -55,16 +45,13 @@
 				<xsd:complexContent>
 					<xsd:extension base="rman:OperationRequestType">
 						<xsd:sequence>
-							<xsd:element name="rig"
-								type="rman:RigIDType">
+							<xsd:element name="rig" type="rman:RigIDType">
 							</xsd:element>
-							<xsd:element name="start"
-								type="xsd:dateTime">
+							<xsd:element name="start" type="xsd:dateTime">
 							</xsd:element>
 							<xsd:element name="end" type="xsd:dateTime">
 							</xsd:element>
-							<xsd:element name="reason"
-								type="xsd:string">
+							<xsd:element name="reason" type="xsd:string">
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>
@@ -81,7 +68,7 @@
 							<xsd:element name="capabilities"
 								type="xsd:string">
 							</xsd:element>
-							<xsd:element name="isActive"
+							<xsd:element name="isRegistered"
 								type="xsd:boolean">
 							</xsd:element>
 							<xsd:element name="isOnline"
@@ -90,38 +77,42 @@
 							<xsd:element name="isInSession"
 								type="xsd:boolean">
 							</xsd:element>
+							<xsd:element name="sessionUser"
+								type="xsd:string" maxOccurs="1" minOccurs="0">
+							</xsd:element>
 							<xsd:element name="isAlarmed"
 								type="xsd:boolean">
 							</xsd:element>
-							<xsd:element name="offlineReason"
-								type="xsd:string" maxOccurs="1" minOccurs="0">
+							<xsd:element maxOccurs="1" minOccurs="0"
+								name="offlineReason" type="xsd:string">
 							</xsd:element>
-							<xsd:element name="contactURL"
-								type="xsd:string" maxOccurs="1" minOccurs="0">
+							<xsd:element maxOccurs="1" minOccurs="0"
+								name="contactURL" type="xsd:string">
 							</xsd:element>
-							<xsd:element name="lastLogs"
-								type="rman:RigLogType" maxOccurs="unbounded" minOccurs="0">
+							<xsd:element maxOccurs="unbounded"
+								minOccurs="0" name="lastLogs" type="rman:RigLogType">
 							</xsd:element>
+							<xsd:element maxOccurs="unbounded"
+								minOccurs="0" name="offlinePeriods"
+								type="rman:OfflinePeriodType">
+							</xsd:element>
+
 						</xsd:sequence>
 					</xsd:extension>
 				</xsd:complexContent>
 			</xsd:complexType>
-			<xsd:element name="freeRig"
-				type="rman:KickRigType">
+			<xsd:element name="freeRig" type="rman:KickRigType">
 			</xsd:element>
-			<xsd:element name="freeRigResponse"
-				type="rman:OperationResponseType">
+			<xsd:element name="freeRigResponse" type="rman:OperationResponseType">
 			</xsd:element>
 
 			<xsd:complexType name="KickRigType">
 				<xsd:complexContent>
 					<xsd:extension base="rman:OperationRequestType">
 						<xsd:sequence>
-							<xsd:element name="rig"
-								type="rman:RigIDType">
+							<xsd:element name="rig" type="rman:RigIDType">
 							</xsd:element>
-							<xsd:element name="reason"
-								type="xsd:string">
+							<xsd:element name="reason" type="xsd:string">
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>
@@ -130,12 +121,10 @@
 			
 			<xsd:complexType name="OperationResponseType">
 				<xsd:sequence>
-					<xsd:element name="successful" type="xsd:boolean"></xsd:element>
-					<xsd:element name="failureCode" type="xsd:int"
-						maxOccurs="1" minOccurs="0">	
+					<xsd:element name="successful" type="xsd:boolean"/>
+					<xsd:element maxOccurs="1" minOccurs="0" name="failureCode" type="xsd:int">	
                     </xsd:element>
-					<xsd:element name="failureReason" type="xsd:string"
-						maxOccurs="1" minOccurs="0">
+					<xsd:element maxOccurs="1" minOccurs="0" name="failureReason" type="xsd:string">
 					</xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
@@ -151,8 +140,8 @@
 							<xsd:element name="isAlarmed"
 								type="xsd:boolean">
 							</xsd:element>
-							<xsd:element name="rigs" type="rman:RigType"
-								maxOccurs="unbounded" minOccurs="0">
+							<xsd:element maxOccurs="unbounded"
+								minOccurs="0" name="rigs" type="rman:RigType">
 							</xsd:element>
 							<xsd:element name="numberRigs"
 								type="xsd:int">
@@ -164,127 +153,182 @@
 		
 			<xsd:complexType name="RigLogType">
 				<xsd:sequence>
-					<xsd:element name="timestamp" type="xsd:dateTime"></xsd:element>
-					<xsd:element name="oldState"
-						type="rman:RigStateType">
+					<xsd:element name="timestamp" type="xsd:dateTime"/>
+					<xsd:element name="oldState" type="rman:RigStateType">
 					</xsd:element>
-					<xsd:element name="newState"
-						type="rman:RigStateType">
+					<xsd:element name="newState" type="rman:RigStateType">
 					</xsd:element>
-					<xsd:element name="reason" type="xsd:string"></xsd:element>
+					<xsd:element name="reason" type="xsd:string"/>
 				</xsd:sequence>
 			</xsd:complexType>
 		
 			<xsd:simpleType name="RigStateType">
 				<xsd:restriction base="xsd:string">
-					<xsd:enumeration value="NOT_REGISTERED"></xsd:enumeration>
-					<xsd:enumeration value="ONLINE"></xsd:enumeration>
-					<xsd:enumeration value="OFFLINE"></xsd:enumeration>
+					<xsd:enumeration value="NOT_REGISTERED"/>
+					<xsd:enumeration value="ONLINE"/>
+					<xsd:enumeration value="OFFLINE"/>
 				</xsd:restriction>
 			</xsd:simpleType>
 			<xsd:element name="getTypes" type="rman:VoidType">
 			</xsd:element>
-			<xsd:element name="getTypesResponse"
-				type="rman:RigTypesType">
+			<xsd:element name="getTypesResponse" type="rman:RigTypesType">
 			</xsd:element>
 
 			<xsd:complexType name="RigTypesType">
 				<xsd:sequence>
-					<xsd:element name="type" type="rman:RigTypeIDType"
-						maxOccurs="unbounded" minOccurs="0">
+					<xsd:element maxOccurs="unbounded" minOccurs="0"
+						name="type" type="rman:RigTypeType">
 					</xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
 		
 			<xsd:complexType name="VoidType">
 				<xsd:sequence>
-					<xsd:element name="void" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+					<xsd:element maxOccurs="1" minOccurs="0" name="void" type="xsd:string"/>
 				</xsd:sequence>
 			</xsd:complexType>
-			<xsd:element name="putRigOnline"
-				type="rman:PutRigOnlineType">
+			<xsd:element name="putRigOnline" type="rman:PutRigOnlineType">
 			</xsd:element>
-			<xsd:element name="putRigOnlineResponse"
-				type="rman:OperationResponseType">
+			<xsd:element name="putRigOnlineResponse" type="rman:OperationResponseType">
 			</xsd:element>
 		
 			<xsd:complexType name="PutRigOnlineType">
 				<xsd:complexContent>
 					<xsd:extension base="rman:OperationRequestType">
 						<xsd:sequence>
-							<xsd:element name="rig"
-								type="rman:RigIDType">
+							<xsd:element name="rig" type="rman:RigIDType">
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>
 				</xsd:complexContent>
 			</xsd:complexType>
-		</xsd:schema>
-  </wsdl:types>
-  <wsdl:message name="getTypeStatusRequest">
-    <wsdl:part element="rman:getTypeStatus" name="parameters"/>
-  </wsdl:message>
-  <wsdl:message name="getTypeStatusResponse">
-    <wsdl:part element="rman:getTypeStatusResponse" name="parameters"/>
-  </wsdl:message>
-  <wsdl:message name="putRigOfflineRequest">
-  	<wsdl:part name="parameters" element="rman:putRigOffline"/>
-  </wsdl:message>
-  <wsdl:message name="putRigOfflineResponse">
-  	<wsdl:part name="parameters" element="rman:putRigOfflineResponse"/>
-  </wsdl:message>
-  <wsdl:message name="getRigRequest">
-  	<wsdl:part name="parameters" element="rman:getRig"/>
-  </wsdl:message>
-  <wsdl:message name="getRigResponse">
-  	<wsdl:part name="parameters" element="rman:getRigResponse"/>
-  </wsdl:message>
-  <wsdl:message name="freeRigRequest">
-  	<wsdl:part name="parameters" element="rman:freeRig"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="freeRigResponse">
-  	<wsdl:part name="parameters" element="rman:freeRigResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getTypesRequest">
-  	<wsdl:part name="parameters" element="rman:getTypes"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getTypesResponse">
-  	<wsdl:part name="parameters" element="rman:getTypesResponse"></wsdl:part>
-  </wsdl:message>
+		
+			<xsd:complexType name="OfflinePeriodType">
+				<xsd:sequence>
+					<xsd:element name="id" type="xsd:int"/>
+					<xsd:element name="start" type="xsd:dateTime"/>
+					<xsd:element name="end" type="xsd:dateTime"/>
 
-  <wsdl:message name="putRigOnlineRequest">
-  	<wsdl:part name="parameters" element="rman:putRigOnline"></wsdl:part>
+					<xsd:element name="reason" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="cancelRigOffline" type="rman:CancelRigOfflineType">
+			</xsd:element>
+			<xsd:element name="cancelRigOfflineResponse" type="rman:OperationResponseType">
+			</xsd:element>
+    
+			<xsd:complexType name="CancelRigOfflineType">
+				<xsd:complexContent>
+					<xsd:extension base="rman:OperationRequestType">
+						<xsd:sequence>
+							<xsd:element name="period" type="rman:OfflinePeriodType">
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:extension>
+				</xsd:complexContent>
+			</xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="getTypesResponse">
+    <wsdl:part name="parameters" element="rman:getTypesResponse">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:message name="putRigOnlineResponse">
-  	<wsdl:part name="parameters" element="rman:putRigOnlineResponse"></wsdl:part>
+    <wsdl:part name="parameters" element="rman:putRigOnlineResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypesRequest">
+    <wsdl:part name="parameters" element="rman:getTypes">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelRigOfflineRequest">
+    <wsdl:part name="parameters" element="rman:cancelRigOffline">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="freeRigResponse">
+    <wsdl:part name="parameters" element="rman:freeRigResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="putRigOnlineRequest">
+    <wsdl:part name="parameters" element="rman:putRigOnline">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="putRigOfflineResponse">
+    <wsdl:part name="parameters" element="rman:putRigOfflineResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelRigOfflineResponse">
+    <wsdl:part name="parameters" element="rman:cancelRigOfflineResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="putRigOfflineRequest">
+    <wsdl:part name="parameters" element="rman:putRigOffline">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="freeRigRequest">
+    <wsdl:part name="parameters" element="rman:freeRig">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRigResponse">
+    <wsdl:part name="parameters" element="rman:getRigResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRigRequest">
+    <wsdl:part name="parameters" element="rman:getRig">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypeStatusRequest">
+    <wsdl:part name="parameters" element="rman:getTypeStatus">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypeStatusResponse">
+    <wsdl:part name="parameters" element="rman:getTypeStatusResponse">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="RigManagement">
     <wsdl:operation name="getTypes">
-    	<wsdl:input message="rman:getTypesRequest"></wsdl:input>
-    	<wsdl:output message="rman:getTypesResponse"></wsdl:output>
+      <wsdl:input message="rman:getTypesRequest">
+    </wsdl:input>
+      <wsdl:output message="rman:getTypesResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getTypeStatus">
-      <wsdl:input message="rman:getTypeStatusRequest"/>
-      <wsdl:output message="rman:getTypeStatusResponse"/>
+      <wsdl:input message="rman:getTypeStatusRequest">
+    </wsdl:input>
+      <wsdl:output message="rman:getTypeStatusResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getRig">
-    	<wsdl:input message="rman:getRigRequest"/>
-    	<wsdl:output message="rman:getRigResponse"/>
+      <wsdl:input message="rman:getRigRequest">
+    </wsdl:input>
+      <wsdl:output message="rman:getRigResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="putRigOffline">
-    	<wsdl:input message="rman:putRigOfflineRequest"/>
-    	<wsdl:output message="rman:putRigOfflineResponse"/>
+      <wsdl:input message="rman:putRigOfflineRequest">
+    </wsdl:input>
+      <wsdl:output message="rman:putRigOfflineResponse">
+    </wsdl:output>
     </wsdl:operation>
-     <wsdl:operation name="putRigOnline">
-    	<wsdl:input message="rman:putRigOnlineRequest"></wsdl:input>
-    	<wsdl:output message="rman:putRigOnlineResponse"></wsdl:output>
+    <wsdl:operation name="putRigOnline">
+      <wsdl:input message="rman:putRigOnlineRequest">
+    </wsdl:input>
+      <wsdl:output message="rman:putRigOnlineResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="freeRig">
-    	<wsdl:input message="rman:freeRigRequest"></wsdl:input>
-    	<wsdl:output message="rman:freeRigResponse"></wsdl:output>
+      <wsdl:input message="rman:freeRigRequest">
+    </wsdl:input>
+      <wsdl:output message="rman:freeRigResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelRigOffline">
+      <wsdl:input message="rman:cancelRigOfflineRequest">
+    </wsdl:input>
+      <wsdl:output message="rman:cancelRigOfflineResponse">
+    </wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
-  
   <wsdl:binding name="RigManagementSOAP" type="rman:RigManagement">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="getTypeStatus">
@@ -296,9 +340,63 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getTypes">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/getTypes"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRig">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/getRig"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="putRigOffline">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOffline"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="putRigOnline">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOnline"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="freeRig">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/freeRig"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelRigOffline">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/cancelRigOffline"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="RigManagement">
-    <wsdl:port binding="rman:RigManagementSOAP" name="RigManagementSOAP">
+    <wsdl:port name="RigManagementSOAP" binding="rman:RigManagementSOAP">
       <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-RigManagement/RigManagement"/>
     </wsdl:port>
   </wsdl:service>
