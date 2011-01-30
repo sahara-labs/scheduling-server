@@ -66,10 +66,10 @@ public class RigOfflineSchedule implements Serializable
     private Rig rig;
     
     /** The time at which this off-line period starts. */
-    private Date start;
+    private Date startTime;
     
     /** The time at which this on-line period ends. */
-    private Date end;
+    private Date endTime;
     
     /** The reason for being off-line. */
     private String reason;
@@ -105,25 +105,25 @@ public class RigOfflineSchedule implements Serializable
     }
 
     @Column(name = "start_time", nullable = true)
-    public Date getStart()
+    public Date getStartTime()
     {
-        return this.start;
+        return this.startTime;
     }
     
-    public void setStart(Date start)
+    public void setStartTime(Date start)
     {
-        this.start = start;
+        this.startTime = start;
     }
 
     @Column(name = "end_time", nullable = true)
-    public Date getEnd()
+    public Date getEndTime()
     {
-        return this.end;
+        return this.endTime;
     }
 
-    public void setEnd(Date end)
+    public void setEndTime(Date end)
     {
-        this.end = end;
+        this.endTime = end;
     }
 
     @Column(name = "reason", nullable = true, length = 255)
