@@ -132,7 +132,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         
         /* Initalise the management tasks. */
         BookingInit init = new BookingInit();
-        this.redeemer = new Redeemer(day);
+        this.redeemer = new Redeemer(this, day);
         init.addTask(this.redeemer);
         init.addListener(this.redeemer);
         init.addListener(new RigRegisteredListener());
@@ -668,8 +668,11 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 }
             }
         }
+        else if (load)
+        {
+            this.dayHitCounts.put(dayKey, this.dayHitCounts.get(dayKey) + 1);
+        }
         
-        this.dayHitCounts.put(dayKey, this.dayHitCounts.get(dayKey) + 1);
         return this.days.get(dayKey);
     }
     

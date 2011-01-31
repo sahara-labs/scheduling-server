@@ -71,6 +71,9 @@ public class Redeemer implements BookingManagementTask, RigEventListener
      *  notification out. */
     public static final int NOTIF_SLOTS = 4;
     
+    /** Slots booking engine. */
+    private SlotBookingEngine engine;
+    
     /** The current day bookings. */
     private DayBookings currentDay;
     
@@ -84,7 +87,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     private Map<String, MBooking> redeemingBookings;
     
     /** List of bookings that are currently in session. */
-    private Map<String, MBooking> runningBookings;    
+    private Map<String, MBooking> runningBookings;
     
     /** Logger. */
     private Logger logger;
@@ -92,9 +95,11 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     /** Flag to specify if this is a test run. */
     private boolean notTest = true;
     
-    public Redeemer(DayBookings startDay)
+    public Redeemer(SlotBookingEngine engine, DayBookings startDay)
     {
         this.logger = LoggerActivator.getLogger();
+        
+        this.engine = engine;
         
         this.redeemingBookings = new HashMap<String, MBooking>();
         this.runningBookings = Collections.synchronizedMap(new HashMap<String, MBooking>());
@@ -125,11 +130,10 @@ public class Redeemer implements BookingManagementTask, RigEventListener
 
                     /* Clean up the old day bookings. We don't need that resident 
                      * any more as it is only historical. */
-                    SlotBookingEngine engine = (SlotBookingEngine)BookingActivator.getBookingEngine();
-                    engine.removeDay(this.currentDay.getDay());
+                    this.engine.removeDay(this.currentDay.getDay());
 
                     /* Set the new day. */
-                    synchronized (this.currentDay = engine.getDayBookings(nowDay))
+                    synchronized (this.currentDay = this.engine.getDayBookings(nowDay))
                     {
                         this.currentDay.fullLoad(db);
                     };
@@ -269,8 +273,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             Calendar next = Calendar.getInstance();
             next.add(Calendar.DAY_OF_MONTH, 1);
             
-            DayBookings nextDay = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(
-                    TimeUtil.getDayKey(next));
+            DayBookings nextDay = this.engine.getDayBookings(TimeUtil.getDayKey(next));
             synchronized (nextDay)
             {
                 nextDay.fullLoad(db);
@@ -298,7 +301,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                 for (String day : TimeUtil.getDayKeys(old.getStart().getTime(), old.getEnd().getTime()))
                 {
                     /* If a day isn't loaded we aren't going to load it. */
-                    if ((dayb = ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(day, false)) != null)
+                    if ((dayb = this.engine.getDayBookings(day, false)) != null)
                     {
                         synchronized (dayb)
                         {
@@ -347,8 +350,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                     /* Next booking is on next day. */
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, 1);
-                    DayBookings nextBookings = 
-                        ((SlotBookingEngine)BookingActivator.getBookingEngine()).getDayBookings(TimeUtil.getDayKey(cal));
+                    DayBookings nextBookings = this.engine.getDayBookings(TimeUtil.getDayKey(cal));
                     
                     synchronized (nextBookings)
                     {
