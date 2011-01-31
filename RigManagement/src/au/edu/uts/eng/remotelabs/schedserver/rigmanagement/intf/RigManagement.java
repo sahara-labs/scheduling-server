@@ -46,11 +46,15 @@ import org.hibernate.criterion.Order;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigOfflineScheduleDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOfflineResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOfflineType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.FreeRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.FreeRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetRig;
@@ -59,6 +63,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeSta
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypes;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypesResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationRequestType;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOfflineResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnline;
@@ -238,7 +244,77 @@ public class RigManagement implements RigManagementInterface
     @Override
     public CancelRigOfflineResponse cancelRigOffline(CancelRigOffline request)
     {
-        // TODO Auto-generated method stub
-        return null;
+        CancelRigOfflineType cancelParam = request.getCancelRigOffline();
+        this.logger.debug("Received RigManagement#cancelRigOffline with params: requestor ID=" + cancelParam.getRequestorID() +
+                "requestor namespace=" + cancelParam.getRequestorNameSpace() + ", requestor name" + cancelParam.getRequestorName() +
+                ", offline ID=" + cancelParam.getPeriod().getId() + '.');
+        
+        CancelRigOfflineResponse response = new CancelRigOfflineResponse();
+        OperationResponseType result = new OperationResponseType();
+        response.setCancelRigOfflineResponse(result);
+        
+        RigOfflineScheduleDao dao = new RigOfflineScheduleDao();
+        try
+        {
+            if (!this.isAuthorised(cancelParam, dao.getSession()))
+            {
+                this.logger.warn("Unable to cancel a rig offline period because the user is not authorised to perform " +
+                		"this operation.");
+                result.setFailureCode(1);
+                result.setFailureReason("Not authorised.");
+                return response;
+            }
+            
+            RigOfflineSchedule offline = dao.get(Long.valueOf(cancelParam.getPeriod().getId()));
+            if (offline == null)
+            {
+                this.logger.warn("Unable to cancel a rig offline period because the offline period with ID " + 
+                        cancelParam.getPeriod().getId() + " was not found.");
+                result.setFailureCode(2);
+                result.setFailureReason("Period not found.");
+                return response;
+            }
+            
+            /* Cancel the offline period. */
+            
+            /* Notify the booking engine. */
+            
+            /* If the period is currently active, clear the rig maintenance state. */
+            
+            
+        }
+        finally
+        {
+            dao.closeSession();
+        }
+        
+        return response;
+    }
+    
+    /**
+     * Checks whether the requestor is authorised to perform an operation. The
+     * requestors are only authorised if they are admins.
+     * 
+     * @param request
+     * @return true if the requestor is an admin
+     */
+    private boolean isAuthorised(OperationRequestType request, Session db)
+    {
+        UserDao dao = new UserDao(db);
+        
+        String ns = request.getRequestorNameSpace(), name = request.getRequestorName();
+        User user = null;
+        if (request.getRequestorID() > 0)
+        {
+            user = dao.get(Long.valueOf(request.getRequestorID()));
+        }
+        else if (ns != null && name != null)
+        {
+            user = dao.findByName(ns, name);
+        }
+        
+        if (user == null) return false;
+        
+        return User.ADMIN.equals(user.getPersona());
     }
 }
