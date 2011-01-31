@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -84,9 +85,25 @@ public class RigOfflineScheduleDao extends GenericDao<RigOfflineSchedule>
         Date now = new Date();
         return (Integer)this.session.createCriteria(this.clazz)
             .add(Restrictions.eq("rig", rig))
+            .add(Restrictions.eq("active", Boolean.TRUE))
             .add(Restrictions.lt("startTime", now))
             .add(Restrictions.gt("endTime", now))
             .setProjection(Projections.rowCount()).uniqueResult() > 0;
-        
+    }
+    
+    /**
+     * Returns a list of offline periods for the rig.
+     * 
+     * @param rig rig
+     * @return list of offline periods
+     */
+    @SuppressWarnings("unchecked")
+    public List<RigOfflineSchedule> getOfflinePeriods(Rig rig)
+    {
+        return this.session.createCriteria(this.clazz)
+            .add(Restrictions.eq("rig", rig))
+            .add(Restrictions.eq("active", Boolean.TRUE))
+            .add(Restrictions.gt("endTime", new Date()))
+            .list();
     }
 }

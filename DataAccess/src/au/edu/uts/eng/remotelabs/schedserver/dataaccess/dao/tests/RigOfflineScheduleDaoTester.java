@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -86,6 +87,7 @@ public class RigOfflineScheduleDaoTester extends TestCase
         r.setRigType(rt);
         ses.save(r);
         RigOfflineSchedule ro = new RigOfflineSchedule();
+        ro.setActive(true);
         ro.setStartTime(new Date(System.currentTimeMillis() - 60000));
         ro.setEndTime(new Date(System.currentTimeMillis() + 60000));
         ro.setRig(r);
@@ -106,6 +108,43 @@ public class RigOfflineScheduleDaoTester extends TestCase
     }
     
     @Test
+    public void testIsOfflineNotActive()
+    {
+        Session ses = this.dao.getSession();
+        ses.beginTransaction();
+        RigType rt = new RigType();
+        rt.setName("offlineschedtype");
+        ses.save(rt);
+        RigCapabilities caps = new RigCapabilities("offline,schedul,test");
+        ses.save(caps);
+        Rig r = new Rig();
+        r.setName("offlineschedtest");
+        r.setLastUpdateTimestamp(new Date());
+        r.setRigCapabilities(caps);
+        r.setRigType(rt);
+        ses.save(r);
+        RigOfflineSchedule ro = new RigOfflineSchedule();
+        ro.setActive(false);
+        ro.setStartTime(new Date(System.currentTimeMillis() - 60000));
+        ro.setEndTime(new Date(System.currentTimeMillis() + 60000));
+        ro.setRig(r);
+        ro.setReason("testcase");
+        ses.save(ro);
+        ses.getTransaction().commit();
+        
+        boolean off = this.dao.isOffline(r);
+        
+        ses.beginTransaction();
+        ses.delete(ro);
+        ses.delete(r);
+        ses.delete(rt);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        
+        assertFalse(off);
+    }
+    
+    @Test
     public void testIsOfflineBefore()
     {
         Session ses = this.dao.getSession();
@@ -122,6 +161,7 @@ public class RigOfflineScheduleDaoTester extends TestCase
         r.setRigType(rt);
         ses.save(r);
         RigOfflineSchedule ro = new RigOfflineSchedule();
+        ro.setActive(true);
         ro.setStartTime(new Date(System.currentTimeMillis() - 120000));
         ro.setEndTime(new Date(System.currentTimeMillis() - 60000));
         ro.setRig(r);
@@ -158,6 +198,7 @@ public class RigOfflineScheduleDaoTester extends TestCase
         r.setRigType(rt);
         ses.save(r);
         RigOfflineSchedule ro = new RigOfflineSchedule();
+        ro.setActive(true);
         ro.setStartTime(new Date(System.currentTimeMillis() + 60000));
         ro.setEndTime(new Date(System.currentTimeMillis() + 1200000));
         ro.setRig(r);
@@ -205,5 +246,58 @@ public class RigOfflineScheduleDaoTester extends TestCase
         
         assertFalse(off);
     }
-
+    
+    @Test
+    public void testGetOfflinePeriods()
+    {
+        Session ses = this.dao.getSession();
+        ses.beginTransaction();
+        RigType rt = new RigType();
+        rt.setName("offlineschedtype");
+        ses.save(rt);
+        RigCapabilities caps = new RigCapabilities("offline,schedul,test");
+        ses.save(caps);
+        Rig r = new Rig();
+        r.setName("offlineschedtest");
+        r.setLastUpdateTimestamp(new Date());
+        r.setRigCapabilities(caps);
+        r.setRigType(rt);
+        ses.save(r);
+        RigOfflineSchedule ro = new RigOfflineSchedule();
+        ro.setActive(true);
+        ro.setStartTime(new Date(System.currentTimeMillis() - 60000));
+        ro.setEndTime(new Date(System.currentTimeMillis() + 60000));
+        ro.setRig(r);
+        ro.setReason("testcase");
+        ses.save(ro);
+        RigOfflineSchedule ro1 = new RigOfflineSchedule();
+        ro1.setActive(true);
+        ro1.setStartTime(new Date(System.currentTimeMillis() + 60000));
+        ro1.setEndTime(new Date(System.currentTimeMillis() + 1200000));
+        ro1.setRig(r);
+        ro1.setReason("testcase");
+        ses.save(ro1);
+        RigOfflineSchedule ro2 = new RigOfflineSchedule();
+        ro2.setActive(false);
+        ro2.setStartTime(new Date(System.currentTimeMillis() + 60000));
+        ro2.setEndTime(new Date(System.currentTimeMillis() + 1200000));
+        ro2.setRig(r);
+        ro2.setReason("testcase");
+        ses.save(ro2);
+        ses.getTransaction().commit();
+        
+        List<RigOfflineSchedule> list = this.dao.getOfflinePeriods(r);
+        
+        ses.beginTransaction();
+        ses.delete(ro2);
+        ses.delete(ro1);
+        ses.delete(ro);
+        ses.delete(r);
+        ses.delete(rt);
+        ses.delete(caps);
+        ses.getTransaction().commit();
+        
+        assertNotNull(list);
+        assertEquals(list.size(), 2);
+    }
 }

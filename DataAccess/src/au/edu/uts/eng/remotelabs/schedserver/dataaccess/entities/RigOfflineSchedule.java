@@ -62,6 +62,9 @@ public class RigOfflineSchedule implements Serializable
     /** Primary key. */
     private Long id;
     
+    /** Whether this offline period is enabled. */
+    private boolean active;
+    
     /** Rig this off-line period refers to. */
     private Rig rig;
     
@@ -90,6 +93,17 @@ public class RigOfflineSchedule implements Serializable
     public void setId(Long id)
     {
         this.id = id;
+    }
+
+    @Column(name = "active", nullable = false)
+    public boolean isActive()
+    {
+        return this.active;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
