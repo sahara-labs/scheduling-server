@@ -37,17 +37,22 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigOfflineScheduleDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -63,12 +68,15 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeSta
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypes;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypesResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OfflinePeriodType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOfflineResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnlineResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigLogType;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigStateType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeIDType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeType;
@@ -213,6 +221,92 @@ public class RigManagement implements RigManagementInterface
         return response;
     }
     
+    @SuppressWarnings("unchecked")
+    @Override
+    public GetRigResponse getRig(GetRig request)
+    {
+        String name = request.getGetRig().getName();
+        this.logger.debug("Received RigManagement#getRig with parameters: name=" + name + '.');
+        
+        GetRigResponse response = new GetRigResponse();
+        RigType rigParam = new RigType();
+        rigParam.setName(name);
+        RigTypeIDType typeID = new RigTypeIDType();
+        typeID.setName("Unknown.");
+        rigParam.setRigType(typeID);
+        rigParam.setCapabilities("Unknown.");
+        response.setGetRigResponse(rigParam);
+        
+        RigDao dao = new RigDao();
+        try
+        {
+            Rig rig = dao.findByName(name);
+            if (rig == null) return response;
+            
+            typeID.setName(rig.getRigType().getName());
+            rigParam.setCapabilities(rig.getRigCapabilities().getCapabilities());
+            
+            rigParam.setIsRegistered(rig.isActive());
+            rigParam.setIsOnline(rig.isOnline());
+            if (rig.isInSession())
+            {
+                rigParam.setIsInSession(true);
+                rigParam.setSessionUser(rig.getSession().getUser().qName());
+            }
+            
+            rigParam.setIsAlarmed(!(rig.isActive() && rig.isOnline()) && 
+                    !(new RigOfflineScheduleDao(dao.getSession()).isOffline(rig)));
+            
+            if (rig.getOfflineReason() != null) rigParam.setOfflineReason(rig.getOfflineReason());
+            if (rig.getContactUrl() != null) rigParam.setContactURL(rig.getContactUrl());
+            
+            for (RigLog log : (List<RigLog>) dao.getSession().createCriteria(RigLog.class)
+                    .add(Restrictions.eq("rig", rig))
+                    .add(Restrictions.gt("timeStamp", new Date(System.currentTimeMillis() - 86400000L)))
+                    .addOrder(Order.asc("timeStamp")).list())
+            {
+                RigLogType logParam = new RigLogType();
+                Calendar ts = Calendar.getInstance();
+                ts.setTime(log.getTimeStamp());
+                logParam.setTimestamp(ts);
+                logParam.setReason(log.getReason());
+                
+                if      (RigLog.ONLINE.equals(log.getOldState())) logParam.setOldState(RigStateType.ONLINE);
+                else if (RigLog.OFFLINE.equals(log.getOldState())) logParam.setOldState(RigStateType.OFFLINE);
+                else if (RigLog.NOT_REGISTERED.equals(log.getOldState())) logParam.setOldState(RigStateType.NOT_REGISTERED);
+                
+                if      (RigLog.ONLINE.equals(log.getNewState())) logParam.setNewState(RigStateType.ONLINE);
+                else if (RigLog.OFFLINE.equals(log.getNewState())) logParam.setNewState(RigStateType.OFFLINE);
+                else if (RigLog.NOT_REGISTERED.equals(log.getNewState())) logParam.setNewState(RigStateType.NOT_REGISTERED);
+                
+                rigParam.addLastLog(logParam);
+            }
+            
+            for (RigOfflineSchedule sched : new RigOfflineScheduleDao(dao.getSession()).getOfflinePeriods(rig))
+            {
+                OfflinePeriodType offline = new OfflinePeriodType();
+                offline.setId(sched.getId().intValue());
+                offline.setReason(sched.getReason());
+                
+                Calendar start = Calendar.getInstance();
+                start.setTime(sched.getStartTime());
+                offline.setStart(start);
+                
+                Calendar end = Calendar.getInstance();
+                end.setTime(sched.getEndTime());
+                offline.setEnd(end);
+                
+                rigParam.addOfflinePeriods(offline);
+            }
+        }
+        finally
+        {
+            dao.closeSession();
+        }
+        
+        return response;
+    }
+    
     @Override
     public PutRigOfflineResponse putRigOffline(PutRigOffline putRigOffline)
     {
@@ -222,13 +316,6 @@ public class RigManagement implements RigManagementInterface
 
     @Override
     public FreeRigResponse freeRig(FreeRig freeRig)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public GetRigResponse getRig(GetRig getRig)
     {
         // TODO Auto-generated method stub
         return null;

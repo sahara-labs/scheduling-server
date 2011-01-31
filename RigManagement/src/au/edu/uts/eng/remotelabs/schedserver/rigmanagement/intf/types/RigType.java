@@ -234,7 +234,7 @@ public class RigType extends RigIDType implements ADBBean
         this.lastLogs = param;
     }
 
-    public void addLastLogs(final RigLogType param)
+    public void addLastLog(final RigLogType param)
     {
         if (this.lastLogs == null)
         {

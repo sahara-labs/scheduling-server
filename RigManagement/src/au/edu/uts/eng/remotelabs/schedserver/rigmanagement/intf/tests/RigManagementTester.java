@@ -47,14 +47,21 @@ import org.junit.Test;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetRig;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypes;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypesResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OfflinePeriodType;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigIDType;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigLogType;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigStateType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeIDType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypesType;
@@ -142,6 +149,7 @@ public class RigManagementTester extends TestCase
         r.setRigType(rt);
         ses.save(r);
         RigOfflineSchedule ro = new RigOfflineSchedule();
+        ro.setActive(true);
         ro.setStartTime(new Date(System.currentTimeMillis() - 60000));
         ro.setEndTime(new Date(System.currentTimeMillis() + 60000));
         ro.setRig(r);
@@ -238,6 +246,182 @@ public class RigManagementTester extends TestCase
             }
         }
     }
+    
+    @Test
+    public void testGetRig()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType rt = new RigType();
+        rt.setName("rigmanagetest");
+        ses.save(rt);
+        RigCapabilities caps = new RigCapabilities("rig,management,test");
+        ses.save(caps);
+        Rig r = new Rig();
+        r.setActive(true);
+        r.setOnline(true);
+        r.setContactUrl("foo://bar");
+        r.setName("rigmanagementrig");
+        r.setLastUpdateTimestamp(new Date());
+        r.setRigCapabilities(caps);
+        r.setRigType(rt);
+        ses.save(r);
+        RigOfflineSchedule ro = new RigOfflineSchedule();
+        ro.setActive(true);
+        ro.setStartTime(new Date(System.currentTimeMillis() - 60000));
+        ro.setEndTime(new Date(System.currentTimeMillis() + 60000));
+        ro.setRig(r);
+        ro.setReason("testcase");
+        ses.save(ro);
+        RigLog l1 = new RigLog();
+        l1.setTimeStamp(new Date());
+        l1.setReason("register received");
+        l1.setRig(r);
+        l1.setOldState(RigLog.NOT_REGISTERED);
+        l1.setNewState(RigLog.OFFLINE);
+        ses.save(l1);
+        RigLog l2 = new RigLog();
+        l2.setTimeStamp(new Date(System.currentTimeMillis() + 100000));
+        l2.setReason("online received");
+        l2.setRig(r);
+        l2.setOldState(RigLog.OFFLINE);
+        l2.setNewState(RigLog.ONLINE);
+        ses.save(l2);
+        RigLog l3 = new RigLog();
+        l3.setTimeStamp(new Date(System.currentTimeMillis() - 100000000));
+        l3.setReason("online received");
+        l3.setRig(r);
+        l3.setOldState(RigLog.OFFLINE);
+        l3.setNewState(RigLog.ONLINE);
+        ses.save(l3);
+        ses.getTransaction().commit();
+        
+        ses.refresh(rt);
+        ses.refresh(r);
+        ses.refresh(ro);
+        
+        GetRig request = new GetRig();
+        RigIDType rid = new RigIDType();
+        rid.setName(r.getName());
+        request.setGetRig(rid);
+        
+        GetRigResponse response = this.service.getRig(request);
+        
+        ses.beginTransaction();
+        ses.delete(l1);
+        ses.delete(l2);
+        ses.delete(l3);
+        ses.delete(ro);
+        ses.delete(r);
+        ses.delete(caps);
+        ses.delete(rt);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType rig = response.getGetRigResponse();
+        assertNotNull(rig);
+        
+        assertEquals(r.getName(), rig.getName());
+        assertEquals(caps.getCapabilities(), rig.getCapabilities());
+        
+        RigTypeIDType tid = rig.getRigType();
+        assertNotNull(tid);
+        assertEquals(rt.getName(), tid.getName());
+        
+        assertTrue(rig.getIsOnline());
+        assertTrue(rig.getIsRegistered());
+        assertFalse(rig.getIsInSession());
+        assertNull(rig.getSessionUser());
+        assertFalse(rig.getIsAlarmed());
+        assertNull(rig.getOfflineReason());
+        assertEquals(r.getContactUrl(), rig.getContactURL());
+        
+        RigLogType logs[] = rig.getLastLogs();
+        assertNotNull(logs);
+        assertEquals(2, logs.length);
+        
+        RigLogType log = logs[0];
+        assertEquals(l1.getReason(), log.getReason());
+        assertEquals(log.getOldState(), RigStateType.NOT_REGISTERED);
+        assertEquals(log.getNewState(), RigStateType.OFFLINE);
+        
+        log = logs[1];
+        assertEquals(l2.getReason(), log.getReason());
+        assertEquals(log.getOldState(), RigStateType.OFFLINE);
+        assertEquals(log.getNewState(), RigStateType.ONLINE);
+        
+        OfflinePeriodType offs[] = rig.getOfflinePeriods();
+        assertNotNull(offs);
+        assertEquals(1, offs.length);
+        
+        OfflinePeriodType off = offs[0];
+        assertEquals(ro.getId().intValue(), off.getId());
+        assertEquals(ro.getReason(), off.getReason());
+        assertEquals(ro.getStartTime().getTime(), off.getStart().getTimeInMillis());
+        assertEquals(ro.getEndTime().getTime(), off.getEnd().getTimeInMillis());
+    }
+    
+    @Test
+    public void testGetRigAlarmed()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        RigType rt = new RigType();
+        rt.setName("rigmanagetest");
+        ses.save(rt);
+        RigType rt2 = new RigType();
+        rt2.setName("rigmanagetest2");
+        ses.save(rt2);
+        RigCapabilities caps = new RigCapabilities("rig,management,test");
+        ses.save(caps);
+        Rig r = new Rig();
+        r.setActive(true);
+        r.setOnline(false);
+        r.setContactUrl("foo://bar");
+        r.setOfflineReason("smothing broke");
+        r.setName("rigmanagementrig");
+        r.setLastUpdateTimestamp(new Date());
+        r.setRigCapabilities(caps);
+        r.setRigType(rt);
+        ses.save(r);
+        ses.getTransaction().commit();
+        
+        ses.refresh(rt);
+        ses.refresh(r);
+        
+        GetRig request = new GetRig();
+        RigIDType rid = new RigIDType();
+        rid.setName(r.getName());
+        request.setGetRig(rid);
+        
+        GetRigResponse response = this.service.getRig(request);
+        
+        ses.beginTransaction();
+        ses.delete(r);
+        ses.delete(caps);
+        ses.delete(rt);
+        ses.delete(rt2);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType rig = response.getGetRigResponse();
+        assertNotNull(rig);
+        
+        assertEquals(r.getName(), rig.getName());
+        assertEquals(caps.getCapabilities(), rig.getCapabilities());
+        
+        RigTypeIDType tid = rig.getRigType();
+        assertNotNull(tid);
+        assertEquals(rt.getName(), tid.getName());
+        
+        assertFalse(rig.getIsOnline());
+        assertTrue(rig.getIsRegistered());
+        assertFalse(rig.getIsInSession());
+        assertNull(rig.getSessionUser());
+        assertTrue(rig.getIsAlarmed());
+        assertEquals(r.getOfflineReason(), rig.getOfflineReason());
+        assertEquals(r.getContactUrl(), rig.getContactURL());
+    }
 
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement#putRigOffline(au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline)}.
@@ -253,15 +437,6 @@ public class RigManagementTester extends TestCase
      */
     @Test
     public void testFreeRig()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement#getRig(au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetRig)}.
-     */
-    @Test
-    public void testGetRig()
     {
         fail("Not yet implemented");
     }
