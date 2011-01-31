@@ -49,10 +49,12 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.RigClientAsyncServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.Allocate;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectable;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.MaintenanceRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.NotificationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.Notify;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.NullType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.Release;
+import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.SetMaintenance;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.UserType;
 
 /**
@@ -263,6 +265,27 @@ public class RigClientAsyncService
         nll.set_void("Hello, World!");
         
         this.service.callIsActivityDetectable(request, callback);
+    }
+    
+    /**
+     * Request to set or clear maintenance state on the rig.
+     * 
+     * @param putOffline whether maintenance is being set or cleared
+     * @param runTests whether exerciser tests are to be run
+     * @param callback response callback handler
+     * @throws RemoteException
+     */
+    public void setMaintenance(boolean putOffline, boolean runTests, RigClientAsyncServiceCallbackHandler callback)
+            throws RemoteException
+    {
+        SetMaintenance request = new SetMaintenance();
+        MaintenanceRequestType params = new MaintenanceRequestType();
+        request.setSetMaintenance(params);
+        params.setIdentityToken(this.tok.getIdentityToken(this.rig));
+        params.setPutOffline(putOffline);
+        params.setRunTests(runTests);
+        
+        this.service.callSetMaintenance(request, callback);
     }
     
     /**
