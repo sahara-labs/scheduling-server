@@ -114,7 +114,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         for (Bookings bk : bookings)
         {
             this.logger.warn("Cancelling booking (" + bk.getId() + ") which expired when the Scheduling Server " +
-            		"wasn't running for user " +   bk.getUser().qName() + " which expired on " + bk.getEndTime() + '.');
+            		"was not running for user " +   bk.getUser().qName() + " which expired on " + bk.getEndTime() + '.');
             bk.setActive(false);
             bk.setCancelReason("Expired when Scheduling Server wasn't running.");
             
