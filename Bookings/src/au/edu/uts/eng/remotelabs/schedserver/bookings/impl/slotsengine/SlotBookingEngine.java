@@ -219,7 +219,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                     for (MRange range : db.findBestFits(mb, ses))
                     {
                         if ((rs = range.getStart().getTimeInMillis()) < perm.getStartTime().getTime() ||
-                             rs < System.currentTimeMillis())
+                             rs < System.currentTimeMillis() + perm.getUserClass().getTimeHorizon() * 1000)
                         {
                             this.logger.info("Excluding best fit option which was to start at " + range.getStart().getTime() +
                                     " because it would be before the permission start or is in the past .");
