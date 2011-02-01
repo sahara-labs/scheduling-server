@@ -57,6 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -633,6 +634,20 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                 }
             }
         }
+    }
+    
+    @Override
+    public void putRigOffline(RigOfflineSchedule period, Session db)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void clearRigOffline(RigOfflineSchedule period, Session db)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     /**

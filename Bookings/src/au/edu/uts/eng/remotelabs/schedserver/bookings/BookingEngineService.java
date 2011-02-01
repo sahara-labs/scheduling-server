@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.bookings;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
 /**
@@ -64,7 +65,7 @@ public interface BookingEngineService
      * 
      * @param rig rig to put a booking to
      * @param ses session to put
-     * @param db database
+     * @param db database connection
      * @return true if session is put to rig
      */
     public boolean putQueuedSession(Rig rig, Session ses, org.hibernate.Session db);
@@ -75,8 +76,26 @@ public interface BookingEngineService
      * @param rig rig to extend rig on
      * @param ses session to extend
      * @param duration length of extension
-     * @param db database
+     * @param db database connection
      * @return true if session is extended
      */
     public boolean extendQueuedSession(Rig rig, Session ses, int duration, org.hibernate.Session db);
+    
+    /**
+     * Puts a rig offline so it cannot accept bookings for the specified time 
+     * period. If the rig already has bookings in that time period, the bookings
+     * will be cancelled.
+     * 
+     * @param period offline period
+     * @param db database connection
+     */
+    public void putRigOffline(RigOfflineSchedule period, org.hibernate.Session db);
+    
+    /**
+     * Clears a rig offline period so bookings can be made during the offline period.
+     * 
+     * @param period offline period
+     * @param db database connection
+     */
+    public void clearRigOffline(RigOfflineSchedule period, org.hibernate.Session db);
 }
