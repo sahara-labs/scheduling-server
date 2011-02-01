@@ -41,7 +41,9 @@ import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
@@ -52,6 +54,9 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
  */
 public class RigManagementActivator implements BundleActivator 
 {
+    /** Tracker for the booking engine service. */
+    private static ServiceTracker bookingTracker;
+    
     /** SOAP servlet service registration. */
     private ServiceRegistration soapService;
     
@@ -63,6 +68,10 @@ public class RigManagementActivator implements BundleActivator
 	{
         this.logger = LoggerActivator.getLogger();
         this.logger.info("The rig management bundle is starting up.");
+        
+        /* Open a tracker to the booking engine. */
+        bookingTracker = new ServiceTracker(context, BookingEngineService.class.getName(), null);
+        bookingTracker.open();
         
         /* Register the Rig Management SOAP service. */
         this.logger.debug("Registering the Rig Management SOAP service.");
@@ -77,6 +86,19 @@ public class RigManagementActivator implements BundleActivator
 		this.logger.info("The rig management bundle is shutting down.");
 		
 		this.soapService.unregister();
+		
+		bookingTracker.close();
+		bookingTracker = null;
 	}
 
+	/**
+     * Returns a booking service object or null if not booking service is running.
+     * 
+     * @return booking engine service or null
+     */
+    public static BookingEngineService getBookingService()
+    {
+        if (bookingTracker == null) return null;
+        return (BookingEngineService) bookingTracker.getService();
+    }
 }

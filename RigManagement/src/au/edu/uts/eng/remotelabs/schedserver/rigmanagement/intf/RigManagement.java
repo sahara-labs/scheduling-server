@@ -46,6 +46,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigOfflineScheduleDao;
@@ -57,6 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSched
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOfflineResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOfflineType;
@@ -81,6 +83,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeIDType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypesType;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigMaintenance;
 
 /**
  * Rig management SOAP service.
@@ -89,6 +92,9 @@ public class RigManagement implements RigManagementInterface
 {
     /** Logger. */
     public Logger logger;
+    
+    /** Flag for unit testing to disable rig client communication. */ 
+    private boolean notTest = true;
     
     public RigManagement()
     {
@@ -262,8 +268,8 @@ public class RigManagement implements RigManagementInterface
             
             for (RigLog log : (List<RigLog>) dao.getSession().createCriteria(RigLog.class)
                     .add(Restrictions.eq("rig", rig))
-                    .add(Restrictions.gt("timeStamp", new Date(System.currentTimeMillis() - 86400000L)))
-                    .addOrder(Order.asc("timeStamp")).list())
+                    .addOrder(Order.desc("timeStamp"))
+                    .setMaxResults(10).list())
             {
                 RigLogType logParam = new RigLogType();
                 Calendar ts = Calendar.getInstance();
@@ -362,13 +368,32 @@ public class RigManagement implements RigManagementInterface
                 return response;
             }
             
+            if (!offline.isActive())
+            {
+                this.logger.warn("Offline period with ID " + offline.getId() + " is already canceled. Not cancelling " +
+                		"it again.");
+                result.setFailureCode(3);
+                result.setFailureReason("Already cancelled.");
+                return response;
+            }
+            
             /* Cancel the offline period. */
+            offline.setActive(false);
+            dao.flush();
             
             /* Notify the booking engine. */
+            BookingEngineService service = RigManagementActivator.getBookingService();
+            if (service != null) service.clearRigOffline(offline, dao.getSession());
             
             /* If the period is currently active, clear the rig maintenance state. */
-            
-            
+            Date now = new Date();
+            Rig rig = offline.getRig();
+            if (rig.isActive() && !rig.isOnline() &&
+                    offline.getStartTime().before(now) && offline.getEndTime().after(now))
+            {
+                this.logger.info("Clearning maintenance state on rig " + offline.getRig().getName() + '.');
+                if (this.notTest) new RigMaintenance().clearMaintenance(rig, dao.getSession());
+            }
         }
         finally
         {

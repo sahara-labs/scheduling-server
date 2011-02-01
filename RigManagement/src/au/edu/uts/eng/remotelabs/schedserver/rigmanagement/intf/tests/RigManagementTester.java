@@ -287,13 +287,6 @@ public class RigManagementTester extends TestCase
         l2.setOldState(RigLog.OFFLINE);
         l2.setNewState(RigLog.ONLINE);
         ses.save(l2);
-        RigLog l3 = new RigLog();
-        l3.setTimeStamp(new Date(System.currentTimeMillis() - 100000000));
-        l3.setReason("online received");
-        l3.setRig(r);
-        l3.setOldState(RigLog.OFFLINE);
-        l3.setNewState(RigLog.ONLINE);
-        ses.save(l3);
         ses.getTransaction().commit();
         
         ses.refresh(rt);
@@ -310,7 +303,6 @@ public class RigManagementTester extends TestCase
         ses.beginTransaction();
         ses.delete(l1);
         ses.delete(l2);
-        ses.delete(l3);
         ses.delete(ro);
         ses.delete(r);
         ses.delete(caps);
