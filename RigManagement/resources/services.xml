@@ -27,9 +27,5 @@
             <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/getTypes</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/getTypesResponse</outputActionMapping>
         </operation>
-        <operation name="putRigOnline" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">
-            <actionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOnline</actionMapping>
-            <outputActionMapping>http://remotelabs.eng.uts.edu.au/rigmanagement/RigManagement/putRigOnlineResponse</outputActionMapping>
-        </operation>
     </service>
 </serviceGroup>

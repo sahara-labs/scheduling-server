@@ -76,8 +76,6 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationR
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOfflineResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnline;
-import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnlineResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigLogType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigStateType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType;
@@ -322,13 +320,6 @@ public class RigManagement implements RigManagementInterface
         return null;
     }
     
-    @Override
-    public PutRigOnlineResponse putRigOnline(PutRigOnline putRigOnline)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public CancelRigOfflineResponse cancelRigOffline(CancelRigOffline request)
     {

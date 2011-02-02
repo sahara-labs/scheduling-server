@@ -187,21 +187,7 @@
 					<xsd:element maxOccurs="1" minOccurs="0" name="void" type="xsd:string"/>
 				</xsd:sequence>
 			</xsd:complexType>
-			<xsd:element name="putRigOnline" type="rman:PutRigOnlineType">
-			</xsd:element>
-			<xsd:element name="putRigOnlineResponse" type="rman:OperationResponseType">
-			</xsd:element>
 		
-			<xsd:complexType name="PutRigOnlineType">
-				<xsd:complexContent>
-					<xsd:extension base="rman:OperationRequestType">
-						<xsd:sequence>
-							<xsd:element name="rig" type="rman:RigIDType">
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:extension>
-				</xsd:complexContent>
-			</xsd:complexType>
 		
 			<xsd:complexType name="OfflinePeriodType">
 				<xsd:sequence>
@@ -233,10 +219,6 @@
     <wsdl:part name="parameters" element="rman:getTypesResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="putRigOnlineResponse">
-    <wsdl:part name="parameters" element="rman:putRigOnlineResponse">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="getTypesRequest">
     <wsdl:part name="parameters" element="rman:getTypes">
     </wsdl:part>
@@ -247,10 +229,6 @@
   </wsdl:message>
   <wsdl:message name="freeRigResponse">
     <wsdl:part name="parameters" element="rman:freeRigResponse">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="putRigOnlineRequest">
-    <wsdl:part name="parameters" element="rman:putRigOnline">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="putRigOfflineResponse">
@@ -310,12 +288,6 @@
       <wsdl:output message="rman:putRigOfflineResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="putRigOnline">
-      <wsdl:input message="rman:putRigOnlineRequest">
-    </wsdl:input>
-      <wsdl:output message="rman:putRigOnlineResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="freeRig">
       <wsdl:input message="rman:freeRigRequest">
     </wsdl:input>
@@ -330,70 +302,68 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="RigManagementSOAP" type="rman:RigManagement">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="getTypeStatus">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/NewOperation"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getTypes">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/getTypes"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getRig">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/getRig"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="putRigOffline">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOffline"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="putRigOnline">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOnline"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="freeRig">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/freeRig"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="cancelRigOffline">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/cancelRigOffline"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="getTypeStatus">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/NewOperation" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getTypes">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/getTypes" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getRig">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/getRig" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="putRigOffline">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/putRigOffline" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="freeRig">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/freeRig" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="cancelRigOffline">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/rigmanagement/cancelRigOffline" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="RigManagement">
     <wsdl:port name="RigManagementSOAP" binding="rman:RigManagementSOAP">

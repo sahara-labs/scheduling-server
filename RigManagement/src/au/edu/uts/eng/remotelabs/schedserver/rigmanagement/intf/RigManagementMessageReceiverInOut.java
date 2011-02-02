@@ -52,6 +52,8 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOffline;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOfflineResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.FreeRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.FreeRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetRig;
@@ -62,8 +64,6 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypes;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOfflineResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnline;
-import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnlineResponse;
 
 /**
  * RigManagementMessageReceiverInOut message receiver.
@@ -130,13 +130,13 @@ public class RigManagementMessageReceiverInOut extends AbstractInOutMessageRecei
                     GetTypesResponse response = skel.getTypes(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
-                else if ("putRigOnline".equals(methodName))
+                else if ("cancelRigOffline".equals(methodName))
                 {
-                    final PutRigOnline wrappedParam = (PutRigOnline) this.fromOM(msgContext.getEnvelope().getBody()
-                            .getFirstElement(), PutRigOnline.class,
+                    final CancelRigOffline wrappedParam = (CancelRigOffline) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), CancelRigOffline.class,
                             this.getEnvelopeNamespaces(msgContext.getEnvelope()));
                     
-                    PutRigOnlineResponse response = skel.putRigOnline(wrappedParam);
+                    CancelRigOfflineResponse response = skel.cancelRigOffline(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else
@@ -228,13 +228,13 @@ public class RigManagementMessageReceiverInOut extends AbstractInOutMessageRecei
         }
     }
 
-    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final PutRigOnlineResponse param,
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final CancelRigOfflineResponse param,
             final boolean optimizeContent) throws AxisFault
     {
         try
         {
             final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-            emptyEnvelope.getBody().addChild(param.getOMElement(PutRigOnlineResponse.MY_QNAME, factory));
+            emptyEnvelope.getBody().addChild(param.getOMElement(CancelRigOfflineResponse.MY_QNAME, factory));
             return emptyEnvelope;
         }
         catch (final ADBException e)
@@ -298,14 +298,14 @@ public class RigManagementMessageReceiverInOut extends AbstractInOutMessageRecei
                 return GetTypesResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (PutRigOnline.class.equals(type))
+            if (CancelRigOffline.class.equals(type))
             {
-                return PutRigOnline.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                return CancelRigOffline.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (PutRigOnlineResponse.class.equals(type))
+            if (CancelRigOfflineResponse.class.equals(type))
             {
-                return PutRigOnlineResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                return CancelRigOfflineResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
         }
         catch (final Exception e)

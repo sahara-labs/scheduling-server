@@ -49,8 +49,6 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypes;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOfflineResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnline;
-import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnlineResponse;
 
 /**
  * Rig Management SOAP service interface.
@@ -96,15 +94,6 @@ public interface RigManagementInterface
      * @return response
      */
     public CancelRigOfflineResponse cancelRigOffline(CancelRigOffline request);
-    
-    /**
-     * Puts a rig online. If the rig is currently off-line, it is put online.
-     * 
-     * @param request
-     * @return response
-     */
-    public PutRigOnlineResponse putRigOnline(PutRigOnline request);
-
     
     /**
      * Frees a rig by terminating any in progress session on the rig.

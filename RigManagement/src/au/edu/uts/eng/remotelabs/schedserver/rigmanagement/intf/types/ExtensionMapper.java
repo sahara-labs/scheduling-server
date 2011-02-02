@@ -82,12 +82,6 @@ public class ExtensionMapper
             return RigTypeIDType.Factory.parse(reader);
         }
 
-        if ("http://remotelabs.eng.uts.edu.au/rigmanagement".equals(namespaceURI)
-                && "PutRigOnlineType".equals(typeName))
-        {
-            return PutRigOnlineType.Factory.parse(reader);
-        }
-
         if ("http://remotelabs.eng.uts.edu.au/rigmanagement".equals(namespaceURI) && "RigLogType".equals(typeName))
         {
             return RigLogType.Factory.parse(reader);
