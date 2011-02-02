@@ -458,7 +458,7 @@ public class RigBookings
 
     /**
      * Gets the booking that is on the slot or immediately succeeds the
-     * slot. If there is booking then <tt>null</tt> is returned.
+     * slot. If there is NO booking then <tt>null</tt> is returned.
      * 
      * @param slot start slot
      * @return booking or null if not found

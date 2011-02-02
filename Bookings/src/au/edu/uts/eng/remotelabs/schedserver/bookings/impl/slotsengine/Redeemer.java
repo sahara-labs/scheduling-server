@@ -331,7 +331,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
             /* If the rig event was free, and the rig isn't booked (i.e. next
              * slot is free), we need to fire another free broadcast to trigger
              * another queue run. This is because if the initial notification 
-             * fired before this in queuer, then the queue attempt would of 
+             * fired before this in queuer, then the queue attempt would have 
              * falsely been blocked by the memory representation of the terminated 
              * session. Removing the finished booking then notifying again makes 
              * sure the queue attempt will run. */

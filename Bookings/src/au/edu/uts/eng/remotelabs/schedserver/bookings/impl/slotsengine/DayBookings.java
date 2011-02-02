@@ -116,8 +116,8 @@ public class DayBookings
      * ========================================================================= */
     
     /**
-     * Creates a booking for the rig. This methods assumes it has free rein 
-     * to choose which rig that matches the booked resoruce may be scheduled 
+     * Creates a booking for the rig. This methods assumes it has free reign 
+     * to choose which rig that matches the booked resource may be scheduled 
      * in the day. Therefore a multi-day rig type or request capabilities
      * booking must be converted to an appropriate rig booking.
      * 
@@ -232,7 +232,7 @@ public class DayBookings
      * Finds the best fits for booking. This will generally attempt to provide 
      * an early solution and a late solution.
      * 
-     * @param mb booking that couldn't be commited
+     * @param mb booking that couldn't be committed
      * @param ses
      * @return
      * @todo Implement balance operation in determining best fits
@@ -300,7 +300,7 @@ public class DayBookings
     
     /**
      * Compares two best fits with a designated booking. The /best/ best fit
-     * is the one which is cloest to the desginated booking.
+     * is the one which is closest to the designated booking.
      * 
      * @param mb desired booking
      * @param r1 first fit
@@ -974,7 +974,7 @@ public class DayBookings
      * onto the rig.
      * 
      * @param rb rig to balance to
-     * @param mb booling to balance onto rig 
+     * @param mb booking to balance onto rig 
      * @param doCommit whether to actually commit the changes.
      * @return true if successful
      */
@@ -1370,7 +1370,7 @@ public class DayBookings
                         }
                         prev.setCapsLoopNext(cc, rb.getCapsLoopNext(cc));
                         
-                        /* First attempt to put the booking oto another rig. */
+                        /* First attempt to put the booking onto another rig. */
                         boolean requiresFlush = false;
                         for (MBooking mb : capsb)
                         {
