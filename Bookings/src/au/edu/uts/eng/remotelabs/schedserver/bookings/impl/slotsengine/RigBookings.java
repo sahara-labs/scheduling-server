@@ -409,7 +409,7 @@ public class RigBookings
         }
         
         int s = booking.getStartSlot();
-        while (s++ <= booking.getEndSlot()) this.slots[s] = booking;
+        while (s++ < booking.getEndSlot()) this.slots[s] = booking;
         if (this.endSlot < booking.getEndSlot()) this.endSlot = booking.getEndSlot();
         return true;
     }

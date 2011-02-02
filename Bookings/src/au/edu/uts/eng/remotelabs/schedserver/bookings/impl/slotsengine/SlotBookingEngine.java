@@ -465,7 +465,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                  *  1) If the booking on the start day doesn't finish at the end of the day
                  *     it must be extendable to the end day, provided the day hasn't elapsed. */
                 if (mb.getEndSlot() != END_SLOT && this.days.containsKey(mb.getDay()) &&
-                    this.getDayBookings(mb.getDay()).isRigFree(rig, mb.getEndSlot() + 1, END_SLOT, db))
+                    !this.getDayBookings(mb.getDay()).isRigFree(rig, mb.getEndSlot() + 1, END_SLOT, db))
                 {
                     /* The current day cannot be extended, so the time extension can't be allowed. */
                     return false;
