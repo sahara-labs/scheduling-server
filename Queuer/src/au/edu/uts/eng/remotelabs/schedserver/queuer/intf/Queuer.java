@@ -171,8 +171,8 @@ public class Queuer implements QueuerSkeletonInterface
                 inQu.setFailureReason("No permission.");
             }
             /**********************************************************************
-             ** 4) Check the user doesn't have a bookingService starting before the     **
-             **    queued session would finish.                                  **
+             ** 4) Check the user doesn't have a bookingService starting before  **
+             **    the queued session would finish.                              **
              **********************************************************************/
             else if ((booking = this.getNextBooking(user, entry.getResourcePermission().getSessionDuration(), db)) != null)
             {

@@ -144,7 +144,7 @@ public class Queue
     /**
      * Attempts to assigned the specified rig to a queued session. If there is
      * queued session for the rig, a queued session for its rig type or a
-     * queued session for a request capabilities matching its rig capabilites,
+     * queued session for a request capabilities matching its rig capabilities,
      * the highest precedence request given by the {@link QueueSessionComparator} 
      * is assigned.
      * 
