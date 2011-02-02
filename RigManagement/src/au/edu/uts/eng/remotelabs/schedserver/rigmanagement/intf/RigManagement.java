@@ -70,6 +70,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeSta
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypes;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypesResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.KickRigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OfflinePeriodType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationResponseType;
@@ -84,6 +85,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeIDT
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypesType;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigMaintenance;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 /**
  * Rig management SOAP service.
@@ -319,13 +321,6 @@ public class RigManagement implements RigManagementInterface
         // TODO Auto-generated method stub
         return null;
     }
-
-    @Override
-    public FreeRigResponse freeRig(FreeRig freeRig)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     @Override
     public PutRigOnlineResponse putRigOnline(PutRigOnline putRigOnline)
@@ -352,7 +347,7 @@ public class RigManagement implements RigManagementInterface
             if (!this.isAuthorised(cancelParam, dao.getSession()))
             {
                 this.logger.warn("Unable to cancel a rig offline period because the user is not authorised to perform " +
-                		"this operation.");
+                		"this operation (not a ADMIN).");
                 result.setFailureCode(1);
                 result.setFailureReason("Not authorised.");
                 return response;
@@ -377,6 +372,8 @@ public class RigManagement implements RigManagementInterface
                 return response;
             }
             
+            result.setSuccessful(true);
+            
             /* Cancel the offline period. */
             offline.setActive(false);
             dao.flush();
@@ -394,6 +391,68 @@ public class RigManagement implements RigManagementInterface
                 this.logger.info("Clearning maintenance state on rig " + offline.getRig().getName() + '.');
                 if (this.notTest) new RigMaintenance().clearMaintenance(rig, dao.getSession());
             }
+        }
+        finally
+        {
+            dao.closeSession();
+        }
+        
+        return response;
+    }
+    
+    @Override
+    public FreeRigResponse freeRig(FreeRig freeRig)
+    {
+        KickRigType param = freeRig.getFreeRig();
+        this.logger.debug("Received RigManagement#freeRig with params: requestor ID=" + param.getRequestorID() +
+                "requestor namespace=" + param.getRequestorNameSpace() + ", requestor name" + param.getRequestorName() +
+                ", rig name=" + param.getRig().getName() + ", reason=" + param.getReason() + '.');
+        
+        FreeRigResponse response = new FreeRigResponse();
+        OperationResponseType result = new OperationResponseType();
+        response.setFreeRigResponse(result);
+        
+        RigDao dao = new RigDao();
+        try
+        {
+            if (!this.isAuthorised(param, dao.getSession()))
+            {
+                this.logger.warn("Unable to free rig because the requesting user is not authorised to perform this " +
+                		"operation (not a ADMIN).");
+                result.setFailureCode(1);
+                result.setFailureReason("No authorised.");
+                return response;
+            }
+            
+            Rig rig = dao.findByName(param.getRig().getName());
+            if (rig == null)
+            {
+                this.logger.warn("Unable to free rig because rig with name " + param.getRig().getName() + " was not " +
+                		"found.");
+                result.setFailureCode(2);
+                result.setFailureReason("Rig not found.");
+                return response;
+            }
+            
+            if (!rig.isInSession() || rig.getSession() == null)
+            {
+                this.logger.warn("Unable to free rig with name " + rig.getName() + " because the rig is not in session.");
+                result.setFailureCode(3);
+                result.setFailureReason("Rig not in session.");
+                return response;
+            }
+            
+            result.setSuccessful(true);
+            
+            au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses = rig.getSession();
+            this.logger.info("Admin kicking off user " + ses.getUser().qName() + " from rig " + rig.getName() + ". " +
+            		"Reason: " + param.getReason() + '.');
+            ses.setActive(false);
+            ses.setRemovalTime(new Date());
+            ses.setRemovalReason("User was kicked off by admin. Reason: " + param.getReason());
+            dao.flush();
+            
+            if (this.notTest) new RigReleaser().release(ses, dao.getSession());
         }
         finally
         {
