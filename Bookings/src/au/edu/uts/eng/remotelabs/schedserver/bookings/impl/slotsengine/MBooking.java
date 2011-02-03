@@ -45,6 +45,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
@@ -72,6 +73,9 @@ public class MBooking
     
     /** Whether this booking is in session. */
     private boolean inSession;
+    
+    /** Whether this is a maintenance holding booking. */
+    private final boolean isMaintenance;
     
     /** The day the booking is located on. */
     private final String day;
@@ -115,6 +119,7 @@ public class MBooking
         this.start = b.getStartTime();
         this.duration = b.getDuration();
         this.inSession = false;
+        this.isMaintenance = false;
         
         if (ResourcePermission.CAPS_PERMISSION.endsWith(b.getResourceType()))
         {
@@ -178,6 +183,7 @@ public class MBooking
         this.duration = ses.getDuration();
         this.inSession = true;
         this.session = ses;
+        this.isMaintenance = false;
         
         /* Must be a rig booking because the session is only ever committed to
          * a singular system. */
@@ -223,6 +229,50 @@ public class MBooking
         this.numSlots = this.endSlot - this.startSlot + 1;
     }
     
+    public MBooking(RigOfflineSchedule off, String day)
+    {
+        this.day = day;
+        this.isMultiDay = false;
+        this.start = off.getStartTime();
+        this.duration = (int) ((off.getEndTime().getTime() - off.getStartTime().getTime()) / 1000);
+        this.inSession = false;
+        this.isMaintenance = true;
+        
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(off.getStartTime());
+        if (TimeUtil.getDayBegin(this.day).after(startCal))
+        {
+            this.startSlot = 0;
+            this.isMultiDay = true;
+        }
+        else this.startSlot = TimeUtil.getSlotIndex(startCal);
+        
+        Calendar end = Calendar.getInstance();
+        end.setTime(off.getEndTime());
+        if (TimeUtil.getDayEnd(this.day).before(end))
+        {
+            /* The booking continues the following day. */
+            this.endSlot = 24 * 60 * 60 / SlotBookingEngine.TIME_QUANTUM - 1;
+            this.isMultiDay = true;
+        }
+        else
+        {
+            /* The end slot may be where the time falls or the preceding slot if
+             * the booking ends exactly when the next slot starts. */
+            this.endSlot = TimeUtil.getSlotIndex(end);
+            
+            if (this.endSlot * TIME_QUANTUM == 
+                end.get(Calendar.HOUR_OF_DAY) * 3600 + end.get(Calendar.MINUTE) * 60 + end.get(Calendar.SECOND))
+            {
+                /* Not point wasting a slot when its time isn't used. */
+                this.endSlot--;
+            }
+        }
+        
+        this.bType = BType.RIG;
+        this.rig = off.getRig();
+    }
+    
     public MBooking(int start, int end, BType type, String day)
     {
         this.startSlot = start;
@@ -232,6 +282,7 @@ public class MBooking
         this.day = day;
         this.start = TimeUtil.getCalendarFromSlot(this.day, start).getTime();
         this.duration = (end - start + 1) * SlotBookingEngine.TIME_QUANTUM;
+        this.isMaintenance = false;
     }
     
     /**
@@ -322,6 +373,11 @@ public class MBooking
     public boolean isMultiDay()
     {
         return this.isMultiDay;
+    }
+
+    public boolean isMaintenanceHolder()
+    {
+        return this.isMaintenance;
     }
 
     public void setSession(Session session)

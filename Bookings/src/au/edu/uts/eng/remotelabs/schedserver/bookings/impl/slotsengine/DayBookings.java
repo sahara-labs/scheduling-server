@@ -1503,7 +1503,40 @@ public class DayBookings
      */
     public void putRigOffline(RigOfflineSchedule off, Session ses)
     {
+        if (!(this.rigBookings.containsKey(off.getRig().getName())))
+        {
+            this.logger.debug("Not committing offline period for rig " + off.getRig().getName() + " because the rig " +
+            		"isn't loaded.");
+            return;
+        }
         
+        RigBookings rb = this.getRigBookings(off.getRig(), ses);
+        MBooking mb = new MBooking(off, this.day);
+        
+        /* All the existing bookings in the offline time period for the rig will 
+         * be need to either be moved or cancelled. */
+        int ss = mb.getStartSlot();
+        List<MBooking> oldBookings = new ArrayList<MBooking>();
+        while (ss <= mb.getDuration())
+        {
+            MBooking ex = rb.getNextBooking(ss);
+            if (ex == null) break;
+            
+            rb.removeBooking(ex);
+            oldBookings.add(ex);
+            ss = ex.getEndSlot() + 1;
+        }
+        
+        rb.commitBooking(mb);
+        
+        for (MBooking ex : oldBookings)
+        {
+            if (!this.createBooking(ex, ses))
+            {
+                Bookings b = (Bookings)ses.merge(ex.getBooking());
+                
+            }
+        }
     }
     
     /**
