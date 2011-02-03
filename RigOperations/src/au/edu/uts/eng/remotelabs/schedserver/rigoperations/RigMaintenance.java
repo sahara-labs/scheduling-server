@@ -77,7 +77,7 @@ public class RigMaintenance extends RigClientAsyncServiceCallbackHandler
      * @param runTests whether exerciser tests should be run
      * @param db database session
      */
-    public void setMaintenance(Rig rig, boolean runTests, Session db)
+    public void putMaintenance(Rig rig, boolean runTests, Session db)
     {
         this.logger.info("Setting maintenance state on rig " + rig.getName() + ". Tests will " + 
                 (runTests ? "" : "not ") + "be run.");
