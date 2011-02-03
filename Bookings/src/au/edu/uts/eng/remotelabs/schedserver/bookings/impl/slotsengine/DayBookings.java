@@ -1513,8 +1513,8 @@ public class DayBookings
         RigBookings rb = this.getRigBookings(off.getRig(), ses);
         MBooking mb = new MBooking(off, this.day);
         
-        /* All the existing bookings in the offline time period for the rig will 
-         * be need to either be moved or cancelled. */
+        /* Get the the bookings on the rig that already exist. These will need 
+         * to be moved or will be canceled. */
         int ss = mb.getStartSlot();
         List<MBooking> oldBookings = new ArrayList<MBooking>();
         while (ss <= mb.getDuration())
@@ -1527,15 +1527,32 @@ public class DayBookings
             ss = ex.getEndSlot() + 1;
         }
         
+        /* Commit the maintenance holding booking. */
         rb.commitBooking(mb);
         
+        /* Move or cancel the old bookings. */
+        boolean hasCanceled = false;
         for (MBooking ex : oldBookings)
         {
             if (!this.createBooking(ex, ses))
             {
-                Bookings b = (Bookings)ses.merge(ex.getBooking());
-                
+                Bookings booking = (Bookings)ses.merge(ex.getBooking());
+                this.logger.warn("Canceling booking (ID " + booking.getId() + ") for user " + booking.getUser().qName() +
+                        " because the assigned rig " + off.getRig().getName() + " will be offline and there are no " +
+                        		"other rigs which can take the booking.");
+                booking.setActive(false);
+                booking.setCancelReason("Rig will be offline for booking period.");
+                hasCanceled = true;
+                new BookingNotification(booking).notifyCancel();
             }
+        }
+        
+        if (hasCanceled)
+        {
+            /* Commit the cancellations. */
+            ses.beginTransaction();
+            ses.flush();
+            ses.getTransaction().commit();
         }
     }
     
@@ -1547,7 +1564,17 @@ public class DayBookings
      */
     public void clearRigOffline(RigOfflineSchedule off, Session ses)
     {
+        if (!this.rigBookings.containsKey(off.getRig().getName())) return;
         
+        RigBookings rb = this.getRigBookings(off.getRig(), ses);
+        
+        MBooking mb = rb.getSlotBooking(TimeUtil.getDaySlotIndex(off.getStartTime(), this.day));
+        if (mb == null || !mb.isMaintenanceHolder())
+        {
+            this.logger.error("Cancelling a rig offline period for rig " + off.getRig().getName() + " but the " +
+            		"maintenance holding was not found.");
+        }
+        else rb.removeBooking(mb);
     }
 
     /**

@@ -240,6 +240,26 @@ public class TimeUtil
      *  <li>If the date/time is on a later day, the last slot index is returned.</li> 
      * </ul>
      * 
+     * @param date date/time
+     * @param dayKey day 
+     * @return slot index
+     */
+    public static int getDaySlotIndex(Date date, String dayKey)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return TimeUtil.getDaySlotIndex(cal, dayKey);
+    }
+    
+    /**
+     * Gets the slot index for the specified date/time with the following
+     * conditions:
+     * <ul>
+     *  <li>If the date/time is on a specified day, the time slot index is returned.</li>
+     *  <li>If the date/time is on a earlier day, 0 is returned.</li>
+     *  <li>If the date/time is on a later day, the last slot index is returned.</li> 
+     * </ul>
+     * 
      * @param cal date/time
      * @param dayKey day 
      * @return slot index
