@@ -76,6 +76,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationR
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOfflineResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOfflineType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigLogType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigStateType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType;
@@ -316,8 +317,71 @@ public class RigManagement implements RigManagementInterface
     @Override
     public PutRigOfflineResponse putRigOffline(PutRigOffline putRigOffline)
     {
-        // TODO Auto-generated method stub
-        return null;
+        PutRigOfflineType param = putRigOffline.getPutRigOffline();
+        this.logger.debug("Received RigManagement#putRigOffline with params: requestor ID=" + param.getRequestorID() +
+                "requestor namespace=" + param.getRequestorNameSpace() + ", requestor name" + param.getRequestorName() +
+                ", rig name=" + param.getRig().getName() + ", offline start=" + param.getStart().getTime() +
+                ", offline end=" + param.getEnd().getTime() + ", reason=" + param.getReason() + '.');
+        
+        PutRigOfflineResponse response = new PutRigOfflineResponse();
+        OperationResponseType result = new OperationResponseType();
+        response.setPutRigOfflineResponse(result);
+        
+        RigDao dao = new RigDao();
+        try
+        {
+            if (!this.isAuthorised(param, dao.getSession()))
+            {
+                this.logger.warn("Unable to put a rig offline because the user is not authorised to perform this " +
+                		"operation (not a ADMIN).");
+                result.setFailureCode(1);
+                result.setFailureReason("Not authorised.");
+                return response;
+            }
+            
+            Rig rig = dao.findByName(param.getRig().getName());
+            if (rig == null)
+            {
+                this.logger.warn("Unable to put a rig offline because the rig with name " + param.getRig().getName() +
+                        " was not found.");
+                result.setFailureCode(2);
+                result.setFailureReason("Rig not found.");
+                return response;
+            }
+            
+            result.setSuccessful(true);
+            
+            RigOfflineSchedule offline = new RigOfflineSchedule();
+            offline.setActive(true);
+            offline.setRig(rig);
+            offline.setStartTime(param.getStart().getTime());
+            offline.setEndTime(param.getEnd().getTime());
+            offline.setReason(param.getReason());
+            new RigOfflineScheduleDao(dao.getSession()).persist(offline);
+            
+            /* Notify the booking engine. */
+            BookingEngineService service = RigManagementActivator.getBookingService();
+            if (service != null) service.putRigOffline(offline, dao.getSession());
+            
+            /* If the period is currently active, clear the rig maintenance state. */
+            Date now = new Date();
+            if (rig.isActive() && rig.isOnline() &&
+                    offline.getStartTime().before(now) && offline.getEndTime().after(now))
+            {
+                this.logger.info("Setting maintenance state on rig " + rig.getName() + '.');
+                if (this.notTest) new RigMaintenance().putMaintenance(rig, true, dao.getSession());
+                
+                rig.setOnline(false);
+                rig.setOfflineReason("In maintenance.");
+                dao.flush();
+            }
+        }
+        finally 
+        {
+            dao.closeSession();
+        }
+        
+        return response;
     }
     
     @Override

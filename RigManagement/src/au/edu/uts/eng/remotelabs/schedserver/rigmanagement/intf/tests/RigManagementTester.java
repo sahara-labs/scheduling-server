@@ -423,32 +423,4 @@ public class RigManagementTester extends TestCase
     {
         fail("Not yet implemented");
     }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement#freeRig(au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.FreeRig)}.
-     */
-    @Test
-    public void testFreeRig()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement#putRigOnline(au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOnline)}.
-     */
-    @Test
-    public void testPutRigOnline()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement#cancelRigOffline(au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.CancelRigOffline)}.
-     */
-    @Test
-    public void testCancelRigOffline()
-    {
-        fail("Not yet implemented");
-    }
-
 }
