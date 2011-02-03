@@ -60,6 +60,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabil
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -1487,6 +1488,33 @@ public class DayBookings
                 }
             }
         }
+    }
+    
+    /**
+     * Makes the rig unavailable for the scheduled offline period. If there
+     * are already assigned bookings for the rigs, these will be either moved
+     * to a different rig or cancelled if no matching rig is found.
+     * <br />
+     * This works <em>lazily</em> so if the rig isn't loaded, it will not be
+     * loaded and marked offline.
+     *  
+     * @param off offline period
+     * @param ses database session
+     */
+    public void putRigOffline(RigOfflineSchedule off, Session ses)
+    {
+        
+    }
+    
+    /**
+     * Clears the rig from being unavailable for the schedule offline period.
+     * 
+     * @param off offline period
+     * @param ses database session
+     */
+    public void clearRigOffline(RigOfflineSchedule off, Session ses)
+    {
+        
     }
 
     /**

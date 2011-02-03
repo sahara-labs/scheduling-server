@@ -639,15 +639,51 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
     @Override
     public void putRigOffline(RigOfflineSchedule period, Session db)
     {
-        // TODO Auto-generated method stub
+        Rig rig = period.getRig();
+        DayBookings dayb;
         
+        synchronized (this.days)
+        {
+            for (String day : TimeUtil.getDayKeys(period.getStartTime(), period.getEndTime()))
+            {
+                if (!this.days.containsKey(day))
+                {
+                    this.logger.debug("Not committing offline period for rig " + rig.getName() + " on day " + day + 
+                            " because the day isn't loaded.");
+                    continue;
+                }
+                
+                synchronized (dayb = this.days.get(day))
+                {
+                    dayb.putRigOffline(period, db);
+                }
+            }
+        }
     }
 
     @Override
     public void clearRigOffline(RigOfflineSchedule period, Session db)
     {
-        // TODO Auto-generated method stub
+        Rig rig = period.getRig();
+        DayBookings dayb;
         
+        synchronized (this.days)
+        {
+            for (String day : TimeUtil.getDayKeys(period.getStartTime(), period.getEndTime()))
+            {
+                if (!this.days.containsKey(day))
+                {
+                    this.logger.debug("Not clearing offline period for rig " + rig.getName() + " on day " + day + 
+                            " because the day isn't loaded.");
+                    continue;
+                }
+                
+                synchronized (dayb = this.days.get(day))
+                {
+                    dayb.clearRigOffline(period, db);
+                }
+            }
+        }        
     }
     
     /**
