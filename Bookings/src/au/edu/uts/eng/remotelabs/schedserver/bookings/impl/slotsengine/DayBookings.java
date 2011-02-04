@@ -1867,13 +1867,22 @@ public class DayBookings
     @SuppressWarnings("unchecked")
     private void loadRig(RigBookings bookings, Rig rig, Session ses)
     {
-        Criteria qu = ses.createCriteria(Bookings.class)
+        /* Load the rig offline periods. */
+        Criteria qu = ses.createCriteria(RigOfflineSchedule.class)
+            .add(Restrictions.eq("active", Boolean.TRUE))
+            .add(Restrictions.eq("rig", rig))
+            .add(this.addDayRange());
+        for (RigOfflineSchedule off : (List<RigOfflineSchedule>)qu.list())
+        {
+            bookings.commitBooking(new MBooking(off, this.day));
+        }
+        
+        /* Load the rigs bookings. */
+        qu = ses.createCriteria(Bookings.class)
             .add(Restrictions.eq("resourceType", ResourcePermission.RIG_PERMISSION))
             .add(Restrictions.eq("rig", rig))
             .add(Restrictions.eq("active", Boolean.TRUE))
             .add(this.addDayRange());
-        
-        
 
         for (Bookings booking : (List<Bookings>)qu.list())
         {
@@ -1885,7 +1894,7 @@ public class DayBookings
                         "The booking for '" + booking.getUserNamespace() + ':' + booking.getUserName() + "' starting at " +
                         booking.getStartTime() + " is being cancelled.");
                 booking.setActive(false);
-                booking.setCancelReason("Rig was overbooked.");
+                booking.setCancelReason("Rig will be offline or was overbooked.");
                 ses.beginTransaction();
                 ses.flush();
                 ses.getTransaction().commit();
