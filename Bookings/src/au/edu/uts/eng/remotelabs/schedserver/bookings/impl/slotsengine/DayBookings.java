@@ -1512,6 +1512,7 @@ public class DayBookings
         
         RigBookings rb = this.getRigBookings(off.getRig(), ses);
         MBooking mb = new MBooking(off, this.day);
+        if (mb.getEndSlot() < 0) return;
         
         /* Get the the bookings on the rig that already exist. These will need 
          * to be moved or will be canceled. */
@@ -1534,14 +1535,16 @@ public class DayBookings
         boolean hasCanceled = false;
         for (MBooking ex : oldBookings)
         {
+            if (ex.getBooking() == null) continue;
+            
             if (!this.createBooking(ex, ses))
-            {
+            {     
                 Bookings booking = (Bookings)ses.merge(ex.getBooking());
                 this.logger.warn("Canceling booking (ID " + booking.getId() + ") for user " + booking.getUser().qName() +
                         " because the assigned rig " + off.getRig().getName() + " will be offline and there are no " +
                         		"other rigs which can take the booking.");
                 booking.setActive(false);
-                booking.setCancelReason("Rig will be offline for booking period.");
+                booking.setCancelReason("Rig will be offline for reservation.");
                 hasCanceled = true;
                 new BookingNotification(booking).notifyCancel();
             }
@@ -1869,6 +1872,8 @@ public class DayBookings
             .add(Restrictions.eq("rig", rig))
             .add(Restrictions.eq("active", Boolean.TRUE))
             .add(this.addDayRange());
+        
+        
 
         for (Bookings booking : (List<Bookings>)qu.list())
         {

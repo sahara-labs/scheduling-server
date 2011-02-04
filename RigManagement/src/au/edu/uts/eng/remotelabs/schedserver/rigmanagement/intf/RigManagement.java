@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
@@ -349,13 +350,56 @@ public class RigManagement implements RigManagementInterface
                 return response;
             }
             
+            if (param.getStart().after(param.getEnd()))
+            {
+                this.logger.warn("Unable to put a rig offline because the offline start " + param.getStart().getTime() +
+                        " is after the offline end " + param.getEnd().getTime() + ".");
+                result.setFailureCode(3);
+                result.setFailureReason("Start after end.");
+                return response;
+            }
+            
+            Date startDate = param.getStart().getTime();
+            Date endDate = param.getEnd().getTime();
+            
+            if ((Integer)dao.getSession().createCriteria(RigOfflineSchedule.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.eq("rig", rig))
+                .add(Restrictions.disjunction()
+                    .add(Restrictions.and(
+                            Restrictions.gt("startTime", startDate),
+                            Restrictions.lt("endTime", endDate)
+                    ))
+                    .add(Restrictions.and(
+                            Restrictions.lt("startTime", startDate),
+                            Restrictions.gt("endTime", endDate)
+                    ))
+                    .add(Restrictions.and(
+                            Restrictions.lt("startTime", startDate),
+                            Restrictions.gt("endTime", endDate)
+                    ))
+                    .add(Restrictions.and(
+                            Restrictions.lt("startTime", startDate),
+                            Restrictions.gt("endTime", endDate)
+                    )
+                )).setProjection(Projections.rowCount()).uniqueResult() > 0)
+            {
+                this.logger.warn("Unable to put a rig offline because there is a concurrent rig offline period.");
+                result.setFailureCode(4);
+                result.setFailureReason("Concurrent offline period.");
+                return response;
+            }
+                
+                
+            
+            
             result.setSuccessful(true);
             
             RigOfflineSchedule offline = new RigOfflineSchedule();
             offline.setActive(true);
             offline.setRig(rig);
-            offline.setStartTime(param.getStart().getTime());
-            offline.setEndTime(param.getEnd().getTime());
+            offline.setStartTime(startDate);
+            offline.setEndTime(endDate);
             offline.setReason(param.getReason());
             new RigOfflineScheduleDao(dao.getSession()).persist(offline);
             
