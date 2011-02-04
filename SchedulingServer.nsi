@@ -54,12 +54,12 @@ Name "Sahara Scheduling Server"
 !define REGKEY "SOFTWARE\$(^Name)"
 
 ; Sahara Scheduling Server Version
-!define Version "1.0"
+!define Version "3.0-0"
 
 !define JREVersion "1.6"
 
 ; The file to write
-OutFile "package/SaharaSchedulingServer.exe"
+OutFile "package/SchedulingServer-${Version}.exe"
 
 ; The default installation directory
 InstallDir "C:\Program Files\Sahara"
@@ -156,34 +156,52 @@ Var finishText
 
 ;--------------------------------
 
+Var ExitInstall
+Var UpgradeSelected
 Var DisplayText
 Var NoSectionSelectedUninstall 
-Var SSAlreadyInstalled ;0=Not installed, 1=Installed but different version, 2=installed and same version 
+Var SSAlreadyInstalled ;NI=Not installed, V2=2.x version installed, SAME=installed and same version, 
+                       ;V3=Major version 3 is installed but with different minor version/build,
+                       ;OTHER=some other version than thsi version or 2.x is installed
 
 Function DirectoryPagePre
 	; If there is already an installation of Sahara, use the same folder for this installation. Else let the user select the installation folder
- 	${If} $SSAlreadyInstalled S== "0"
+ 	${If} $SSAlreadyInstalled S== "NI"
 		StrCpy $DirHeaderText "Choose Install Location"
 		StrCpy $DirHeaderSubText "Choose the folder in which to install $(^Name)"
-	${ElseIf} $SSAlreadyInstalled S== "2" 
+	${Else} 
 		StrCpy $DirHeaderText "Using existing $(^Name) installation folder"
-		StrCpy $DirHeaderSubText "One or more components of $(^Name) are already installed on this machine. Installer will use same destination folder"
-		
+		StrCpy $DirHeaderSubText "$(^Name) is already installed on this machine. Installer will upgarde the existing installation"
 	${EndIf}
 
 FunctionEnd
 
-Function CheckSaharaVersion
-	ReadRegStr $R0 HKLM "${REGKEY}" "CurrentVersion"
-	${If} $R0 S== ""
-		StrCpy $SSAlreadyInstalled "0"
-	${ElseIf} $R0 S!=  ${Version} 
-		StrCpy $SSAlreadyInstalled "1"
-	${Else}
-		StrCpy $SSAlreadyInstalled "2"
-        ReadRegStr $R0 HKLM "${REGKEY}" "Path"
+Function CheckSSVersion
+    Var /GLOBAL SSVersion
+    Push $R0
+    ReadRegStr $SSVersion HKLM "${REGKEY}" "CurrentVersion"
+    StrCpy $R0 $SSVersion 1
+    ${If} $R0 S== ""
+        ; SS not installed. Clean install
+        StrCpy $SSAlreadyInstalled "NI"
+    ${ElseIf} $R0 S== "2"
+        ; SS version 2.x is installed. Can be upgraded
+        StrCpy $SSAlreadyInstalled "V2"
+    ${ElseIf} $SSVersion S== ${Version}
+        ; Same SS version is installed. No action
+        StrCpy $SSAlreadyInstalled "SAME"
+    ${ElseIf} $R0 S== "3"
+        ; SS version 3.x is installed (with different minor versiobn or build). Can be upgraded
+        StrCpy $SSAlreadyInstalled "V3"
+    ${Else}
+        ; Some other version is installed
+        StrCpy $SSAlreadyInstalled "OTHER"
+    ${EndIf}
+    ReadRegStr $R0 HKLM "${REGKEY}" "Path"
+    ${IfNot} $R0 S== ""
         StrCpy $INSTDIR $R0
-	${EndIf}
+    ${EndIf}
+    Pop $R0
 FunctionEnd
 
 
@@ -192,7 +210,8 @@ Function DirectoryPageShow
 	; If there is already an installation of Sahara, disable the destination folder selection and use the same folder for this installation. 
 	; Else let the user select the installation folder
     
-    ${If} $SSAlreadyInstalled S== "2"
+    ${If} $SSAlreadyInstalled S== "V2" 
+    ${OrIf} $SSAlreadyInstalled S== "V3"
 		; Disable the page
 		FindWindow $R0 "#32770" "" $HWNDPARENT
 		GetDlgItem $R1 $R0 1019
@@ -205,7 +224,7 @@ FunctionEnd
 
 
 Function SetInstallDir
-	${If} $SSAlreadyInstalled S== "0"
+	${If} $SSAlreadyInstalled S== "NI"
 		StrCpy $INSTDIR "$INSTDIR\SchedulingServer"
 	${EndIf}
 FunctionEnd
@@ -222,8 +241,8 @@ Function .onInit
 	advsplash::show 1000 1000 1000 -1 ..\InstallerFiles\labshare
  	StrCpy $skipSection "false"
  	StrCpy $SSAlreadyInstalled "-1"
-	call CheckSaharaVersion
-	${If} $SSAlreadyInstalled S== "1"
+	call CheckSSVersion
+	${If} $SSAlreadyInstalled S== "OTHER"
 		MessageBox MB_OK|MB_ICONSTOP "A different version of Sahara is already installed on this machine. $\nPlease uninstall the existing Sahara software before continuing the installation"
 		Abort 
 	${EndIf}
@@ -239,6 +258,15 @@ Function checkJREVersion
 		MessageBox MB_OK|MB_ICONSTOP "$(^Name) needs JRE version ${JREVersion} or higher. It is currently $0. Aborting the installation."
 		Abort ; causes installer to quit.
 	${EndIf}
+FunctionEnd
+
+; Function to go to a specified NSIS page 
+Function GotoDBPage 
+    IntCmp $DBPageNumber 0 0 GoToPage GoToPage
+    StrCmp $DBPageNumber "X" 0 GoToPage
+    StrCpy $DBPageNumber "120"
+  GoToPage:
+  SendMessage $HWNDPARENT "0x408" "$DBPageNumber" ""
 FunctionEnd
 
 ; Check if RigClient service is running
@@ -282,7 +310,7 @@ Function checkIfServiceInstalled
 FunctionEnd
 
 ; Check if RigClient service is running
-Function un.checkIfServiceRunning
+!macro checkIfServiceRunning
 	; Check if the RigClient service is running. (probably need a better way to do this)
 	; If the service is running, the output of 'sc query RigClient' will be like:
 	;	SERVICE_NAME: RigClient
@@ -322,14 +350,34 @@ Function un.checkIfServiceRunning
 	ClearErrors
 	${WordReplace} '$1' 'RUNNING' 'RUNNING' 'E+1' $R0
 	IfErrors Errors 0
-	MessageBox MB_OK|MB_ICONSTOP "Please stop the '${Sahara_SSWindows_Service}' service before continuing the uninstallation."
+	MessageBox MB_OK|MB_ICONSTOP "Please stop the '${Sahara_SSWindows_Service}' service before continuing"
 	Abort
 	Errors:
 	StrCmp $R0 '1' NotRunning 0
 	MessageBox MB_OK|MB_ICONSTOP "Error is detecting if '${Sahara_SSWindows_Service}' service is installed"
 	Abort
 	NotRunning:
-FunctionEnd
+!macroend
+
+!macro uninstallWindowsService operation
+    !insertmacro checkIfServiceRunning
+    Push $R1
+    ReadRegStr $R1 HKLM "${REGKEY}" "Path"
+    ClearErrors
+    ExecWait '"$R1\schedulingservice" uninstall'
+    ifErrors 0 WinServiceNoError
+    MessageBox MB_ABORTRETRYIGNORE "Error in uninstalling Scheduling Server service.  $\n$\nIf the service is installed, manually \
+    uninstall the service from command prompt using: '$R1\schedulingservice uninstall' as admin and press 'Retry'. $\nIf the service is \
+    already uninstalled, press 'Ignore'. $\nPress 'Abort' to end the uninstallation" IDABORT AbortUninstall IDIGNORE WinServiceNoError 
+    ;TryAgain
+    ExecWait '$R1\schedulingservice uninstall'
+    ifErrors 0 WinServiceNoError
+    MessageBox MB_OK|MB_ICONSTOP "Error in uninstalling Scheduling Server service again. Aborting the ${operation}"
+    AbortUninstall:
+    Abort
+    WinServiceNoError:
+    Pop $R1
+!macroend
 
 ; Disable the section so that user will not be able to select it
 ; This macro is used mainly for uninstallation. 
@@ -356,33 +404,45 @@ FunctionEnd
 Section "Sahara Scheduling Server" SchedServer
 	!insertmacro checkAdminUser "installation"
 
-	call checkJREVersion	
-	call checkIfServiceInstalled 
-
-    ; Set output path to the installation directory.
-    SetOutPath $INSTDIR
-    
+    ${If} $SSAlreadyInstalled S== "NI"
+	   call checkJREVersion	
+	   call checkIfServiceInstalled 
+        ; Set output path to the installation directory.
+        SetOutPath $INSTDIR\conf 
+        File conf\schedulingserver.properties
+        File conf\scheduling_service.ini
+    ${Else}
+        ; uninstall the existing service before upgrade
+        !insertmacro uninstallWindowsService "upgrade"
+        ; sql files were copied to the $INSTDIR in previous version
+        ; moving them to schemas directoty to make it consistent with Unix installation
+        Delete $INSTDIR\*.sql
+        
+        ; delete older bundle directory
+        RMDir /r $INSTDIR\bundles
+    ${EndIf}
+    ; Common steps for installation and upgrade
+        
     ; Copy the component files/directories
+    SetOutPath $INSTDIR
     File LICENSE
     File servicewrapper\WindowsServiceWrapper\Release\schedulingservice.exe
+    SetOutPath $INSTDIR\schemas
     File doc\db\schema\*.sql
     
     SetOutPath $INSTDIR\bundles
 	File /r /x *.svn bundles\*.*
     SetOutPath $INSTDIR\bin
 	File /r /x *.svn bin\*.*
-    SetOutPath $INSTDIR\conf 
-    File /oname=schedulingserver.properties conf\schedulingserver.properties.win
-	File conf\scheduling_service.ini
-	
+		
     SetOutPath $INSTDIR
     ; Add the RigClient service to the windows services
     ExecWait '"$INSTDIR\schedulingservice" install'
-    ifErrors 0 WinServiceNoError
+    ifErrors 0 WinServiceInstNoError
     MessageBox MB_OK|MB_ICONSTOP "Error in executing schedulingservice.exe"
     ; TODO  Revert back the installed SS in case of error?
     Abort
-    WinServiceNoError:
+    WinServiceInstNoError:
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     WriteRegStr HKLM "${REGKEY}" CurrentVersion  ${Version}
     
@@ -391,7 +451,6 @@ Section "Sahara Scheduling Server" SchedServer
 SectionEnd
 
 ;--------------------------------
-
 ; Post install actions
 Function .onInstSuccess
 	ClearErrors
@@ -425,58 +484,84 @@ SectionEnd
 
 ; Function to display installation choice after the license page
 Function getInstallChoice
-    !insertmacro MUI_HEADER_TEXT "Select the installaion option" ""
+${IfNot} $SSAlreadyInstalled S== "NI" 
+    !insertmacro MUI_HEADER_TEXT "Select the installation option" ""
     nsDialogs::Create 1018
     Pop $Dialog
     ${If} $Dialog == error
         Abort
     ${EndIf}
-    ${NSD_CreateRadioButton} 0 0 100% 20% "Install Scheduling Server (optionally including database setup)"
-    Pop $SSInstallClick
-    ${NSD_CreateRadioButton} 0 20% 100% 20% "Database setup only"
-    Pop $DBSetupClick
-    ; By default, select the SS installation option
-    ${NSD_SetState} $SSInstallClick ${BST_CHECKED} 
+    ${If} $SSAlreadyInstalled S== "V2" 
+    ${OrIf} $SSAlreadyInstalled S== "V3"
+        ${NSD_CreateLabel} 0 0 100% 15% "Please select one of the following install options:"
+        ${NSD_CreateRadioButton} 0 15% 100% 15% "Upgrade the $(^Name) from the existing version $SSVersion to version ${Version}"
+        Pop $UpgradeSelected
+        ${NSD_CreateRadioButton} 0 30% 100% 15% "Clean install $(^Name) ${Version}"
+        Pop $SSInstallClick
+        ; By default, select the upgrade option
+        ${NSD_SetState} $UpgradeSelected ${BST_CHECKED} 
+        
+    ${ElseIf} $SSAlreadyInstalled S== "SAME"
+        ${NSD_CreateLabel} 0 0 100% 15% "$(^Name) version ${Version} is already installed on this machine.\
+        $\nPlease select one of the following install options:"
+        ${NSD_CreateRadioButton} 0 15% 100% 15% "Database setup only"
+        Pop $DBSetupClick
+        ${NSD_CreateRadioButton} 0 30% 100% 15% "Exit installation"
+        Pop $ExitInstall
+        ; By default, select the database setup option
+        ${NSD_SetState} $DBSetupClick ${BST_CHECKED}
+    ${EndIf}
     nsDialogs::Show 
+${EndIf}
 FunctionEnd
 
 ; This function will be called after getInstallChoice function
 Function selectionDone
     ; Check which option is selected
-    ${NSD_GetState} $SSInstallClick $Checkbox_State
-    ${If} $Checkbox_State == ${BST_UNCHECKED} ; Install option not selected
-        ${NSD_GetState} $DBSetupClick $Checkbox_State
-        ${If} $Checkbox_State == ${BST_CHECKED}
-            ; If 'Database setup only' option is selected -
-            ; 1. Check if Scheduling Server is installed.
-            ; 2. If yes, skip the install pages and go to the DB setup page
-            ; TODO check the behaviour in case of upgrade
-            ${If} $SSAlreadyInstalled S!= "2"
-                MessageBox MB_OK|MB_ICONEXCLAMATION "This option can be selected only if the same version of Scheduling Server is \
-                already installed on the machine.$\n$\nPlease select the 'Install Scheduling Server' option"
+    ${If} $SSAlreadyInstalled S== "V2" 
+    ${OrIf} $SSAlreadyInstalled S== "V3"
+        ${NSD_GetState} $UpgradeSelected $Checkbox_State
+        ${If} $Checkbox_State == ${BST_UNCHECKED} ; Upgrade option not selected
+            ${NSD_GetState} $SSInstallClick $Checkbox_State
+            ${If} $Checkbox_State == ${BST_CHECKED}
+                ; If 'Clean Install' option is selected, abort the installer and display message
+                MessageBox MB_ICONINFORMATION|MB_OKCANCEL "To install version ${Version}, please uninstall the existing version of $(^Name) \
+                and re-run the installer" IDCANCEL ShowSamePage
+                Quit
+            ShowSamePage:
+                Abort
+            ${Else}
+                MessageBox MB_OK "Please select one option"
                 Abort
             ${EndIf}
+        ${EndIf}
+    ${ElseIf} $SSAlreadyInstalled S== "SAME"
+        ${NSD_GetState} $DBSetupClick $Checkbox_State
+        ${If} $Checkbox_State == ${BST_UNCHECKED} ; DB setup option not selected
+            ${NSD_GetState} $ExitInstall $Checkbox_State
+            ${If} $Checkbox_State == ${BST_CHECKED}
+                ; 'Exit installation' option is selected
+                MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL "Exiting the $(^Name) installation" IDCANCEL ShowOptionPage
+                Quit
+            ShowOptionPage:
+                Abort
+            ${Else}
+                MessageBox MB_OK "Please select one option"
+                Abort
+            ${EndIf}
+        ${Else}
             StrCpy $finishTitle "Completing $(^Name) Database Setup Wizard"
             StrCpy $finishText ""      
-            Call GotoDBPage
-        ${Else}
-            MessageBox MB_OK "Please select one option"
-            Abort
+            call GotoDBPage 
         ${EndIf}
     ${EndIf}
 FunctionEnd
 
-; Function to go to a specified NSIS page 
-Function GotoDBPage
-    IntCmp $DBPageNumber 0 0 GoToPage GoToPage
-    StrCmp $DBPageNumber "X" 0 GoToPage
-    StrCpy $DBPageNumber "120"
-  GoToPage:
-  SendMessage $HWNDPARENT "0x408" "$DBPageNumber" ""
-FunctionEnd
-
 ; Function to confirm whether to proceed with database setup stage
 Function confirmDB
+    ${IfNot} $SSAlreadyInstalled S== "NI"
+        Abort
+    ${EndIf}     
     Var /GLOBAL yesClick
     Var /GLOBAL noClick
     nsDialogs::Create 1018
@@ -491,7 +576,7 @@ Function confirmDB
     Pop $noClick
     ; By default 'yes' selected
     ${NSD_SetState} $yesClick ${BST_CHECKED}
-    nsDialogs::Show 
+    nsDialogs::Show
 FunctionEnd
 
 ; This function will be called after confirmDB function
@@ -516,6 +601,9 @@ FunctionEnd
 
 ; Start page for DB setup
 Function dbSetup
+    ${IfNot} $SSAlreadyInstalled S== "NI"
+        Abort
+    ${EndIf}     
     !insertmacro MUI_HEADER_TEXT "Scheduling Server Database setup" ""
     nsDialogs::Create 1018
     Pop $Dialog
@@ -556,6 +644,9 @@ FunctionEnd
 
 ; Function to get the database server and login details
 Function setupDatabase
+    ${IfNot} $SSAlreadyInstalled S== "NI"
+        Abort
+    ${EndIf}     
     Var /GLOBAL ComboBox
     Var /GLOBAL GenericControl
     Var /GLOBAL DBAdmin
@@ -636,6 +727,9 @@ Function setupDatabasePost
 FunctionEnd
 
 Function DDBDirectoryPre
+    ${IfNot} $SSAlreadyInstalled S== "NI"
+        Abort
+    ${EndIf}   
     StrCpy $DBDirText "Select the location of $DBType database tool" 
     ${If} $DBType S== "MySQL"
          StrCpy $DBDirText "$DBDirText mysql.exe"
@@ -647,7 +741,7 @@ FunctionEnd
 Function DDBDirectoryShow
     FindWindow $0 "#32770" "" $HWNDPARENT
     GetDlgItem $1 $0 1023 
-    ShowWindow $1 0  
+    ShowWindow $1 0
 FunctionEnd
 
 ; Check the executable directory selected by the user
@@ -696,6 +790,10 @@ FunctionEnd
 
 ; Function to get the details of the database to be created
 Function getDBDetails
+    ${IfNot} $SSAlreadyInstalled S== "NI"
+        Abort
+    ${EndIf}     
+
     nsDialogs::Create 1018
     Pop $Dialog
 
@@ -705,7 +803,7 @@ Function getDBDetails
     ; get the username, password, database name
     ${NSD_CreateGroupBox} 0%  0% 100% 100% "Scheduling Server database details"
     Pop $GenericControl
-    ${NSD_CreateLabel} 5% 10% 85% 25% "The database will be created along with the user to access the database. \
+    ${NSD_CreateLabel} 5% 10% 85% 25% "The database will be created along with the users to access the database. \
     $\n$\n*** NOTE: Please add the same user and database details in the Scheduling Server configuration file ***"
     Pop $GenericControl
     ${NSD_CreateLabel} 5%  40% 20% 10% "Database Name"
@@ -787,8 +885,10 @@ Function createUser
         Pop $1
         ${If} $0 S!= "0"
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
-            !insertmacro writeToLog "Error in creating user $DBUser. Skipping user creation - $\n$1"
-            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating user $DBUser. Skipping user creation - $\n$\n$1"
+            !insertmacro writeToLog "Error in creating user $DBUser (this could be because the user already exists).\
+            $\nSkipping user creation - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating user $DBUser (this could be because the user already exists).\
+            $\nSkipping user creation - $\n$\n$1"
             StrCpy $UserStatus "-1"
         ${Else}
             StrCpy $UserStatus ""
@@ -801,8 +901,10 @@ Function createUser
         Pop $1
         ${If} $0 S!= "0"
             ${OrIf} $1 S!= ""
-            !insertmacro writeToLog "Error in creating database user/login $DBUser. Skipping user creation - $\n$1"
-            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating database user/login $DBUser. Skipping user creation - $\n$\n$1"
+            !insertmacro writeToLog "Error in creating database user/login $DBUser (this could be because the user already exists).\
+            $\nSkipping user creation - $\n$1"
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating database user/login $DBUser (this could be because the user already exists).\
+            $\nSkipping user creation - $\n$\n$1"
             StrCpy $UserStatus "-1"
         ${Else}
             StrCpy $UserStatus ""            
@@ -848,14 +950,14 @@ FunctionEnd
 Function createSchema
     ${If} $DBType S== "MySQL"
         ; create the schema
-        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBUser --password=$DBUserPass -D $DBName -e "source $INSTDIR\mysql-schema.sql"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBUser --password=$DBUserPass -D $DBName -e "source $INSTDIR\schema\mysql-schema.sql"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
-            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mysql-schema.sql manually.\
+            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mysql-schema.sql manually.\
             $\nThe error message is - $1"
-            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mysql-schema.sql manually.\
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mysql-schema.sql manually.\
              $\n$\nThe error message is - $1"
             StrCpy $SchemaStatus "-1"
         ${Else}
@@ -863,14 +965,14 @@ Function createSchema
         ${EndIf}
     ${ElseIf} $DBType S== "Microsoft SQL"
         ; create the schema
-        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBUser -P $DBUserPass -d $DBName -i $INSTDIR\mssql-schema.sql'
+        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBUser -P $DBUserPass -d $DBName -i $INSTDIR\schema\mssql-schema.sql'
         Pop $0
         Pop $1
         ${IfNot} $0 S== "0" 
         ${OrIf} $1 S!= ""
-            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mssql-schema.sql manually.\
+            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mssql-schema.sql manually.\
             $\nThe error message is - $1"
-            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\mssql-schema.sql manually.\
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mssql-schema.sql manually.\
             $\n$\nThe error message is - $1"
             StrCpy $SchemaStatus "-1"
         ${Else}
@@ -909,7 +1011,9 @@ Function addDataUsingFile
 FunctionEnd
 
 Function createDB
-
+    ${IfNot} $SSAlreadyInstalled S== "NI"
+        Abort
+    ${EndIf}
     ; $DBStatus - createDatabase status
     ; $UserStatus - createUser status
     ; $PrivilegesStatus - grantPrivileges status
@@ -1011,6 +1115,9 @@ Function revertBackDB
 FunctionEnd
 
 Function printSummary
+    ${IfNot} $SSAlreadyInstalled S== "NI"
+        Abort
+    ${EndIf}
     Var /GLOBAL Image
     Var /GLOBAL ImageHandle
     Var /GLOBAL ErrorFlag
@@ -1095,7 +1202,11 @@ FunctionEnd
 
 Function revertBack
     ${If} $ErrorFlag S== "1" 
-    ${AndIf} $DBStatus S== "" ; No steps to revert back if database creation has failed  
+    ${AndIf} $DBStatus S== "" ; No steps to revert back if database creation has failed
+        ${If} $UserStatus S!= ""
+        ${AndIf} $PrivilegesStatus S== ""
+            ; User creation failed but granting privileges succeeded
+        ${EndIf}
         MessageBox MB_YESNO|MB_ICONEXCLAMATION "Some of the database setup steps could not be completed successfully. \
         The log $\nfile contains more details about the problems.$\n$\nThe installer can now revert back the successfully executed \
         database setup steps $\nand you can re-run the installer after resolving the problems$\n- OR -$\nYou can execute \
@@ -1141,29 +1252,17 @@ FunctionEnd
 ; Uninstall Scheduling Server
 Section "un.Sahara Scheduling Server" un.SchedulingServer
 	!insertmacro checkAdminUser "uninstallation"
-	call un.checkIfServiceRunning
+	!insertmacro uninstallWindowsService "uninstallation"
 	Push $R1
-	ReadRegStr $R1 HKLM "${REGKEY}" "Path"
-	ClearErrors
-	ExecWait '"$R1\schedulingservice" uninstall'
-	ifErrors 0 WinServiceNoError
-	MessageBox MB_ABORTRETRYIGNORE "Error in uninstalling Scheduling Server service.  $\n$\nIf the service is installed, manually uninstall the service from command prompt using: '$R1\schedulingservice uninstall' as admin and press 'Retry'. $\nIf the service is already uninstalled, press 'Ignore'. $\nPress 'Abort' to end the uninstallation" IDABORT AbortUninstall IDIGNORE WinServiceNoError 
-	;TryAgain
-	ExecWait '$R1\schedulingservice uninstall'
-	ifErrors 0 WinServiceNoError
-	MessageBox MB_OK|MB_ICONSTOP "Error in uninstalling Scheduling Server service again. Aborting the uninstallation"
-	AbortUninstall:
-	Abort
-	WinServiceNoError:
-
+    ReadRegStr $R1 HKLM "${REGKEY}" "Path"
 	;Delete the component files/directories
 	RMDir /r $R1\bundles 
     RMDir /r $R1\bin 
     RMDir /r $R1\conf
     RMDir /r $R1\cache
+    RMDir /r $R1\schema
     Delete $R1\LICENSE
     Delete $R1\schedulingservice*
-    Delete $R1\*.sql
     Delete $R1\DatabaseSetup.log
     
     Pop $R1
