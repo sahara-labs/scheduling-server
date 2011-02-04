@@ -42,6 +42,7 @@ import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigOfflineScheduleDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -124,7 +125,7 @@ public class UpdateLocalRigStatus
             this.logger.info("Reactivating rig '" + name + "' because a status update was received.");
         }
         
-        if (!rig.isOnline() && online)
+        if (!rig.isOnline() && online && !(new RigOfflineScheduleDao(this.rigDao.getSession()).isOffline(rig)))
         {
             /* Rig was offline but now came online. */
             this.logger.info("Rig '" + name + "' came online.");
@@ -132,15 +133,15 @@ public class UpdateLocalRigStatus
             rig.setOfflineReason(null);
             rig.setLastUpdateTimestamp(new Date());
             this.rigDao.flush();
-            
+
             /* Log rig came online. */
             this.rigLogDao.addOnlineLog(rig, "Rig came online.");
-            
+
             /* Fire online rig event. */
             for (RigEventListener list : RigProviderActivator.getRigEventListeners())
             {
                 list.eventOccurred(RigStateChangeEvent.ONLINE, rig, this.rigDao.getSession());
-            }    
+            }
         }
         else if (rig.isOnline() && !online)
         {
