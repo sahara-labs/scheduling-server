@@ -108,14 +108,12 @@ public class GenericDao<T>
      * @param obj transient object
      * @return persistent object
      */
-    @SuppressWarnings("unchecked")
     public T persist(T obj)
     {        
         this.begin();
-        Serializable id = this.session.save(obj);
+        this.session.save(obj);
         this.commit();
-        
-        return (T) this.session.load(this.clazz, id);
+        return obj;
     }
     
     /**
