@@ -118,7 +118,7 @@ public class RigOfflineSchedule implements Serializable
         this.rig = rig;
     }
 
-    @Column(name = "start_time", nullable = true)
+    @Column(name = "start_time", nullable = false)
     public Date getStartTime()
     {
         return this.startTime;
@@ -129,7 +129,7 @@ public class RigOfflineSchedule implements Serializable
         this.startTime = start;
     }
 
-    @Column(name = "end_time", nullable = true)
+    @Column(name = "end_time", nullable = false)
     public Date getEndTime()
     {
         return this.endTime;
@@ -140,7 +140,7 @@ public class RigOfflineSchedule implements Serializable
         this.endTime = end;
     }
 
-    @Column(name = "reason", nullable = true, length = 255)
+    @Column(name = "reason", nullable = false, length = 255)
     public String getReason()
     {
         return this.reason;
