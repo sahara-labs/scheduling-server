@@ -286,6 +286,29 @@ public class BookingsService implements BookingsInterface
                 status.setBestFits(bestFits);
                 for (TimePeriod tp : bc.getBestFits())
                 {
+                    numBookings = (Integer) ses.createCriteria(Bookings.class)
+                         .setProjection(Projections.rowCount())
+                         .add(Restrictions.eq("active", Boolean.TRUE))
+                         .add(Restrictions.eq("user", user))
+                         .add(Restrictions.disjunction()
+                                 .add(Restrictions.and(
+                                         Restrictions.gt("startTime", tp.getStartTime().getTime()),
+                                         Restrictions.lt("startTime", tp.getEndTime().getTime())
+                                 ))       
+                                 .add(Restrictions.and(
+                                         Restrictions.gt("endTime", tp.getStartTime().getTime()),
+                                         Restrictions.le("endTime", tp.getEndTime().getTime())
+                                 ))
+                                 .add(Restrictions.and(
+                                         Restrictions.le("startTime", tp.getStartTime().getTime()),
+                                         Restrictions.gt("endTime", tp.getEndTime().getTime())))
+                         ).uniqueResult();
+                    if (numBookings > 0)
+                    {
+                        this.logger.debug("Excluding best fit option for user " + user.qName() + " because it is " +
+                        		"concurrent with an existing.");
+                        continue;
+                    }
                     BookingType fit = new BookingType();
                     fit.setPermissionID(booking.getPermissionID());
                     fit.setStartTime(tp.getStartTime());
