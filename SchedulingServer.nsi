@@ -1263,7 +1263,7 @@ Section "un.Sahara Scheduling Server" un.SchedulingServer
     RMDir /r $R1\bin 
     RMDir /r $R1\conf
     RMDir /r $R1\cache
-    RMDir /r $R1\schema
+    RMDir /r $R1\schemas
     Delete $R1\LICENSE
     Delete $R1\schedulingservice*
     Delete $R1\DatabaseSetup.log
