@@ -71,7 +71,7 @@ public class RigMaintenance extends RigClientAsyncServiceCallbackHandler
     }
     
     /**
-     * Sets mainteance state on rig. 
+     * Sets maintenance state on rig. 
      * 
      * @param rig rig to set
      * @param runTests whether exerciser tests should be run
@@ -98,11 +98,11 @@ public class RigMaintenance extends RigClientAsyncServiceCallbackHandler
     }
     
     /**
-     * Actually makes the maintenace request.
+     * Actually makes the maintenance request.
      * 
      * @param rig rig to request
      * @param offline whether the rig s being put offline
-     * @param tests whehter exerciser tests should be run
+     * @param tests whether exerciser tests should be run
      * @param db database session
      */
     private void makeMaintenaceRequest(Rig rig, boolean offline, boolean tests, Session db)
