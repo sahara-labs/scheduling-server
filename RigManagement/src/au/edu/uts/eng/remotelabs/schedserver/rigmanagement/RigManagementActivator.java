@@ -37,6 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.rigmanagement;
 
+import java.util.Properties;
+
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -46,6 +48,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.impl.RigMaintenanceNotifier;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -60,6 +63,9 @@ public class RigManagementActivator implements BundleActivator
     /** SOAP servlet service registration. */
     private ServiceRegistration soapService;
     
+    /** Maintenance notifier. */
+    private ServiceRegistration notifierReg;
+    
     /** Logger. */
     private Logger logger;
     
@@ -72,6 +78,11 @@ public class RigManagementActivator implements BundleActivator
         /* Open a tracker to the booking engine. */
         bookingTracker = new ServiceTracker(context, BookingEngineService.class.getName(), null);
         bookingTracker.open();
+        
+        /* Register the maintenance notifier. */
+        Properties props = new Properties();
+        props.put("period", String.valueOf(RigMaintenanceNotifier.RUN_PERIOD));
+        this.notifierReg = context.registerService(Runnable.class.getName(), new RigMaintenanceNotifier(), props);
         
         /* Register the Rig Management SOAP service. */
         this.logger.debug("Registering the Rig Management SOAP service.");
@@ -86,6 +97,8 @@ public class RigManagementActivator implements BundleActivator
 		this.logger.info("The rig management bundle is shutting down.");
 		
 		this.soapService.unregister();
+		
+		this.notifierReg.unregister();
 		
 		bookingTracker.close();
 		bookingTracker = null;
