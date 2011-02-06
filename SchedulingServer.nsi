@@ -420,6 +420,9 @@ Section "Sahara Scheduling Server" SchedServer
         
         ; delete older bundle directory
         RMDir /r $INSTDIR\bundles
+        
+        SetOutPath $INSTDIR\schemas
+        File InstallerFiles\migrationScriptV2ToV3.sql
     ${EndIf}
     ; Common steps for installation and upgrade
         
