@@ -43,6 +43,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -50,6 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSched
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigMaintenance;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
@@ -160,6 +162,10 @@ public class RigMaintenanceNotifier implements Runnable
                     this.logger.warn("Mainteance period for rig " + rig.getName() + " is ending but it is not " +
                     		"registered.");
                 }
+                
+                /* Notify the booking engine. */
+                BookingEngineService service = RigManagementActivator.getBookingService();
+                if (service != null) service.clearRigOffline(sched, db);
             }
             
             if (endOffline.size() > 0)
