@@ -45,9 +45,11 @@ import junit.framework.TestCase;
 import org.junit.Before;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -150,6 +152,13 @@ public class RigMaintenanceNotifierTester extends TestCase
         db.refresh(r1);
         db.refresh(r2);
         db.refresh(r3);
+        
+        RigLogDao rldao = new RigLogDao(db);
+        db.beginTransaction();
+        for (RigLog log : rldao.findLogs(r1, past, future)) db.delete(log);
+        for (RigLog log : rldao.findLogs(r2, past, future)) db.delete(log);
+        for (RigLog log : rldao.findLogs(r3, past, future)) db.delete(log);
+        db.getTransaction().commit();
         
         db.beginTransaction();
         db.delete(sch3);
@@ -276,6 +285,13 @@ public class RigMaintenanceNotifierTester extends TestCase
         db.refresh(r3);
         db.refresh(ses);
         
+        RigLogDao rldao = new RigLogDao(db);
+        db.beginTransaction();
+        for (RigLog log : rldao.findLogs(r1, past, future)) db.delete(log);
+        for (RigLog log : rldao.findLogs(r2, past, future)) db.delete(log);
+        for (RigLog log : rldao.findLogs(r3, past, future)) db.delete(log);
+        db.getTransaction().commit();
+        
         db.beginTransaction();
         db.delete(ses);
         db.delete(rp);
@@ -311,7 +327,6 @@ public class RigMaintenanceNotifierTester extends TestCase
     public void testRunEnd()
     {
         Date now = new Date();
-        Date soon = new Date(System.currentTimeMillis() + 30000);
         Date past = new Date(System.currentTimeMillis() - 30000);
         Date future = new Date(System.currentTimeMillis() + 120000);
         
@@ -348,8 +363,8 @@ public class RigMaintenanceNotifierTester extends TestCase
         db.save(r3);
         RigOfflineSchedule sch1 = new RigOfflineSchedule();
         sch1.setActive(true);
-        sch1.setStartTime(soon);
-        sch1.setEndTime(future);
+        sch1.setStartTime(past);
+        sch1.setEndTime(now);
         sch1.setReason("is offline");
         sch1.setRig(r1);
         db.save(sch1);
@@ -378,6 +393,13 @@ public class RigMaintenanceNotifierTester extends TestCase
         db.refresh(sch2);
         db.refresh(sch3);
         
+        RigLogDao rldao = new RigLogDao(db);
+        db.beginTransaction();
+        for (RigLog log : rldao.findLogs(r1, past, future)) db.delete(log);
+        for (RigLog log : rldao.findLogs(r2, past, future)) db.delete(log);
+        for (RigLog log : rldao.findLogs(r3, past, future)) db.delete(log);
+        db.getTransaction().commit();
+        
         db.beginTransaction();
         db.delete(sch3);
         db.delete(sch2);
@@ -389,7 +411,7 @@ public class RigMaintenanceNotifierTester extends TestCase
         db.delete(ty1);
         db.getTransaction().commit();
         
-        assertTrue(sch1.isActive());
+        assertFalse(sch1.isActive());
         assertFalse(sch2.isActive());
         assertFalse(sch3.isActive());
     }

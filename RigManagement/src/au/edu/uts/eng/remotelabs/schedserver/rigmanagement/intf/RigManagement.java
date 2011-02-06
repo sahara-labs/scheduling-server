@@ -50,6 +50,7 @@ import org.hibernate.criterion.Restrictions;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigOfflineScheduleDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
@@ -389,10 +390,7 @@ public class RigManagement implements RigManagementInterface
                 result.setFailureReason("Concurrent offline period.");
                 return response;
             }
-                
-                
-            
-            
+
             result.setSuccessful(true);
             
             RigOfflineSchedule offline = new RigOfflineSchedule();
@@ -417,6 +415,7 @@ public class RigManagement implements RigManagementInterface
                 
                 rig.setOnline(false);
                 rig.setOfflineReason("In maintenance.");
+                new RigLogDao(dao.getSession()).addOfflineLog(rig, "In maintenance.");
                 dao.flush();
             }
         }

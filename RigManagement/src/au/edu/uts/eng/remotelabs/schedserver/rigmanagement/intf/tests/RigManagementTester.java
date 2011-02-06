@@ -332,12 +332,12 @@ public class RigManagementTester extends TestCase
         assertNotNull(logs);
         assertEquals(2, logs.length);
         
-        RigLogType log = logs[0];
+        RigLogType log = logs[1];
         assertEquals(l1.getReason(), log.getReason());
         assertEquals(log.getOldState(), RigStateType.NOT_REGISTERED);
         assertEquals(log.getNewState(), RigStateType.OFFLINE);
         
-        log = logs[1];
+        log = logs[0];
         assertEquals(l2.getReason(), log.getReason());
         assertEquals(log.getOldState(), RigStateType.OFFLINE);
         assertEquals(log.getNewState(), RigStateType.ONLINE);
@@ -413,14 +413,5 @@ public class RigManagementTester extends TestCase
         assertTrue(rig.getIsAlarmed());
         assertEquals(r.getOfflineReason(), rig.getOfflineReason());
         assertEquals(r.getContactUrl(), rig.getContactURL());
-    }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement#putRigOffline(au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffline)}.
-     */
-    @Test
-    public void testPutRigOffline()
-    {
-        fail("Not yet implemented");
     }
 }

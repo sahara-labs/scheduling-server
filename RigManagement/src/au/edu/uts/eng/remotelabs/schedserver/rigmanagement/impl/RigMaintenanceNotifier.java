@@ -44,6 +44,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -124,6 +125,7 @@ public class RigMaintenanceNotifier implements Runnable
                 
                 rig.setOnline(false);
                 rig.setOfflineReason("Rig going into maintenance.");
+                new RigLogDao(db).addOfflineLog(rig, "Maintenance period starting.");
                 
                 db.beginTransaction();
                 db.flush();
