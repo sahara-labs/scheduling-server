@@ -407,10 +407,7 @@ Section "Sahara Scheduling Server" SchedServer
     ${If} $SSAlreadyInstalled S== "NI"
 	   call checkJREVersion	
 	   call checkIfServiceInstalled 
-        ; Set output path to the installation directory.
-        SetOutPath $INSTDIR\conf 
-        File conf\schedulingserver.properties
-        File conf\scheduling_service.ini
+
     ${Else}
         ; uninstall the existing service before upgrade
         !insertmacro uninstallWindowsService "upgrade"
@@ -426,6 +423,10 @@ Section "Sahara Scheduling Server" SchedServer
     ${EndIf}
     ; Common steps for installation and upgrade
         
+    ; Set output path to the installation directory.
+    SetOutPath $INSTDIR\conf 
+    File conf\schedulingserver.properties
+    File conf\scheduling_service.ini
     ; Copy the component files/directories
     SetOutPath $INSTDIR
     File LICENSE
