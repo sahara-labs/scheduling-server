@@ -733,6 +733,7 @@ public class DayBookings
         {
             if ((mb = rb.getSlotBooking(slot)) != null && mb.getStartSlot() == slot && mb.getSession() == null)
             {
+                if (mb.isMaintenanceHolder()) continue;
                 starting.put(rb.getRig().getName(), mb);
             }
         }
