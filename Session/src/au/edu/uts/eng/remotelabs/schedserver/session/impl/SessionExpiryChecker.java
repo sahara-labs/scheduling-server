@@ -159,10 +159,10 @@ public class SessionExpiryChecker implements Runnable
                              !service.extendQueuedSession(ses.getRig(), ses, extension, db)))
                     {
                         this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
-                                "rig " + ses.getAssignedRigName() + " is expired and the rig is queued. Marking " +
-                                "session for expiry and giving a grace period.");
+                                "rig " + ses.getAssignedRigName() + " is expired and the rig is queued or booked. " +
+                                "Marking session for expiry and giving a grace period.");
                         ses.setInGrace(true);
-                        ses.setRemovalReason("Rig is queued.");
+                        ses.setRemovalReason("Rig is queued or booked.");
                         db.beginTransaction();
                         db.flush();
                         db.getTransaction().commit();
@@ -242,6 +242,11 @@ public class SessionExpiryChecker implements Runnable
                             ex.getClass().getName() + "," + " Message: " + ex.getMessage() + ").");
                 }
             }
+        }
+        catch (Throwable thr)
+        {
+           this.logger.error("Caught unchecked exception in session expirty checker. Exception: " + thr.getClass() + 
+                   ", message: " + thr.getMessage() + '.');
         }
         finally
         {

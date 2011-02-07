@@ -40,7 +40,7 @@
 Name: SchedulingServer
 Summary: Schedules and assigns remote laboratory rigs.
 Version: 3.0
-Release: 0.alpha
+Release: 0
 License: BSD
 Group: Sahara
 
@@ -72,7 +72,7 @@ done
 
 # Configuration files
 mkdir -p $RPM_BUILD_ROOT/%{installdir}/conf
-install -m 700 $RPM_BUILD_DIR/../../conf/schedulingserver.properties.unix $RPM_BUILD_ROOT/%{installdir}/conf/schedulingserver.properties
+install -m 700 $RPM_BUILD_DIR/../../conf/schedulingserver.properties $RPM_BUILD_ROOT/%{installdir}/conf/schedulingserver.properties
 cp $RPM_BUILD_DIR/../../conf/scheduling_service.ini $RPM_BUILD_ROOT/%{installdir}/conf/scheduling_service.ini
 
 # Service wrapper & init file
@@ -86,7 +86,7 @@ for SCHEMA in $RPM_BUILD_DIR/../../doc/db/schema/*.sql
 do
 	cp $SCHEMA $RPM_BUILD_ROOT/%{installdir}/schemas
 done
-cp $RPM_BUILD_DIR/../../InstallerFiles/migrationScriptV2ToV3.sql $RPM_BUILD_ROOT/%{installdir}/schemas
+cp  $RPM_BUILD_ROOT/InstallerFiles/migrationScriptV2ToV3.sql $RPM_BUILD_ROOT/%{installdir}/schemas
 
 # Miscellaneous stuff
 mkdir -p $RPM_BUILD_ROOT/etc/Sahara
