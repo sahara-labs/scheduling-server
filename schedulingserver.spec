@@ -86,6 +86,7 @@ for SCHEMA in $RPM_BUILD_DIR/../../doc/db/schema/*.sql
 do
 	cp $SCHEMA $RPM_BUILD_ROOT/%{installdir}/schemas
 done
+cp $RPM_BUILD_DIR/../../InstallerFiles/migrationScriptV2ToV3.sql $RPM_BUILD_ROOT/%{installdir}/schemas
 
 # Miscellaneous stuff
 mkdir -p $RPM_BUILD_ROOT/etc/Sahara
