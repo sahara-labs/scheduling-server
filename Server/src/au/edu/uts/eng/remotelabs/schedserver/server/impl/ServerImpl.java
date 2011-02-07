@@ -241,16 +241,16 @@ public class ServerImpl
 	                PrintWriter writer = res.getWriter();
 	                writer.println("<html>");
 	                writer.println("   <head>");
-	                writer.println("       <title>Sahara R2: A New Hope</title>");
+	                writer.println("       <title>Sahara Scheduling Server R3</title>");
 	                writer.println("   <head>");
 	                writer.println("   <body>");
 	                writer.println("       <div align=\"center\">");
-	                writer.println("           <h1>Sahara R2: A New Hope</h1>");
+	                writer.println("           <h1>Sahara R3: Your lack of faith is disturbing...</h1>");
 	                writer.println("           <img src=\"team.jpg\" />");
 	                writer.println("           <p style=\"font-size:0.8em\"><strong>The Sahara team:</strong> " +
 	                		"Michael Diponio (Developer), Tania Machet (Software Engineer), " +
 	                		"Michel de la Villefromoy (Project Manager), Tejaswini Deshpande (Tester).<br />");
-	                writer.println("           &copy;University of Technology, Sydney 2009 - 2010</p>");
+	                writer.println("           &copy;University of Technology, Sydney 2009 - 2011</p>");
 	                writer.println("       </div>");
 	                writer.println("   </body>");
 	                writer.println("</html>");
