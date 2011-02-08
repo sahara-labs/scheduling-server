@@ -6,7 +6,7 @@
         <property name="hibernate.connection.password">rootpasswd</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost/sahara</property>
         <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 		
 		<!-- Mapping -->	
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission" />
