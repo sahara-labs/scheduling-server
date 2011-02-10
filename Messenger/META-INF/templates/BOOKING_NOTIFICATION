@@ -3,8 +3,7 @@ Reservation for ${resource} will start on ${starttime}
 Dear ${firstname} ${lastname},
 
 The reservation for ${resource} will start on ${starttime}. If your are not 
-logged into ${Site_Address} at this time your reservation may be cancelled.
+logged into ${Site_Address} at this time your reservation may be canceled.
 
-
-Cheers,
+Regards,
 Scheduling System

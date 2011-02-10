@@ -1,13 +1,13 @@
-Reservation for ${resource} has been cancelled.
+Reservation for ${resource} has been canceled.
 
 Dear ${firstname} ${lastname},
 
 The reservation for '${resource}' that would have started on ${starttime} has been 
-cancelled by the system. 
+canceled by the system. 
 
 The reason for cancellation is: ${cancelreason}
 
-Please feel free to create another reservaton. 
+Please feel free to create another reservation. 
 
 
 Regards,

@@ -1,11 +1,11 @@
-Rig ${rig} hhas gone offline.
+Rig ${rig} has gone off-line.
 
-Oh no, the rig ${rig} has gone offline. The reason for going offline
+Oh no, the rig ${rig} has gone off-line. The reason for going off-line
 ${reason}.
 
 Until further notice the rig will not accept any sessions and any
-assigned reservations will be cancelled at redemption time if 
+assigned reservations will be canceled at redemption time if 
 no free resources are found. 
 
-Cheers,
+Regards,
 Your Cheerful Scheduling Server
