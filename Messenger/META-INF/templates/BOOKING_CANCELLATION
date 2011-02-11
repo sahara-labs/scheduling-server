@@ -1,14 +1,14 @@
-Reservation for ${resource} has been canceled.
+Reservation for ${resource} has been cancelled.
 
 Dear ${firstname} ${lastname},
 
-The reservation for '${resource}' that would have started on ${starttime} has been 
-canceled by the system. 
+The reservation for '${resource}' that would have started
+on ${starttime} has been 
+cancelled by the system. 
 
 The reason for cancellation is: ${cancelreason}
 
 Please feel free to create another reservation. 
-
 
 Regards,
 Scheduling System

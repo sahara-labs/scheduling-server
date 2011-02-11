@@ -2,8 +2,8 @@ Reservation cancelled for ${resource}.
 
 Dear ${firstname} ${lastname},
 
-You have successfully canceled your reservation for '${resource}' on 
-'${starttime}'.
+You have successfully cancelled your reservation for 
+'${resource}' on '${starttime}'.
 
 Regards,
 Scheduling System
