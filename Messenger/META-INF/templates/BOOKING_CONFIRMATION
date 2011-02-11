@@ -6,7 +6,7 @@ A reservation for ${resource} was successfully created. This reservation
 will start on ${starttime} and finish on ${endtime}. 
 
 
-If you are are not logged in to ${Site_Address} at this time your 
+If you are not logged in to ${Site_Address} at this time your 
 reservation may be canceled.
 
 
