@@ -87,6 +87,7 @@ do
 	cp $SCHEMA $RPM_BUILD_ROOT/%{installdir}/schemas
 done
 cp  $RPM_BUILD_ROOT/../../InstallerFiles/migrationScriptV2ToV3.sql $RPM_BUILD_ROOT/%{installdir}/schemas
+cp  $RPM_BUILD_ROOT/../../InstallerFiles/migrationScriptV2ToV3Postgres.sql $RPM_BUILD_ROOT/%{installdir}/schemas
 
 # Miscellaneous stuff
 mkdir -p $RPM_BUILD_ROOT/etc/Sahara

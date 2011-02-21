@@ -420,6 +420,7 @@ Section "Sahara Scheduling Server" SchedServer
         
         SetOutPath $INSTDIR\schemas
         File InstallerFiles\migrationScriptV2ToV3.sql
+        File InstallerFiles\migrationScriptV2ToV3Postgres.sql
     ${EndIf}
     ; Common steps for installation and upgrade
         
