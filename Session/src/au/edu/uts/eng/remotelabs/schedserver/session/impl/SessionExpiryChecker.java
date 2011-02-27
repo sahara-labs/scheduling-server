@@ -41,10 +41,12 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -153,6 +155,28 @@ public class SessionExpiryChecker implements Runnable
                         /* Notification warning. */
                         if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
                         		"Please finish and exit.", ses, db);
+                    }
+                    else if ((Integer)db.createCriteria(Bookings.class)
+                                .add(Restrictions.eq("active", Boolean.TRUE))
+                                .add(Restrictions.eq("user", ses.getUser()))
+                                .add(Restrictions.ge("startTime", now))
+                                .add(Restrictions.lt("startTime", new Date(System.currentTimeMillis() + extension * 1000)))
+                                .setProjection(Projections.rowCount())
+                                .uniqueResult() > 0)
+                    {
+                        this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
+                                "rig" + ses.getAssignedRigName() + " is being terminated because the user has a " +
+                                "starting booking. Marking session for expiry and giving a grace period.");
+                        ses.setInGrace(true);
+                        ses.setRemovalReason("User has starting booking.");
+                        db.beginTransaction();
+                        db.flush();
+                        db.getTransaction().commit();
+                        
+                        /* Notification warning. */
+                        if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
+                        		"Please finish and exit. Please note, you have a reservation that starts after this" +
+                        		" session so do not leave.", ses, db);
                     }
                     else if (QueueInfo.isQueued(ses.getRig(), db) ||
                             ((service = SessionActivator.getBookingService()) != null && 

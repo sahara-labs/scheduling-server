@@ -47,6 +47,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
@@ -952,6 +953,226 @@ public class SessionExpiryCheckerTester extends TestCase
         db.delete(uc1);
         db.delete(user1);
         db.getTransaction().commit(); 
+    }
+    
+    @Test
+    public void testRunBooked()
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        User user1 = new User("sesperm1", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("sesclass1");
+        uc1.setActive(true);
+        uc1.setKickable(false);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+        
+        RigType rt = new RigType();
+        rt.setName("Session_Test_Rig_Type");
+        rt.setLogoffGraceDuration(180);
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("session,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Session_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        p1.setSessionDuration(1800);
+        p1.setAllowedExtensions((short)3);
+        p1.setExtensionDuration(300);
+        p1.setSessionActivityTimeout(200);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setDuration(1800);
+        ses1.setActive(true);
+        ses1.setReady(true);
+        ses1.setInGrace(false);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 3);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(rt.getId());
+        ses1.setRequestedResourceName(rt.getName());
+        ses1.setResourceType("TYPE");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        ses1.setAssignedRigName(r.getName());
+        ses1.setAssignmentTime(new Date(System.currentTimeMillis() - 2521000));
+        ses1.setRig(r);
+        db.persist(ses1);
+        
+        Bookings b1 = new Bookings();
+        b1.setActive(true);
+        b1.setDuration(1800);
+        b1.setStartTime(new Date(System.currentTimeMillis() + 1000));
+        b1.setEndTime(new Date(System.currentTimeMillis() + 1800000));
+        b1.setResourceType("RIG");
+        b1.setRig(r);
+        b1.setUser(user1);
+        b1.setUserName(user1.getName());
+        b1.setUserNamespace(user1.getNamespace());
+        b1.setResourcePermission(p1);
+        db.persist(b1);
+        db.getTransaction().commit();
+        
+        this.checker.run();
+        
+        db.refresh(ses1);
+
+        db.beginTransaction();
+        db.delete(b1);
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit(); 
+        
+        assertTrue(ses1.isActive());
+        assertTrue(ses1.isInGrace());
+        assertNotNull(ses1.getRemovalReason());
+        assertNull(ses1.getRemovalTime());
+        assertEquals(3, ses1.getExtensions());
+    }
+    
+        @Test
+    public void testRunBooked2()
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        
+        Date before = new Date(System.currentTimeMillis() - 10000);
+        Date after = new Date(System.currentTimeMillis() + 10000);
+        Date now = new Date();
+        
+        db.beginTransaction();
+        User user1 = new User("sesperm1", "testns", "USER");
+        db.persist(user1);
+        
+        UserClass uc1 = new UserClass();
+        uc1.setName("sesclass1");
+        uc1.setActive(true);
+        uc1.setKickable(false);
+        db.persist(uc1);
+        
+        UserAssociation ass1 = new UserAssociation(new UserAssociationId(user1.getId(), uc1.getId()), uc1, user1);
+        db.persist(ass1);
+        
+        RigType rt = new RigType();
+        rt.setName("Session_Test_Rig_Type");
+        rt.setLogoffGraceDuration(180);
+        db.persist(rt);
+        
+        RigCapabilities caps = new RigCapabilities("session,test,rig,type");
+        db.persist(caps);
+        
+        Rig r = new Rig();
+        r.setName("Session_Rig_Test_Rig1");
+        r.setRigType(rt);
+        r.setRigCapabilities(caps);
+        r.setLastUpdateTimestamp(before);
+        r.setActive(true);
+        r.setOnline(true);
+        r.setInSession(true);
+        db.persist(r);
+        
+        ResourcePermission p1 = new ResourcePermission();
+        p1.setType("RIG");
+        p1.setUserClass(uc1);
+        p1.setStartTime(before);
+        p1.setExpiryTime(after);
+        p1.setRig(r);
+        p1.setSessionDuration(1800);
+        p1.setAllowedExtensions((short)3);
+        p1.setExtensionDuration(1750);
+        p1.setSessionActivityTimeout(200);
+        db.persist(p1);
+        
+        Session ses1 = new Session();
+        ses1.setDuration(1800);
+        ses1.setActive(true);
+        ses1.setReady(true);
+        ses1.setInGrace(false);
+        ses1.setActivityLastUpdated(now);
+        ses1.setExtensions((short) 3);
+        ses1.setPriority((short) 5);
+        ses1.setRequestTime(now);
+        ses1.setRequestedResourceId(rt.getId());
+        ses1.setRequestedResourceName(rt.getName());
+        ses1.setResourceType("TYPE");
+        ses1.setResourcePermission(p1);
+        ses1.setUser(user1);
+        ses1.setUserName(user1.getName());
+        ses1.setUserNamespace(user1.getNamespace());
+        ses1.setAssignedRigName(r.getName());
+        ses1.setAssignmentTime(new Date(System.currentTimeMillis() - 2521000));
+        ses1.setRig(r);
+        db.persist(ses1);
+        
+        Bookings b1 = new Bookings();
+        b1.setActive(true);
+        b1.setDuration(1800);
+        b1.setStartTime(new Date(System.currentTimeMillis() + 1800000));
+        b1.setEndTime(new Date(System.currentTimeMillis() + 3600000));
+        b1.setResourceType("RIG");
+        b1.setRig(r);
+        b1.setUser(user1);
+        b1.setUserName(user1.getName());
+        b1.setUserNamespace(user1.getNamespace());
+        b1.setResourcePermission(p1);
+        db.persist(b1);
+        db.getTransaction().commit();
+        
+        this.checker.run();
+        
+        db.refresh(ses1);
+
+        db.beginTransaction();
+        db.delete(b1);
+        db.delete(ses1);
+        db.delete(p1);
+        db.delete(r);
+        db.delete(rt);
+        db.delete(caps);
+        db.delete(ass1);
+        db.delete(uc1);
+        db.delete(user1);
+        db.getTransaction().commit(); 
+        
+        assertTrue(ses1.isActive());
+        assertFalse(ses1.isInGrace());
+        assertNull(ses1.getRemovalReason());
+        assertNull(ses1.getRemovalTime());
+        assertEquals(2, ses1.getExtensions());
     }
     
     @Test
