@@ -1409,6 +1409,10 @@ public class DayBookings
             while (it.hasNext())
             {
                 RequestCapabilities reqCaps = it.next();
+                
+                /* Caps loop is not loaded, so no need to load it. */
+                if (!this.capsTargets.containsKey(reqCaps.getCapabilities())) continue;
+                
                 RigBookings capsb = this.capsTargets.get(reqCaps.getCapabilities());
                 rb.setCapsLoopNext(reqCaps, capsb.getCapsLoopNext(reqCaps));
                 capsb.setCapsLoopNext(reqCaps, rb);
