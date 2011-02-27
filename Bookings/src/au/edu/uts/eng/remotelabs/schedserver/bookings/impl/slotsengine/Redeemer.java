@@ -154,8 +154,9 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                         b.setActive(false);
                         b.setCancelReason("No resources free to redeem booking too.");
                         this.logger.warn("Unable to redeem booking (" + b.getId() + ") for " + b.getUser().qName() + 
-                        " because no free resources were found in the slot period.");
+                                " because no free resources were found in the slot period.");
                         
+                        this.currentDay.removeBooking(mb);
                         new BookingNotification(b).notifyCancel();
                     }
 
