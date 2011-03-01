@@ -32,7 +32,7 @@
         primary key (id)
     );
     create table rig_log (
-        id  bigserial not null unique,
+        id int8 not null unique,
         new_state varchar(20) not null,
         old_state varchar(20) not null,
         reason varchar(255) not null,
