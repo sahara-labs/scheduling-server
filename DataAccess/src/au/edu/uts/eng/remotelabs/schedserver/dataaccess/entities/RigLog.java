@@ -94,7 +94,7 @@ public class RigLog implements Serializable
     private Date timeStamp;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
     public Long getId()
     {
