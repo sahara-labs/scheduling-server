@@ -51,7 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
  */
 public class UserComparator implements Comparator<User>
 {
-    public int compare(User u1, User u2)
+    public int compare(final User u1, final User u2)
     {
         return (u1.getId().compareTo(u2.getId()));
     }

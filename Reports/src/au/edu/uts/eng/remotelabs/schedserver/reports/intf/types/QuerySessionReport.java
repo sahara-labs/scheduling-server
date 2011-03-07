@@ -45,7 +45,7 @@
                            * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType
                            */
                            public  au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportType getQuerySessionReport(){
-                               return localQuerySessionReport;
+                               return this.localQuerySessionReport;
                            }
 
                            
@@ -91,14 +91,15 @@
 
         
                 org.apache.axiom.om.OMDataSource dataSource =
-                       new org.apache.axis2.databinding.ADBDataSource(this,MY_QNAME){
+                       new org.apache.axis2.databinding.ADBDataSource(this,QuerySessionReport.MY_QNAME){
 
-                 public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-                       QuerySessionReport.this.serialize(MY_QNAME,factory,xmlWriter);
+                 @Override
+                public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                       QuerySessionReport.this.serialize(QuerySessionReport.MY_QNAME,factory,xmlWriter);
                  }
                };
                return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(
-               MY_QNAME,factory,dataSource);
+               QuerySessionReport.MY_QNAME,factory,dataSource);
             
        }
 
@@ -106,7 +107,7 @@
                                        final org.apache.axiom.om.OMFactory factory,
                                        org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                                 throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-                           serialize(parentQName,factory,xmlWriter,false);
+                           this.serialize(parentQName,factory,xmlWriter,false);
          }
 
          public void serialize(final javax.xml.namespace.QName parentQName,
@@ -118,10 +119,10 @@
                 
                 //We can safely assume an element has only one type associated with it
                 
-                                 if (localQuerySessionReport==null){
+                                 if (this.localQuerySessionReport==null){
                                    throw new org.apache.axis2.databinding.ADBException("Property cannot be null!");
                                  }
-                                 localQuerySessionReport.serialize(MY_QNAME,factory,xmlWriter);
+                                 this.localQuerySessionReport.serialize(QuerySessionReport.MY_QNAME,factory,xmlWriter);
                             
 
         }
@@ -152,7 +153,7 @@
               }
               else
               {
-                  registerPrefix(xmlWriter, namespace);
+                  this.registerPrefix(xmlWriter, namespace);
                   xmlWriter.writeAttribute(namespace,attName,attValue);
               }
           }
@@ -167,7 +168,7 @@
                 java.lang.String attributeNamespace = qname.getNamespaceURI();
                 java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
                 if (attributePrefix == null) {
-                    attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
+                    attributePrefix = this.registerPrefix(xmlWriter, attributeNamespace);
                 }
                 java.lang.String attributeValue;
                 if (attributePrefix.trim().length() > 0) {
@@ -179,7 +180,7 @@
                 if (namespace.equals("")) {
                     xmlWriter.writeAttribute(attName, attributeValue);
                 } else {
-                    registerPrefix(xmlWriter, namespace);
+                    this.registerPrefix(xmlWriter, namespace);
                     xmlWriter.writeAttribute(namespace, attName, attributeValue);
                 }
             }
@@ -193,7 +194,7 @@
             if (namespaceURI != null) {
                 java.lang.String prefix = xmlWriter.getPrefix(namespaceURI);
                 if (prefix == null) {
-                    prefix = generatePrefix(namespaceURI);
+                    prefix = QuerySessionReport.generatePrefix(namespaceURI);
                     xmlWriter.writeNamespace(prefix, namespaceURI);
                     xmlWriter.setPrefix(prefix,namespaceURI);
                 }
@@ -228,7 +229,7 @@
                     if (namespaceURI != null) {
                         prefix = xmlWriter.getPrefix(namespaceURI);
                         if ((prefix == null) || (prefix.length() == 0)) {
-                            prefix = generatePrefix(namespaceURI);
+                            prefix = QuerySessionReport.generatePrefix(namespaceURI);
                             xmlWriter.writeNamespace(prefix, namespaceURI);
                             xmlWriter.setPrefix(prefix,namespaceURI);
                         }
@@ -255,7 +256,7 @@
                 java.lang.String prefix = xmlWriter.getPrefix(namespace);
 
                 if (prefix == null) {
-                    prefix = generatePrefix(namespace);
+                    prefix = QuerySessionReport.generatePrefix(namespace);
 
                     while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null) {
                         prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -281,7 +282,7 @@
         
                 
                 //We can safely assume an element has only one type associated with it
-                return localQuerySessionReport.getPullParser(MY_QNAME);
+                return this.localQuerySessionReport.getPullParser(QuerySessionReport.MY_QNAME);
 
         }
 
@@ -313,7 +314,9 @@
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
+                {
                     reader.next();
+                }
 
                 
 

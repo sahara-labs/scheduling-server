@@ -111,111 +111,6 @@ public class ReportsTester extends TestCase
     {
         super.tearDown();
     }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#queryInfo(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo)}.
-     */
-    public void testQueryInfoAcademicPermissionsUserClass() throws Exception
-    {
-        org.hibernate.Session ses = DataAccessActivator.getNewSession();
-        ses.beginTransaction();
-        UserClass uclass1 = new UserClass();
-        uclass1.setName("reportstestclass");
-        uclass1.setActive(true);
-        uclass1.setQueuable(false);
-        uclass1.setBookable(true);
-        uclass1.setTimeHorizon(1000);
-        ses.save(uclass1);
-
-        UserClass uclass2 = new UserClass();
-        uclass2.setName("reportstest2");
-        uclass2.setActive(true);
-        uclass2.setQueuable(false);
-        uclass2.setBookable(true);
-        uclass2.setTimeHorizon(1000);
-        ses.save(uclass2);
-
-        User us1 = new User();
-        us1.setName("testuser1");
-        us1.setNamespace("REPS");
-        us1.setPersona("ACADEMIC");
-        ses.save(us1);
-        
-        User us2 = new User();
-        us2.setName("testuser2");
-        us2.setNamespace("REPS");
-        us2.setPersona("USER");
-        ses.save(us2);
-        
-        AcademicPermission ap1 = new AcademicPermission(us1, uclass1, true, true, true, true, true);
-        ses.save(ap1);
-        AcademicPermission ap2 = new AcademicPermission(us1, uclass2, true, true, true, true, false);
-        ses.save(ap2);
-        
-        RigType rigType1 = new RigType("reportstestrigtype", 300, false);
-        ses.save(rigType1);
-        
-        ResourcePermission perm1 = new ResourcePermission();
-        perm1.setUserClass(uclass1);
-        perm1.setType("TYPE");
-        perm1.setSessionDuration(3600);
-        perm1.setQueueActivityTimeout(300);
-        perm1.setAllowedExtensions((short)10);
-        perm1.setSessionActivityTimeout(300);
-        perm1.setExtensionDuration(300);
-        perm1.setMaximumBookings(10);
-        perm1.setRigType(rigType1);
-        perm1.setStartTime(new Date());
-        perm1.setExpiryTime(new Date());
-        perm1.setDisplayName("reportsperm");
-        ses.save(perm1);
-        ses.getTransaction().commit();
-        
-        QueryInfo request = new QueryInfo();
-        QueryInfoType reqTy = new QueryInfoType();
-        
-        QueryFilterType qSelect = new QueryFilterType();
-        TypeForQuery type = TypeForQuery.USER_CLASS;
-        OperatorType op = OperatorType.AND;
-        qSelect.setTypeForQuery(type);
-        qSelect.setOperator(op);
-        qSelect.setQueryLike("rep%");
-        
-        RequestorType user = new RequestorType();
-        user.setUserQName("REPS:testuser1");
-        
-        reqTy.setQuerySelect(qSelect);
-        reqTy.setLimit(10);
-        reqTy.setRequestor(user);
-        
-        request.setQueryInfo(reqTy);
-        
-        QueryInfoResponse response = this.service.queryInfo(request);
-        
-        ses.beginTransaction();
-        ses.delete(perm1);
-        ses.delete(rigType1);
-        ses.delete(ap2);
-        ses.delete(ap1);
-        ses.delete(us2);
-        ses.delete(us1);
-        ses.delete(uclass2);
-        ses.delete(uclass1);
-        ses.getTransaction().commit();
-        
-        assertNotNull(response);
-        QueryInfoResponseType resp = response.getQueryInfoResponse();
-        assertNotNull(resp);
-        
-        String typeResp = resp.getTypeForQuery().toString();
-        assertEquals("USER_CLASS", typeResp);
-        
-        String[] selectResult = resp.getSelectionResult();
-        assertNotNull(selectResult);
-        assertEquals(1,selectResult.length);
-        assertEquals(uclass1.getName(),selectResult[0]);
-    }
-
     /**
      * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#querySessionAccess(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess)}.
      */
@@ -233,33 +128,42 @@ public class ReportsTester extends TestCase
         us1.setName("testuser1");
         us1.setNamespace("REPS");
         us1.setPersona("ADMIN");
-        db.persist(us1);
+        us1.setEmail("user1@uts");
+        us1.setFirstName("user");
+        us1.setLastName("test");
+        db.save(us1);
         
         User us2 = new User();
         us2.setName("testuser2");
         us2.setNamespace("REPS");
         us2.setPersona("ADMIN");
-        db.persist(us2);
+        us2.setEmail("user2@uts");
+        us2.setFirstName("user");
+        us2.setLastName("test");
+        db.save(us2);
 
         User user = new User("sessiontest", "testns", "ADMIN");
-        db.persist(user);
+        user.setEmail("user@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
+        db.save(user);
         
         UserClass uc1 = new UserClass();
         uc1.setName("sessclass");
         uc1.setActive(true);
         uc1.setQueuable(true);
         uc1.setPriority((short)4);
-        db.persist(uc1);
+        db.save(uc1);
         
         UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
-        db.persist(ass);
+        db.save(ass);
         
         RigType rt = new RigType();
         rt.setName("Session_Test_Rig_Type");
-        db.persist(rt);
+        db.save(rt);
         
         RigCapabilities caps = new RigCapabilities("session,test,rig,type");
-        db.persist(caps);
+        db.save(caps);
         
         Rig r = new Rig();
         r.setName("Session_Rig_Test_Rig1");
@@ -269,7 +173,7 @@ public class ReportsTester extends TestCase
         r.setActive(true);
         r.setOnline(true);
         r.setInSession(true);
-        db.persist(r);
+        db.save(r);
         
         ResourcePermission p1 = new ResourcePermission();
         p1.setType("RIG");
@@ -278,7 +182,7 @@ public class ReportsTester extends TestCase
         p1.setExpiryTime(after);
         p1.setRig(r);
         p1.setAllowedExtensions((short)10);
-        db.persist(p1);
+        db.save(p1);
         
         Session ses = new Session();
         ses.setActive(true);
@@ -298,7 +202,7 @@ public class ReportsTester extends TestCase
         ses.setAssignedRigName(r.getName());
         ses.setAssignmentTime(now);
         ses.setRig(r);
-        db.persist(ses);
+        db.save(ses);
         db.getTransaction().commit();
         
         db.beginTransaction();
@@ -370,6 +274,117 @@ public class ReportsTester extends TestCase
         assertNotNull(xml);
     }
 
+
+    /**
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#queryInfo(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo)}.
+     */
+    public void testQueryInfoAcademicPermissionsUserClass() throws Exception
+    {
+        org.hibernate.Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        UserClass uclass1 = new UserClass();
+        uclass1.setName("reportstestclass");
+        uclass1.setActive(true);
+        uclass1.setQueuable(false);
+        uclass1.setBookable(true);
+        uclass1.setTimeHorizon(1000);
+        ses.save(uclass1);
+
+        UserClass uclass2 = new UserClass();
+        uclass2.setName("reportstest2");
+        uclass2.setActive(true);
+        uclass2.setQueuable(false);
+        uclass2.setBookable(true);
+        uclass2.setTimeHorizon(1000);
+        ses.save(uclass2);
+
+        User us1 = new User();
+        us1.setName("testuser1");
+        us1.setNamespace("REPS");
+        us1.setPersona("ACADEMIC");
+        us1.setEmail("user1@uts");
+        us1.setFirstName("user");
+        us1.setLastName("test");
+        ses.save(us1);
+        
+        User us2 = new User();
+        us2.setName("testuser2");
+        us2.setNamespace("REPS");
+        us2.setPersona("USER");
+        us2.setEmail("user2@uts");
+        us2.setFirstName("user");
+        us2.setLastName("test");
+        ses.save(us2);
+        
+        AcademicPermission ap1 = new AcademicPermission(us1, uclass1, true, true, true, true, true);
+        ses.save(ap1);
+        AcademicPermission ap2 = new AcademicPermission(us1, uclass2, true, true, true, true, false);
+        ses.save(ap2);
+        
+        RigType rigType1 = new RigType("reportstestrigtype", 300, false);
+        ses.save(rigType1);
+        
+        ResourcePermission perm1 = new ResourcePermission();
+        perm1.setUserClass(uclass1);
+        perm1.setType("TYPE");
+        perm1.setSessionDuration(3600);
+        perm1.setQueueActivityTimeout(300);
+        perm1.setAllowedExtensions((short)10);
+        perm1.setSessionActivityTimeout(300);
+        perm1.setExtensionDuration(300);
+        perm1.setMaximumBookings(10);
+        perm1.setRigType(rigType1);
+        perm1.setStartTime(new Date());
+        perm1.setExpiryTime(new Date());
+        perm1.setDisplayName("reportsperm");
+        ses.save(perm1);
+        ses.getTransaction().commit();
+        
+        QueryInfo request = new QueryInfo();
+        QueryInfoType reqTy = new QueryInfoType();
+        
+        QueryFilterType qSelect = new QueryFilterType();
+        TypeForQuery type = TypeForQuery.USER_CLASS;
+        OperatorType op = OperatorType.AND;
+        qSelect.setTypeForQuery(type);
+        qSelect.setOperator(op);
+        qSelect.setQueryLike("rep%");
+        
+        RequestorType user = new RequestorType();
+        user.setUserQName("REPS:testuser1");
+        
+        reqTy.setQuerySelect(qSelect);
+        reqTy.setLimit(10);
+        reqTy.setRequestor(user);
+        
+        request.setQueryInfo(reqTy);
+        
+        QueryInfoResponse response = this.service.queryInfo(request);
+        
+        ses.beginTransaction();
+        ses.delete(perm1);
+        ses.delete(rigType1);
+        ses.delete(ap2);
+        ses.delete(ap1);
+        ses.delete(us2);
+        ses.delete(us1);
+        ses.delete(uclass2);
+        ses.delete(uclass1);
+        ses.getTransaction().commit();
+        
+        assertNotNull(response);
+        QueryInfoResponseType resp = response.getQueryInfoResponse();
+        assertNotNull(resp);
+        
+        String typeResp = resp.getTypeForQuery().toString();
+        assertEquals("USER_CLASS", typeResp);
+        
+        String[] selectResult = resp.getSelectionResult();
+        assertNotNull(selectResult);
+        assertEquals(1,selectResult.length);
+        assertEquals(uclass1.getName(),selectResult[0]);
+    }
+
     public void testQuerySessionAccessTimePeriod() throws Exception
     {
         org.hibernate.Session db = DataAccessActivator.getNewSession();
@@ -382,24 +397,27 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ADMIN");
-        db.persist(user);
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
+        db.save(user);
         
         UserClass uc1 = new UserClass();
         uc1.setName("sessclass");
         uc1.setActive(true);
         uc1.setQueuable(true);
         uc1.setPriority((short)4);
-        db.persist(uc1);
+        db.save(uc1);
         
         UserAssociation ass = new UserAssociation(new UserAssociationId(user.getId(), uc1.getId()), uc1, user);
-        db.persist(ass);
+        db.save(ass);
         
         RigType rt = new RigType();
         rt.setName("Session_Test_Rig_Type");
-        db.persist(rt);
+        db.save(rt);
         
         RigCapabilities caps = new RigCapabilities("session,test,rig,type");
-        db.persist(caps);
+        db.save(caps);
         
         Rig r = new Rig();
         r.setName("Session_Rig_Test_Rig1");
@@ -409,7 +427,7 @@ public class ReportsTester extends TestCase
         r.setActive(true);
         r.setOnline(true);
         r.setInSession(true);
-        db.persist(r);
+        db.save(r);
         
         ResourcePermission p1 = new ResourcePermission();
         p1.setType("RIG");
@@ -418,7 +436,7 @@ public class ReportsTester extends TestCase
         p1.setExpiryTime(after);
         p1.setRig(r);
         p1.setAllowedExtensions((short)10);
-        db.persist(p1);
+        db.save(p1);
         
         Session ses = new Session();
         ses.setActive(true);
@@ -560,6 +578,9 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ADMIN");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         UserClass uc1 = new UserClass();
@@ -746,6 +767,9 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ADMIN");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         UserClass uc1 = new UserClass();
@@ -931,6 +955,9 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         UserClass uc1 = new UserClass();
@@ -1120,6 +1147,9 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         UserClass uc1 = new UserClass();
@@ -1309,6 +1339,9 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         UserClass uc1 = new UserClass();
@@ -1516,12 +1549,21 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         User user2 = new User("testuser2", "REPS", "USER");
+        user2.setEmail("user1@uts");
+        user2.setFirstName("user");
+        user2.setLastName("test");
         db.persist(user2);
 
         User user3 = new User("testuser3", "REPS", "USER");
+        user3.setEmail("user1@uts");
+        user3.setFirstName("user");
+        user3.setLastName("test");
         db.persist(user3);
 
         UserClass uc1 = new UserClass();
@@ -1728,12 +1770,21 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         User user2 = new User("testuser2", "REPS", "USER");
+        user2.setEmail("user1@uts");
+        user2.setFirstName("user");
+        user2.setLastName("test");
         db.persist(user2);
 
         User user3 = new User("testuser3", "REPS", "USER");
+        user3.setEmail("user1@uts");
+        user3.setFirstName("user");
+        user3.setLastName("test");
         db.persist(user3);
 
         UserClass uc1 = new UserClass();
@@ -1976,12 +2027,21 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         User user2 = new User("testuser2", "REPS", "USER");
+        user2.setEmail("user1@uts");
+        user2.setFirstName("user");
+        user2.setLastName("test");
         db.persist(user2);
 
         User user3 = new User("testuser3", "REPS", "USER");
+        user3.setEmail("user1@uts");
+        user3.setFirstName("user");
+        user3.setLastName("test");
         db.persist(user3);
 
         UserClass uc1 = new UserClass();
@@ -2299,12 +2359,21 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         User user2 = new User("testuser2", "REPS", "USER");
+        user2.setEmail("user2@uts");
+        user2.setFirstName("user");
+        user2.setLastName("test");
         db.persist(user2);
 
         User user3 = new User("testuser3", "REPS", "USER");
+        user3.setEmail("user3@uts");
+        user3.setFirstName("user");
+        user3.setLastName("test");
         db.persist(user3);
 
         UserClass uc1 = new UserClass();
@@ -2621,12 +2690,21 @@ public class ReportsTester extends TestCase
         db.beginTransaction();
         
         User user = new User("testuser1", "REPS", "ACADEMIC");
+        user.setEmail("user1@uts");
+        user.setFirstName("user");
+        user.setLastName("test");
         db.persist(user);
         
         User user2 = new User("testuser2", "REPS", "USER");
+        user2.setEmail("user1@uts");
+        user2.setFirstName("user");
+        user2.setLastName("test");
         db.persist(user2);
 
         User user3 = new User("testuser3", "REPS", "USER");
+        user3.setEmail("user1@uts");
+        user3.setFirstName("user");
+        user3.setLastName("test");
         db.persist(user3);
 
         UserClass uc1 = new UserClass();

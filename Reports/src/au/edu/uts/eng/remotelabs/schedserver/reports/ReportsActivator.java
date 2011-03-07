@@ -22,13 +22,13 @@ public class ReportsActivator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
         this.logger = LoggerActivator.getLogger();
 	    this.logger.debug("Reports Activator start");
 	    
         /* Register the reports service. */
         this.logger.debug("Registering the Reports SOAP interface service.");
-        ServletContainerService soapService = new ServletContainerService();
+        final ServletContainerService soapService = new ServletContainerService();
         soapService.addServlet(new ServletContainer(new AxisServlet(), true));
         this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
 
@@ -38,7 +38,7 @@ public class ReportsActivator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(final BundleContext context) throws Exception {
 	    System.out.println("Reports Activator stop");
 	    
        this.logger.info("Shutting down the Reports bundle.");

@@ -50,7 +50,7 @@
                            * @return java.lang.String
                            */
                            public  java.lang.String getUserName(){
-                               return localUserName;
+                               return this.localUserName;
                            }
 
                            
@@ -63,9 +63,9 @@
                             
                                        if (param != null){
                                           //update the setting tracker
-                                          localUserNameTracker = true;
+                                          this.localUserNameTracker = true;
                                        } else {
-                                          localUserNameTracker = false;
+                                          this.localUserNameTracker = false;
                                               
                                        }
                                    
@@ -94,7 +94,7 @@
                            * @return java.lang.String
                            */
                            public  java.lang.String getUserNamespace(){
-                               return localUserNamespace;
+                               return this.localUserNamespace;
                            }
 
                            
@@ -107,9 +107,9 @@
                             
                                        if (param != null){
                                           //update the setting tracker
-                                          localUserNamespaceTracker = true;
+                                          this.localUserNamespaceTracker = true;
                                        } else {
-                                          localUserNamespaceTracker = false;
+                                          this.localUserNamespaceTracker = false;
                                               
                                        }
                                    
@@ -151,7 +151,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
                  public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
-                       UserNSNameSequence.this.serialize(parentQName,factory,xmlWriter);
+                       UserNSNameSequence.this.serialize(this.parentQName,factory,xmlWriter);
                  }
                };
                return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(
@@ -163,7 +163,7 @@
                                        final org.apache.axiom.om.OMFactory factory,
                                        org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                                 throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException{
-                           serialize(parentQName,factory,xmlWriter,false);
+                           this.serialize(parentQName,factory,xmlWriter,false);
          }
 
          public void serialize(final javax.xml.namespace.QName parentQName,
@@ -181,26 +181,26 @@
                   if (serializeType){
                
 
-                   java.lang.String namespacePrefix = registerPrefix(xmlWriter,"http://remotelabs.eng.uts.edu.au/schedserver/reports");
+                   java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,"http://remotelabs.eng.uts.edu.au/schedserver/reports");
                    if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)){
-                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
+                       this.writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            namespacePrefix+":UserNSNameSequence",
                            xmlWriter);
                    } else {
-                       writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
+                       this.writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","type",
                            "UserNSNameSequence",
                            xmlWriter);
                    }
 
                
                    }
-                if (localUserNameTracker){
+                if (this.localUserNameTracker){
                                     namespace = "";
                                     if (! namespace.equals("")) {
                                         prefix = xmlWriter.getPrefix(namespace);
 
                                         if (prefix == null) {
-                                            prefix = generatePrefix(namespace);
+                                            prefix = UserNSNameSequence.generatePrefix(namespace);
 
                                             xmlWriter.writeStartElement(prefix,"userName", namespace);
                                             xmlWriter.writeNamespace(prefix, namespace);
@@ -215,7 +215,7 @@
                                     }
                                 
 
-                                          if (localUserName==null){
+                                          if (this.localUserName==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("userName cannot be null!!");
@@ -223,18 +223,18 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localUserName);
+                                                   xmlWriter.writeCharacters(this.localUserName);
                                             
                                           }
                                     
                                    xmlWriter.writeEndElement();
-                             } if (localUserNamespaceTracker){
+                             } if (this.localUserNamespaceTracker){
                                     namespace = "";
                                     if (! namespace.equals("")) {
                                         prefix = xmlWriter.getPrefix(namespace);
 
                                         if (prefix == null) {
-                                            prefix = generatePrefix(namespace);
+                                            prefix = UserNSNameSequence.generatePrefix(namespace);
 
                                             xmlWriter.writeStartElement(prefix,"userNamespace", namespace);
                                             xmlWriter.writeNamespace(prefix, namespace);
@@ -249,7 +249,7 @@
                                     }
                                 
 
-                                          if (localUserNamespace==null){
+                                          if (this.localUserNamespace==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("userNamespace cannot be null!!");
@@ -257,7 +257,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localUserNamespace);
+                                                   xmlWriter.writeCharacters(this.localUserNamespace);
                                             
                                           }
                                     
@@ -292,7 +292,7 @@
               }
               else
               {
-                  registerPrefix(xmlWriter, namespace);
+                  this.registerPrefix(xmlWriter, namespace);
                   xmlWriter.writeAttribute(namespace,attName,attValue);
               }
           }
@@ -307,7 +307,7 @@
                 java.lang.String attributeNamespace = qname.getNamespaceURI();
                 java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
                 if (attributePrefix == null) {
-                    attributePrefix = registerPrefix(xmlWriter, attributeNamespace);
+                    attributePrefix = this.registerPrefix(xmlWriter, attributeNamespace);
                 }
                 java.lang.String attributeValue;
                 if (attributePrefix.trim().length() > 0) {
@@ -319,7 +319,7 @@
                 if (namespace.equals("")) {
                     xmlWriter.writeAttribute(attName, attributeValue);
                 } else {
-                    registerPrefix(xmlWriter, namespace);
+                    this.registerPrefix(xmlWriter, namespace);
                     xmlWriter.writeAttribute(namespace, attName, attributeValue);
                 }
             }
@@ -333,7 +333,7 @@
             if (namespaceURI != null) {
                 java.lang.String prefix = xmlWriter.getPrefix(namespaceURI);
                 if (prefix == null) {
-                    prefix = generatePrefix(namespaceURI);
+                    prefix = UserNSNameSequence.generatePrefix(namespaceURI);
                     xmlWriter.writeNamespace(prefix, namespaceURI);
                     xmlWriter.setPrefix(prefix,namespaceURI);
                 }
@@ -368,7 +368,7 @@
                     if (namespaceURI != null) {
                         prefix = xmlWriter.getPrefix(namespaceURI);
                         if ((prefix == null) || (prefix.length() == 0)) {
-                            prefix = generatePrefix(namespaceURI);
+                            prefix = UserNSNameSequence.generatePrefix(namespaceURI);
                             xmlWriter.writeNamespace(prefix, namespaceURI);
                             xmlWriter.setPrefix(prefix,namespaceURI);
                         }
@@ -395,7 +395,7 @@
                 java.lang.String prefix = xmlWriter.getPrefix(namespace);
 
                 if (prefix == null) {
-                    prefix = generatePrefix(namespace);
+                    prefix = UserNSNameSequence.generatePrefix(namespace);
 
                     while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null) {
                         prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -422,21 +422,21 @@
                  java.util.ArrayList elementList = new java.util.ArrayList();
                  java.util.ArrayList attribList = new java.util.ArrayList();
 
-                 if (localUserNameTracker){
+                 if (this.localUserNameTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "userName"));
                                  
-                                        if (localUserName != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localUserName));
+                                        if (this.localUserName != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserName));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("userName cannot be null!!");
                                         }
-                                    } if (localUserNamespaceTracker){
+                                    } if (this.localUserNamespaceTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "userNamespace"));
                                  
-                                        if (localUserNamespace != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localUserNamespace));
+                                        if (this.localUserNamespace != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserNamespace));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("userNamespace cannot be null!!");
                                         }
@@ -476,7 +476,9 @@
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
+                {
                     reader.next();
+                }
 
                 
 
@@ -488,7 +490,10 @@
 
                  
                                     
-                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                                    while (!reader.isStartElement() && !reader.isEndElement())
+                                    {
+                                        reader.next();
+                                    }
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","userName").equals(reader.getName())){
                                 
@@ -506,7 +511,10 @@
                                     }
                                 
                                     
-                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                                    while (!reader.isStartElement() && !reader.isEndElement())
+                                    {
+                                        reader.next();
+                                    }
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","userNamespace").equals(reader.getName())){
                                 
@@ -524,7 +532,9 @@
                                     }
                                   
                             while (!reader.isStartElement() && !reader.isEndElement())
+                            {
                                 reader.next();
+                            }
                             
 
 
