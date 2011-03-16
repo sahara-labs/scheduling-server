@@ -565,6 +565,7 @@ FunctionEnd
 ; Function to confirm whether to proceed with database setup stage
 Function confirmDB
     ${IfNot} $SSAlreadyInstalled S== "NI"
+    ${AndIfNot} $SSAlreadyInstalled S== "SAME"
         Abort
     ${EndIf}     
     Var /GLOBAL yesClick
@@ -607,6 +608,7 @@ FunctionEnd
 ; Start page for DB setup
 Function dbSetup
     ${IfNot} $SSAlreadyInstalled S== "NI"
+    ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
     ${EndIf}     
     !insertmacro MUI_HEADER_TEXT "Scheduling Server Database setup" ""
@@ -650,6 +652,7 @@ FunctionEnd
 ; Function to get the database server and login details
 Function setupDatabase
     ${IfNot} $SSAlreadyInstalled S== "NI"
+    ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
     ${EndIf}     
     Var /GLOBAL ComboBox
@@ -733,6 +736,7 @@ FunctionEnd
 
 Function DDBDirectoryPre
     ${IfNot} $SSAlreadyInstalled S== "NI"
+    ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
     ${EndIf}   
     StrCpy $DBDirText "Select the location of $DBType database tool" 
@@ -796,6 +800,7 @@ FunctionEnd
 ; Function to get the details of the database to be created
 Function getDBDetails
     ${IfNot} $SSAlreadyInstalled S== "NI"
+    ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
     ${EndIf}     
 
@@ -955,14 +960,14 @@ FunctionEnd
 Function createSchema
     ${If} $DBType S== "MySQL"
         ; create the schema
-        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBUser --password=$DBUserPass -D $DBName -e "source $INSTDIR\schema\mysql-schema.sql"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBUser --password=$DBUserPass -D $DBName -e "source $INSTDIR\schemas\mysql-schema.sql"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
         ${OrIf} $1 S!= "" ; additional check for cases when the status is 0 but there is an error 
-            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mysql-schema.sql manually.\
+            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schemas\mysql-schema.sql manually.\
             $\nThe error message is - $1"
-            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mysql-schema.sql manually.\
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schemas\mysql-schema.sql manually.\
              $\n$\nThe error message is - $1"
             StrCpy $SchemaStatus "-1"
         ${Else}
@@ -970,14 +975,14 @@ Function createSchema
         ${EndIf}
     ${ElseIf} $DBType S== "Microsoft SQL"
         ; create the schema
-        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBUser -P $DBUserPass -d $DBName -i $INSTDIR\schema\mssql-schema.sql'
+        nsExec::ExecToStack /OEM '"$DBExec" -S $DBServer -U $DBUser -P $DBUserPass -d $DBName -i $INSTDIR\schemas\mssql-schema.sql'
         Pop $0
         Pop $1
         ${IfNot} $0 S== "0" 
         ${OrIf} $1 S!= ""
-            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mssql-schema.sql manually.\
+            !insertmacro writeToLog "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schemas\mssql-schema.sql manually.\
             $\nThe error message is - $1"
-            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schema\mssql-schema.sql manually.\
+            MessageBox MB_OK|MB_ICONEXCLAMATION "Error in creating schema in database $DBName. Please execute the script $INSTDIR\schemas\mssql-schema.sql manually.\
             $\n$\nThe error message is - $1"
             StrCpy $SchemaStatus "-1"
         ${Else}
@@ -1017,6 +1022,7 @@ FunctionEnd
 
 Function createDB
     ${IfNot} $SSAlreadyInstalled S== "NI"
+    ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
     ${EndIf}
     ; $DBStatus - createDatabase status
@@ -1121,6 +1127,7 @@ FunctionEnd
 
 Function printSummary
     ${IfNot} $SSAlreadyInstalled S== "NI"
+    ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
     ${EndIf}
     Var /GLOBAL Image
