@@ -88,6 +88,7 @@ Var skipSection
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "License"
 Page custom getInstallChoice selectionDone
+!define MUI_PAGE_CUSTOMFUNCTION_Pre ComponentPagePre
 !insertmacro MUI_PAGE_COMPONENTS
 
 Var DirHeaderText
@@ -107,10 +108,10 @@ Var InfoLabel
 Var SSInstallClick
 Var DBSetupClick
 Var Checkbox_State
-Var DBPageNumber
 Var DBDir
 Var DBExec
 Var DBUser
+Var Host
 Var DBUserPass
 Var DBNameTemp
 Var DBName
@@ -123,6 +124,7 @@ Var DBSetupLog
 Var DBDirText
 Var DBType
 Var DBTypeStr
+Var DBSetupOnly
 
 Page custom confirmDB confirmDBPost
 Page custom dbSetup
@@ -165,6 +167,9 @@ Var SSAlreadyInstalled ;NI=Not installed, V2=2.x version installed, SAME=install
                        ;OTHER=some other version than thsi version or 2.x is installed
 
 Function DirectoryPagePre
+    ${If} $DBSetupOnly S== "true"
+        Abort
+    ${EndIf}
 	; If there is already an installation of Sahara, use the same folder for this installation. Else let the user select the installation folder
  	${If} $SSAlreadyInstalled S== "NI"
 		StrCpy $DirHeaderText "Choose Install Location"
@@ -173,6 +178,13 @@ Function DirectoryPagePre
 		StrCpy $DirHeaderText "Using existing $(^Name) installation folder"
 		StrCpy $DirHeaderSubText "$(^Name) is already installed on this machine. Installer will upgarde the existing installation"
 	${EndIf}
+
+FunctionEnd
+
+Function ComponentPagePre
+    ${If} $DBSetupOnly S== "true"
+        Abort
+    ${EndIf}    
 
 FunctionEnd
 
@@ -224,6 +236,10 @@ FunctionEnd
 
 
 Function SetInstallDir
+    ${If} $DBSetupOnly S== "true"
+        Abort
+    ${EndIf}
+
 	${If} $SSAlreadyInstalled S== "NI"
 		StrCpy $INSTDIR "$INSTDIR\SchedulingServer"
 	${EndIf}
@@ -246,9 +262,9 @@ Function .onInit
 		MessageBox MB_OK|MB_ICONSTOP "A different version of Sahara is already installed on this machine. $\nPlease uninstall the existing Sahara software before continuing the installation"
 		Abort 
 	${EndIf}
-    StrCpy $DBPageNumber "7" ; Number of pages to jump forward from 'getInstallChoice' page
     StrCpy $DBTypeStr "-- Select database --"
     StrCpy $DBType $DBTypeStr
+    StrCpy $DBSetupOnly "false"
 FunctionEnd
 
 Function checkJREVersion
@@ -258,15 +274,6 @@ Function checkJREVersion
 		MessageBox MB_OK|MB_ICONSTOP "$(^Name) needs JRE version ${JREVersion} or higher. It is currently $0. Aborting the installation."
 		Abort ; causes installer to quit.
 	${EndIf}
-FunctionEnd
-
-; Function to go to a specified NSIS page 
-Function GotoDBPage 
-    IntCmp $DBPageNumber 0 0 GoToPage GoToPage
-    StrCmp $DBPageNumber "X" 0 GoToPage
-    StrCpy $DBPageNumber "120"
-  GoToPage:
-  SendMessage $HWNDPARENT "0x408" "$DBPageNumber" ""
 FunctionEnd
 
 ; Check if RigClient service is running
@@ -557,13 +564,22 @@ Function selectionDone
         ${Else}
             StrCpy $finishTitle "Completing $(^Name) Database Setup Wizard"
             StrCpy $finishText ""      
-            call GotoDBPage 
+            ; Instead of GotoDBPage, added a check in all the installer pages
+            ; If it is 'Database setup only', other pages will be skipped.
+            ; This will allow correctly navigating between pages (specially
+            ; using Back button) 
+            ;call GotoDBPage
+            StrCpy $DBSetupOnly "true" 
         ${EndIf}
     ${EndIf}
 FunctionEnd
 
 ; Function to confirm whether to proceed with database setup stage
 Function confirmDB
+    ${If} $DBSetupOnly S== "true"
+        Abort
+    ${EndIf}     
+    
     ${IfNot} $SSAlreadyInstalled S== "NI"
     ${AndIfNot} $SSAlreadyInstalled S== "SAME"
         Abort
@@ -607,6 +623,10 @@ FunctionEnd
 
 ; Start page for DB setup
 Function dbSetup
+    ${If} $DBSetupOnly S== "true"
+        Abort
+    ${EndIf}     
+    
     ${IfNot} $SSAlreadyInstalled S== "NI"
     ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
@@ -678,12 +698,14 @@ Function setupDatabase
     ; Database selection
     ${NSD_CreateGroupBox} 0%  0% 100% 55% "Database server details"
     Pop $InfoLabel
-    ${NSD_CreateComboBox} 5%  10% 30% 10% ""
+    
+    ${NSD_CreateDropList} 5%  10% 30% 10% ""
     Pop $ComboBox
-    ${NSD_SetText} $ComboBox "$DBType" 
+    ${NSD_CB_AddString} $ComboBox "$DBType"
     ${NSD_CB_AddString} $ComboBox "MySQL"
     ${NSD_CB_AddString} $ComboBox "Microsoft SQL"
-    
+    ${NSD_CB_SelectString} $ComboBox "$DBType" 
+        
     ${NSD_CreateLabel} 5% 25% 30% 15% "Enter servername or IP"
     Pop $GenericControl
     ${NSD_CreateText} 5% 40% 30% 10% "$DBServer"
@@ -799,6 +821,8 @@ FunctionEnd
 
 ; Function to get the details of the database to be created
 Function getDBDetails
+    Var /GLOBAL SmallFont
+      
     ${IfNot} $SSAlreadyInstalled S== "NI"
     ${AndIfNot} $SSAlreadyInstalled S== "SAME"    
         Abort
@@ -813,20 +837,32 @@ Function getDBDetails
     ; get the username, password, database name
     ${NSD_CreateGroupBox} 0%  0% 100% 100% "Scheduling Server database details"
     Pop $GenericControl
-    ${NSD_CreateLabel} 5% 10% 85% 25% "The database will be created along with the users to access the database. \
-    $\n$\n*** NOTE: Please add the same user and database details in the Scheduling Server configuration file ***"
+    ${NSD_CreateLabel} 5% 10% 85% 10% "The database will be created along with the users to access the database"
     Pop $GenericControl
-    ${NSD_CreateLabel} 5%  40% 20% 10% "Database Name"
+    ${NSD_CreateLabel} 5%  25% 20% 10% "Database Name"
     Pop $GenericControl
-    ${NSD_CreateText} 25% 40% 35% 10% "$DBName"
+    ${NSD_CreateText} 25% 25% 35% 10% "$DBName"
     Pop $DBNameTemp
-    ${NSD_CreateLabel} 5%  60% 15% 10% "Username"
+    ${NSD_CreateLabel} 5%  40% 15% 10% "Username"
     Pop $GenericControl
-    ${NSD_CreateText} 25% 60% 35% 10% "$DBUser"
+    ${NSD_CreateText} 25% 40% 35% 10% "$DBUser"
     Pop $DBUserTemp
-    ${NSD_CreateLabel} 5% 80% 15% 10% " Password"
+    ${NSD_CreateLabel} 5%  55% 15% 10% "Host"
     Pop $GenericControl
-    ${NSD_CreatePassword} 25% 80% 35% 10% "$DBUserPass"
+    ${NSD_CreateComboBox} 25%  55% 35% 10% ""
+    Pop $ComboBox
+    ${NSD_CB_AddString} $ComboBox "Any Host"
+    ${NSD_CB_AddString} $ComboBox "localhost"
+    ${NSD_CB_SelectString} $ComboBox "Any Host"
+    
+    CreateFont $SmallFont "$(^Font)" "7" "520" 
+    ${NSD_CreateLabel} 5% 66% 85% 15% "For any host other than $\'localhost$\' or $\'Any host$\', please type the host name/address in the box above"
+    Pop $GenericControl
+    SendMessage $GenericControl ${WM_SETFONT} $SmallFont 1
+    
+    ${NSD_CreateLabel} 5% 85% 15% 10% "Password"
+    Pop $GenericControl
+    ${NSD_CreatePassword} 25% 85% 35% 10% "$DBUserPass"
     Pop $DBPassTemp
     
     nsDialogs::Show
@@ -835,6 +871,7 @@ FunctionEnd
 Function getDetails
   
     ${NSD_GetText} $DBUserTemp $DBUser
+    ${NSD_GetText} $ComboBox $Host
     ${NSD_GetText} $DBPassTemp $DBUserPass
     ${NSD_GetText} $DBNameTemp $DBName
     ; check database name
@@ -853,6 +890,11 @@ Function getDetails
         Abort
     ${EndIf}
     ContinueDB:
+
+    ${If} $Host S== "Any Host"
+        StrCpy $Host "%"
+    ${EndIf}
+    MessageBox MB_ICONINFORMATION|MB_OK "NOTE: Please update the Scheduling Server configuration file with these user and database details"
 FunctionEnd
 
 ; Function to create the database
@@ -890,7 +932,7 @@ FunctionEnd
 Function createUser
     ${If} $DBType S== "MySQL"
     ; create user
-        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "CREATE USER $\'$DBUser$\'@$\'%$\' IDENTIFIED BY $\'$DBUserPass$\'"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "CREATE USER $\'$DBUser$\'@$\'$Host$\' IDENTIFIED BY $\'$DBUserPass$\'"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
@@ -928,7 +970,7 @@ Function grantPrivileges
         ; grant all previleges on the created database
         ; set the NO_AUTO_CREATE_USER so that the grant statement does not automatically create the user
         nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e \
-        "set session sql_mode=$\'NO_AUTO_CREATE_USER$\'; GRANT ALL ON $DBName.* to $\'$DBUser$\'@$\'%$\'"'
+        "set session sql_mode=$\'NO_AUTO_CREATE_USER$\'; GRANT ALL ON $DBName.* to $\'$DBUser$\'@$\'$Host$\'"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0" 
@@ -1052,7 +1094,7 @@ Function revertBackPrivileges
     ; MessageBox MB_OK "Reverting back privileges"
     Var /GLOBAL revertStatus
     ${If} $DBType S== "MySQL"
-        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "revoke all on $DBName.* from $DBUser"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "revoke all on $DBName.* from $\'$DBUser$\'@$\'$Host$\'"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
@@ -1078,7 +1120,7 @@ FunctionEnd
 Function revertBackUser
     ; MessageBox MB_OK "Reverting back user creation"
     ${If} $DBType S== "MySQL"
-        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "drop user $DBUser"'
+        nsExec::ExecToStack /OEM '"$DBExec" -h $DBServer -u $DBAdmin --password=$DBAdminPass -e "drop user $\'$DBUser$\'@$\'$Host$\'"'
         Pop $0
         Pop $1
         ${If} $0 S!= "0"
@@ -1218,6 +1260,20 @@ Function revertBack
         ${If} $UserStatus S!= ""
         ${AndIf} $PrivilegesStatus S== ""
             ; User creation failed but granting privileges succeeded
+            ; Check with the user whether to revert back the steps.
+            MessageBox MB_YESNO|MB_ICONEXCLAMATION "User creation step failed for the user $DBUser (this could be because the user already exists).\
+            $\nThe installer can now revert back the database creation step (drop the database $DBName)$\n- OR -\
+            $\nyou can ignore the user creation failure and continue. \
+            $\n$\nDo you want to revert back the changes?" IDNO FinishSetup
+            call revertBackDB
+            call revertBackPrivileges
+            ${If} $revertStatus S== "-1"
+                MessageBox MB_OK|MB_ICONEXCLAMATION "Error in reverting back the steps.\
+                $\nPlease check the log file $INSTDIR\DatabaseSetup.log for errors"
+            ${Else}
+                MessageBox MB_OK|MB_ICONINFORMATION "Successfully dropped the database $DBName"
+            ${EndIf}
+            Goto FinishSetup
         ${EndIf}
         MessageBox MB_YESNO|MB_ICONEXCLAMATION "Some of the database setup steps could not be completed successfully. \
         The log $\nfile contains more details about the problems.$\n$\nThe installer can now revert back the successfully executed \
