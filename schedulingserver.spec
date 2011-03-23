@@ -112,6 +112,9 @@ fi
 # Add a symlink to the Rig Client configuration into /etc
 ln -sf %{installdir}/conf /etc/Sahara/SchedulingServer
 
+# Fix for weird nested conf symlink in conf
+rm -f %{installdir}/conf/conf
+
 %preun
 
 # Let the operating system know the service has been removed
