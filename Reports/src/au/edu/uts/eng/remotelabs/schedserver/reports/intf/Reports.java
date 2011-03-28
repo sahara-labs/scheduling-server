@@ -163,7 +163,8 @@ public class Reports implements ReportsSkeletonInterface
                 {
                     cri.add(Restrictions.like("name", query0.getQueryLike()));
                 }
-                cri.setMaxResults(qIReq.getLimit());
+                if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
+
                 cri.addOrder(Order.asc("name"));
                 final List<Rig> list = cri.list();
                 for (final Rig o : list)
@@ -183,7 +184,7 @@ public class Reports implements ReportsSkeletonInterface
                 {
                     cri.add(Restrictions.like("name", query0.getQueryLike()));
                 }
-                cri.setMaxResults(qIReq.getLimit());
+                if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
                 final List<RigType> list = cri.list();
                 for (final RigType o : list)
@@ -199,7 +200,7 @@ public class Reports implements ReportsSkeletonInterface
                 {
                     cri.add(Restrictions.like("name", query0.getQueryLike()));
                 }
-                cri.setMaxResults(qIReq.getLimit());
+                if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
                 final List<UserClass> list = cri.list();
                 for (final UserClass o : list)
@@ -262,7 +263,7 @@ public class Reports implements ReportsSkeletonInterface
                 {
                     cri.add(Restrictions.like("name", query0.getQueryLike()));
                 }
-                cri.setMaxResults(qIReq.getLimit());
+                if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
                 final List<User> userList = cri.list();
                 for (final User o : userList)
@@ -277,7 +278,7 @@ public class Reports implements ReportsSkeletonInterface
                 {
                     cri.add(Restrictions.like("capabilities", query0.getQueryLike()));
                 }
-                cri.setMaxResults(qIReq.getLimit());
+                if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("capabilities"));
                 final List<RequestCapabilities> list = cri.list();
                 for (final RequestCapabilities o : list)
