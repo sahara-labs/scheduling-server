@@ -49,6 +49,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
@@ -161,7 +162,7 @@ public class Reports implements ReportsSkeletonInterface
                 cri = ses.createCriteria(Rig.class);
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike()));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
 
@@ -182,7 +183,7 @@ public class Reports implements ReportsSkeletonInterface
 
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike()));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
@@ -198,7 +199,7 @@ public class Reports implements ReportsSkeletonInterface
 
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike()));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
@@ -261,7 +262,7 @@ public class Reports implements ReportsSkeletonInterface
                 
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike()));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
@@ -276,7 +277,7 @@ public class Reports implements ReportsSkeletonInterface
                 cri = ses.createCriteria(RequestCapabilities.class);
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("capabilities", query0.getQueryLike()));
+                    cri.add(Restrictions.like("capabilities", query0.getQueryLike(),MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("capabilities"));
@@ -694,7 +695,7 @@ public class Reports implements ReportsSkeletonInterface
                 final UserDao userDAO = new UserDao(ses);
                 final String idParts[] = query0.getQueryLike().split(Reports.QNAME_DELIM, 2);
                 final String ns = idParts[0];
-                final String name = idParts[1];
+                final String name = (idParts.length > 1) ? idParts[1] : idParts[0];
                 final User u = userDAO.findByName(ns, name);
                 
                 if (u == null)
@@ -1332,7 +1333,7 @@ public class Reports implements ReportsSkeletonInterface
                 final UserDao userDAO = new UserDao(ses);
                 final String idParts[] = query0.getQueryLike().split(Reports.QNAME_DELIM, 2);
                 final String ns = idParts[0];
-                final String name = idParts[1];
+                final String name = (idParts.length > 1) ? idParts[1] : idParts[0];
                 final User user0 = userDAO.findByName(ns, name);
                 
                 if (user0 == null)
