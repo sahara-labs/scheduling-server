@@ -411,6 +411,8 @@ public class Reports implements ReportsSkeletonInterface
                     {
                         cri.setFirstResult((pageNumber-1)*pageLength);
                     }
+                    
+                    respType.setPagination(pages);
                 }
                                
                 final List<Session> list = cri.list();
@@ -505,6 +507,8 @@ public class Reports implements ReportsSkeletonInterface
                     {
                         cri.setFirstResult((pageNumber-1)*pageLength);
                     }
+                    
+                    respType.setPagination(pages);
                 }
 
                 final List<Session> list = cri.list();
@@ -626,14 +630,14 @@ public class Reports implements ReportsSkeletonInterface
                     final int pageNumber = pages.getPageNumber();
                     final int pageLength = pages.getPageLength();
 
-                    if (noPages > 1)
-                    {
-                        cri.setMaxResults(pageLength);
-                    }
+                    cri.setMaxResults(pageLength);
+
                     if (pageNumber > 1)
                     {
                         cri.setFirstResult((pageNumber-1)*pageLength);
                     }
+
+                    respType.setPagination(pages);
                 }
 
                 final List<Session> list = cri.list();
@@ -772,14 +776,14 @@ public class Reports implements ReportsSkeletonInterface
                     final int pageNumber = pages.getPageNumber();
                     final int pageLength = pages.getPageLength();
 
-                    if (noPages > 1)
-                    {
-                        cri.setMaxResults(pageLength);
-                    }
+                    cri.setMaxResults(pageLength);
                     if (pageNumber > 1)
                     {
                         cri.setFirstResult((pageNumber-1)*pageLength);
                     }
+                    
+                    respType.setPagination(pages);
+
                 }
 
                 final List<Session> list = cri.list();
@@ -1022,8 +1026,11 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
+                        reportType.setSessionCount(e.getValue().userRecordCount);
+                        
                         respType.addSessionReport(reportType);
                     }
+                    
                 }
                 
                 respType.setSessionCount(recordCount);
@@ -1148,6 +1155,8 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
+                        reportType.setSessionCount(e.getValue().userRecordCount);
+
                         respType.addSessionReport(reportType);
                     }
                 }
@@ -1309,6 +1318,8 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
+                        reportType.setSessionCount(e.getValue().userRecordCount);
+
                         respType.addSessionReport(reportType);
                     }
                 }
@@ -1335,7 +1346,7 @@ public class Reports implements ReportsSkeletonInterface
                 final String ns = idParts[0];
                 final String name = (idParts.length > 1) ? idParts[1] : idParts[0];
                 final User user0 = userDAO.findByName(ns, name);
-                
+
                 if (user0 == null)
                 {
                     this.logger.warn("No valid user found - " + query0.getTypeForQuery().toString());
@@ -1487,6 +1498,8 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
+                        reportType.setSessionCount(e.getValue().userRecordCount);
+
                         respType.addSessionReport(reportType);
                     }
                 }

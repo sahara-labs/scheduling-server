@@ -56,11 +56,13 @@ public class UserRecord
 {
     public List<Integer> queueDuration;
     public List<Integer> sessionDuration;
+    public int userRecordCount;
     
     public UserRecord()
     {
         this.queueDuration = new ArrayList<Integer>();
         this.sessionDuration = new ArrayList<Integer>();
+        this.userRecordCount = 0;
     }
 
     public void addRecord(Session session)
@@ -81,6 +83,7 @@ public class UserRecord
 
         this.queueDuration.add(queueD);
         this.sessionDuration.add(sessionD);
+        this.userRecordCount++;
     }
     
     public int getAverageQueueDuration()
