@@ -335,7 +335,7 @@ public class Reports implements ReportsSkeletonInterface
         final QuerySessionAccessResponseType respType = new QuerySessionAccessResponseType();
         final PaginationType page = new PaginationType();
         page.setNumberOfPages(1);
-        page.setPageLength(30);
+        page.setPageLength(0);
         page.setPageNumber(1);
         respType.setPagination(page);
         resp.setQuerySessionAccessResponse(respType);
@@ -881,7 +881,7 @@ public class Reports implements ReportsSkeletonInterface
         final QuerySessionReportResponseType respType = new QuerySessionReportResponseType();
         final PaginationType page = new PaginationType();
         page.setNumberOfPages(1);
-        page.setPageLength(30);
+        page.setPageLength(0);
         page.setPageNumber(1);
         respType.setPagination(page);
         respType.setSessionCount(0);
@@ -979,6 +979,7 @@ public class Reports implements ReportsSkeletonInterface
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
+                int totalSessionCount = 0;
                 int totalSessionDuration = 0;
                 int totalQueueDuration = 0;
 
@@ -989,6 +990,8 @@ public class Reports implements ReportsSkeletonInterface
                     pageNumber = pages.getPageNumber();
                     pageLength = pages.getPageLength();
                     
+                    respType.setPagination(page);
+
                 }
 
                 /* ----------------------------------------------------------------
@@ -998,6 +1001,7 @@ public class Reports implements ReportsSkeletonInterface
                 for (final Entry<User,UserRecord> e : recordMap.entrySet())
                 {
                     recordCount++;
+                    totalSessionCount += e.getValue().userRecordCount;
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1033,7 +1037,7 @@ public class Reports implements ReportsSkeletonInterface
                     
                 }
                 
-                respType.setSessionCount(recordCount);
+                respType.setSessionCount(totalSessionCount);
                 respType.setTotalQueueDuration(totalQueueDuration);
                 respType.setTotalSessionDuration(totalSessionDuration);
                 
@@ -1108,6 +1112,7 @@ public class Reports implements ReportsSkeletonInterface
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
+                int totalSessionCount = 0;
                 int totalSessionDuration = 0;
                 int totalQueueDuration = 0;
 
@@ -1127,6 +1132,7 @@ public class Reports implements ReportsSkeletonInterface
                 for (final Entry<User,UserRecord> e : recordMap.entrySet())
                 {
                     recordCount++;
+                    totalSessionCount += e.getValue().userRecordCount;
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1161,7 +1167,7 @@ public class Reports implements ReportsSkeletonInterface
                     }
                 }
                 
-                respType.setSessionCount(recordCount);
+                respType.setSessionCount(totalSessionCount);
                 respType.setTotalQueueDuration(totalQueueDuration);
                 respType.setTotalSessionDuration(totalSessionDuration);
                 
@@ -1271,6 +1277,7 @@ public class Reports implements ReportsSkeletonInterface
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
+                int totalSessionCount = 0;
                 int totalSessionDuration = 0;
                 int totalQueueDuration = 0;
 
@@ -1290,6 +1297,7 @@ public class Reports implements ReportsSkeletonInterface
                 for (final Entry<User,UserRecord> e : recordMap.entrySet())
                 {
                     recordCount++;
+                    totalSessionCount += e.getValue().userRecordCount;
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1324,7 +1332,7 @@ public class Reports implements ReportsSkeletonInterface
                     }
                 }
                 
-                respType.setSessionCount(recordCount);
+                respType.setSessionCount(totalSessionCount);
                 respType.setTotalQueueDuration(totalQueueDuration);
                 respType.setTotalSessionDuration(totalSessionDuration);
                 
@@ -1451,6 +1459,7 @@ public class Reports implements ReportsSkeletonInterface
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
+                int totalSessionCount = 0;
                 int totalSessionDuration = 0;
                 int totalQueueDuration = 0;
 
@@ -1470,6 +1479,7 @@ public class Reports implements ReportsSkeletonInterface
                 for (final Entry<User,UserRecord> e : recordMap.entrySet())
                 {
                     recordCount++;
+                    totalSessionCount += e.getValue().userRecordCount;
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1504,7 +1514,7 @@ public class Reports implements ReportsSkeletonInterface
                     }
                 }
                 
-                respType.setSessionCount(recordCount);
+                respType.setSessionCount(totalSessionCount);
                 respType.setTotalQueueDuration(totalQueueDuration);
                 respType.setTotalSessionDuration(totalSessionDuration);
                 
