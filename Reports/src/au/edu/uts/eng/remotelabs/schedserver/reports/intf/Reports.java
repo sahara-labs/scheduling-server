@@ -210,7 +210,7 @@ public class Reports implements ReportsSkeletonInterface
                      * Check that the requestor has permissions to request the report.
                      * If persona = USER, no reports (USERs will not get here)
                      * If persona = ADMIN, any report 
-                     * If persona = ACADEMIC, only for classes they own if they can genrate reports
+                     * If persona = ACADEMIC, only for classes they own if they can generate reports
                      * ---------------------------------------------------------------- */
 
                     if (User.ACADEMIC.equals(persona))
