@@ -142,4 +142,11 @@ Date: 28th December 2009
 	<target name="rigManagementBundle" if="missing.rigmanagement">
 		<buildRequiredBundle bundle="SchedulingServer-RigManagement.jar" bundleProject="RigManagement" />
 	</target>
+
+	<!-- ### Reports Bundle. -->
+	<detectIfBundlePresent property="missing.reports" bundle="SchedulingServer-Reports.jar" />
+	<target name="reportsBundle" if="missing.reports">
+		<buildRequiredBundle bundle="SchedulingServer-Reports.jar" bundleProject="Reports" />
+	</target>
+
 </project>
