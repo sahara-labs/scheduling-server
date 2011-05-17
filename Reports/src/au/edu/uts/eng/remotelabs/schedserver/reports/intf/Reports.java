@@ -1,13 +1,11 @@
 /**
- * SAHARA Rig Client
- * 
- * Software abstraction of physical rig to provide rig session control
- * and rig device control. Automatically tests rig hardware and reports
- * the rig status to ensure rig goodness.
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2009, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -33,11 +31,8 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author <First> <Last> (tmachet)
- * @date <Day> <Month> 2010
- *
- * Changelog:
- * - 13/12/2010 - tmachet - Initial file creation.
+ * @author Tania Machet (tmachet)
+ * @date 13 December 2010
  */
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 
@@ -89,13 +84,12 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTyp
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence;
 
-
 /**
- * @author tmachet
- *
+ *  TODO - put in description
  */
 public class Reports implements ReportsSkeletonInterface
 {
+    /** Delimiter for user name with institution */
     public static final String QNAME_DELIM = ":";
 
     /** Logger. */
@@ -114,12 +108,12 @@ public class Reports implements ReportsSkeletonInterface
         /** Request parameters. **/
         final QueryInfoType qIReq = queryInfo.getQueryInfo();
         String debug = "Received " + this.getClass().getSimpleName() + "#queryInfo with params:";
-            debug += "Requestor: " + qIReq.getRequestor() + ", QuerySelect: " + qIReq.getQuerySelect().toString(); 
-            if(qIReq.getQueryFilter() != null)
-            {
-                debug += ", QueryFilter: " + qIReq.getQueryFilter().toString();
-            }
-            debug += ", limit: " + qIReq.getLimit(); 
+            debug += "Requestor: " + qIReq.getRequestor() + ", QuerySelect: " + qIReq.getQuerySelect();
+        if(qIReq.getQueryFilter() != null)
+        {
+            debug += ", QueryFilter: " + qIReq.getQueryFilter();
+        }
+        debug += ", limit: " + qIReq.getLimit(); 
         this.logger.debug(debug);
         final RequestorType uid = qIReq.getRequestor();
         
@@ -151,24 +145,23 @@ public class Reports implements ReportsSkeletonInterface
             }
             final String persona = user.getPersona();
  
-            //Get table to be queried
+            /* Check for type of query to determine selection parameters */
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
                 /* ----------------------------------------------------------------
                  * -- Rig Information only available to ADMIN, to be mediated    --
                  * -- by interface. No criteria on Requestor                     --
                  * ---------------------------------------------------------------- */
-                //Rig Information only available to ADMIN, to be mediated by interface
+                
                 cri = ses.createCriteria(Rig.class);
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(), MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
 
                 cri.addOrder(Order.asc("name"));
-                final List<Rig> list = cri.list();
-                for (final Rig o : list)
+                for (final Rig o : (List<Rig>)cri.list())
                 {
                     respType.addSelectionResult(o.getName());
                 }
@@ -183,12 +176,11 @@ public class Reports implements ReportsSkeletonInterface
 
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(), MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
-                final List<RigType> list = cri.list();
-                for (final RigType o : list)
+                for (final RigType o : (List<RigType>)cri.list())
                 {
                     respType.addSelectionResult(o.getName());
                 }
@@ -199,12 +191,11 @@ public class Reports implements ReportsSkeletonInterface
 
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(), MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
-                final List<UserClass> list = cri.list();
-                for (final UserClass o : list)
+                for (final UserClass o : (List<UserClass>)cri.list())
                 {
                     /* ----------------------------------------------------------------
                      * Check that the requestor has permissions to request the report.
@@ -258,18 +249,36 @@ public class Reports implements ReportsSkeletonInterface
                  *  Get users in each class
                  *  Compare to users matching search criteria
                  * ---------------------------------------------------------------- */
-
                 
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("name", query0.getQueryLike(),MatchMode.ANYWHERE));
+                    cri.add(Restrictions.like("name", query0.getQueryLike(), MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
-                final List<User> userList = cri.list();
-                for (final User o : userList)
+                
+                for (final User o : (List<User>)cri.list())
                 {
-                    respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
+                    if (User.ACADEMIC.equals(persona))
+                    {
+                        /* An academic may generate reports for users in their own classes only. */
+                        boolean hasPerm = false;
+                        
+                        final Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
+                        while (apIt.hasNext())
+                        {
+                            final AcademicPermission ap = apIt.next();
+                            {
+                                hasPerm = true;
+                                break;
+                            }    
+                        }
+                        if (hasPerm) respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
+                    }
+                    else if (User.ADMIN.equals(persona))
+                    {
+                        respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
+                    }
                 }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.REQUEST_CAPABILITIES)
@@ -277,7 +286,7 @@ public class Reports implements ReportsSkeletonInterface
                 cri = ses.createCriteria(RequestCapabilities.class);
                 if(query0.getQueryLike() != null)
                 {
-                    cri.add(Restrictions.like("capabilities", query0.getQueryLike(),MatchMode.ANYWHERE));
+                    cri.add(Restrictions.like("capabilities", query0.getQueryLike(), MatchMode.ANYWHERE));
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("capabilities"));
@@ -311,9 +320,6 @@ public class Reports implements ReportsSkeletonInterface
         return resp;
     }
 
-    /* (non-Javadoc)
-     * @see au.edu.uts.eng.remotelabs.schedserver.reports.intf.ReportsSkeletonInterface#querySessionAccess(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess)
-     */
     @SuppressWarnings({ "unchecked" })
     @Override
     public QuerySessionAccessResponse querySessionAccess(final QuerySessionAccess querySessionAccess)
@@ -322,11 +328,11 @@ public class Reports implements ReportsSkeletonInterface
         final QuerySessionAccessType qSAReq = querySessionAccess.getQuerySessionAccess();
         String debug = "Received " + this.getClass().getSimpleName() + "#querySessionAccess with params:";
             debug += "Requestor: " + qSAReq.getRequestor() + ", QuerySelect: " + qSAReq.getQuerySelect().toString(); 
-            if(qSAReq.getQueryConstraints() != null)
-            {
-                debug += ", QueryConstraints: " + qSAReq.getQueryConstraints().toString();  //DODGY only first displayed
-            }
-            debug += ", start time: " + qSAReq.getStartTime() + ", end time: " + qSAReq.getEndTime() + ", pagination: " + qSAReq.getPagination();
+        if(qSAReq.getQueryConstraints() != null)
+        {
+            debug += ", QueryConstraints: " + qSAReq.getQueryConstraints().toString();  //DODGY only first displayed
+        }
+        debug += ", start time: " + qSAReq.getStartTime() + ", end time: " + qSAReq.getEndTime() + ", pagination: " + qSAReq.getPagination();
         this.logger.debug(debug);
         final RequestorType uid = qSAReq.getRequestor();
 
@@ -359,7 +365,7 @@ public class Reports implements ReportsSkeletonInterface
             final String persona = user.getPersona();
 
             Criteria cri = ses.createCriteria(Session.class);
-            // Order by request time
+            /* Order by request time */
             cri.addOrder(Order.asc("requestTime"));
 
             /* First Query Filter - this contains grouping for the query */        
@@ -392,10 +398,7 @@ public class Reports implements ReportsSkeletonInterface
                     cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
                 }
                 
-                //Query Filter to be used for multiple selections in later versions of reporting. 
-                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
-                
-                // Add pagination requirements
+                /* Add pagination requirements */
                 if (qSAReq.getPagination() != null)
                 {
                     final PaginationType pages = qSAReq.getPagination();
@@ -420,7 +423,7 @@ public class Reports implements ReportsSkeletonInterface
                 {
                     final AccessReportType reportType = new AccessReportType();
 
-                    //Get user from session object
+                    /* Get user from session object */
                     final RequestorType user0 = new RequestorType();
                     final UserNSNameSequence nsSequence = new UserNSNameSequence();
                     nsSequence.setUserName(o.getUser().getName());
@@ -438,10 +441,10 @@ public class Reports implements ReportsSkeletonInterface
                     {
                         final int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
                         reportType.setQueueDuration(queueD);
+
                         cal = Calendar.getInstance();
                         cal.setTime(o.getAssignmentTime());
                         reportType.setSessionStartTime(cal);
-
                         final int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
                         reportType.setSessionDuration(sessionD);
                     }
@@ -619,14 +622,10 @@ public class Reports implements ReportsSkeletonInterface
                     cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
                 }
                 
-                //Query Filter to be used for multiple selections in later versions of reporting. 
-                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
-                
-                // Add pagination requirements
+                /* Add pagination requirements */
                 if (qSAReq.getPagination() != null)
                 {
                     final PaginationType pages = qSAReq.getPagination();
-                    final int noPages = pages.getNumberOfPages();
                     final int pageNumber = pages.getPageNumber();
                     final int pageLength = pages.getPageLength();
 
@@ -772,7 +771,6 @@ public class Reports implements ReportsSkeletonInterface
                 if (qSAReq.getPagination() != null)
                 {
                     final PaginationType pages = qSAReq.getPagination();
-                    final int noPages = pages.getNumberOfPages();
                     final int pageNumber = pages.getPageNumber();
                     final int pageLength = pages.getPageLength();
 
@@ -975,7 +973,6 @@ public class Reports implements ReportsSkeletonInterface
                  * --     returned.                                              --
                  * ---------------------------------------------------------------- */
 
-                int noPages = 1;
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
@@ -986,7 +983,6 @@ public class Reports implements ReportsSkeletonInterface
                 if (qSRReq.getPagination() != null)
                 {
                     final PaginationType pages = qSRReq.getPagination();
-                    noPages = pages.getNumberOfPages();
                     pageNumber = pages.getPageNumber();
                     pageLength = pages.getPageLength();
                     
@@ -1108,7 +1104,6 @@ public class Reports implements ReportsSkeletonInterface
                  * --     returned.                                              --
                  * ---------------------------------------------------------------- */
 
-                int noPages = 1;
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
@@ -1119,10 +1114,8 @@ public class Reports implements ReportsSkeletonInterface
                 if (qSRReq.getPagination() != null)
                 {
                     final PaginationType pages = qSRReq.getPagination();
-                    noPages = pages.getNumberOfPages();
                     pageNumber = pages.getPageNumber();
                     pageLength = pages.getPageLength();
-                    
                 }
 
                 /* ----------------------------------------------------------------
@@ -1273,7 +1266,6 @@ public class Reports implements ReportsSkeletonInterface
                  * --     returned.                                              --
                  * ---------------------------------------------------------------- */
 
-                int noPages = 1;
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
@@ -1284,7 +1276,6 @@ public class Reports implements ReportsSkeletonInterface
                 if (qSRReq.getPagination() != null)
                 {
                     final PaginationType pages = qSRReq.getPagination();
-                    noPages = pages.getNumberOfPages();
                     pageNumber = pages.getPageNumber();
                     pageLength = pages.getPageLength();
                     
@@ -1455,7 +1446,6 @@ public class Reports implements ReportsSkeletonInterface
                  * --     returned.                                              --
                  * ---------------------------------------------------------------- */
 
-                int noPages = 1;
                 int pageNumber = 1;
                 int pageLength = recordMap.size();
                 int recordCount = 0;
@@ -1466,7 +1456,6 @@ public class Reports implements ReportsSkeletonInterface
                 if (qSRReq.getPagination() != null)
                 {
                     final PaginationType pages = qSRReq.getPagination();
-                    noPages = pages.getNumberOfPages();
                     pageNumber = pages.getPageNumber();
                     pageLength = pages.getPageLength();
                     
