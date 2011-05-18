@@ -44,9 +44,12 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
@@ -209,6 +212,12 @@ public class Reports implements ReportsSkeletonInterface
                         /* An academic may generate reports for their own classes only. */
                         boolean hasPerm = false;
                             
+                    /*    DetachedCriteria apList = DetachedCriteria.forClass(AcademicPermission.class,"ap")
+                            .add(Restrictions.eq("ap.canGenerateReports", true))
+                            .setProjection(Property.forName("userClass"));
+                    
+                    cri.add(Subqueries.propertyIn("id",userList));*/
+
                         final Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
                         while (apIt.hasNext())
                         {
@@ -216,8 +225,8 @@ public class Reports implements ReportsSkeletonInterface
                             if (ap.getUserClass().getId().equals(o.getId()) && ap.isCanGenerateReports())
                             {
                                 hasPerm = true;
-                                break;
-                             }    
+                                respType.addSelectionResult(o.getName());
+                            }    
                         }
                             
                         if (!hasPerm)
@@ -237,17 +246,12 @@ public class Reports implements ReportsSkeletonInterface
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER)
             {
-                cri = ses.createCriteria(User.class);
+                cri = ses.createCriteria(User.class, "u");
 
                 /* ----------------------------------------------------------------
-                 * TODO Check that the requestor has permissions to request the report.
                  * If persona = USER, no reports (USERs will not get here)
                  * If persona = ADMIN, any report 
                  * If persona = ACADEMIC, only for users in classes they own if they can genrate reports
-                 * 
-                 *  NOTE generate academics class list
-                 *  Get users in each class
-                 *  Compare to users matching search criteria
                  * ---------------------------------------------------------------- */
                 
                 if(query0.getQueryLike() != null)
@@ -257,25 +261,26 @@ public class Reports implements ReportsSkeletonInterface
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
                 
-                for (final User o : (List<User>)cri.list())
+                if (User.ACADEMIC.equals(persona))
                 {
-                    if (User.ACADEMIC.equals(persona))
+                    DetachedCriteria apList = DetachedCriteria.forClass(AcademicPermission.class,"ap")
+                        .add(Restrictions.eq("ap.canGenerateReports", true))
+                        .setProjection(Property.forName("userClass"));
+                    
+                    DetachedCriteria userList = DetachedCriteria.forClass(UserAssociation.class,"ua")
+                        .add(Subqueries.propertyIn("ua.userClass", apList))
+                        .setProjection(Property.forName("user.id"));
+
+                    cri.add(Subqueries.propertyIn("id",userList));
+                    
+                    for (final User o : (List<User>)cri.list())
                     {
-                        /* An academic may generate reports for users in their own classes only. */
-                        boolean hasPerm = false;
-                        
-                        final Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
-                        while (apIt.hasNext())
-                        {
-                            final AcademicPermission ap = apIt.next();
-                            {
-                                hasPerm = true;
-                                break;
-                            }    
-                        }
-                        if (hasPerm) respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
+                        respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
                     }
-                    else if (User.ADMIN.equals(persona))
+                }
+                else if(User.ADMIN.equals(persona))
+                {
+                    for (final User o : (List<User>)cri.list())
                     {
                         respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
                     }
