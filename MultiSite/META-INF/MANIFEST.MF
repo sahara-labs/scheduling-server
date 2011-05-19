@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Multisite
+Bundle-SymbolicName: SchedulingServer-Multisite
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator
+Bundle-Vendor: Michael Diponio Capstone
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.osgi.framework;version="1.3.0"
