@@ -198,51 +198,34 @@ public class Reports implements ReportsSkeletonInterface
                 }
                 if(qIReq.getLimit() > 0 ) cri.setMaxResults(qIReq.getLimit());
                 cri.addOrder(Order.asc("name"));
-                for (final UserClass o : (List<UserClass>)cri.list())
+
+                /* ----------------------------------------------------------------
+                * Check that the requestor has permissions to request the report.
+                * If persona = USER, no reports (USERs will not get here)
+                * If persona = ADMIN, any report 
+                * If persona = ACADEMIC, only for classes they own if they can generate reports
+                * ---------------------------------------------------------------- */
+                
+                if (User.ACADEMIC.equals(persona))
                 {
-                    /* ----------------------------------------------------------------
-                     * Check that the requestor has permissions to request the report.
-                     * If persona = USER, no reports (USERs will not get here)
-                     * If persona = ADMIN, any report 
-                     * If persona = ACADEMIC, only for classes they own if they can generate reports
-                     * ---------------------------------------------------------------- */
-
-                    if (User.ACADEMIC.equals(persona))
+                    DetachedCriteria apList = DetachedCriteria.forClass(AcademicPermission.class,"ap")
+                        .add(Restrictions.eq("ap.canGenerateReports", true))
+                        .setProjection(Property.forName("userClass"));
+            
+                    cri.add(Subqueries.propertyIn("id",apList));
+                    
+                    for (final UserClass o : (List<UserClass>)cri.list())
                     {
-                        /* An academic may generate reports for their own classes only. */
-                        boolean hasPerm = false;
-                            
-                    /*    DetachedCriteria apList = DetachedCriteria.forClass(AcademicPermission.class,"ap")
-                            .add(Restrictions.eq("ap.canGenerateReports", true))
-                            .setProjection(Property.forName("userClass"));
-                    
-                    cri.add(Subqueries.propertyIn("id",userList));*/
-
-                        final Iterator<AcademicPermission> apIt = user.getAcademicPermissions().iterator();
-                        while (apIt.hasNext())
-                        {
-                            final AcademicPermission ap = apIt.next();
-                            if (ap.getUserClass().getId().equals(o.getId()) && ap.isCanGenerateReports())
-                            {
-                                hasPerm = true;
-                                respType.addSelectionResult(o.getName());
-                            }    
-                        }
-                            
-                        if (!hasPerm)
-                        {
-                            this.logger.info("Unable to generate report for user class " + o.getName() + 
-                                    " because the user " + user.getNamespace() + ':' + user.getName() +
-                                    " does not own or have academic permission to it.");
-                            continue;
-                        }
-                            
-                        this.logger.debug("Academic " + user.getNamespace() + ':' + user.getName() + " has permission to " +
-                                   "generate report from user class" + o.getName() + '.');
+                         respType.addSelectionResult(o.getName());
                     }
-                    
-                    respType.addSelectionResult(o.getName());
                 }
+                else if(User.ADMIN.equals(persona))
+                {
+                    for (final UserClass o : (List<UserClass>)cri.list())
+                    {
+                        respType.addSelectionResult(o.getName());
+                    }
+                 }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER)
             {
@@ -437,6 +420,8 @@ public class Reports implements ReportsSkeletonInterface
                     reportType.setUser(user0);
                                         
                     reportType.setRigName(query0.getQueryLike());
+                    reportType.setRigType(o.getRig().getRigType().getName());
+                    reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
                     
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(o.getRequestTime());
@@ -455,8 +440,13 @@ public class Reports implements ReportsSkeletonInterface
                     }
                     else
                     {
+                        /* There was no session */
                         final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
                         reportType.setQueueDuration(queueD);
+                        
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getRemovalTime());
+                        reportType.setSessionStartTime(cal);
                         reportType.setSessionDuration(0);
                     }
                     
@@ -496,9 +486,6 @@ public class Reports implements ReportsSkeletonInterface
                     cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
                 }
                 
-                //Query Filter to be used for multiple selections in later versions of reporting. 
-                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
-                
                 // Add pagination requirements
                 if (qSAReq.getPagination() != null)
                 {
@@ -533,7 +520,9 @@ public class Reports implements ReportsSkeletonInterface
                     reportType.setUser(user0);
 
                     reportType.setRigType(query0.getQueryLike());
-                    
+                    reportType.setRigName(o.getRig().getName());
+                    reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
+
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(o.getRequestTime());
                     reportType.setQueueStartTime(cal);
@@ -552,6 +541,10 @@ public class Reports implements ReportsSkeletonInterface
                     {
                         final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
                         reportType.setQueueDuration(queueD);
+                        
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getRemovalTime());
+                        reportType.setSessionStartTime(cal);
                         reportType.setSessionDuration(0);
                     }
                     
@@ -658,7 +651,18 @@ public class Reports implements ReportsSkeletonInterface
                     reportType.setUser(user0);
 
                     reportType.setUserClass(query0.getQueryLike());
-                    reportType.setRigName(o.getAssignedRigName());
+
+                    /* Can have sessions with no rig assignment so check */
+                    if (o.getRig() != null)
+                    {
+                        reportType.setRigName(o.getAssignedRigName());
+                        reportType.setRigType(o.getRig().getRigType().getName());
+                    }
+                    else
+                    {
+                        reportType.setRigName("Not Assigned");
+                        reportType.setRigType("Not Assigned");
+                    }
                     
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(o.getRequestTime());
@@ -678,6 +682,10 @@ public class Reports implements ReportsSkeletonInterface
                     {
                         final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
                         reportType.setQueueDuration(queueD);
+
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getRemovalTime());
+                        reportType.setSessionStartTime(cal);
                         reportType.setSessionDuration(0);
                     }
                     
@@ -802,8 +810,19 @@ public class Reports implements ReportsSkeletonInterface
                     user0.setRequestorTypeSequence_type0(nsSequence);
                     reportType.setUser(user0);
 
-                    reportType.setRigName(o.getAssignedRigName());
-                    
+                    reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
+                    /* Can have sessions with no rig assignment so check */
+                    if (o.getRig() != null)
+                    {
+                        reportType.setRigName(o.getAssignedRigName());
+                        reportType.setRigType(o.getRig().getRigType().getName());
+                    }
+                    else
+                    {
+                        reportType.setRigName("Not Assigned");
+                        reportType.setRigType("Not Assigned");
+                    }
+                        
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(o.getRequestTime());
                     reportType.setQueueStartTime(cal);
@@ -822,6 +841,10 @@ public class Reports implements ReportsSkeletonInterface
                     {
                         final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
                         reportType.setQueueDuration(queueD);
+
+                        cal = Calendar.getInstance();
+                        cal.setTime(o.getRemovalTime());
+                        reportType.setSessionStartTime(cal);
                         reportType.setSessionDuration(0);
                     }
                     
