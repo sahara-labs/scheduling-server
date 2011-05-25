@@ -2,7 +2,7 @@ Bundle-Name: MultiSite
 Bundle-SymbolicName: SchedulingServer-MultiSite
 Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator
-Bundle-Vendor: Michael Diponio
+Bundle-Vendor: Michael Diponio Capstone
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
 !org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
