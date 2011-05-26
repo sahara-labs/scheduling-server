@@ -370,193 +370,198 @@ public class Reports implements ReportsSkeletonInterface
             if(query0.getTypeForQuery() == TypeForQuery.RIG)
             {
                 /* ----------------------------------------------------------------
-                 * -- 1. Rig Information only available to ADMIN, to be mediated --
-                 * --    by interface. No criteria on Requestor                  --
+                 * -- 1. Rig Information only available to ADMIN,                --
                  * ---------------------------------------------------------------- */
-                
-                // Select Rig name to match query
-                cri.add(Restrictions.eq("assignedRigName", query0.getQueryLike()));
-                // Select time period
-                if (qSAReq.getStartTime() != null)
+             
+                if (User.ADMIN.equals(persona))
                 {
-                    cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
-                }
-                if (qSAReq.getEndTime() != null)
-                {
-                    cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
-                }
-                
-                /* Add pagination requirements */
-                if (qSAReq.getPagination() != null)
-                {
-                    final PaginationType pages = qSAReq.getPagination();
-                    final int noPages = pages.getNumberOfPages();
-                    final int pageNumber = pages.getPageNumber();
-                    final int pageLength = pages.getPageLength();
 
-                    if (noPages > 1)
+                    // Select Rig name to match query
+                    cri.add(Restrictions.eq("assignedRigName", query0.getQueryLike()));
+                    // Select time period
+                    if (qSAReq.getStartTime() != null)
                     {
-                        cri.setMaxResults(pageLength);
+                        cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
                     }
-                    if (pageNumber > 1)
+                    if (qSAReq.getEndTime() != null)
                     {
-                        cri.setFirstResult((pageNumber-1)*pageLength);
+                        cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
                     }
                     
-                    respType.setPagination(pages);
-                }
-                               
-                final List<Session> list = cri.list();
-                for (final Session o : list)
-                {
-                    final AccessReportType reportType = new AccessReportType();
-
-                    /* Get user from session object */
-                    final RequestorType user0 = new RequestorType();
-                    final UserNSNameSequence nsSequence = new UserNSNameSequence();
-                    nsSequence.setUserName(o.getUser().getName());
-                    nsSequence.setUserNamespace(o.getUser().getNamespace());
-                    user0.setRequestorTypeSequence_type0(nsSequence);
-                    reportType.setUser(user0);
-                                        
-                    reportType.setRigName(query0.getQueryLike());
-                    reportType.setRigType(o.getRig().getRigType().getName());
-                    reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
-                    
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(o.getRequestTime());
-                    reportType.setQueueStartTime(cal);
-
-                    if(o.getAssignmentTime() != null)
+                    /* Add pagination requirements */
+                    if (qSAReq.getPagination() != null)
                     {
-                        final int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
-                        reportType.setQueueDuration(queueD);
-
-                        cal = Calendar.getInstance();
-                        cal.setTime(o.getAssignmentTime());
-                        reportType.setSessionStartTime(cal);
-                        final int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
-                        reportType.setSessionDuration(sessionD);
+                        final PaginationType pages = qSAReq.getPagination();
+                        final int noPages = pages.getNumberOfPages();
+                        final int pageNumber = pages.getPageNumber();
+                        final int pageLength = pages.getPageLength();
+    
+                        if (noPages > 1)
+                        {
+                            cri.setMaxResults(pageLength);
+                        }
+                        if (pageNumber > 1)
+                        {
+                            cri.setFirstResult((pageNumber-1)*pageLength);
+                        }
+                        
+                        respType.setPagination(pages);
                     }
-                    else
+                                   
+                    final List<Session> list = cri.list();
+                    for (final Session o : list)
                     {
-                        /* There was no session */
-                        final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
-                        reportType.setQueueDuration(queueD);
+                        final AccessReportType reportType = new AccessReportType();
+    
+                        /* Get user from session object */
+                        final RequestorType user0 = new RequestorType();
+                        final UserNSNameSequence nsSequence = new UserNSNameSequence();
+                        nsSequence.setUserName(o.getUser().getName());
+                        nsSequence.setUserNamespace(o.getUser().getNamespace());
+                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        reportType.setUser(user0);
+                                            
+                        reportType.setRigName(query0.getQueryLike());
+                        reportType.setRigType(o.getRig().getRigType().getName());
+                        reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
+                        
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(o.getRequestTime());
+                        reportType.setQueueStartTime(cal);
+    
+                        if(o.getAssignmentTime() != null)
+                        {
+                            final int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
+                            reportType.setQueueDuration(queueD);
+    
+                            cal = Calendar.getInstance();
+                            cal.setTime(o.getAssignmentTime());
+                            reportType.setSessionStartTime(cal);
+                            final int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
+                            reportType.setSessionDuration(sessionD);
+                        }
+                        else
+                        {
+                            /* There was no session */
+                            final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
+                            reportType.setQueueDuration(queueD);
+                            
+                            cal = Calendar.getInstance();
+                            cal.setTime(o.getRemovalTime());
+                            reportType.setSessionStartTime(cal);
+                            reportType.setSessionDuration(0);
+                        }
                         
                         cal = Calendar.getInstance();
                         cal.setTime(o.getRemovalTime());
-                        reportType.setSessionStartTime(cal);
-                        reportType.setSessionDuration(0);
+                        reportType.setSessionEndTime(cal);
+                        
+                        reportType.setReasonForTermination(o.getRemovalReason());
+    
+                        respType.addAccessReportData(reportType);
                     }
-                    
-                    cal = Calendar.getInstance();
-                    cal.setTime(o.getRemovalTime());
-                    reportType.setSessionEndTime(cal);
-                    
-                    reportType.setReasonForTermination(o.getRemovalReason());
-
-                    respType.addAccessReportData(reportType);
                 }
             }
             else if(query0.getTypeForQuery() == TypeForQuery.RIG_TYPE)
             {
                 /* ----------------------------------------------------------------
-                 * -- 2. Rig Type Information only available to ADMIN, to be     -- 
-                 * --    mediated by interface. No criteria on Requestor         --
+                 * -- 2. Rig Type Information only available to ADMIN           --
                  * ---------------------------------------------------------------- */
-                final RigTypeDao rTypeDAO = new RigTypeDao(ses);
-                final RigType rType = rTypeDAO.findByName(query0.getQueryLike());
-                cri = ses.createCriteria(Session.class);
-                if (rType == null)
-                {
-                    this.logger.warn("No valid rig type found - " + query0.getTypeForQuery().toString());
-                    return resp;
-                }
-                // Select Sessions where rig value is of the correct Rig Type
-                cri.createCriteria("rig").add(Restrictions.eq("rigType",rType));
 
-                // Select time period
-                if (qSAReq.getStartTime() != null)
+                if (User.ADMIN.equals(persona))
                 {
-                    cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
-                }
-                if (qSAReq.getEndTime() != null)
-                {
-                    cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
-                }
-                
-                // Add pagination requirements
-                if (qSAReq.getPagination() != null)
-                {
-                    final PaginationType pages = qSAReq.getPagination();
-                    final int noPages = pages.getNumberOfPages();
-                    final int pageNumber = pages.getPageNumber();
-                    final int pageLength = pages.getPageLength();
-
-                    if (noPages > 1)
+                    final RigTypeDao rTypeDAO = new RigTypeDao(ses);
+                    final RigType rType = rTypeDAO.findByName(query0.getQueryLike());
+                    cri = ses.createCriteria(Session.class);
+                    if (rType == null)
                     {
-                        cri.setMaxResults(pageLength);
+                        this.logger.warn("No valid rig type found - " + query0.getTypeForQuery().toString());
+                        return resp;
                     }
-                    if (pageNumber > 1)
+                    // Select Sessions where rig value is of the correct Rig Type
+                    cri.createCriteria("rig").add(Restrictions.eq("rigType",rType));
+    
+                    // Select time period
+                    if (qSAReq.getStartTime() != null)
                     {
-                        cri.setFirstResult((pageNumber-1)*pageLength);
+                        cri.add(Restrictions.ge("requestTime", qSAReq.getStartTime().getTime()));
+                    }
+                    if (qSAReq.getEndTime() != null)
+                    {
+                        cri.add(Restrictions.le("requestTime", qSAReq.getEndTime().getTime()));
                     }
                     
-                    respType.setPagination(pages);
-                }
-
-                final List<Session> list = cri.list();
-                for (final Session o : list)
-                {
-                    final AccessReportType reportType = new AccessReportType();
-
-                    //Get user from session object
-                    final RequestorType user0 = new RequestorType();
-                    final UserNSNameSequence nsSequence = new UserNSNameSequence();
-                    nsSequence.setUserName(o.getUser().getName());
-                    nsSequence.setUserNamespace(o.getUser().getNamespace());
-                    user0.setRequestorTypeSequence_type0(nsSequence);
-                    reportType.setUser(user0);
-
-                    reportType.setRigType(query0.getQueryLike());
-                    reportType.setRigName(o.getRig().getName());
-                    reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
-
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(o.getRequestTime());
-                    reportType.setQueueStartTime(cal);
-                    
-                    if(o.getAssignmentTime() != null)
+                    // Add pagination requirements
+                    if (qSAReq.getPagination() != null)
                     {
-                        final int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
-                        reportType.setQueueDuration(queueD);
-                        cal = Calendar.getInstance();
-                        cal.setTime(o.getAssignmentTime());
-                        reportType.setSessionStartTime(cal);
-                        final int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
-                        reportType.setSessionDuration(sessionD);
+                        final PaginationType pages = qSAReq.getPagination();
+                        final int noPages = pages.getNumberOfPages();
+                        final int pageNumber = pages.getPageNumber();
+                        final int pageLength = pages.getPageLength();
+    
+                        if (noPages > 1)
+                        {
+                            cri.setMaxResults(pageLength);
+                        }
+                        if (pageNumber > 1)
+                        {
+                            cri.setFirstResult((pageNumber-1)*pageLength);
+                        }
+                        
+                        respType.setPagination(pages);
                     }
-                    else
+    
+                    final List<Session> list = cri.list();
+                    for (final Session o : list)
                     {
-                        final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
-                        reportType.setQueueDuration(queueD);
+                        final AccessReportType reportType = new AccessReportType();
+    
+                        //Get user from session object
+                        final RequestorType user0 = new RequestorType();
+                        final UserNSNameSequence nsSequence = new UserNSNameSequence();
+                        nsSequence.setUserName(o.getUser().getName());
+                        nsSequence.setUserNamespace(o.getUser().getNamespace());
+                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        reportType.setUser(user0);
+    
+                        reportType.setRigType(query0.getQueryLike());
+                        reportType.setRigName(o.getRig().getName());
+                        reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
+    
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(o.getRequestTime());
+                        reportType.setQueueStartTime(cal);
+                        
+                        if(o.getAssignmentTime() != null)
+                        {
+                            final int queueD = (int) ((o.getAssignmentTime().getTime() - o.getRequestTime().getTime())/1000);
+                            reportType.setQueueDuration(queueD);
+                            cal = Calendar.getInstance();
+                            cal.setTime(o.getAssignmentTime());
+                            reportType.setSessionStartTime(cal);
+                            final int sessionD = (int) ((o.getRemovalTime().getTime() - o.getAssignmentTime().getTime())/1000);
+                            reportType.setSessionDuration(sessionD);
+                        }
+                        else
+                        {
+                            final int queueD = (int) ((o.getRemovalTime().getTime() - o.getRequestTime().getTime())/1000);
+                            reportType.setQueueDuration(queueD);
+                            
+                            cal = Calendar.getInstance();
+                            cal.setTime(o.getRemovalTime());
+                            reportType.setSessionStartTime(cal);
+                            reportType.setSessionDuration(0);
+                        }
                         
                         cal = Calendar.getInstance();
                         cal.setTime(o.getRemovalTime());
-                        reportType.setSessionStartTime(cal);
-                        reportType.setSessionDuration(0);
+                        reportType.setSessionEndTime(cal);
+                        
+                        reportType.setReasonForTermination(o.getRemovalReason());
+    
+                        respType.addAccessReportData(reportType);
                     }
-                    
-                    cal = Calendar.getInstance();
-                    cal.setTime(o.getRemovalTime());
-                    reportType.setSessionEndTime(cal);
-                    
-                    reportType.setReasonForTermination(o.getRemovalReason());
-
-                    respType.addAccessReportData(reportType);
                 }
-                
             }
             else if(query0.getTypeForQuery() == TypeForQuery.USER_CLASS)
             {
