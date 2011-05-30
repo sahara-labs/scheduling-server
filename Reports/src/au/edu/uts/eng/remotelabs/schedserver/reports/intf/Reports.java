@@ -416,14 +416,26 @@ public class Reports implements ReportsSkeletonInterface
                         /* Get user from session object */
                         final RequestorType user0 = new RequestorType();
                         final UserNSNameSequence nsSequence = new UserNSNameSequence();
-                        nsSequence.setUserName(o.getUser().getName());
-                        nsSequence.setUserNamespace(o.getUser().getNamespace());
-                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        
+                        /*Check for NULL user_id in case of deleted user */
+                        if (o.getUser() != null)
+                        {
+                            nsSequence.setUserName(o.getUser().getName());
+                            nsSequence.setUserNamespace(o.getUser().getNamespace());
+                            user0.setRequestorTypeSequence_type0(nsSequence);
+                        }
+                        else
+                        {
+                            /* Read data from record as user_id has been deleted */
+                            nsSequence.setUserName(o.getUserName());
+                            nsSequence.setUserNamespace(o.getUserNamespace());
+                            user0.setRequestorTypeSequence_type0(nsSequence);
+                        }
                         reportType.setUser(user0);
                                             
                         reportType.setRigName(query0.getQueryLike());
-                        reportType.setRigType(o.getRig().getRigType().getName());
-                        reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
+                        if (o.getRig() != null) reportType.setRigType(o.getRig().getRigType().getName());
+                        if (o.getResourcePermission() != null) reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
                         
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(o.getRequestTime());
@@ -519,14 +531,25 @@ public class Reports implements ReportsSkeletonInterface
                         //Get user from session object
                         final RequestorType user0 = new RequestorType();
                         final UserNSNameSequence nsSequence = new UserNSNameSequence();
-                        nsSequence.setUserName(o.getUser().getName());
-                        nsSequence.setUserNamespace(o.getUser().getNamespace());
-                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        /*Check for NULL user_id in case of deleted user */
+                        if (o.getUser() != null)
+                        {
+                            nsSequence.setUserName(o.getUser().getName());
+                            nsSequence.setUserNamespace(o.getUser().getNamespace());
+                            user0.setRequestorTypeSequence_type0(nsSequence);
+                        }
+                        else
+                        {
+                            /* Read data from record as user_id has been deleted */
+                            nsSequence.setUserName(o.getUserName());
+                            nsSequence.setUserNamespace(o.getUserNamespace());
+                            user0.setRequestorTypeSequence_type0(nsSequence);
+                        }
                         reportType.setUser(user0);
     
                         reportType.setRigType(query0.getQueryLike());
-                        reportType.setRigName(o.getRig().getName());
-                        reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
+                        if (o.getRig() != null) reportType.setRigName(o.getRig().getName());
+                        if (o.getResourcePermission() != null) reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
     
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(o.getRequestTime());
@@ -650,9 +673,21 @@ public class Reports implements ReportsSkeletonInterface
                     //Get user from session object
                     final RequestorType user0 = new RequestorType();
                     final UserNSNameSequence nsSequence = new UserNSNameSequence();
-                    nsSequence.setUserName(o.getUser().getName());
-                    nsSequence.setUserNamespace(o.getUser().getNamespace());
-                    user0.setRequestorTypeSequence_type0(nsSequence);
+
+                    /*Check for NULL user_id in case of deleted user */
+                    if (o.getUser() != null)
+                    {
+                        nsSequence.setUserName(o.getUser().getName());
+                        nsSequence.setUserNamespace(o.getUser().getNamespace());
+                        user0.setRequestorTypeSequence_type0(nsSequence);
+                    }
+                    else
+                    {
+                        /* Read data from record as user_id has been deleted */
+                        nsSequence.setUserName(o.getUserName());
+                        nsSequence.setUserNamespace(o.getUserNamespace());
+                        user0.setRequestorTypeSequence_type0(nsSequence);
+                    }
                     reportType.setUser(user0);
 
                     reportType.setUserClass(query0.getQueryLike());
@@ -815,7 +850,7 @@ public class Reports implements ReportsSkeletonInterface
                     user0.setRequestorTypeSequence_type0(nsSequence);
                     reportType.setUser(user0);
 
-                    reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
+                    if (o.getResourcePermission()!= null) reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
                     /* Can have sessions with no rig assignment so check */
                     if (o.getRig() != null)
                     {
@@ -987,17 +1022,21 @@ public class Reports implements ReportsSkeletonInterface
                      * -- 1b. Iterate through sessions and create user records       --
                      * ---------------------------------------------------------------- */
                     
-                    final User u = o.getUser();
-                    
-                    if(recordMap.containsKey(u))
+                    /* Create check for user_id not being null - deleted user */
+                    if(o.getUser() != null)
                     {
-                        recordMap.get(u).addRecord(o);
-                    }
-                    else
-                    {
-                        final UserRecord userRec = new UserRecord();
-                        userRec.addRecord(o);
-                        recordMap.put(u, userRec);
+                        final User u = o.getUser();
+                        
+                        if(recordMap.containsKey(u))
+                        {
+                            recordMap.get(u).addRecord(o);
+                        }
+                        else
+                        {
+                            final UserRecord userRec = new UserRecord();
+                            userRec.addRecord(o);
+                            recordMap.put(u, userRec);
+                        }
                     }
                 }
 
@@ -1118,17 +1157,21 @@ public class Reports implements ReportsSkeletonInterface
                      * -- 2b. Iterate through sessions and create user records       --
                      * ---------------------------------------------------------------- */
                     
-                    final User u = o.getUser();
-                    
-                    if(recordMap.containsKey(u))
+                    /* Create check for user_id not being null - deleted user */
+                    if(o.getUser() != null)
                     {
-                        recordMap.get(u).addRecord(o);
-                    }
-                    else
-                    {
-                        final UserRecord userRec = new UserRecord();
-                        userRec.addRecord(o);
-                        recordMap.put(u, userRec);
+                        final User u = o.getUser();
+                        
+                        if(recordMap.containsKey(u))
+                        {
+                            recordMap.get(u).addRecord(o);
+                        }
+                        else
+                        {
+                            final UserRecord userRec = new UserRecord();
+                            userRec.addRecord(o);
+                            recordMap.put(u, userRec);
+                        }
                     }
                 }
 
@@ -1280,17 +1323,21 @@ public class Reports implements ReportsSkeletonInterface
                      * -- 3b. Iterate through sessions and create user records       --
                      * ---------------------------------------------------------------- */
                     
-                    final User u = o.getUser();
-                    
-                    if(recordMap.containsKey(u))
+                    /* Create check for user_id not being null - deleted user */
+                    if(o.getUser() != null)
                     {
-                        recordMap.get(u).addRecord(o);
-                    }
-                    else
-                    {
-                        final UserRecord userRec = new UserRecord();
-                        userRec.addRecord(o);
-                        recordMap.put(u, userRec);
+                        final User u = o.getUser();
+                        
+                        if(recordMap.containsKey(u))
+                        {
+                            recordMap.get(u).addRecord(o);
+                        }
+                        else
+                        {
+                            final UserRecord userRec = new UserRecord();
+                            userRec.addRecord(o);
+                            recordMap.put(u, userRec);
+                        }
                     }
                 }
 
@@ -1450,7 +1497,6 @@ public class Reports implements ReportsSkeletonInterface
                 //Query Filter to be used for multiple selections in later versions of reporting. 
                 //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
                 
-                // ?? Do we need this - single user only
                 final SortedMap<User,UserRecord> recordMap = new TreeMap<User,UserRecord>(new UserComparator());
 
                 final List<Session> list = cri.list();
