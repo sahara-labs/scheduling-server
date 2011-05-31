@@ -56,7 +56,7 @@ public class RemoteSite implements Serializable
     /** Serializable class. */
     private static final long serialVersionUID = -4281815890358921326L;
 
-    /** Record Identifer. */
+    /** Record Identifier. */
     private long id;
 
     /** The name of the remote site institution. */
