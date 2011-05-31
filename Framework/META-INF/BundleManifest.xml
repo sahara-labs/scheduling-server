@@ -20,5 +20,6 @@
 	<entry key="B11">SchedulingServer-RigManagement</entry>
 	<entry key="B12">SchedulingServer-Queuer</entry>
 	<entry key="B13">SchedulingServer-Session</entry>
-	<entry key="B14">SchedulingServer-Server</entry>
+	<entry key="B14">SchedulingServer-Reports</entry>
+	<entry key="B15">SchedulingServer-Server</entry>
 </properties>
