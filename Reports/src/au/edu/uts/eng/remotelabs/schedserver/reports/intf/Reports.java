@@ -37,8 +37,10 @@
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -999,6 +1001,7 @@ public class Reports implements ReportsSkeletonInterface
                  * -- 1a. Get Sessions that match the rig                        --
                  * ---------------------------------------------------------------- */
 
+                
                 cri.add(Restrictions.eq("assignedRigName", query0.getQueryLike()));
                 // Select time period
                 if (qSRReq.getStartTime() != null)
@@ -1010,10 +1013,10 @@ public class Reports implements ReportsSkeletonInterface
                     cri.add(Restrictions.le("requestTime", qSRReq.getEndTime().getTime()));
                 }
                 
-                //Query Filter to be used for multiple selections in later versions of reporting. 
-                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
-
+                Long idCount = new Long(-1);
                 final SortedMap<User,UserRecord> recordMap = new TreeMap<User,UserRecord>(new UserComparator());
+                /* Contains list of users without user_id in session.  Indexed with namespace:name */
+                final Map<String,UserRecord> userMap = new HashMap<String,UserRecord>();
                 
                 final List<Session> list = cri.list();
                 for (final Session o : list)
@@ -1036,6 +1039,28 @@ public class Reports implements ReportsSkeletonInterface
                             final UserRecord userRec = new UserRecord();
                             userRec.addRecord(o);
                             recordMap.put(u, userRec);
+                        }
+                    }
+                    else 
+                    {
+                        final String nameIndex =  o.getUserNamespace() + QNAME_DELIM + o.getUserName();
+                        /* Does 'namespace:name' indexed list contain user */
+                        if(userMap.containsKey(nameIndex))
+                        {
+                            userMap.get(nameIndex).addRecord(o);
+                        }
+                        else
+                        {
+                            final User u = new User();
+                            u.setName(o.getUserName());
+                            u.setNamespace(o.getUserNamespace());
+                            u.setId(idCount);
+                            idCount--;
+
+                            final UserRecord userRec = new UserRecord();
+                            userRec.addRecord(o);
+                            recordMap.put(u, userRec);
+                            userMap.put(nameIndex, userRec);
                         }
                     }
                 }
@@ -1145,10 +1170,12 @@ public class Reports implements ReportsSkeletonInterface
                     cri.add(Restrictions.le("requestTime", qSRReq.getEndTime().getTime()));
                 }
                 
-                //Query Filter to be used for multiple selections in later versions of reporting. 
-                //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
                 
+                Long idCount = new Long(-1);
+
                 final SortedMap<User,UserRecord> recordMap = new TreeMap<User,UserRecord>(new UserComparator());
+                /* Contains list of users without user_id in session.  Indexed with namespace:name */
+                final Map<String,UserRecord> userMap = new HashMap<String,UserRecord>();
 
                 final List<Session> list = cri.list();
                 for (final Session o : list)
@@ -1173,6 +1200,29 @@ public class Reports implements ReportsSkeletonInterface
                             recordMap.put(u, userRec);
                         }
                     }
+                    else 
+                    {
+                        final String nameIndex =  o.getUserNamespace() + QNAME_DELIM + o.getUserName();
+                        /* Does 'namespace:name' indexed list contain user */
+                        if(userMap.containsKey(nameIndex))
+                        {
+                            userMap.get(nameIndex).addRecord(o);
+                        }
+                        else
+                        {
+                            final User u = new User();
+                            u.setName(o.getUserName());
+                            u.setNamespace(o.getUserNamespace());
+                            u.setId(idCount);
+                            idCount--;
+
+                            final UserRecord userRec = new UserRecord();
+                            userRec.addRecord(o);
+                            recordMap.put(u, userRec);
+                            userMap.put(nameIndex, userRec);
+                        }
+                    }
+
                 }
 
                 /* ----------------------------------------------------------------
