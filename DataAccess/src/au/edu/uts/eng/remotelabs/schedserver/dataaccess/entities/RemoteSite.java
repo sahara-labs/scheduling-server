@@ -38,12 +38,16 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -76,6 +80,9 @@ public class RemoteSite implements Serializable
     
     /** The time the site sent a status update. */
     private Date lastPush;
+    
+    /** The remote permissions that relate to this site. */
+    private Set<RemotePermission> remotePermissions = new HashSet<RemotePermission>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -154,5 +161,16 @@ public class RemoteSite implements Serializable
     public void setLastPush(Date lastPush)
     {
         this.lastPush = lastPush;
+    }
+
+    @OneToMany(fetch =FetchType.LAZY, mappedBy = "site")
+    public Set<RemotePermission> getRemotePermissions()
+    {
+        return this.remotePermissions;
+    }
+
+    public void setRemotePermissions(Set<RemotePermission> remotePermissions)
+    {
+        this.remotePermissions = remotePermissions;
     }
 }
