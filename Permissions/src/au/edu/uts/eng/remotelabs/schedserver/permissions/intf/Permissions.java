@@ -48,6 +48,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserLockDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -868,6 +869,21 @@ public class Permissions implements PermissionsSkeletonInterface
                     resource.setResourceName(caps.getCapabilities());
                 }
             }
+            else if (ResourcePermission.CONSUMER_PERMISSION.equals(rp.getType()))
+            {
+                permission.setResourceClass(ResourceClass.CONSUMER);
+
+                RemotePermission remotePerm = rp.getRemotePermission();
+                if (remotePerm == null)
+                {
+                    this.logger.warn("Incorrect configuration of a consumer resource permission with id " + rp.getId() + 
+                            " as no remote permission is set.");
+                }
+                else
+                {
+                    permission.setRemoteSite(remotePerm.getSite().getName());
+                }
+            }
             else
             {
                 this.logger.warn("Incorrect configuration of a resource permission with id " + rp.getId() + 
@@ -996,6 +1012,19 @@ public class Permissions implements PermissionsSkeletonInterface
                     perm.setResourceClass(ResourceClass.CAPABILITY);
                     resourceIdType.setResourceID(caps.getId().intValue());
                     resourceIdType.setResourceName(caps.getCapabilities());
+                }
+                else if (ResourcePermission.CONSUMER_PERMISSION.equals(resPerm.getType()))
+                {
+                    perm.setResourceClass(ResourceClass.CONSUMER);
+                    
+                    RemotePermission remotePerm = resPerm.getRemotePermission();
+                    if (remotePerm == null)
+                    {
+                        this.logger.warn("Incorrect configuration of a consumer resource permission with id " + 
+                                resPerm.getId() + " as no remote permission is set.");
+                        continue;
+                    }
+                    perm.setRemoteSite(remotePerm.getSite().getName());
                 }
                 else
                 {
