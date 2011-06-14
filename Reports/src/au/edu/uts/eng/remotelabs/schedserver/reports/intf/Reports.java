@@ -358,6 +358,9 @@ public class Reports implements ReportsSkeletonInterface
             /* Order by request time */
             cri.addOrder(Order.asc("requestTime"));
 
+            /* Add restriction - removal time cannot be null - these are in session records */
+            cri.add(Restrictions.isNotNull("removalTime"));
+            
             /* First Query Filter - this contains grouping for the query */        
             final QueryFilterType query0 = qSAReq.getQuerySelect();
 
@@ -978,6 +981,9 @@ public class Reports implements ReportsSkeletonInterface
             final Criteria cri = ses.createCriteria(Session.class);
             // Order by request time
             cri.addOrder(Order.asc("requestTime"));
+            
+            /* Add restriction - removal time cannot be null - these are in session records */
+            cri.add(Restrictions.isNotNull("removalTime"));
 
             /* First Query Filter - this contains grouping for the query */        
             final QueryFilterType query0 = qSRReq.getQuerySelect();
