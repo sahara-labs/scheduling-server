@@ -110,18 +110,21 @@ public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
     @Override
     public void loadDefault()
     {
-        final Config config = new PropertiesConfig();
+        /* Determine the location of the configuration file. */
+        String confFile = System.getProperty("config.file", DEFAULT_CONFIG_FILE);
         
-        this.loadedConfig.put(System.getProperty("config.file", PropertiesConfig.DEFAULT_CONFIG_FILE), config);
+        /* Load up the default configuration. */
+        final Config config = new PropertiesConfig(confFile);
+        this.loadedConfig.put(confFile, config);
         System.err.println("Loaded " + config.getConfigurationInfomation() + ".");
         
+        /* Register the configuration service. */
         final Dictionary<String, String> props = new Hashtable<String, String>();
-        props.put("config.loc", PropertiesConfig.DEFAULT_CONFIG_FILE);
+        props.put("config.loc", confFile);
         props.put("default", "true");
         props.put("common", "true");
         
-        this.registrations.put(PropertiesConfig.DEFAULT_CONFIG_FILE, 
-                this.context.registerService(Config.class.getName(), config, props));
+        this.registrations.put(confFile, this.context.registerService(Config.class.getName(), config, props));
     }
 
     @Override
