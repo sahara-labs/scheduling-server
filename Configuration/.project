@@ -39,6 +39,16 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>consumer.properties</name>
+			<type>1</type>
+			<location>/home/mdiponio/capstone/SchedulingServer/conf/consumer.properties</location>
+		</link>
+		<link>
+			<name>provider.properties</name>
+			<type>1</type>
+			<location>/home/mdiponio/capstone/SchedulingServer/conf/provider.properties</location>
+		</link>
+		<link>
 			<name>schedulingserver.properties</name>
 			<type>1</type>
 			<location>/home/mdiponio/workspace/SchedServer/conf/schedulingserver.properties</location>
