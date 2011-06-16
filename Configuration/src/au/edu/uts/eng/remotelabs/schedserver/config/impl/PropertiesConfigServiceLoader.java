@@ -50,9 +50,17 @@ import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 
 /**
  * Loads {@link PropertiesConfig} configuration classes.
+ * <br />
+ * The default configuration is either specified by the system property 
+ * <tt>config.file</tt> or if that is not specified, the directory
+ * '<tt>conf/schedulingserver.properties</tt>' relative to the current working 
+ * directory is used.
  */
 public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
 {
+    /** Location of default properties file. */
+    public static final String DEFAULT_CONFIG_FILE = "conf/schedulingserver.properties";
+    
     /** Bundle context. */
     private  final BundleContext context;
 
@@ -103,7 +111,8 @@ public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
     public void loadDefault()
     {
         final Config config = new PropertiesConfig();
-        this.loadedConfig.put(PropertiesConfig.DEFAULT_CONFIG_FILE, config);
+        
+        this.loadedConfig.put(System.getProperty("config.file", PropertiesConfig.DEFAULT_CONFIG_FILE), config);
         System.err.println("Loaded " + config.getConfigurationInfomation() + ".");
         
         final Dictionary<String, String> props = new Hashtable<String, String>();
