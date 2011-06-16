@@ -50,9 +50,17 @@ import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 
 /**
  * Loads {@link PropertiesConfig} configuration classes.
+ * <br />
+ * The default configuration is either specified by the system property 
+ * <tt>config.file</tt> or if that is not specified, the directory
+ * '<tt>conf/schedulingserver.properties</tt>' relative to the current working 
+ * directory is used.
  */
 public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
 {
+    /** Location of default properties file. */
+    public static final String DEFAULT_CONFIG_FILE = "conf/schedulingserver.properties";
+    
     /** Bundle context. */
     private  final BundleContext context;
 
@@ -102,17 +110,21 @@ public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
     @Override
     public void loadDefault()
     {
-        final Config config = new PropertiesConfig();
-        this.loadedConfig.put(PropertiesConfig.DEFAULT_CONFIG_FILE, config);
+        /* Determine the location of the configuration file. */
+        String confFile = System.getProperty("config.file", DEFAULT_CONFIG_FILE);
+        
+        /* Load up the default configuration. */
+        final Config config = new PropertiesConfig(confFile);
+        this.loadedConfig.put(confFile, config);
         System.err.println("Loaded " + config.getConfigurationInfomation() + ".");
         
+        /* Register the configuration service. */
         final Dictionary<String, String> props = new Hashtable<String, String>();
-        props.put("config.loc", PropertiesConfig.DEFAULT_CONFIG_FILE);
+        props.put("config.loc", confFile);
         props.put("default", "true");
         props.put("common", "true");
         
-        this.registrations.put(PropertiesConfig.DEFAULT_CONFIG_FILE, 
-                this.context.registerService(Config.class.getName(), config, props));
+        this.registrations.put(confFile, this.context.registerService(Config.class.getName(), config, props));
     }
 
     @Override

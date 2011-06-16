@@ -53,9 +53,6 @@ import au.edu.uts.eng.remotelabs.schedserver.config.Config;
  */
 public class PropertiesConfig implements Config
 {
-    /** Location of default properties file. */
-    public static final String DEFAULT_CONFIG_FILE = "conf/schedulingserver.properties";
-
     /** Java Properties class. */
     private Properties prop;
     
@@ -64,15 +61,6 @@ public class PropertiesConfig implements Config
     
     /** Loaded configuration file. */
     private String configFile;
-
-    /**
-     * Loads configuration from the <code>config/schedulingserver.properties</code>
-     * file.
-     */
-    public PropertiesConfig()
-    {
-        this(PropertiesConfig.DEFAULT_CONFIG_FILE);
-    }
     
     /**
      * Loads configuration from the <code>filename</code> parameter.
