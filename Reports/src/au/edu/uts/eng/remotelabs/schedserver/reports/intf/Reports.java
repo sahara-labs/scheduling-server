@@ -697,7 +697,7 @@ public class Reports implements ReportsSkeletonInterface
 
                     reportType.setUserClass(query0.getQueryLike());
 
-                    /* Can have sessions with no rig assignment so check */
+                    /* Can have sessions with no rig id due to no assignment or deleted Rig ID*/
                     if (o.getRig() != null)
                     {
                         reportType.setRigName(o.getAssignedRigName());
@@ -705,8 +705,15 @@ public class Reports implements ReportsSkeletonInterface
                     }
                     else
                     {
-                        reportType.setRigName("Not Assigned");
-                        reportType.setRigType("Not Assigned");
+                        if(o.getAssignedRigName() != null)
+                        {
+                            reportType.setRigName(o.getAssignedRigName());
+                        }
+                        else
+                        {
+                            reportType.setRigName("Not Assigned");
+                            reportType.setRigType("Not Assigned");
+                        }
                     }
                     
                     Calendar cal = Calendar.getInstance();
@@ -856,7 +863,8 @@ public class Reports implements ReportsSkeletonInterface
                     reportType.setUser(user0);
 
                     if (o.getResourcePermission()!= null) reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
-                    /* Can have sessions with no rig assignment so check */
+
+                    /* Can have sessions with no rig id due to no assignment or deleted Rig ID*/
                     if (o.getRig() != null)
                     {
                         reportType.setRigName(o.getAssignedRigName());
@@ -864,8 +872,15 @@ public class Reports implements ReportsSkeletonInterface
                     }
                     else
                     {
-                        reportType.setRigName("Not Assigned");
-                        reportType.setRigType("Not Assigned");
+                        if(o.getAssignedRigName() != null)
+                        {
+                            reportType.setRigName(o.getAssignedRigName());
+                        }
+                        else
+                        {
+                            reportType.setRigName("Not Assigned");
+                            reportType.setRigType("Not Assigned");
+                        }
                     }
                         
                     Calendar cal = Calendar.getInstance();
