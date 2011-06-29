@@ -80,7 +80,7 @@ public class TaskSchedulerActivator implements BundleActivator
 		context.addServiceListener(this.listener, filter);
 		
 		/* Fire pseudo events for each of the previously registered tasks. */
-		ServiceReference refs[] = context.getServiceReferences(null, filter);
+		ServiceReference refs[] = context.getServiceReferences((String)null, filter);
 		if (refs != null)
 		{
     		for (ServiceReference ref : refs)
