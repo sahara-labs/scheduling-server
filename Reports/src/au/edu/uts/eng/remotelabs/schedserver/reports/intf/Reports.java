@@ -67,8 +67,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.reports.impl.SessionStatistics;
 import au.edu.uts.eng.remotelabs.schedserver.reports.impl.UserComparator;
-import au.edu.uts.eng.remotelabs.schedserver.reports.impl.UserRecord;
+import au.edu.uts.eng.remotelabs.schedserver.reports.impl.SessionStatistics;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryFilterType;
@@ -90,7 +91,7 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.UserNSNameSequence;
 
 /**
- *  TODO - put in description
+ *  Reports service.
  */
 public class Reports implements ReportsSkeletonInterface
 {
@@ -1035,9 +1036,9 @@ public class Reports implements ReportsSkeletonInterface
                 }
                 
                 Long idCount = new Long(-1);
-                final SortedMap<User,UserRecord> recordMap = new TreeMap<User,UserRecord>(new UserComparator());
+                final SortedMap<User, SessionStatistics> recordMap = new TreeMap<User,SessionStatistics>(new UserComparator());
                 /* Contains list of users without user_id in session.  Indexed with namespace:name */
-                final Map<String,UserRecord> userMap = new HashMap<String,UserRecord>();
+                final Map<String,SessionStatistics> userMap = new HashMap<String,SessionStatistics>();
                 
                 final List<Session> list = cri.list();
                 for (final Session o : list)
@@ -1057,7 +1058,7 @@ public class Reports implements ReportsSkeletonInterface
                         }
                         else
                         {
-                            final UserRecord userRec = new UserRecord();
+                            final SessionStatistics userRec = new SessionStatistics();
                             userRec.addRecord(o);
                             recordMap.put(u, userRec);
                         }
@@ -1078,7 +1079,7 @@ public class Reports implements ReportsSkeletonInterface
                             u.setId(idCount);
                             idCount--;
 
-                            final UserRecord userRec = new UserRecord();
+                            final SessionStatistics userRec = new SessionStatistics();
                             userRec.addRecord(o);
                             recordMap.put(u, userRec);
                             userMap.put(nameIndex, userRec);
@@ -1112,10 +1113,10 @@ public class Reports implements ReportsSkeletonInterface
                  * -- 1d. Iterate through user records and calculate report data --
                  * ---------------------------------------------------------------- */
 
-                for (final Entry<User,UserRecord> e : recordMap.entrySet())
+                for (final Entry<User,SessionStatistics> e : recordMap.entrySet())
                 {
                     recordCount++;
-                    totalSessionCount += e.getValue().userRecordCount;
+                    totalSessionCount += e.getValue().getSessionCount();
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1144,7 +1145,7 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
-                        reportType.setSessionCount(e.getValue().userRecordCount);
+                        reportType.setSessionCount(e.getValue().getSessionCount());
                         
                         respType.addSessionReport(reportType);
                     }
@@ -1194,9 +1195,9 @@ public class Reports implements ReportsSkeletonInterface
                 
                 Long idCount = new Long(-1);
 
-                final SortedMap<User,UserRecord> recordMap = new TreeMap<User,UserRecord>(new UserComparator());
+                final SortedMap<User,SessionStatistics> recordMap = new TreeMap<User,SessionStatistics>(new UserComparator());
                 /* Contains list of users without user_id in session.  Indexed with namespace:name */
-                final Map<String,UserRecord> userMap = new HashMap<String,UserRecord>();
+                final Map<String,SessionStatistics> userMap = new HashMap<String,SessionStatistics>();
 
                 final List<Session> list = cri.list();
                 for (final Session o : list)
@@ -1216,7 +1217,7 @@ public class Reports implements ReportsSkeletonInterface
                         }
                         else
                         {
-                            final UserRecord userRec = new UserRecord();
+                            final SessionStatistics userRec = new SessionStatistics();
                             userRec.addRecord(o);
                             recordMap.put(u, userRec);
                         }
@@ -1237,7 +1238,7 @@ public class Reports implements ReportsSkeletonInterface
                             u.setId(idCount);
                             idCount--;
 
-                            final UserRecord userRec = new UserRecord();
+                            final SessionStatistics userRec = new SessionStatistics();
                             userRec.addRecord(o);
                             recordMap.put(u, userRec);
                             userMap.put(nameIndex, userRec);
@@ -1269,10 +1270,10 @@ public class Reports implements ReportsSkeletonInterface
                  * -- 2d. Iterate through user records and calculate report data --
                  * ---------------------------------------------------------------- */
 
-                for (final Entry<User,UserRecord> e : recordMap.entrySet())
+                for (final Entry<User,SessionStatistics> e : recordMap.entrySet())
                 {
                     recordCount++;
-                    totalSessionCount += e.getValue().userRecordCount;
+                    totalSessionCount += e.getValue().getSessionCount();
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1301,7 +1302,7 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
-                        reportType.setSessionCount(e.getValue().userRecordCount);
+                        reportType.setSessionCount(e.getValue().getSessionCount());
 
                         respType.addSessionReport(reportType);
                     }
@@ -1385,7 +1386,7 @@ public class Reports implements ReportsSkeletonInterface
                 //Query Filter to be used for multiple selections in later versions of reporting. 
                 //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
                 
-                final SortedMap<User,UserRecord> recordMap = new TreeMap<User,UserRecord>(new UserComparator());
+                final SortedMap<User,SessionStatistics> recordMap = new TreeMap<User,SessionStatistics>(new UserComparator());
 
                 final List<Session> list = cri.list();
                 for (final Session o : list)
@@ -1405,7 +1406,7 @@ public class Reports implements ReportsSkeletonInterface
                         }
                         else
                         {
-                            final UserRecord userRec = new UserRecord();
+                            final SessionStatistics userRec = new SessionStatistics();
                             userRec.addRecord(o);
                             recordMap.put(u, userRec);
                         }
@@ -1436,10 +1437,10 @@ public class Reports implements ReportsSkeletonInterface
                  * -- 3d. Iterate through user records and calculate report data --
                  * ---------------------------------------------------------------- */
 
-                for (final Entry<User,UserRecord> e : recordMap.entrySet())
+                for (final Entry<User,SessionStatistics> e : recordMap.entrySet())
                 {
                     recordCount++;
-                    totalSessionCount += e.getValue().userRecordCount;
+                    totalSessionCount += e.getValue().getSessionCount();
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1468,7 +1469,7 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
-                        reportType.setSessionCount(e.getValue().userRecordCount);
+                        reportType.setSessionCount(e.getValue().getSessionCount());
 
                         respType.addSessionReport(reportType);
                     }
@@ -1568,7 +1569,7 @@ public class Reports implements ReportsSkeletonInterface
                 //Query Filter to be used for multiple selections in later versions of reporting. 
                 //QueryFilterType queryFilters[] = qSAReq.getQueryConstraints();
                 
-                final SortedMap<User,UserRecord> recordMap = new TreeMap<User,UserRecord>(new UserComparator());
+                final SortedMap<User,SessionStatistics> recordMap = new TreeMap<User,SessionStatistics>(new UserComparator());
 
                 final List<Session> list = cri.list();
                 for (final Session o : list)
@@ -1585,7 +1586,7 @@ public class Reports implements ReportsSkeletonInterface
                     }
                     else
                     {
-                        final UserRecord userRec = new UserRecord();
+                        final SessionStatistics userRec = new SessionStatistics();
                         userRec.addRecord(o);
                         recordMap.put(u, userRec);
                     }
@@ -1615,10 +1616,10 @@ public class Reports implements ReportsSkeletonInterface
                  * -- 4d. Iterate through user records and calculate report data --
                  * ---------------------------------------------------------------- */
 
-                for (final Entry<User,UserRecord> e : recordMap.entrySet())
+                for (final Entry<User,SessionStatistics> e : recordMap.entrySet())
                 {
                     recordCount++;
-                    totalSessionCount += e.getValue().userRecordCount;
+                    totalSessionCount += e.getValue().getSessionCount();
                     totalQueueDuration += e.getValue().getTotalQueueDuration();
                     totalSessionDuration += e.getValue().getTotalSessionDuration();
                     if ((recordCount > (pageNumber-1)*pageLength) && (recordCount <= pageNumber*pageLength))
@@ -1647,7 +1648,7 @@ public class Reports implements ReportsSkeletonInterface
                         reportType.setMaxSessionDuration(e.getValue().getMaximumSessionDuration());
                         reportType.setTotalSessionDuration(e.getValue().getTotalSessionDuration());
                         
-                        reportType.setSessionCount(e.getValue().userRecordCount);
+                        reportType.setSessionCount(e.getValue().getSessionCount());
 
                         respType.addSessionReport(reportType);
                     }

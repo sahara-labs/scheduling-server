@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Tania Machet (tmachet)
- * @date 13 December 2010
+ * @date 29th November 2010
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.reports;
@@ -50,27 +50,30 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class ReportsActivator implements BundleActivator 
 {
     /** Service registration for the Reports SOAP interface. */
-    private ServiceRegistration soapReg;
+    private ServiceRegistration<ServletContainerService> soapReg;
     
     /** Logger. */
     private Logger logger;
-    
+
     @Override
 	public void start(final BundleContext context) throws Exception 
 	{
         this.logger = LoggerActivator.getLogger();
-	    this.logger.debug("Reports Activator start");
+	    this.logger.info("Starting the Reports bundle...");
 	    
         /* Register the reports service. */
         this.logger.debug("Registering the Reports SOAP interface service.");
         final ServletContainerService soapService = new ServletContainerService();
         soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-        this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
+        this.soapReg = context.registerService(ServletContainerService.class, soapService, null);
+
 	}
 
     @Override
 	public void stop(final BundleContext context) throws Exception 
 	{
+        this.logger.info("Stopping the Reports bundle...");
+	    
         this.logger.info("Shutting down the Reports bundle.");
         this.soapReg.unregister();
 	}
