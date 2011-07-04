@@ -38,6 +38,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.rigoperations;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.osgi.framework.BundleActivator;
@@ -59,7 +60,7 @@ public class RigOperationsActivator implements BundleActivator
     /** Rig event listeners list. */
     private static List<RigEventListener> listenerList;
     
-    /** Loger. */
+    /** Logger. */
     private Logger logger;
     
     @Override
@@ -74,13 +75,11 @@ public class RigOperationsActivator implements BundleActivator
         context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         
         /* Fire pseudo events for all registered services. */
-        ServiceReference refs[] = context.getServiceReferences(RigEventListener.class.getName(), null);
-        if (refs != null)
+        Collection<ServiceReference<RigEventListener>> refs = context.getServiceReferences(RigEventListener.class, null);
+        
+        for (ServiceReference<RigEventListener> ref : refs)
         {
-            for (ServiceReference ref : refs)
-            {
                 listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-            }
         }
 	}
 

@@ -41,7 +41,7 @@
 		<link>
 			<name>schedulingserver.properties</name>
 			<type>1</type>
-			<location>/home/mdiponio/workspace/SchedServer/conf/schedulingserver.properties</location>
+			<location>/home/mdiponio/workspace/SchedulingServer/conf/schedulingserver.properties</location>
 		</link>
 	</linkedResources>
 </projectDescription>

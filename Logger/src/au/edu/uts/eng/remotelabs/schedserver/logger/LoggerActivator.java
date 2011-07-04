@@ -73,13 +73,13 @@ public class LoggerActivator implements BundleActivator
     private static final Dictionary<String, String> loggerProperties = new Hashtable<String, String>();
     
     /** Configuration confService tracker. */
-    private ServiceTracker confService;
+    private ServiceTracker<Config, Config> confService;
     
     /** Logger object. */
     private static Logger logger = null;
     
     /** Logger confService registration. */
-    private ServiceRegistration reg;
+    private ServiceRegistration<Logger> reg;
     
     /** Config object */
     private static Config conf;
@@ -105,7 +105,7 @@ public class LoggerActivator implements BundleActivator
     @Override
     public void start(final BundleContext context) throws Exception
     {
-        ServiceReference ref = context.getServiceReference(Config.class.getName());
+        ServiceReference<Config> ref = context.getServiceReference(Config.class);
         
         if (ref == null)
         {
@@ -119,15 +119,15 @@ public class LoggerActivator implements BundleActivator
                     b.start();
                 }
             }
-            ref = context.getServiceReference(Config.class.getName());
+            ref = context.getServiceReference(Config.class);
         }
         
         if (ref != null)
         {
             /* Load all configuration properties. */
-            this.confService = new ServiceTracker(context, ref, null);
+            this.confService = new ServiceTracker<Config, Config>(context, ref, null);
             this.confService.open();
-            conf = (Config)this.confService.getService();
+            conf = this.confService.getService();
             
             /* Common configuration. */
             LoggerActivator.loggerProperties.put("Logger_Type", conf.getProperty("Logger_Type", "File"));
@@ -172,8 +172,7 @@ public class LoggerActivator implements BundleActivator
         }
         
         /* Register a logger confService. */        
-        this.reg  = context.registerService(Logger.class.getName(), LoggerActivator.logger, 
-                LoggerActivator.loggerProperties);        
+        this.reg  = context.registerService(Logger.class, LoggerActivator.logger, LoggerActivator.loggerProperties);        
     }
 
     @Override

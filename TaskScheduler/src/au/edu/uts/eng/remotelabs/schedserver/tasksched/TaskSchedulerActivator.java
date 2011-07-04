@@ -36,6 +36,8 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.tasksched;
 
+import java.util.Collection;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -80,22 +82,17 @@ public class TaskSchedulerActivator implements BundleActivator
 		context.addServiceListener(this.listener, filter);
 		
 		/* Fire pseudo events for each of the previously registered tasks. */
-		ServiceReference refs[] = context.getServiceReferences((String)null, filter);
-		if (refs != null)
+		Collection<ServiceReference<Runnable>> refs = context.getServiceReferences(Runnable.class, filter);
+		for (ServiceReference<Runnable> ref : refs)
 		{
-    		for (ServiceReference ref : refs)
-    		{
-    		    this.listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-    		}
+		    this.listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
 		}
 	}
 	
-
 	@Override
 	public void stop(BundleContext context) throws Exception
 	{
 		context.removeServiceListener(this.listener);
 		this.scheduler.shutdown();
 	}
-
 }

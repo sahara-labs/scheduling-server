@@ -72,7 +72,8 @@ public class RigEventServiceListener implements ServiceListener
     @Override
     public void serviceChanged(ServiceEvent evt)
     {
-        ServiceReference ref = evt.getServiceReference();
+        @SuppressWarnings("unchecked")
+        ServiceReference<RigEventListener> ref = (ServiceReference<RigEventListener>)evt.getServiceReference();
         switch (evt.getType())
         {
             case ServiceEvent.REGISTERED:
@@ -80,7 +81,7 @@ public class RigEventServiceListener implements ServiceListener
                 		"rig operations.");
                 synchronized (this.listenerList)
                 {
-                    this.listenerList.add((RigEventListener)this.context.getService(ref));
+                    this.listenerList.add(this.context.getService(ref));
                 }
                 break;
             case ServiceEvent.UNREGISTERING:

@@ -36,8 +36,9 @@
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.hibernate.Hibernate;
@@ -68,22 +69,22 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class RigProviderActivator implements BundleActivator
 {
     /** Servlet container service registration. */
-    private ServiceRegistration serverReg;
+    private ServiceRegistration<ServletContainerService> serverReg;
 
     /** Identity token service registration. */
-    private ServiceRegistration idenTokReg;
+    private ServiceRegistration<IdentityToken> idenTokReg;
     
     /** Rig status message timeout checker. */
     private StatusTimeoutChecker tmChecker;
     
     /** Runnable status timeout checker service registration. */
-    private ServiceRegistration runnableReg;
+    private ServiceRegistration<Runnable> runnableReg;
     
     /** Rig event listeners list. */
     private static List<RigEventListener> listenerList;
     
     /** Configuration service tracker. */
-    private static ServiceTracker configTracker;
+    private static ServiceTracker<Config, Config> configTracker;
     
     /** Logger. */
     private Logger logger;
@@ -94,25 +95,24 @@ public class RigProviderActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
         
-        RigProviderActivator.configTracker = new ServiceTracker(context, Config.class.getName(), null);
+        RigProviderActivator.configTracker = new ServiceTracker<Config, Config>(context, Config.class, null);
         RigProviderActivator.configTracker.open();
         
         /* Service to allow other bundles to obtain identity tokens for rigs. */
-        Properties props = new Properties();
+        Dictionary<String, String> props = new Hashtable<String, String>();
         props.put("provider", "local");
-        this.idenTokReg = context.registerService(IdentityToken.class.getName(), 
-                IdentityTokenRegister.getInstance(), props);
+        this.idenTokReg = context.registerService(IdentityToken.class, IdentityTokenRegister.getInstance(), props);
         
         /* Service to run the status timeout checker every 30 seconds. */
         this.tmChecker = new StatusTimeoutChecker();
-        props = new Properties();
+        props = new Hashtable<String, String>();
         props.put("period", "30");
-        this.runnableReg = context.registerService(Runnable.class.getName(), this.tmChecker, props);
+        this.runnableReg = context.registerService(Runnable.class, this.tmChecker, props);
         
         /* Service to host the local rig provider interface. */
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new AxisServlet(), true));
-        this.serverReg = context.registerService(ServletContainerService.class.getName(), service, null);
+        this.serverReg = context.registerService(ServletContainerService.class, service, null);
         
         /* Add service listener to add and remove registered rig event listeners. */
         RigProviderActivator.listenerList = new ArrayList<RigEventListener>();
@@ -120,13 +120,9 @@ public class RigProviderActivator implements BundleActivator
         context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         
         /* Fire pseudo events for all registered services. */
-        ServiceReference refs[] = context.getServiceReferences(RigEventListener.class.getName(), null);
-        if (refs != null)
+        for (ServiceReference<RigEventListener> ref : context.getServiceReferences(RigEventListener.class, null))
         {
-            for (ServiceReference ref : refs)
-            {
-                listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-            }
+            listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
     }
 
@@ -180,7 +176,7 @@ public class RigProviderActivator implements BundleActivator
             return def;
         }
         
-        Config config = (Config)RigProviderActivator.configTracker.getService();
+        Config config = RigProviderActivator.configTracker.getService();
         if (config == null)
         {
             return def;

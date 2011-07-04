@@ -65,8 +65,8 @@ public class DataAccessConfiguration
         this.logger = LoggerActivator.getLogger();
         this.props = new Properties();
         
-        ServiceReference ref = context.getServiceReference(Config.class.getName());
-        this.config = (Config)context.getService(ref);
+        ServiceReference<Config> ref = context.getServiceReference(Config.class);
+        this.config = context.getService(ref);
     }
     
     /**

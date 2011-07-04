@@ -53,7 +53,7 @@ public class ConfigActivator implements BundleActivator
     private ConfigServiceLoaderImpl loader;
     
     /** Loader service registration. */
-    private ServiceRegistration registration;
+    private ServiceRegistration<ConfigServiceLoader> registration;
     
     @Override
 	public void start(final BundleContext context) throws Exception 
@@ -61,7 +61,7 @@ public class ConfigActivator implements BundleActivator
 	    this.loader = new PropertiesConfigServiceLoader(context);
 	    this.loader.loadDefault();
 	    
-	    this.registration = context.registerService(ConfigServiceLoader.class.getName(), this.loader, null);
+	    this.registration = context.registerService(ConfigServiceLoader.class, this.loader, null);
 	}
     
     @Override

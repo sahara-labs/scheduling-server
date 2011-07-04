@@ -55,7 +55,7 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class PermissionActivator implements BundleActivator 
 {
     /** Service registration for the Permission SOAP interface. */
-    private ServiceRegistration soapRegistration;
+    private ServiceRegistration<ServletContainerService> soapRegistration;
     
     /** Logger. */
     private Logger logger;
@@ -70,7 +70,7 @@ public class PermissionActivator implements BundleActivator
 	    this.logger.debug("Registering the Permissions SOAP interface service.");
 	    ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapRegistration = context.registerService(ServletContainerService.class.getName(), soapService, null);
+	    this.soapRegistration = context.registerService(ServletContainerService.class, soapService, null);
 	}
 
     @Override

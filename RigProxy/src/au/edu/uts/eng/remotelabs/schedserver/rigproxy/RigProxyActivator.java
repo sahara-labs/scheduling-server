@@ -57,7 +57,7 @@ public class RigProxyActivator implements BundleActivator
     public static final int DEFAULT_ASYNC_TIMEOUT = 60;
     
     /** Identity token register. */
-    private static ServiceTracker idenTokTracker;
+    private static ServiceTracker<IdentityToken, IdentityToken> idenTokTracker;
     
     /** The timeout in seconds for the response to be recieved from a SOAP
      *  operation. */
@@ -72,11 +72,12 @@ public class RigProxyActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Rig client proxy bundle starting up...");
         
-        RigProxyActivator.idenTokTracker = new ServiceTracker(context, IdentityToken.class.getName(), null);
+        RigProxyActivator.idenTokTracker = 
+                new ServiceTracker<IdentityToken, IdentityToken>(context, IdentityToken.class, null);
         RigProxyActivator.idenTokTracker.open();        
         
         /* Load the service timeout. */
-	    ServiceReference confRef = context.getServiceReference(Config.class.getName());
+	    ServiceReference<Config> confRef = context.getServiceReference(Config.class);
 	    if (confRef == null)
 	    {
 	        RigProxyActivator.timeout = RigProxyActivator.DEFAULT_ASYNC_TIMEOUT;
@@ -85,7 +86,7 @@ public class RigProxyActivator implements BundleActivator
 	        return;
 	    }
 	    
-	    Config conf = (Config) context.getService(confRef);
+	    Config conf = context.getService(confRef);
 	    if (conf == null)
 	    {
 	        RigProxyActivator.timeout = RigProxyActivator.DEFAULT_ASYNC_TIMEOUT;
@@ -127,7 +128,7 @@ public class RigProxyActivator implements BundleActivator
 	 */
 	public static IdentityToken getIdentityTokenRegister()
 	{
-	    return (IdentityToken) RigProxyActivator.idenTokTracker.getService();
+	    return RigProxyActivator.idenTokTracker.getService();
 	}
 	
 	/**
