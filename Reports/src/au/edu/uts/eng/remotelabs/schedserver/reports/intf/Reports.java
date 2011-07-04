@@ -34,6 +34,7 @@
  * @author Tania Machet (tmachet)
  * @date 13 December 2010
  */
+
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 
 import java.util.Calendar;
@@ -41,9 +42,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
@@ -69,7 +70,6 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.reports.impl.SessionStatistics;
 import au.edu.uts.eng.remotelabs.schedserver.reports.impl.UserComparator;
-import au.edu.uts.eng.remotelabs.schedserver.reports.impl.SessionStatistics;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType;
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryFilterType;
