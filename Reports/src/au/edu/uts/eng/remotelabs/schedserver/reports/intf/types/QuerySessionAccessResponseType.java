@@ -1,16 +1,68 @@
 /**
- * QuerySessionAccessResponseType.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:25:17 EDT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Tania Machet (tmachet)
+ * @date 13 December 2010
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
-/**
- * QuerySessionAccessResponseType bean class
- */
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class QuerySessionAccessResponseType implements org.apache.axis2.databinding.ADBBean
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
+/**
+ * QuerySessionAccessResponseType bean class.
+ */
+public class QuerySessionAccessResponseType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
@@ -19,199 +71,103 @@ public class QuerySessionAccessResponseType implements org.apache.axis2.databind
      * Namespace Prefix = ns1
      */
 
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = 429396383072800544L;
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    private static String generatePrefix(final String namespace)
     {
         if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/reports"))
         {
             return "ns1";
         }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return BeanUtil.getUniquePrefix();
     }
 
-    /**
-     * field for Pagination
-     */
+    protected PaginationType pagination;
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType localPagination;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType
-     */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType getPagination()
+    public PaginationType getPagination()
     {
-        return this.localPagination;
+        return this.pagination;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            Pagination
-     */
-    public void setPagination(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType param)
+    public void setPagination(final PaginationType param)
     {
-
-        this.localPagination = param;
-
+        this.pagination = param;
     }
 
-    /**
-     * field for AccessReportData
-     * This was an Array!
-     */
+    protected AccessReportType[] accessReportData;
+    protected boolean accessReportDataTracker = false;
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] localAccessReportData;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localAccessReportDataTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[]
-     */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] getAccessReportData()
+    public AccessReportType[] getAccessReportData()
     {
-        return this.localAccessReportData;
+        return this.accessReportData;
     }
 
-    /**
-     * validate the array for AccessReportData
-     */
-    protected void validateAccessReportData(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] param)
+    public void setAccessReportData(final AccessReportType[] param)
     {
-
+        this.accessReportData = param;
+        this.accessReportDataTracker = param != null;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            AccessReportData
-     */
-    public void setAccessReportData(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] param)
+    public void addAccessReportData(final AccessReportType param)
     {
-
-        this.validateAccessReportData(param);
-
-        if (param != null)
+        if (this.accessReportData == null)
         {
-            //update the setting tracker
-            this.localAccessReportDataTracker = true;
-        }
-        else
-        {
-            this.localAccessReportDataTracker = false;
-
+            this.accessReportData = new AccessReportType[] {};
         }
 
-        this.localAccessReportData = param;
-    }
+        this.accessReportDataTracker = true;
 
-    /**
-     * Auto generated add method for the array for convenience
-     * 
-     * @param param
-     *            au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType
-     */
-    public void addAccessReportData(
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType param)
-    {
-        if (this.localAccessReportData == null)
-        {
-            this.localAccessReportData = new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[] {};
-        }
-
-        //update the setting tracker
-        this.localAccessReportDataTracker = true;
-
-        final java.util.List list = org.apache.axis2.databinding.utils.ConverterUtil.toList(this.localAccessReportData);
+        @SuppressWarnings("unchecked")
+        final List<AccessReportType> list = ConverterUtil.toList(this.accessReportData);
         list.add(param);
-        this.localAccessReportData = (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[]) list
-                .toArray(new au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[list.size()]);
-
+        this.accessReportData = list.toArray(new AccessReportType[list.size()]);
     }
 
-    /**
-     * isReaderMTOMAware
-     * 
-     * @return true if the reader supports MTOM
-     */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
 
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
-
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 QuerySessionAccessResponseType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
-
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
-
-        java.lang.String prefix = null;
-        java.lang.String namespace = null;
-
-        prefix = parentQName.getPrefix();
-        namespace = parentQName.getNamespaceURI();
+        String prefix = parentQName.getPrefix();
+        String namespace = parentQName.getNamespaceURI();
 
         if ((namespace != null) && (namespace.trim().length() > 0))
         {
-            final java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
+            final String writerPrefix = xmlWriter.getPrefix(namespace);
             if (writerPrefix != null)
             {
                 xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
@@ -235,8 +191,7 @@ public class QuerySessionAccessResponseType implements org.apache.axis2.databind
 
         if (serializeType)
         {
-
-            final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+            final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/reports");
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
@@ -248,69 +203,50 @@ public class QuerySessionAccessResponseType implements org.apache.axis2.databind
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
                         "QuerySessionAccessResponseType", xmlWriter);
             }
-
         }
 
-        if (this.localPagination == null)
+        if (this.pagination == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
+            throw new ADBException("pagination cannot be null!!");
         }
-        this.localPagination.serialize(new javax.xml.namespace.QName("", "pagination"), factory, xmlWriter);
-        if (this.localAccessReportDataTracker)
+        this.pagination.serialize(new QName("", "pagination"), factory, xmlWriter);
+        
+        if (this.accessReportDataTracker)
         {
-            if (this.localAccessReportData != null)
+            if (this.accessReportData != null)
             {
-                for (final AccessReportType element : this.localAccessReportData)
+                for (final AccessReportType element : this.accessReportData)
                 {
                     if (element != null)
                     {
-                        element.serialize(new javax.xml.namespace.QName("", "accessReportData"), factory, xmlWriter);
+                        element.serialize(new QName("", "accessReportData"), factory, xmlWriter);
                     }
-                    else
-                    {
-
-                        // we don't have to do any thing since minOccures is zero
-
-                    }
-
                 }
             }
             else
             {
-
-                throw new org.apache.axis2.databinding.ADBException("accessReportData cannot be null!!");
-
+                throw new ADBException("accessReportData cannot be null!!");
             }
         }
+        
         xmlWriter.writeEndElement();
-
     }
 
-    /**
-     * Util method to write an attribute with the ns prefix
-     */
-    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
-            final java.lang.String attName, final java.lang.String attValue,
-            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
-
         }
 
         xmlWriter.writeAttribute(namespace, attName, attValue);
-
     }
 
-    /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
+        String prefix = xmlWriter.getPrefix(namespace);
 
         if (prefix == null)
         {
@@ -318,7 +254,7 @@ public class QuerySessionAccessResponseType implements org.apache.axis2.databind
 
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+                prefix = BeanUtil.getUniquePrefix();
             }
 
             xmlWriter.writeNamespace(prefix, namespace);
@@ -328,227 +264,150 @@ public class QuerySessionAccessResponseType implements org.apache.axis2.databind
         return prefix;
     }
 
-    /**
-     * databinding method to get an XML representation of this object
-     */
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
+    @Override
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
 
-        final java.util.ArrayList elementList = new java.util.ArrayList();
-        final java.util.ArrayList attribList = new java.util.ArrayList();
+        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        elementList.add(new javax.xml.namespace.QName("", "pagination"));
-
-        if (this.localPagination == null)
+        elementList.add(new QName("", "pagination"));
+        if (this.pagination == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("pagination cannot be null!!");
+            throw new ADBException("pagination cannot be null!!");
         }
-        elementList.add(this.localPagination);
-        if (this.localAccessReportDataTracker)
+        elementList.add(this.pagination);
+        
+        if (this.accessReportDataTracker)
         {
-            if (this.localAccessReportData != null)
+            if (this.accessReportData != null)
             {
-                for (final AccessReportType element : this.localAccessReportData)
+                for (final AccessReportType element : this.accessReportData)
                 {
-
                     if (element != null)
                     {
-                        elementList.add(new javax.xml.namespace.QName("", "accessReportData"));
+                        elementList.add(new QName("", "accessReportData"));
                         elementList.add(element);
                     }
-                    else
-                    {
-
-                        // nothing to do
-
-                    }
-
                 }
             }
             else
             {
-
-                throw new org.apache.axis2.databinding.ADBException("accessReportData cannot be null!!");
-
+                throw new ADBException("accessReportData cannot be null!!");
             }
-
         }
 
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
-                attribList.toArray());
+        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
 
     }
 
-    /**
-     * Factory class that keeps the parse method
-     */
     public static class Factory
     {
-
-        /**
-         * static method to create the object
-         * Precondition: If this object is an element, the current or next start element starts this object and any
-         * intervening reader events are ignorable
-         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
-         * start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element
-         * If this object is a complex type, the reader is positioned at the end element of its outer element
-         */
-        public static QuerySessionAccessResponseType parse(final javax.xml.stream.XMLStreamReader reader)
-                throws java.lang.Exception
+        public static QuerySessionAccessResponseType parse(final XMLStreamReader reader) throws Exception
         {
             final QuerySessionAccessResponseType object = new QuerySessionAccessResponseType();
-
             try
             {
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
-                    final java.lang.String fullTypeName = reader.getAttributeValue(
-                            "http://www.w3.org/2001/XMLSchema-instance", "type");
+                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
+                            "type");
                     if (fullTypeName != null)
                     {
-                        java.lang.String nsPrefix = null;
+                        String nsPrefix = null;
                         if (fullTypeName.indexOf(":") > -1)
                         {
                             nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
                         }
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-                        final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
-
+                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
                         if (!"QuerySessionAccessResponseType".equals(type))
                         {
-                            //find namespace for the prefix
-                            final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (QuerySessionAccessResponseType) au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper
-                                    .getTypeObject(nsUri, type, reader);
+                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+                            return (QuerySessionAccessResponseType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
-
                     }
-
                 }
-
-                new java.util.Vector();
 
                 reader.next();
-
-                final java.util.ArrayList list2 = new java.util.ArrayList();
-
+                final ArrayList<AccessReportType> reportList = new ArrayList<AccessReportType>();
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
 
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "pagination").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "pagination").equals(reader.getName()))
                 {
-
-                    object
-                            .setPagination(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.PaginationType.Factory
-                                    .parse(reader));
-
+                    object.setPagination(PaginationType.Factory.parse(reader));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "accessReportData").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "accessReportData").equals(reader.getName()))
                 {
+                    reportList.add(AccessReportType.Factory.parse(reader));
 
-                    // Process the array and step past its final element's end.
-                    list2.add(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType.Factory
-                            .parse(reader));
-
-                    //loop until we find a start element that is not part of this array
-                    boolean loopDone2 = false;
-                    while (!loopDone2)
+                    boolean noMore = false;
+                    while (!noMore)
                     {
-                        // We should be at the end element, but make sure
                         while (!reader.isEndElement())
                         {
                             reader.next();
                         }
-                        // Step out of this element
+
                         reader.next();
-                        // Step to next element event.
                         while (!reader.isStartElement() && !reader.isEndElement())
                         {
                             reader.next();
                         }
+                        
                         if (reader.isEndElement())
                         {
-                            //two continuous end elements means we are exiting the xml structure
-                            loopDone2 = true;
+                            noMore = true;
                         }
                         else
                         {
-                            if (new javax.xml.namespace.QName("", "accessReportData").equals(reader.getName()))
+                            if (new QName("", "accessReportData").equals(reader.getName()))
                             {
-                                list2
-                                        .add(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType.Factory
-                                                .parse(reader));
-
+                                reportList.add(AccessReportType.Factory.parse(reader));
                             }
                             else
                             {
-                                loopDone2 = true;
+                                noMore = true;
                             }
                         }
                     }
-                    // call the converter utility  to convert and set the array
 
-                    object
-                            .setAccessReportData((au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType[]) org.apache.axis2.databinding.utils.ConverterUtil
-                                    .convertToArray(
-                                            au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.AccessReportType.class,
-                                            list2));
-
-                } // End of if for expected property start element
-
-                else
-                {
-
+                    object.setAccessReportData((AccessReportType[]) ConverterUtil.convertToArray(
+                            AccessReportType.class, reportList));
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
                 if (reader.isStartElement())
                 {
-                    // A start element we are not expecting indicates a trailing invalid property
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
-
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
 
             return object;
         }
-
-    }//end of factory class
-
+    }
 }
