@@ -44,7 +44,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMConstants;
 import org.apache.axiom.om.OMDataSource;
 import org.apache.axiom.om.OMElement;
@@ -59,18 +58,18 @@ import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
 
 /**
- * UserNSNameSequence bean class.
+ * SessionReportTypeChoice bean class.
  */
-public class UserNSNameSequence implements ADBBean
+public class SessionReportTypeChoice implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
-     * name = UserNSNameSequence
+     * name = SessionReportTypeChoice_type0
      * Namespace URI = http://remotelabs.eng.uts.edu.au/schedserver/reports
      * Namespace Prefix = ns1
      */
 
-    private static final long serialVersionUID = -4852664587693179776L;
+    private static final long serialVersionUID = 8491570126377821952L;
 
     private static String generatePrefix(final String namespace)
     {
@@ -81,32 +80,76 @@ public class UserNSNameSequence implements ADBBean
         return BeanUtil.getUniquePrefix();
     }
 
-    protected String userName;
-    protected boolean userNameTracker = false;
-
-    public String getUserName()
+    private void clearAllSettingTrackers()
     {
-        return this.userName;
+        this.userClassTracker = false;
+        this.userTracker = false;
+        this.rigTypeTracker = false;
+        this.rigNameTracker = false;
     }
 
-    public void setUserName(final String param)
+    protected String userClass;
+    protected boolean userClassTracker = false;
+
+    public String getUserClass()
     {
-        this.userName = param;
-        this.userNameTracker = param != null;
+        return this.userClass;
     }
 
-    protected String userNamespace;
-    protected boolean userNamespaceTracker = false;
-
-    public String getUserNamespace()
+    public void setUserClass(final String param)
     {
-        return this.userNamespace;
+        this.clearAllSettingTrackers();
+
+        this.userClass = param;
+        this.userClassTracker = param != null;
     }
 
-    public void setUserNamespace(final String param)
+    protected RequestorType user;
+    protected boolean userTracker = false;
+
+    public RequestorType getUser()
     {
-        this.userNamespace = param;
-        this.userNamespaceTracker = param != null;
+        return this.user;
+    }
+
+    public void setUser(final RequestorType param)
+    {
+        this.clearAllSettingTrackers();
+
+        this.user = param;
+        this.userTracker = param != null;
+    }
+
+    protected String rigType;
+    protected boolean rigTypeTracker = false;
+
+    public String getRigType()
+    {
+        return this.rigType;
+    }
+
+    public void setRigType(final String param)
+    {
+        this.clearAllSettingTrackers();
+
+        this.rigType = param;
+        this.rigTypeTracker = param != null;
+    }
+
+    protected String rigName;
+    protected boolean rigNameTracker = false;
+
+    public String getRigName()
+    {
+        return this.rigName;
+    }
+
+    public void setRigName(final String param)
+    {
+        this.clearAllSettingTrackers();
+
+        this.rigName = param;
+        this.rigNameTracker = param != null;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -130,7 +173,7 @@ public class UserNSNameSequence implements ADBBean
             @Override
             public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
-                UserNSNameSequence.this.serialize(this.parentQName, factory, xmlWriter);
+                SessionReportTypeChoice.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
         return new OMSourcedElementImpl(parentQName, factory, dataSource);
@@ -147,7 +190,6 @@ public class UserNSNameSequence implements ADBBean
     public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
             final boolean serializeType) throws XMLStreamException, ADBException
     {
-
         String prefix = null;
         String namespace = null;
 
@@ -158,52 +200,59 @@ public class UserNSNameSequence implements ADBBean
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
-                        + ":UserNSNameSequence", xmlWriter);
+                        + ":SessionReportTypeChoice_type0", xmlWriter);
             }
             else
             {
-                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "UserNSNameSequence",
-                        xmlWriter);
+                this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type",
+                        "SessionReportTypeChoice_type0", xmlWriter);
             }
         }
-        
-        if (this.userNameTracker)
+
+        if (this.userClassTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
-                    prefix = UserNSNameSequence.generatePrefix(namespace);
-
-                    xmlWriter.writeStartElement(prefix, "userName", namespace);
+                    prefix = SessionReportTypeChoice.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "userClass", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
                 }
                 else
                 {
-                    xmlWriter.writeStartElement(namespace, "userName");
+                    xmlWriter.writeStartElement(namespace, "userClass");
                 }
             }
             else
             {
-                xmlWriter.writeStartElement("userName");
+                xmlWriter.writeStartElement("userClass");
             }
 
-            if (this.userName == null)
+            if (this.userClass == null)
             {
-                throw new ADBException("userName cannot be null!!");
+                throw new ADBException("userClass cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(this.userName);
+                xmlWriter.writeCharacters(this.userClass);
             }
             xmlWriter.writeEndElement();
         }
-        
-        if (this.userNamespaceTracker)
+
+        if (this.userTracker)
+        {
+            if (this.user == null)
+            {
+                throw new ADBException("user cannot be null!!");
+            }
+            this.user.serialize(new QName("", "user"), factory, xmlWriter);
+        }
+
+        if (this.rigTypeTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -211,28 +260,62 @@ public class UserNSNameSequence implements ADBBean
                 prefix = xmlWriter.getPrefix(namespace);
                 if (prefix == null)
                 {
-                    prefix = UserNSNameSequence.generatePrefix(namespace);
-                    xmlWriter.writeStartElement(prefix, "userNamespace", namespace);
+                    prefix = SessionReportTypeChoice.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "rigType", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
                 }
                 else
                 {
-                    xmlWriter.writeStartElement(namespace, "userNamespace");
+                    xmlWriter.writeStartElement(namespace, "rigType");
                 }
             }
             else
             {
-                xmlWriter.writeStartElement("userNamespace");
+                xmlWriter.writeStartElement("rigType");
             }
 
-            if (this.userNamespace == null)
+            if (this.rigType == null)
             {
-                throw new ADBException("userNamespace cannot be null!!");
+                throw new ADBException("rigType cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(this.userNamespace);
+                xmlWriter.writeCharacters(this.rigType);
+            }
+            xmlWriter.writeEndElement();
+        }
+
+        if (this.rigNameTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = SessionReportTypeChoice.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "rigName", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "rigName");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("rigName");
+            }
+
+            if (this.rigName == null)
+            {
+                throw new ADBException("rigName cannot be null!!");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(this.rigName);
             }
 
             xmlWriter.writeEndElement();
@@ -256,14 +339,16 @@ public class UserNSNameSequence implements ADBBean
         String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
-            prefix = UserNSNameSequence.generatePrefix(namespace);
+            prefix = SessionReportTypeChoice.generatePrefix(namespace);
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
                 prefix = BeanUtil.getUniquePrefix();
             }
+
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
+
         return prefix;
     }
 
@@ -271,30 +356,53 @@ public class UserNSNameSequence implements ADBBean
     public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
         final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
-        
-        if (this.userNameTracker)
+
+        if (this.userClassTracker)
         {
-            elementList.add(new QName("", "userName"));
-            if (this.userName != null)
+            elementList.add(new QName("", "userClass"));
+            if (this.userClass != null)
             {
-                elementList.add(ConverterUtil.convertToString(this.userName));
+                elementList.add(ConverterUtil.convertToString(this.userClass));
             }
             else
             {
-                throw new ADBException("userName cannot be null!!");
+                throw new ADBException("userClass cannot be null!!");
             }
         }
-        
-        if (this.userNamespaceTracker)
+
+        if (this.userTracker)
         {
-            elementList.add(new QName("", "userNamespace"));
-            if (this.userNamespace != null)
+            elementList.add(new QName("", "user"));
+            if (this.user == null)
             {
-                elementList.add(ConverterUtil.convertToString(this.userNamespace));
+                throw new ADBException("user cannot be null!!");
+            }
+            elementList.add(this.user);
+        }
+
+        if (this.rigTypeTracker)
+        {
+            elementList.add(new QName("", "rigType"));
+            if (this.rigType != null)
+            {
+                elementList.add(ConverterUtil.convertToString(this.rigType));
             }
             else
             {
-                throw new ADBException("userNamespace cannot be null!!");
+                throw new ADBException("rigType cannot be null!!");
+            }
+        }
+
+        if (this.rigNameTracker)
+        {
+            elementList.add(new QName("", "rigName"));
+            if (this.rigName != null)
+            {
+                elementList.add(ConverterUtil.convertToString(this.rigName));
+            }
+            else
+            {
+                throw new ADBException("rigName cannot be null!!");
             }
         }
 
@@ -303,40 +411,36 @@ public class UserNSNameSequence implements ADBBean
 
     public static class Factory
     {
-        public static UserNSNameSequence parse(final XMLStreamReader reader) throws Exception
+        public static SessionReportTypeChoice parse(final XMLStreamReader reader) throws Exception
         {
-            final UserNSNameSequence object = new UserNSNameSequence();
-
+            final SessionReportTypeChoice object = new SessionReportTypeChoice();
             try
             {
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "userName").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "userClass").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setUserName(ConverterUtil.convertToString(content));
+                    object.setUserClass(ConverterUtil.convertToString(content));
                     reader.next();
                 }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
+                else if (reader.isStartElement() && new QName("", "user").equals(reader.getName()))
                 {
+                    object.setUser(RequestorType.Factory.parse(reader));
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "userNamespace").equals(reader.getName()))
+                else if (reader.isStartElement() && new QName("", "rigType").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setUserNamespace(ConverterUtil.convertToString(content));
+                    object.setRigType(ConverterUtil.convertToString(content));
                     reader.next();
                 }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
+                else if (reader.isStartElement() && new QName("", "rigName").equals(reader.getName()))
                 {
+                    final String content = reader.getElementText();
+                    object.setRigName(ConverterUtil.convertToString(content));
                     reader.next();
                 }
             }

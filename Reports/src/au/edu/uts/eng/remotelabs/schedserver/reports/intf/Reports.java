@@ -428,14 +428,14 @@ public class Reports implements ReportsSkeletonInterface
                         {
                             nsSequence.setUserName(o.getUser().getName());
                             nsSequence.setUserNamespace(o.getUser().getNamespace());
-                            user0.setRequestorTypeSequence_type0(nsSequence);
+                            user0.setRequestorNSName(nsSequence);
                         }
                         else
                         {
                             /* Read data from record as user_id has been deleted */
                             nsSequence.setUserName(o.getUserName());
                             nsSequence.setUserNamespace(o.getUserNamespace());
-                            user0.setRequestorTypeSequence_type0(nsSequence);
+                            user0.setRequestorNSName(nsSequence);
                         }
                         reportType.setUser(user0);
                                             
@@ -543,14 +543,14 @@ public class Reports implements ReportsSkeletonInterface
                         {
                             nsSequence.setUserName(o.getUser().getName());
                             nsSequence.setUserNamespace(o.getUser().getNamespace());
-                            user0.setRequestorTypeSequence_type0(nsSequence);
+                            user0.setRequestorNSName(nsSequence);
                         }
                         else
                         {
                             /* Read data from record as user_id has been deleted */
                             nsSequence.setUserName(o.getUserName());
                             nsSequence.setUserNamespace(o.getUserNamespace());
-                            user0.setRequestorTypeSequence_type0(nsSequence);
+                            user0.setRequestorNSName(nsSequence);
                         }
                         reportType.setUser(user0);
     
@@ -686,14 +686,14 @@ public class Reports implements ReportsSkeletonInterface
                     {
                         nsSequence.setUserName(o.getUser().getName());
                         nsSequence.setUserNamespace(o.getUser().getNamespace());
-                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        user0.setRequestorNSName(nsSequence);
                     }
                     else
                     {
                         /* Read data from record as user_id has been deleted */
                         nsSequence.setUserName(o.getUserName());
                         nsSequence.setUserNamespace(o.getUserNamespace());
-                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        user0.setRequestorNSName(nsSequence);
                     }
                     reportType.setUser(user0);
 
@@ -861,7 +861,7 @@ public class Reports implements ReportsSkeletonInterface
                     final UserNSNameSequence nsSequence = new UserNSNameSequence();
                     nsSequence.setUserName(o.getUser().getName());
                     nsSequence.setUserNamespace(o.getUser().getNamespace());
-                    user0.setRequestorTypeSequence_type0(nsSequence);
+                    user0.setRequestorNSName(nsSequence);
                     reportType.setUser(user0);
 
                     if (o.getResourcePermission()!= null) reportType.setUserClass(o.getResourcePermission().getUserClass().getName());
@@ -1129,7 +1129,7 @@ public class Reports implements ReportsSkeletonInterface
                         final UserNSNameSequence nsSequence = new UserNSNameSequence();
                         nsSequence.setUserName(e.getKey().getName());
                         nsSequence.setUserNamespace(e.getKey().getNamespace());
-                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        user0.setRequestorNSName(nsSequence);
                         reportType.setUser(user0);
 
                         reportType.setRigName(query0.getQueryLike());
@@ -1286,7 +1286,7 @@ public class Reports implements ReportsSkeletonInterface
                         final UserNSNameSequence nsSequence = new UserNSNameSequence();
                         nsSequence.setUserName(e.getKey().getName());
                         nsSequence.setUserNamespace(e.getKey().getNamespace());
-                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        user0.setRequestorNSName(nsSequence);
                         reportType.setUser(user0);
 
                         reportType.setRigType(rType.getName());
@@ -1453,7 +1453,7 @@ public class Reports implements ReportsSkeletonInterface
                         final UserNSNameSequence nsSequence = new UserNSNameSequence();
                         nsSequence.setUserName(e.getKey().getName());
                         nsSequence.setUserNamespace(e.getKey().getNamespace());
-                        user0.setRequestorTypeSequence_type0(nsSequence);
+                        user0.setRequestorNSName(nsSequence);
                         reportType.setUser(user0);
 
                         reportType.setUserClass(uClass.getName());
@@ -1632,7 +1632,7 @@ public class Reports implements ReportsSkeletonInterface
                         final UserNSNameSequence nsSequence = new UserNSNameSequence();
                         nsSequence.setUserName(e.getKey().getName());
                         nsSequence.setUserNamespace(e.getKey().getNamespace());
-                        user1.setRequestorTypeSequence_type0(nsSequence);
+                        user1.setRequestorNSName(nsSequence);
                         reportType.setUser(user1);
 
                         reportType.setUser(user1);
