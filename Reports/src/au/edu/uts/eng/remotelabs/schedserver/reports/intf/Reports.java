@@ -493,9 +493,10 @@ public class Reports implements ReportsSkeletonInterface
                     cri = ses.createCriteria(Session.class);
                     if (rType == null)
                     {
-                        this.logger.warn("No valid rig type found - " + query0.getTypeForQuery().toString());
+                        this.logger.warn("No valid rig type found, attempted to find  '" + query0.getQueryLike() + "'.");
                         return resp;
                     }
+                    
                     // Select Sessions where rig value is of the correct Rig Type
                     cri.createCriteria("rig").add(Restrictions.eq("rigType",rType));
     
@@ -603,7 +604,7 @@ public class Reports implements ReportsSkeletonInterface
                 final UserClass uClass = uClassDAO.findByName(query0.getQueryLike());
                 if (uClass == null)
                 {
-                    this.logger.warn("No valid user class found - " + query0.getTypeForQuery().toString());
+                    this.logger.warn("No valid user class found, attempted to find '" + query0.getQueryLike() + "'.");
                     return resp;
                 }
                 
@@ -769,7 +770,7 @@ public class Reports implements ReportsSkeletonInterface
                 
                 if (u == null)
                 {
-                    this.logger.warn("No valid user found - " + query0.getTypeForQuery().toString());
+                    this.logger.warn("No valid user found, attempted to find '" + query0.getQueryLike() + "'.");
                     return resp;
                 }
                 
