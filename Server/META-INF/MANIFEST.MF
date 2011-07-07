@@ -13,9 +13,9 @@ Bundle-Vendor: UTS:FEIT Remote Laboratory
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.server;uses:="org.osgi.framework,javax.servlet.http",
  javax.servlet,
  javax.servlet.http
-Bundle-ClassPath: lib/jetty-6.1.22.jar,
- lib/jetty-sslengine-6.1.22.jar,
- lib/jetty-util-6.1.22.jar,
- lib/servlet-api-2.5-20081211.jar,
- .
+Bundle-ClassPath: .,
+ lib/jetty-6.1.26.jar,
+ lib/jetty-sslengine-6.1.26.jar,
+ lib/jetty-util-6.1.26.jar,
+ lib/servlet-api-2.5-20081211.jar
 Bundle-ActivationPolicy: lazy
