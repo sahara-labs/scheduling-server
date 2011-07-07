@@ -37,6 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.server;
 
+import java.util.Collection;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -74,19 +76,14 @@ public class ServerActivator implements BundleActivator
         context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + ServletContainerService.class.getName() + ')');
         
         /* Fire pseudo-events for already registered servers. */
-        final ServiceReference[] refs = context.getServiceReferences(ServletContainerService.class.getName(), null);
-        if (refs == null)
+        final Collection<ServiceReference<ServletContainerService>> refs = 
+                context.getServiceReferences(ServletContainerService.class, null);
+        
+        for (ServiceReference<ServletContainerService> ref : refs)
         {
-            this.logger.debug("There are no currently registered services to host a servlet.");
-        }
-        else
-        {
-            for (ServiceReference ref : refs)
-            {
-                this.logger.debug("Firing registered event for servlet service from bundle " + 
-                        ref.getBundle().getSymbolicName() + '.');
-                listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-            }
+            this.logger.debug("Firing registered event for servlet service from bundle " + 
+                    ref.getBundle().getSymbolicName() + '.');
+            listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
         
         /* Start the server. */

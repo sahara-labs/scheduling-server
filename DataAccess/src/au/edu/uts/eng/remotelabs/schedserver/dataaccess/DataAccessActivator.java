@@ -46,9 +46,9 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
@@ -83,7 +83,7 @@ public class DataAccessActivator implements BundleActivator
     private static SessionFactory sessionFactory;
     
     /** Configuration service tracker. */
-    private static ServiceTracker confTracker;
+    private static ServiceTracker<Config, Config> confTracker;
     
     /** Logger. */
     private Logger logger;
@@ -99,7 +99,7 @@ public class DataAccessActivator implements BundleActivator
         cfg.setProperties(new DataAccessConfiguration(context).getProperties());
         cfg.addAnnotatedClass(AcademicPermission.class);
         cfg.addAnnotatedClass(Bookings.class);
-        cfg.addAnnotatedClass(Config.class);
+        cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config.class);
         cfg.addAnnotatedClass(MatchingCapabilities.class);
         cfg.addAnnotatedClass(MatchingCapabilitiesId.class);
         cfg.addAnnotatedClass(RemotePermission.class);
@@ -128,8 +128,7 @@ public class DataAccessActivator implements BundleActivator
             		"and restart the scheduling server.");
         }
         
-        DataAccessActivator.confTracker = new ServiceTracker(context, 
-                au.edu.uts.eng.remotelabs.schedserver.config.Config.class.getName(), null);
+        DataAccessActivator.confTracker = new ServiceTracker<Config, Config>(context, Config.class, null);
     }
 	
 	@Override
@@ -192,8 +191,7 @@ public class DataAccessActivator implements BundleActivator
     public static String getProperty(String prop, String def)
     {
         au.edu.uts.eng.remotelabs.schedserver.config.Config conf;
-        if (DataAccessActivator.confTracker == null || (conf = 
-            (au.edu.uts.eng.remotelabs.schedserver.config.Config) DataAccessActivator.confTracker.getService()) == null)
+        if (DataAccessActivator.confTracker == null || (conf = DataAccessActivator.confTracker.getService()) == null)
         {
             return def;
         }

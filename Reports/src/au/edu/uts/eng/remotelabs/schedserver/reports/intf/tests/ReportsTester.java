@@ -1,13 +1,11 @@
 /**
- * SAHARA Rig Client
- * 
- * Software abstraction of physical rig to provide rig session control
- * and rig device control. Automatically tests rig hardware and reports
- * the rig status to ensure rig goodness.
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2009, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -33,12 +31,10 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author <First> <Last> (tmachet)
- * @date <Day> <Month> 2010
- *
- * Changelog:
- * - 15/12/2010 - tmachet - Initial file creation.
+ * @author Tania Machet (tmachet)
+ * @date 29th November 2010
  */
+
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.tests;
 
 import java.util.Calendar;
@@ -48,7 +44,6 @@ import junit.framework.TestCase;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
-import org.apache.axis2.databinding.ADBException;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
@@ -84,17 +79,14 @@ import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.SessionReportTyp
 import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.TypeForQuery;
 
 /**
- * @author tmachet
- *
+ * Tests the {@link Reports} service.
  */
 public class ReportsTester extends TestCase
 {
-
+    /** Object of class under test. */
     private Reports service;
 
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
+    @Override
     protected void setUp() throws Exception
     {
         super.setUp();
@@ -103,17 +95,6 @@ public class ReportsTester extends TestCase
         this.service = new Reports();
     }
 
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#querySessionAccess(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess)}.
-     */
     public void testQuerySessionAccess() throws Exception
     {
         org.hibernate.Session db = DataAccessActivator.getNewSession();
@@ -274,10 +255,6 @@ public class ReportsTester extends TestCase
         assertNotNull(xml);
     }
 
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.intf.Reports#queryInfo(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo)}.
-     */
     public void testQueryInfoAcademicPermissionsUserClass() throws Exception
     {
         org.hibernate.Session ses = DataAccessActivator.getNewSession();
@@ -1998,8 +1975,6 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 60);
         Date remove2 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after2 = cal.getTime();
-
         // Queue time 0 hr
         // Session time 40 min
         cal.add(Calendar.MINUTE, 30);
@@ -2008,8 +1983,6 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 40);
         Date remove3 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after3 = cal.getTime();
-
         // Queue time 20 min
         // Session time 0 min
         cal.add(Calendar.MINUTE, 30);
@@ -2018,9 +1991,6 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 20);
         Date remove4 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after4 = cal.getTime();
-
-        
         cal.add(Calendar.MONTH, 2);
         Date later = cal.getTime();
         
@@ -2330,8 +2300,6 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 60);
         Date remove2 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after2 = cal.getTime();
-
         // Queue time 0 hr
         // Session time 40 min
         cal.add(Calendar.MINUTE, 30);
@@ -2340,8 +2308,6 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 40);
         Date remove3 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after3 = cal.getTime();
-
         // Queue time 20 min
         // Session time 0 min
         cal.add(Calendar.MINUTE, 30);
@@ -2350,9 +2316,6 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 20);
         Date remove4 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after4 = cal.getTime();
-
-        
         cal.add(Calendar.MONTH, 2);
         Date later = cal.getTime();
         
@@ -2661,8 +2624,7 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 60);
         Date remove2 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after2 = cal.getTime();
-
+      
         // Queue time 0 hr
         // Session time 40 min
         cal.add(Calendar.MINUTE, 30);
@@ -2671,8 +2633,7 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 40);
         Date remove3 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after3 = cal.getTime();
-
+      
         // Queue time 20 min
         // Session time 0 min
         cal.add(Calendar.MINUTE, 30);
@@ -2681,8 +2642,6 @@ public class ReportsTester extends TestCase
         cal.add(Calendar.MINUTE, 20);
         Date remove4 = cal.getTime();
         cal.add(Calendar.MINUTE, 30);
-        Date after4 = cal.getTime();
-
         
         cal.add(Calendar.MONTH, 2);
         Date later = cal.getTime();

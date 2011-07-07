@@ -1,13 +1,11 @@
 /**
- * SAHARA Rig Client
- * 
- * Software abstraction of physical rig to provide rig session control
- * and rig device control. Automatically tests rig hardware and reports
- * the rig status to ensure rig goodness.
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2009, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -33,12 +31,10 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author <First> <Last> (tmachet)
- * @date <Day> <Month> 2010
- *
- * Changelog:
- * - 22/12/2010 - tmachet - Initial file creation.
+ * @author Tania Machet (tmachet)
+ * @date 22nd December 2010
  */
+
 package au.edu.uts.eng.remotelabs.schedserver.reports.impl;
 
 import java.util.Comparator;
@@ -46,11 +42,11 @@ import java.util.Comparator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 
 /**
- * @author tmachet
- *
+ * Compares two users based on the natural ordering of the primary key.
  */
 public class UserComparator implements Comparator<User>
 {
+    @Override
     public int compare(final User u1, final User u2)
     {
         return (u1.getId().compareTo(u2.getId()));

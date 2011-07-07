@@ -42,6 +42,7 @@ import org.osgi.framework.ServiceReference;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * Listener for <tt>ServletContainerService</tt> service events. If the service
@@ -63,21 +64,22 @@ public class ServerServiceListener implements ServiceListener
         this.server = srv;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void serviceChanged(final ServiceEvent event)
     {
-        ServiceReference ref;
+        ServiceReference<ServletContainerService> ref;
         switch (event.getType())
         {
             case ServiceEvent.REGISTERED:
-                ref = event.getServiceReference();
+                ref = (ServiceReference<ServletContainerService>) event.getServiceReference();
                 this.logger.debug("Received a registered service event for a servlet service of bundle " + 
                         ref.getBundle().getSymbolicName() + '.');
                 this.server.addService(ref);
                 break;
                 
             case ServiceEvent.UNREGISTERING:
-                ref = event.getServiceReference();
+                ref = (ServiceReference<ServletContainerService>) event.getServiceReference();
                 this.logger.debug("Received a unregistering service event for a shutting down servlet service of " +
                 		"bundle " + ref.getBundle().getSymbolicName() + '.');
                 this.server.removeService(ref);

@@ -37,8 +37,9 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
@@ -64,16 +65,16 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class QueueActivator implements BundleActivator 
 {
     /** Service registration for the Permission SOAP interface. */
-    private ServiceRegistration soapReg;
+    private ServiceRegistration<ServletContainerService> soapReg;
     
     /** Service registration for the queue stale session timeout task. */
-    private ServiceRegistration staleTimeoutTaskReg;
+    private ServiceRegistration<Runnable> staleTimeoutTaskReg;
     
     /** Service registration for a rig event listener. */
-    private ServiceRegistration rigListenerReg;
+    private ServiceRegistration<RigEventListener> rigListenerReg;
     
     /** Bookings service. */
-    public static ServiceTracker bookingTracker;
+    public static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
     
     /** Logger. */
     private Logger logger;
@@ -101,22 +102,23 @@ public class QueueActivator implements BundleActivator
         /* Register the queue stale session timeout task. */
         QueueStaleSessionTask task = new QueueStaleSessionTask();
         task.run(); // Clean up any old stale sessions
-        Properties props = new Properties();
+        Dictionary<String, String> props = new Hashtable<String, String>();
         props.put("period", "60");
-        this.staleTimeoutTaskReg = context.registerService(Runnable.class.getName(), task, props);
+        this.staleTimeoutTaskReg = context.registerService(Runnable.class, task, props);
         
         /* Obtain a service tracker for the booking service. */
-        QueueActivator.bookingTracker = new ServiceTracker(context, BookingEngineService.class.getName(), null);
+        QueueActivator.bookingTracker = new ServiceTracker<BookingEngineService, BookingEngineService>(context, 
+                BookingEngineService.class, null);
         QueueActivator.bookingTracker.open();
         
         /* Register the rig event listener service. */
-        this.rigListenerReg = context.registerService(RigEventListener.class.getName(), new QueueListenerRun(), null);
+        this.rigListenerReg = context.registerService(RigEventListener.class, new QueueListenerRun(), null);
         
         /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
+	    this.soapReg = context.registerService(ServletContainerService.class, soapService, null);
 	}
 
 	@Override
@@ -139,6 +141,6 @@ public class QueueActivator implements BundleActivator
 	{
 	    if (QueueActivator.bookingTracker == null) return null;
 	    
-	    return (BookingEngineService) QueueActivator.bookingTracker.getService();
+	    return QueueActivator.bookingTracker.getService();
 	}
 }

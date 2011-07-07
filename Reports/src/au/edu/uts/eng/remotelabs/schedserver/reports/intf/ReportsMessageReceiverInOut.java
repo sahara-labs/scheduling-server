@@ -1,253 +1,225 @@
 /**
- * ReportsMessageReceiverInOut.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:24:30 EDT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Tania Machet (tmachet)
+ * @date 29th November 2010
  */
+
+
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
+import org.apache.axis2.util.JavaUtils;
+
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport;
+import au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse;
+
 /**
- * ReportsMessageReceiverInOut message receiver
+ * Reports service message receiver.
  */
-
-public class ReportsMessageReceiverInOut extends org.apache.axis2.receivers.AbstractInOutMessageReceiver
+public class ReportsMessageReceiverInOut extends AbstractInOutMessageReceiver
 {
-
     @Override
-    public void invokeBusinessLogic(final org.apache.axis2.context.MessageContext msgContext,
-            final org.apache.axis2.context.MessageContext newMsgContext) throws org.apache.axis2.AxisFault
+    public void invokeBusinessLogic(final MessageContext msgContext, final MessageContext newMsgContext)
+            throws AxisFault
     {
-
         try
         {
-
-            // get the implementation class for the Web Service
-            final Object obj = this.getTheImplementationObject(msgContext);
-
-            final ReportsSkeletonInterface skel = (ReportsSkeletonInterface) obj;
-            //Out Envelop
-            org.apache.axiom.soap.SOAPEnvelope envelope = null;
-            //Find the axisOperation that has been set by the Dispatch phase.
-            final org.apache.axis2.description.AxisOperation op = msgContext.getOperationContext().getAxisOperation();
+            final ReportsSkeletonInterface skel = (ReportsSkeletonInterface)this.getTheImplementationObject(msgContext);
+         
+            SOAPEnvelope envelope = null;
+         
+            final AxisOperation op = msgContext.getOperationContext().getAxisOperation();
             if (op == null)
             {
-                throw new org.apache.axis2.AxisFault(
-                        "Operation is not located, if this is doclit style the SOAP-ACTION should specified via the SOAP Action to use the RawXMLProvider");
+                throw new AxisFault("Operation is not located, if this is doclit style the SOAP-ACTION should " +
+                		"specified via the SOAP Action to use the RawXMLProvider");
             }
 
-            java.lang.String methodName;
-            if ((op.getName() != null)
-                    && ((methodName = org.apache.axis2.util.JavaUtils.xmlNameToJava(op.getName().getLocalPart())) != null))
+            String methodName;
+            if ((op.getName() != null) && ((methodName = JavaUtils.xmlNameToJava(op.getName().getLocalPart())) != null))
             {
-
                 if ("querySessionAccess".equals(methodName))
                 {
+                    final QuerySessionAccess wrappedParam = (QuerySessionAccess) this.fromOM(msgContext.getEnvelope()
+                            .getBody().getFirstElement(), QuerySessionAccess.class,
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
 
-                    au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse querySessionAccessResponse7 = null;
-                    final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess wrappedParam = (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess) this
-                            .fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess.class,
-                                    this.getEnvelopeNamespaces(msgContext.getEnvelope()));
-
-                    querySessionAccessResponse7 =
-
-                    skel.querySessionAccess(wrappedParam);
-
-                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), querySessionAccessResponse7, false);
+                    QuerySessionAccessResponse response = skel.querySessionAccess(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
-                else
-
-                if ("queryInfo".equals(methodName))
+                else if ("queryInfo".equals(methodName))
                 {
+                    final QueryInfo wrappedParam = (QueryInfo) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), QueryInfo.class, this.getEnvelopeNamespaces(msgContext.getEnvelope()));
 
-                    au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse queryInfoResponse9 = null;
-                    final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo wrappedParam = (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo) this
-                            .fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo.class, this
-                                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
-
-                    queryInfoResponse9 =
-
-                    skel.queryInfo(wrappedParam);
-
-                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), queryInfoResponse9, false);
+                    QueryInfoResponse response = skel.queryInfo(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
-                else
-
-                if ("querySessionReport".equals(methodName))
+                else if ("querySessionReport".equals(methodName))
                 {
+                    final QuerySessionReport wrappedParam = (QuerySessionReport) this.fromOM(msgContext.getEnvelope()
+                            .getBody().getFirstElement(), QuerySessionReport.class,
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
 
-                    au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse querySessionReportResponse11 = null;
-                    final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport wrappedParam = (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport) this
-                            .fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
-                                    au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport.class,
-                                    this.getEnvelopeNamespaces(msgContext.getEnvelope()));
-
-                    querySessionReportResponse11 =
-
-                    skel.querySessionReport(wrappedParam);
-
-                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), querySessionReportResponse11, false);
-
+                    QuerySessionReportResponse response = skel.querySessionReport(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else
                 {
-                    throw new java.lang.RuntimeException("method not found");
+                    throw new RuntimeException("SOAP operation not found.");
                 }
 
                 newMsgContext.setEnvelope(envelope);
             }
         }
-        catch (final java.lang.Exception e)
+        catch (final Exception e)
         {
-            throw org.apache.axis2.AxisFault.makeFault(e);
+            throw AxisFault.makeFault(e);
         }
     }
 
-    private org.apache.axiom.soap.SOAPEnvelope toEnvelope(final org.apache.axiom.soap.SOAPFactory factory,
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse param,
-            final boolean optimizeContent) throws org.apache.axis2.AxisFault
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final QuerySessionAccessResponse param,
+            final boolean optimizeContent) throws AxisFault
     {
         try
         {
-            final org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-
-            emptyEnvelope
-                    .getBody()
-                    .addChild(
-                            param
-                                    .getOMElement(
-                                            au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse.MY_QNAME,
-                                            factory));
-
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(QuerySessionAccessResponse.MY_QNAME, factory));
             return emptyEnvelope;
         }
-        catch (final org.apache.axis2.databinding.ADBException e)
+        catch (final ADBException e)
         {
-            throw org.apache.axis2.AxisFault.makeFault(e);
+            throw AxisFault.makeFault(e);
         }
     }
 
-    private org.apache.axiom.soap.SOAPEnvelope toEnvelope(final org.apache.axiom.soap.SOAPFactory factory,
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse param,
-            final boolean optimizeContent) throws org.apache.axis2.AxisFault
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final QueryInfoResponse param,
+            final boolean optimizeContent) throws AxisFault
     {
         try
         {
-            final org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-
-            emptyEnvelope.getBody().addChild(
-                    param.getOMElement(
-                            au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse.MY_QNAME,
-                            factory));
-
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(QueryInfoResponse.MY_QNAME, factory));
             return emptyEnvelope;
         }
-        catch (final org.apache.axis2.databinding.ADBException e)
+        catch (final ADBException e)
         {
-            throw org.apache.axis2.AxisFault.makeFault(e);
+            throw AxisFault.makeFault(e);
         }
     }
 
-    private org.apache.axiom.soap.SOAPEnvelope toEnvelope(final org.apache.axiom.soap.SOAPFactory factory,
-            final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse param,
-            final boolean optimizeContent) throws org.apache.axis2.AxisFault
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final QuerySessionReportResponse param,
+            final boolean optimizeContent) throws AxisFault
     {
         try
         {
-            final org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
-
-            emptyEnvelope
-                    .getBody()
-                    .addChild(
-                            param
-                                    .getOMElement(
-                                            au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse.MY_QNAME,
-                                            factory));
-
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(QuerySessionReportResponse.MY_QNAME, factory));
             return emptyEnvelope;
         }
-        catch (final org.apache.axis2.databinding.ADBException e)
+        catch (final ADBException e)
         {
-            throw org.apache.axis2.AxisFault.makeFault(e);
+            throw AxisFault.makeFault(e);
         }
     }
 
-    private java.lang.Object fromOM(final org.apache.axiom.om.OMElement param, final java.lang.Class type,
-            final java.util.Map extraNamespaces) throws org.apache.axis2.AxisFault
+    private Object fromOM(final OMElement param, final Class<?> type, final Map<String, String> extraNamespaces) throws AxisFault
     {
-
         try
         {
-
-            if (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess.class.equals(type))
+            if (QuerySessionAccess.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccess.Factory.parse(param
-                        .getXMLStreamReaderWithoutCaching());
-
+                return QuerySessionAccess.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse.class.equals(type))
+            if (QuerySessionAccessResponse.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionAccessResponse.Factory
-                        .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return QuerySessionAccessResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo.class.equals(type))
+            if (QueryInfo.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfo.Factory.parse(param
-                        .getXMLStreamReaderWithoutCaching());
-
+                return QueryInfo.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse.class.equals(type))
+            if (QueryInfoResponse.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QueryInfoResponse.Factory.parse(param
-                        .getXMLStreamReaderWithoutCaching());
-
+                return QueryInfoResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport.class.equals(type))
+            if (QuerySessionReport.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReport.Factory.parse(param
-                        .getXMLStreamReaderWithoutCaching());
-
+                return QuerySessionReport.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
-            if (au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse.class.equals(type))
+            if (QuerySessionReportResponse.class.equals(type))
             {
-
-                return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.QuerySessionReportResponse.Factory
-                        .parse(param.getXMLStreamReaderWithoutCaching());
-
+                return QuerySessionReportResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
-
         }
-        catch (final java.lang.Exception e)
+        catch (final Exception e)
         {
-            throw org.apache.axis2.AxisFault.makeFault(e);
+            throw AxisFault.makeFault(e);
         }
         return null;
     }
 
-    /**
-     * A utility method that copies the namepaces from the SOAPEnvelope
-     */
-    private java.util.Map getEnvelopeNamespaces(final org.apache.axiom.soap.SOAPEnvelope env)
+    private Map<String, String> getEnvelopeNamespaces(final SOAPEnvelope env)
     {
-        final java.util.Map returnMap = new java.util.HashMap();
-        final java.util.Iterator namespaceIterator = env.getAllDeclaredNamespaces();
+        final Map<String, String> returnMap = new HashMap<String, String>();
+        final Iterator<?> namespaceIterator = env.getAllDeclaredNamespaces();
         while (namespaceIterator.hasNext())
         {
-            final org.apache.axiom.om.OMNamespace ns = (org.apache.axiom.om.OMNamespace) namespaceIterator.next();
+            final OMNamespace ns = (OMNamespace) namespaceIterator.next();
             returnMap.put(ns.getPrefix(), ns.getNamespaceURI());
         }
         return returnMap;
     }
-
-}//end of class
+}

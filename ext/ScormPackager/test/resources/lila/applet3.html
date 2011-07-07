@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script language="JavaScript" src="lmsstub.js" type="text/JavaScript"></script>
+    <script type="text/javascript">stub.initialize();</script>
+    <script type="text/javascript">
+        function setRawScore()
+        {
+            var score = document.getElementById("userRawScore").value;
+            stub.LMSSetValue('cmi.core.score.raw', score);
+            stub.LMSCommit(); //Clicking on another SCO seems to not persist info
+        }
+    </script>
+</head>
+<body onunload="return stub.abnormalExit()">
+    <h1>Hello
+    <script type="text/javascript"> 
+        var studentname = stub.LMSGetValue("cmi.core.student_name");
+        var name = studentname.split(","); // separate the last and first names
+        var lastName  = name[0];
+        var firstName = name[1];
+        document.write(firstName + " " + lastName);
+    </script> 
+    </h1>
+
+    <p>Your User ID is: 
+    <script type="text/javascript"> 
+        var userid = stub.LMSGetValue("cmi.core.student_id");
+        document.write(" " + userid);
+    </script> 
+    </p>
+
+    <p>Your course is (credited/not credited): 
+    <script type="text/javascript"> 
+        var credited = stub.LMSGetValue("cmi.core.credit");
+        document.write(credited);
+    </script> 
+    </p>
+
+    <p>Is this your 1st attempt (ab_init/resume): 
+    <script type="text/javascript"> 
+        var attempt = stub.LMSGetValue("cmi.core.entry");
+        if(attempt == "ab_initio")
+        {
+            document.write("YES");
+        }
+        else
+        {
+            document.write("NO");
+        }
+    </script> 
+    </p>
+
+    <p>Your raw score is: 
+    <script type="text/javascript"> 
+        var rawscore = stub.LMSGetValue("cmi.core.score.raw");
+        document.write(rawscore);
+    </script> 
+    </p>
+
+    <p>Your total access time for SCORM is: 
+    <script type="text/javascript"> 
+        var score = stub.LMSGetValue("cmi.core.total_time");
+        document.write(score);
+    </script> 
+    </p>
+
+    <p>Enter new RAW score (between 0.00 and 100.00):</p> 
+<li><input name="userRawScore" id="userRawScore" type="text" value="0"><button onClick="setRawScore();">Set Raw Score</button></li>
+ 
+    <p>Here is a <a href="http://google.com/">link</a>.</p>
+</body>
+</html>
+

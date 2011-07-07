@@ -68,7 +68,7 @@ public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
     private final Map<String, Config> loadedConfig;
     
     /** Service registrations. */
-    private final Map<String, ServiceRegistration> registrations;
+    private final Map<String, ServiceRegistration<Config>> registrations;
     
     /**
      * Constructor. 
@@ -79,7 +79,7 @@ public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
     {
         this.context = cont;
         this.loadedConfig = Collections.synchronizedMap(new HashMap<String, Config>());
-        this.registrations = Collections.synchronizedMap(new HashMap<String, ServiceRegistration>());
+        this.registrations = Collections.synchronizedMap(new HashMap<String, ServiceRegistration<Config>>());
     }
     
     @Override
@@ -102,7 +102,7 @@ public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
         /* Register service. */
         final Dictionary<String, String> props = new Hashtable<String, String>(1);
         props.put("config.loc", fileLoc);
-        this.registrations.put(fileLoc, this.context.registerService(Config.class.getCanonicalName(), config, props));
+        this.registrations.put(fileLoc, this.context.registerService(Config.class, config, props));
         
         return config;
     }
@@ -124,7 +124,7 @@ public class PropertiesConfigServiceLoader implements ConfigServiceLoaderImpl
         props.put("default", "true");
         props.put("common", "true");
         
-        this.registrations.put(confFile, this.context.registerService(Config.class.getName(), config, props));
+        this.registrations.put(confFile, this.context.registerService(Config.class, config, props));
     }
 
     @Override

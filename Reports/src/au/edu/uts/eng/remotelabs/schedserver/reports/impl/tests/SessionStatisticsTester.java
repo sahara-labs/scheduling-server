@@ -1,82 +1,28 @@
-/**
- * SAHARA Rig Client
- * 
- * Software abstraction of physical rig to provide rig session control
- * and rig device control. Automatically tests rig hardware and reports
- * the rig status to ensure rig goodness.
- *
- * @license See LICENSE in the top level directory for complete license terms.
- *
- * Copyright (c) 2010, University of Technology, Sydney
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met:
- *
- *  * Redistributions of source code must retain the above copyright notice, 
- *    this list of conditions and the following disclaimer.
- *  * Redistributions in binary form must reproduce the above copyright 
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the distribution.
- *  * Neither the name of the University of Technology, Sydney nor the names 
- *    of its contributors may be used to endorse or promote products derived from 
- *    this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * @author <First> <Last> (tmachet)
- * @date <Day> <Month> 2010
- *
- * Changelog:
- * - 22/12/2010 - tmachet - Initial file creation.
- */
-package au.edu.uts.eng.remotelabs.schedserver.reports.intf.tests;
+
+package au.edu.uts.eng.remotelabs.schedserver.reports.impl.tests;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import junit.framework.TestCase;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.reports.impl.UserRecord;
+import au.edu.uts.eng.remotelabs.schedserver.reports.impl.SessionStatistics;
 
 /**
- * @author tmachet
- *
+ * Tests the {@link SessionStatistics} class.
  */
-public class UserRecordTester extends TestCase
+public class SessionStatisticsTester extends TestCase
 {
+    /** Object under test. */
+    private SessionStatistics record;
 
-    private UserRecord record;
-
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
+    @Override
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.record = new UserRecord();
+        this.record = new SessionStatistics();
     }
 
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.impl.UserRecord#addRecord(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session)}.
-     */
     public void testAddRecord()
     {
         Date request = new Date(System.currentTimeMillis() - 30000);
@@ -105,9 +51,6 @@ public class UserRecordTester extends TestCase
         assertEquals(this.record.sessionDuration.size(),2);
     }
 
-    /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.reports.impl.UserRecord#getAverageQueueDuration()}.
-     */
     public void testGetMethods()
     {
         Calendar cal = Calendar.getInstance();

@@ -38,7 +38,8 @@
 package au.edu.uts.eng.remotelabs.schedserver.session;
 
 import java.util.Date;
-import java.util.Properties;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.hibernate.Query;
@@ -64,16 +65,16 @@ import au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionExpiryChecker;
 public class SessionActivator implements BundleActivator 
 {
     /** Service registration for the Session SOAP interface. */
-    private ServiceRegistration soapReg;
+    private ServiceRegistration<ServletContainerService> soapReg;
     
     /** Session expiry checked runnable task service. */
-    private ServiceRegistration sessionCheckerReg;
+    private ServiceRegistration<Runnable> sessionCheckerReg;
     
     /** Shutdown event notifier session terminator service. */
-    private ServiceRegistration terminatorService;
+    private ServiceRegistration<RigEventListener> terminatorService;
     
     /** Booking service tracker. */
-    private static ServiceTracker bookingsTracker;
+    private static ServiceTracker<BookingEngineService, BookingEngineService> bookingsTracker;
     
     /** Logger. */
     private Logger logger;
@@ -85,25 +86,25 @@ public class SessionActivator implements BundleActivator
         this.logger.info("Starting the Session bunde...");
         
         /* Track the bookings service tracker. */
-        SessionActivator.bookingsTracker = new ServiceTracker(context, BookingEngineService.class.getName(), null);
+        SessionActivator.bookingsTracker = 
+                new ServiceTracker<BookingEngineService, BookingEngineService>(context, BookingEngineService.class, null);
         SessionActivator.bookingsTracker.open();
         
         /* Register the session timeout checker service. */
-        Properties props = new Properties();
+        Dictionary<String, String> props = new Hashtable<String, String>(1);
         props.put("period", "10");
         SessionExpiryChecker task = new SessionExpiryChecker();
         task.run(); // Expire any old sessions
-        this.sessionCheckerReg = context.registerService(Runnable.class.getName(), task, props);
+        this.sessionCheckerReg = context.registerService(Runnable.class, task, props);
         
         /* Register the rig event notifier. */
-        this.terminatorService = context.registerService(RigEventListener.class.getName(), 
-                new RigShutdownSessonStopper(), null);
+        this.terminatorService = context.registerService(RigEventListener.class, new RigShutdownSessonStopper(), null);
         
         /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
         soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-        this.soapReg = context.registerService(ServletContainerService.class.getName(), soapService, null);
+        this.soapReg = context.registerService(ServletContainerService.class, soapService, null);
 	}
 
 	@Override
@@ -143,6 +144,6 @@ public class SessionActivator implements BundleActivator
 	{
 	    if (SessionActivator.bookingsTracker == null) return null;
 	    
-	    return (BookingEngineService) SessionActivator.bookingsTracker.getService();
+	    return SessionActivator.bookingsTracker.getService();
 	}
 }

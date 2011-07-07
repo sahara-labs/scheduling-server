@@ -1,0 +1,8 @@
+Example blurb:
+
+The first of the UTS:Engineering remote laboratories to be established, this construction consists of a pool of twelve Motorola (Freescale) MC5272 Coldfire 32-bit microcontrollers. The board modules were sourced from senTec Elektronik GmbH and UTS has interfaced their own 7-segment LED display output board.
+
+The laboratory exercises that this apparatus facilitates incorporate both development of stand-alone programs coded in C and/or Assembly Language, and as a separate exercise, the creation of programs to run under uClinux on the microcontroller. Students benefit from being able to hone their cross-development skills on 32-bit microcontrollers, and from using an open-source microcontroller-specific version of Linux.
+
+Future plans for this apparatus include the interfacing of more elaborate output devices (stepper motors and colour LCDs), as well as the provision of some simple input devices (single throw two-position switches).
+

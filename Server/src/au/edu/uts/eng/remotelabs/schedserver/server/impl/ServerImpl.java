@@ -125,9 +125,9 @@ public class ServerImpl
 	    final List<Connector> connectors = new ArrayList<Connector>();
 
 	    /* Get the configuration service. */
-	    final ServiceReference ref = this.bundleContext.getServiceReference(Config.class.getName());
+	    final ServiceReference<Config> ref = this.bundleContext.getServiceReference(Config.class);
 	    Config config = null;
-	    if (ref == null || (config = (Config)this.bundleContext.getService(ref)) == null)
+	    if (ref == null || (config = this.bundleContext.getService(ref)) == null)
 	    {
 	        this.logger.error("Unable to get configuration service reference so unable " +
 	        "to load server configuration.");
@@ -267,12 +267,12 @@ public class ServerImpl
      * 
      * @param ref service reference pointing to a ServletContainerService service
      */
-    public synchronized void addService(final ServiceReference ref)
+    public synchronized void addService(final ServiceReference<ServletContainerService> ref)
     {
         boolean wasRunning = false;
         try
         {
-            final ServletContainerService serv = (ServletContainerService)this.bundleContext.getService(ref);
+            final ServletContainerService serv = this.bundleContext.getService(ref);
             ServletContainer containers[] = serv.getServlets();
             if (containers.length == 0)
             {
@@ -355,7 +355,7 @@ public class ServerImpl
      * 
      * @param ref service reference pointing to a ServletContainerService service
      */
-    public synchronized void removeService(final ServiceReference ref)
+    public synchronized void removeService(final ServiceReference<ServletContainerService> ref)
     {
         boolean wasRunning = false;
         try

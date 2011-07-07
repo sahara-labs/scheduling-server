@@ -1,16 +1,68 @@
 /**
- * AccessReportType.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:25:17 EDT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Tania Machet (tmachet)
+ * @date 13 December 2010
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
-/**
- * AccessReportType bean class
- */
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
 
-public class AccessReportType implements org.apache.axis2.databinding.ADBBean
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
+/**
+ * AccessReportType bean class.
+ */
+public class AccessReportType implements ADBBean
 {
     /*
      * This type was generated from the piece of schema that had
@@ -19,514 +71,205 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
      * Namespace Prefix = ns1
      */
 
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = -2061621727367281105L;
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    private static String generatePrefix(final String namespace)
     {
         if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/reports"))
         {
             return "ns1";
         }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return BeanUtil.getUniquePrefix();
     }
 
-    /**
-     * field for User
-     */
+    protected RequestorType user;
 
-    protected au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType localUser;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType
-     */
-    public au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType getUser()
+    public RequestorType getUser()
     {
-        return this.localUser;
+        return this.user;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            User
-     */
-    public void setUser(final au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType param)
+    public void setUser(final RequestorType param)
     {
-
-        this.localUser = param;
-
+        this.user = param;
     }
 
-    /**
-     * field for UserClass
-     */
+    protected String userClass;
+    protected boolean userClassTracker = false;
 
-    protected java.lang.String localUserClass;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localUserClassTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.lang.String
-     */
-    public java.lang.String getUserClass()
+    public String getUserClass()
     {
-        return this.localUserClass;
+        return this.userClass;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            UserClass
-     */
-    public void setUserClass(final java.lang.String param)
+    public void setUserClass(final String param)
     {
-
-        if (param != null)
-        {
-            //update the setting tracker
-            this.localUserClassTracker = true;
-        }
-        else
-        {
-            this.localUserClassTracker = false;
-
-        }
-
-        this.localUserClass = param;
-
+        this.userClass = param;
+        this.userClassTracker = param != null;
     }
 
-    /**
-     * field for RigType
-     */
+    protected String rigType;
+    protected boolean rigTypeTracker = false;
 
-    protected java.lang.String localRigType;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localRigTypeTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.lang.String
-     */
-    public java.lang.String getRigType()
+    public String getRigType()
     {
-        return this.localRigType;
+        return this.rigType;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            RigType
-     */
-    public void setRigType(final java.lang.String param)
+    public void setRigType(final String param)
     {
-
-        if (param != null)
-        {
-            //update the setting tracker
-            this.localRigTypeTracker = true;
-        }
-        else
-        {
-            this.localRigTypeTracker = false;
-
-        }
-
-        this.localRigType = param;
-
+        this.rigType = param;
+        this.rigTypeTracker = param != null;
     }
 
-    /**
-     * field for RigName
-     */
+    protected String rigName;
+    protected boolean rigNameTracker = false;
 
-    protected java.lang.String localRigName;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localRigNameTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.lang.String
-     */
-    public java.lang.String getRigName()
+    public String getRigName()
     {
-        return this.localRigName;
+        return this.rigName;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            RigName
-     */
-    public void setRigName(final java.lang.String param)
+    public void setRigName(final String param)
     {
-
-        if (param != null)
-        {
-            //update the setting tracker
-            this.localRigNameTracker = true;
-        }
-        else
-        {
-            this.localRigNameTracker = false;
-
-        }
-
-        this.localRigName = param;
-
+        this.rigName = param;
+        this.rigNameTracker = param != null;
     }
 
-    /**
-     * field for QueueStartTime
-     */
-
-    protected java.util.Calendar localQueueStartTime;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.util.Calendar
-     */
-    public java.util.Calendar getQueueStartTime()
+    protected Calendar queueStartTime;
+     
+    public Calendar getQueueStartTime()
     {
-        return this.localQueueStartTime;
+        return this.queueStartTime;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            QueueStartTime
-     */
-    public void setQueueStartTime(final java.util.Calendar param)
+    public void setQueueStartTime(final Calendar param)
     {
-
-        this.localQueueStartTime = param;
-
+        this.queueStartTime = param;
     }
 
-    /**
-     * field for QueueDuration
-     */
+    protected int queueDuration;
+    protected boolean queueDurationTracker = false;
 
-    protected int localQueueDuration;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localQueueDurationTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getQueueDuration()
     {
-        return this.localQueueDuration;
+        return this.queueDuration;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            QueueDuration
-     */
     public void setQueueDuration(final int param)
     {
-
-        // setting primitive attribute tracker to true
-
-        if (param == java.lang.Integer.MIN_VALUE)
-        {
-            this.localQueueDurationTracker = false;
-
-        }
-        else
-        {
-            this.localQueueDurationTracker = true;
-        }
-
-        this.localQueueDuration = param;
-
+        this.queueDuration = param;
+        this.queueDurationTracker = param != Integer.MIN_VALUE;
     }
 
-    /**
-     * field for SessionStartTime
-     */
+    protected Calendar sessionStartTime;
+    protected boolean sessionStartTimeTracker = false;
 
-    protected java.util.Calendar localSessionStartTime;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localSessionStartTimeTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.util.Calendar
-     */
-    public java.util.Calendar getSessionStartTime()
+    public Calendar getSessionStartTime()
     {
-        return this.localSessionStartTime;
+        return this.sessionStartTime;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            SessionStartTime
-     */
-    public void setSessionStartTime(final java.util.Calendar param)
+    public void setSessionStartTime(final Calendar param)
     {
-
-        if (param != null)
-        {
-            //update the setting tracker
-            this.localSessionStartTimeTracker = true;
-        }
-        else
-        {
-            this.localSessionStartTimeTracker = false;
-
-        }
-
-        this.localSessionStartTime = param;
-
+        this.sessionStartTime = param;
+        this.sessionStartTimeTracker = param != null;
     }
 
-    /**
-     * field for SessionEndTime
-     */
+    protected Calendar sessionEndTime;
 
-    protected java.util.Calendar localSessionEndTime;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.util.Calendar
-     */
-    public java.util.Calendar getSessionEndTime()
+    public Calendar getSessionEndTime()
     {
-        return this.localSessionEndTime;
+        return this.sessionEndTime;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            SessionEndTime
-     */
-    public void setSessionEndTime(final java.util.Calendar param)
+    public void setSessionEndTime(final Calendar param)
     {
-
-        this.localSessionEndTime = param;
-
+        this.sessionEndTime = param;
     }
 
-    /**
-     * field for SessionDuration
-     */
+    protected int sessionDuration;
 
-    protected int localSessionDuration;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return int
-     */
     public int getSessionDuration()
     {
-        return this.localSessionDuration;
+        return this.sessionDuration;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            SessionDuration
-     */
     public void setSessionDuration(final int param)
     {
-
-        this.localSessionDuration = param;
-
+        this.sessionDuration = param;
     }
 
-    /**
-     * field for ReasonForTermination
-     */
+    protected String reasonForTermination;
+    protected boolean reasonForTerminationTracker = false;
 
-    protected java.lang.String localReasonForTermination;
-
-    /*
-     * This tracker boolean wil be used to detect whether the user called the set method
-     * for this attribute. It will be used to determine whether to include this field
-     * in the serialized XML
-     */
-    protected boolean localReasonForTerminationTracker = false;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return java.lang.String
-     */
-    public java.lang.String getReasonForTermination()
+    public String getReasonForTermination()
     {
-        return this.localReasonForTermination;
+        return this.reasonForTermination;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            ReasonForTermination
-     */
-    public void setReasonForTermination(final java.lang.String param)
+    public void setReasonForTermination(final String param)
     {
-
-        if (param != null)
-        {
-            //update the setting tracker
-            this.localReasonForTerminationTracker = true;
-        }
-        else
-        {
-            this.localReasonForTerminationTracker = false;
-
-        }
-
-        this.localReasonForTermination = param;
-
+        this.reasonForTermination = param;
+        this.reasonForTerminationTracker = param != null;
     }
 
-    /**
-     * field for WasAssigned
-     */
+    protected boolean wasAssigned;
 
-    protected boolean localWasAssigned;
-
-    /**
-     * Auto generated getter method
-     * 
-     * @return boolean
-     */
     public boolean getWasAssigned()
     {
-        return this.localWasAssigned;
+        return this.wasAssigned;
     }
 
-    /**
-     * Auto generated setter method
-     * 
-     * @param param
-     *            WasAssigned
-     */
     public void setWasAssigned(final boolean param)
     {
-
-        this.localWasAssigned = param;
-
+        this.wasAssigned = param;
     }
 
-    /**
-     * isReaderMTOMAware
-     * 
-     * @return true if the reader supports MTOM
-     */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
-
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                parentQName)
+        final OMDataSource dataSource = new ADBDataSource(this, parentQName)
         {
-
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            @Override
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 AccessReportType.this.serialize(this.parentQName, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(parentQName, factory, dataSource);
-
+        return new OMSourcedElementImpl(parentQName, factory, dataSource);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
-
-        java.lang.String prefix = null;
-        java.lang.String namespace = null;
-
-        prefix = parentQName.getPrefix();
-        namespace = parentQName.getNamespaceURI();
+        String prefix = parentQName.getPrefix();
+        String namespace = parentQName.getNamespaceURI();
 
         if ((namespace != null) && (namespace.trim().length() > 0))
         {
-            final java.lang.String writerPrefix = xmlWriter.getPrefix(namespace);
+            final String writerPrefix = xmlWriter.getPrefix(namespace);
             if (writerPrefix != null)
             {
                 xmlWriter.writeStartElement(namespace, parentQName.getLocalPart());
@@ -550,8 +293,7 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
 
         if (serializeType)
         {
-
-            final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+            final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/reports");
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
@@ -563,15 +305,15 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
                 this.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", "AccessReportType",
                         xmlWriter);
             }
-
         }
 
-        if (this.localUser == null)
+        if (this.user == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("user cannot be null!!");
+            throw new ADBException("user cannot be null!!");
         }
-        this.localUser.serialize(new javax.xml.namespace.QName("", "user"), factory, xmlWriter);
-        if (this.localUserClassTracker)
+        this.user.serialize(new QName("", "user"), factory, xmlWriter);
+        
+        if (this.userClassTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -581,291 +323,230 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
                 if (prefix == null)
                 {
                     prefix = AccessReportType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "userClass", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "userClass");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("userClass");
             }
 
-            if (this.localUserClass == null)
+            if (this.userClass == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
-
+                throw new ADBException("userClass cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(this.localUserClass);
-
+                xmlWriter.writeCharacters(this.userClass);
             }
 
             xmlWriter.writeEndElement();
         }
-        if (this.localRigTypeTracker)
+        
+        if (this.rigTypeTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = AccessReportType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "rigType", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "rigType");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("rigType");
             }
 
-            if (this.localRigType == null)
+            if (this.rigType == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("rigType cannot be null!!");
-
+                throw new ADBException("rigType cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(this.localRigType);
-
+                xmlWriter.writeCharacters(this.rigType);
             }
 
             xmlWriter.writeEndElement();
         }
-        if (this.localRigNameTracker)
+        
+        if (this.rigNameTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = AccessReportType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "rigName", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "rigName");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("rigName");
             }
 
-            if (this.localRigName == null)
+            if (this.rigName == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("rigName cannot be null!!");
-
+                throw new ADBException("rigName cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(this.localRigName);
-
+                xmlWriter.writeCharacters(this.rigName);
             }
 
             xmlWriter.writeEndElement();
         }
+        
         namespace = "";
         if (!namespace.equals(""))
         {
             prefix = xmlWriter.getPrefix(namespace);
-
             if (prefix == null)
             {
                 prefix = AccessReportType.generatePrefix(namespace);
-
                 xmlWriter.writeStartElement(prefix, "queueStartTime", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
-
             }
             else
             {
                 xmlWriter.writeStartElement(namespace, "queueStartTime");
             }
-
         }
         else
         {
             xmlWriter.writeStartElement("queueStartTime");
         }
 
-        if (this.localQueueStartTime == null)
+        if (this.queueStartTime == null)
         {
-            // write the nil attribute
-
-            throw new org.apache.axis2.databinding.ADBException("queueStartTime cannot be null!!");
-
+            throw new ADBException("queueStartTime cannot be null!!");
         }
         else
         {
-
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localQueueStartTime));
-
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.queueStartTime));
         }
 
         xmlWriter.writeEndElement();
-        if (this.localQueueDurationTracker)
+        if (this.queueDurationTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = AccessReportType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "queueDuration", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "queueDuration");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("queueDuration");
             }
 
-            if (this.localQueueDuration == java.lang.Integer.MIN_VALUE)
+            if (this.queueDuration == Integer.MIN_VALUE)
             {
-
-                throw new org.apache.axis2.databinding.ADBException("queueDuration cannot be null!!");
-
+                throw new ADBException("queueDuration cannot be null!!");
             }
             else
             {
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localQueueDuration));
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.queueDuration));
             }
-
             xmlWriter.writeEndElement();
         }
-        if (this.localSessionStartTimeTracker)
+        
+        if (this.sessionStartTimeTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
             {
                 prefix = xmlWriter.getPrefix(namespace);
-
                 if (prefix == null)
                 {
                     prefix = AccessReportType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "sessionStartTime", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "sessionStartTime");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("sessionStartTime");
             }
 
-            if (this.localSessionStartTime == null)
+            if (this.sessionStartTime == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("sessionStartTime cannot be null!!");
-
+                throw new ADBException("sessionStartTime cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localSessionStartTime));
-
+                xmlWriter.writeCharacters(ConverterUtil.convertToString(this.sessionStartTime));
             }
-
             xmlWriter.writeEndElement();
         }
+        
         namespace = "";
         if (!namespace.equals(""))
         {
             prefix = xmlWriter.getPrefix(namespace);
-
             if (prefix == null)
             {
                 prefix = AccessReportType.generatePrefix(namespace);
-
                 xmlWriter.writeStartElement(prefix, "sessionEndTime", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
-
             }
             else
             {
                 xmlWriter.writeStartElement(namespace, "sessionEndTime");
             }
-
         }
         else
         {
             xmlWriter.writeStartElement("sessionEndTime");
         }
 
-        if (this.localSessionEndTime == null)
+        if (this.sessionEndTime == null)
         {
-            // write the nil attribute
-
-            throw new org.apache.axis2.databinding.ADBException("sessionEndTime cannot be null!!");
-
+            throw new ADBException("sessionEndTime cannot be null!!");
         }
         else
         {
-
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localSessionEndTime));
-
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.sessionEndTime));
         }
-
         xmlWriter.writeEndElement();
 
         namespace = "";
@@ -876,37 +557,23 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
             if (prefix == null)
             {
                 prefix = AccessReportType.generatePrefix(namespace);
-
                 xmlWriter.writeStartElement(prefix, "sessionDuration", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
-
             }
             else
             {
                 xmlWriter.writeStartElement(namespace, "sessionDuration");
             }
-
         }
         else
         {
             xmlWriter.writeStartElement("sessionDuration");
         }
-
-        if (this.localSessionDuration == java.lang.Integer.MIN_VALUE)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException("sessionDuration cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localSessionDuration));
-        }
-
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.sessionDuration));
         xmlWriter.writeEndElement();
-        if (this.localReasonForTerminationTracker)
+        
+        if (this.reasonForTerminationTracker)
         {
             namespace = "";
             if (!namespace.equals(""))
@@ -916,254 +583,79 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
                 if (prefix == null)
                 {
                     prefix = AccessReportType.generatePrefix(namespace);
-
                     xmlWriter.writeStartElement(prefix, "reasonForTermination", namespace);
                     xmlWriter.writeNamespace(prefix, namespace);
                     xmlWriter.setPrefix(prefix, namespace);
-
                 }
                 else
                 {
                     xmlWriter.writeStartElement(namespace, "reasonForTermination");
                 }
-
             }
             else
             {
                 xmlWriter.writeStartElement("reasonForTermination");
             }
 
-            if (this.localReasonForTermination == null)
+            if (this.reasonForTermination == null)
             {
-                // write the nil attribute
-
-                throw new org.apache.axis2.databinding.ADBException("reasonForTermination cannot be null!!");
-
+                throw new ADBException("reasonForTermination cannot be null!!");
             }
             else
             {
-
-                xmlWriter.writeCharacters(this.localReasonForTermination);
-
+                xmlWriter.writeCharacters(this.reasonForTermination);
             }
 
             xmlWriter.writeEndElement();
         }
+        
         namespace = "";
         if (!namespace.equals(""))
         {
             prefix = xmlWriter.getPrefix(namespace);
-
             if (prefix == null)
             {
                 prefix = AccessReportType.generatePrefix(namespace);
-
                 xmlWriter.writeStartElement(prefix, "wasAssigned", namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
-
             }
             else
             {
                 xmlWriter.writeStartElement(namespace, "wasAssigned");
             }
-
         }
         else
         {
             xmlWriter.writeStartElement("wasAssigned");
         }
-
-        if (false)
-        {
-
-            throw new org.apache.axis2.databinding.ADBException("wasAssigned cannot be null!!");
-
-        }
-        else
-        {
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil
-                    .convertToString(this.localWasAssigned));
-        }
-
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.wasAssigned));
         xmlWriter.writeEndElement();
 
         xmlWriter.writeEndElement();
-
     }
 
-    /**
-     * Util method to write an attribute with the ns prefix
-     */
-    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
-            final java.lang.String attName, final java.lang.String attValue,
-            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
-
         }
 
         xmlWriter.writeAttribute(namespace, attName, attValue);
-
     }
 
-    /**
-     * Util method to write an attribute without the ns prefix
-     */
-    private void writeAttribute(final java.lang.String namespace, final java.lang.String attName,
-            final java.lang.String attValue, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
-        if (namespace.equals(""))
-        {
-            xmlWriter.writeAttribute(attName, attValue);
-        }
-        else
-        {
-            this.registerPrefix(xmlWriter, namespace);
-            xmlWriter.writeAttribute(namespace, attName, attValue);
-        }
-    }
-
-    /**
-     * Util method to write an attribute without the ns prefix
-     */
-    private void writeQNameAttribute(final java.lang.String namespace, final java.lang.String attName,
-            final javax.xml.namespace.QName qname, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
-    {
-
-        final java.lang.String attributeNamespace = qname.getNamespaceURI();
-        java.lang.String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
-        if (attributePrefix == null)
-        {
-            attributePrefix = this.registerPrefix(xmlWriter, attributeNamespace);
-        }
-        java.lang.String attributeValue;
-        if (attributePrefix.trim().length() > 0)
-        {
-            attributeValue = attributePrefix + ":" + qname.getLocalPart();
-        }
-        else
-        {
-            attributeValue = qname.getLocalPart();
-        }
-
-        if (namespace.equals(""))
-        {
-            xmlWriter.writeAttribute(attName, attributeValue);
-        }
-        else
-        {
-            this.registerPrefix(xmlWriter, namespace);
-            xmlWriter.writeAttribute(namespace, attName, attributeValue);
-        }
-    }
-
-    /**
-     * method to handle Qnames
-     */
-
-    private void writeQName(final javax.xml.namespace.QName qname, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
-    {
-        final java.lang.String namespaceURI = qname.getNamespaceURI();
-        if (namespaceURI != null)
-        {
-            java.lang.String prefix = xmlWriter.getPrefix(namespaceURI);
-            if (prefix == null)
-            {
-                prefix = AccessReportType.generatePrefix(namespaceURI);
-                xmlWriter.writeNamespace(prefix, namespaceURI);
-                xmlWriter.setPrefix(prefix, namespaceURI);
-            }
-
-            if (prefix.trim().length() > 0)
-            {
-                xmlWriter.writeCharacters(prefix + ":"
-                        + org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-            }
-            else
-            {
-                // i.e this is the default namespace
-                xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-            }
-
-        }
-        else
-        {
-            xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qname));
-        }
-    }
-
-    private void writeQNames(final javax.xml.namespace.QName[] qnames, final javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException
-    {
-
-        if (qnames != null)
-        {
-            // we have to store this data until last moment since it is not possible to write any
-            // namespace data after writing the charactor data
-            final java.lang.StringBuffer stringToWrite = new java.lang.StringBuffer();
-            java.lang.String namespaceURI = null;
-            java.lang.String prefix = null;
-
-            for (int i = 0; i < qnames.length; i++)
-            {
-                if (i > 0)
-                {
-                    stringToWrite.append(" ");
-                }
-                namespaceURI = qnames[i].getNamespaceURI();
-                if (namespaceURI != null)
-                {
-                    prefix = xmlWriter.getPrefix(namespaceURI);
-                    if ((prefix == null) || (prefix.length() == 0))
-                    {
-                        prefix = AccessReportType.generatePrefix(namespaceURI);
-                        xmlWriter.writeNamespace(prefix, namespaceURI);
-                        xmlWriter.setPrefix(prefix, namespaceURI);
-                    }
-
-                    if (prefix.trim().length() > 0)
-                    {
-                        stringToWrite.append(prefix).append(":").append(
-                                org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                    }
-                    else
-                    {
-                        stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil
-                                .convertToString(qnames[i]));
-                    }
-                }
-                else
-                {
-                    stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
-                }
-            }
-            xmlWriter.writeCharacters(stringToWrite.toString());
-        }
-
-    }
-
-    /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
-    {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
+        String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
             prefix = AccessReportType.generatePrefix(namespace);
-
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+                prefix = BeanUtil.getUniquePrefix();
             }
 
             xmlWriter.writeNamespace(prefix, namespace);
@@ -1173,155 +665,125 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
         return prefix;
     }
 
-    /**
-     * databinding method to get an XML representation of this object
-     */
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
+    @Override
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
+        final ArrayList<Serializable> elementList = new ArrayList<Serializable>();
 
-        final java.util.ArrayList elementList = new java.util.ArrayList();
-        final java.util.ArrayList attribList = new java.util.ArrayList();
-
-        elementList.add(new javax.xml.namespace.QName("", "user"));
-
-        if (this.localUser == null)
+        elementList.add(new QName("", "user"));
+        if (this.user == null)
         {
-            throw new org.apache.axis2.databinding.ADBException("user cannot be null!!");
+            throw new ADBException("user cannot be null!!");
         }
-        elementList.add(this.localUser);
-        if (this.localUserClassTracker)
+        elementList.add(this.user);
+        
+        if (this.userClassTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "userClass"));
-
-            if (this.localUserClass != null)
+            elementList.add(new QName("", "userClass"));
+            if (this.userClass != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localUserClass));
+                elementList.add(ConverterUtil.convertToString(this.userClass));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("userClass cannot be null!!");
+                throw new ADBException("userClass cannot be null!!");
             }
         }
-        if (this.localRigTypeTracker)
+        
+        if (this.rigTypeTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "rigType"));
-
-            if (this.localRigType != null)
+            elementList.add(new QName("", "rigType"));
+            if (this.rigType != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localRigType));
+                elementList.add(ConverterUtil.convertToString(this.rigType));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("rigType cannot be null!!");
+                throw new ADBException("rigType cannot be null!!");
             }
         }
-        if (this.localRigNameTracker)
+        
+        if (this.rigNameTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "rigName"));
-
-            if (this.localRigName != null)
+            elementList.add(new QName("", "rigName"));
+            if (this.rigName != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localRigName));
+                elementList.add(ConverterUtil.convertToString(this.rigName));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("rigName cannot be null!!");
+                throw new ADBException("rigName cannot be null!!");
             }
         }
-        elementList.add(new javax.xml.namespace.QName("", "queueStartTime"));
-
-        if (this.localQueueStartTime != null)
+        
+        elementList.add(new QName("", "queueStartTime"));
+        if (this.queueStartTime != null)
         {
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localQueueStartTime));
+            elementList.add(ConverterUtil.convertToString(this.queueStartTime));
         }
         else
         {
-            throw new org.apache.axis2.databinding.ADBException("queueStartTime cannot be null!!");
+            throw new ADBException("queueStartTime cannot be null!!");
         }
-        if (this.localQueueDurationTracker)
+        
+        if (this.queueDurationTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "queueDuration"));
-
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localQueueDuration));
+            elementList.add(new QName("", "queueDuration"));
+            elementList.add(ConverterUtil.convertToString(this.queueDuration));
         }
-        if (this.localSessionStartTimeTracker)
+        
+        if (this.sessionStartTimeTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "sessionStartTime"));
-
-            if (this.localSessionStartTime != null)
+            elementList.add(new QName("", "sessionStartTime"));
+            if (this.sessionStartTime != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localSessionStartTime));
+                elementList.add(ConverterUtil.convertToString(this.sessionStartTime));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("sessionStartTime cannot be null!!");
+                throw new ADBException("sessionStartTime cannot be null!!");
             }
         }
-        elementList.add(new javax.xml.namespace.QName("", "sessionEndTime"));
-
-        if (this.localSessionEndTime != null)
+        
+        elementList.add(new QName("", "sessionEndTime"));
+        if (this.sessionEndTime != null)
         {
-            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localSessionEndTime));
+            elementList.add(ConverterUtil.convertToString(this.sessionEndTime));
         }
         else
         {
-            throw new org.apache.axis2.databinding.ADBException("sessionEndTime cannot be null!!");
+            throw new ADBException("sessionEndTime cannot be null!!");
         }
 
-        elementList.add(new javax.xml.namespace.QName("", "sessionDuration"));
-
-        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localSessionDuration));
-        if (this.localReasonForTerminationTracker)
+        elementList.add(new QName("", "sessionDuration"));
+        elementList.add(ConverterUtil.convertToString(this.sessionDuration));
+        
+        if (this.reasonForTerminationTracker)
         {
-            elementList.add(new javax.xml.namespace.QName("", "reasonForTermination"));
-
-            if (this.localReasonForTermination != null)
+            elementList.add(new QName("", "reasonForTermination"));
+            if (this.reasonForTermination != null)
             {
-                elementList.add(org.apache.axis2.databinding.utils.ConverterUtil
-                        .convertToString(this.localReasonForTermination));
+                elementList.add(ConverterUtil.convertToString(this.reasonForTermination));
             }
             else
             {
-                throw new org.apache.axis2.databinding.ADBException("reasonForTermination cannot be null!!");
+                throw new ADBException("reasonForTermination cannot be null!!");
             }
         }
-        elementList.add(new javax.xml.namespace.QName("", "wasAssigned"));
+        
+        elementList.add(new QName("", "wasAssigned"));
+        elementList.add(ConverterUtil.convertToString(this.wasAssigned));
 
-        elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localWasAssigned));
-
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(),
-                attribList.toArray());
-
+        return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
     }
 
-    /**
-     * Factory class that keeps the parse method
-     */
     public static class Factory
     {
-
-        /**
-         * static method to create the object
-         * Precondition: If this object is an element, the current or next start element starts this object and any
-         * intervening reader events are ignorable
-         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
-         * start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element
-         * If this object is a complex type, the reader is positioned at the end element of its outer element
-         */
-        public static AccessReportType parse(final javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception
+        public static AccessReportType parse(final XMLStreamReader reader) throws Exception
         {
             final AccessReportType object = new AccessReportType();
-
-            final int event;
-            final java.lang.String nillableValue = null;
-            final java.lang.String prefix = "";
-            final java.lang.String namespaceuri = "";
             try
             {
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
@@ -1329,57 +791,74 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
 
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null)
                 {
-                    final java.lang.String fullTypeName = reader.getAttributeValue(
-                            "http://www.w3.org/2001/XMLSchema-instance", "type");
+                    final String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
+                            "type");
                     if (fullTypeName != null)
                     {
-                        java.lang.String nsPrefix = null;
+                        String nsPrefix = null;
                         if (fullTypeName.indexOf(":") > -1)
                         {
                             nsPrefix = fullTypeName.substring(0, fullTypeName.indexOf(":"));
                         }
                         nsPrefix = nsPrefix == null ? "" : nsPrefix;
 
-                        final java.lang.String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
+                        final String type = fullTypeName.substring(fullTypeName.indexOf(":") + 1);
 
                         if (!"AccessReportType".equals(type))
                         {
-                            //find namespace for the prefix
-                            final java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (AccessReportType) au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.ExtensionMapper
-                                    .getTypeObject(nsUri, type, reader);
+                            final String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
+                            return (AccessReportType) ExtensionMapper.getTypeObject(nsUri, type, reader);
                         }
-
                     }
-
                 }
-
-                // Note all attributes that were handled. Used to differ normal attributes
-                // from anyAttributes.
-                final java.util.Vector handledAttributes = new java.util.Vector();
 
                 reader.next();
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
 
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "user").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "user").equals(reader.getName()))
                 {
-
-                    object.setUser(au.edu.uts.eng.remotelabs.schedserver.reports.intf.types.RequestorType.Factory
-                            .parse(reader));
-
+                    object.setUser(RequestorType.Factory.parse(reader));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "userClass").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setUserClass(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "rigType").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setRigType(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
+
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "rigName").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setRigName(ConverterUtil.convertToString(content));
+                    reader.next();
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -1387,20 +866,15 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
                     reader.next();
                 }
 
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "userClass").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "queueStartTime").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setUserClass(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
-
+                    final String content = reader.getElementText();
+                    object.setQueueStartTime(ConverterUtil.convertToDateTime(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -1408,232 +882,99 @@ public class AccessReportType implements org.apache.axis2.databinding.ADBBean
                     reader.next();
                 }
 
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "rigType").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "queueDuration").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setRigType(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
-
+                    final String content = reader.getElementText();
+                    object.setQueueDuration(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-
+                    object.setQueueDuration(Integer.MIN_VALUE);
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement() && new javax.xml.namespace.QName("", "rigName").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "sessionStartTime").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setRigName(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
-
+                    final String content = reader.getElementText();
+                    object.setSessionStartTime(ConverterUtil.convertToDateTime(content));
                     reader.next();
+                }
 
-                } // End of if for expected property start element
-
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "sessionEndTime").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setSessionEndTime(ConverterUtil.convertToDateTime(content));
+                    reader.next();
+                }
                 else
                 {
-
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "queueStartTime").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "sessionDuration").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setQueueStartTime(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToDateTime(content));
-
+                    final String content = reader.getElementText();
+                    object.setSessionDuration(ConverterUtil.convertToInt(content));
                     reader.next();
-
-                } // End of if for expected property start element
-
+                }
                 else
                 {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "queueDuration").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "reasonForTermination").equals(reader.getName()))
                 {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setQueueDuration(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
+                    final String content = reader.getElementText();
+                    object.setReasonForTermination(ConverterUtil.convertToString(content));
                     reader.next();
+                }
 
-                } // End of if for expected property start element
-
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "wasAssigned").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setWasAssigned(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
                 else
                 {
-
-                    object.setQueueDuration(java.lang.Integer.MIN_VALUE);
-
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "sessionStartTime").equals(reader.getName()))
-                {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setSessionStartTime(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToDateTime(content));
-
-                    reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "sessionEndTime").equals(reader.getName()))
-                {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setSessionEndTime(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToDateTime(content));
-
-                    reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "sessionDuration").equals(reader.getName()))
-                {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setSessionDuration(org.apache.axis2.databinding.utils.ConverterUtil.convertToInt(content));
-
-                    reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "reasonForTermination").equals(reader.getName()))
-                {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setReasonForTermination(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(content));
-
-                    reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
-                if (reader.isStartElement()
-                        && new javax.xml.namespace.QName("", "wasAssigned").equals(reader.getName()))
-                {
-
-                    final java.lang.String content = reader.getElementText();
-
-                    object.setWasAssigned(org.apache.axis2.databinding.utils.ConverterUtil.convertToBoolean(content));
-
-                    reader.next();
-
-                } // End of if for expected property start element
-
-                else
-                {
-                    // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-
                 if (reader.isStartElement())
                 {
-                    // A start element we are not expecting indicates a trailing invalid property
-                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement "
-                            + reader.getLocalName());
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
                 }
-
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
 
             return object;
         }
-
-    }//end of factory class
-
+    }
 }

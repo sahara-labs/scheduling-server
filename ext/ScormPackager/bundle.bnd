@@ -1,0 +1,19 @@
+Bundle-Name: ScormPackager
+Bundle-SymbolicName: SchedulingServer-ScormPackager
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: au.edu.labshare.schedserver.scormpackager.ScormPackagerActivator
+Bundle-Vendor: LabShare-UTS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
+!org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
+!org.jdom.*, !javax.*, !sun.*, !nu.xom, !biz.source_code.miniTemplator, !javanet.staxutils.*, \
+au.edu.uts.eng.remotelabs.schedserver.server, *
+Private-Package: au.edu.labshare.schedserver.scormpackager.service, au.edu.labshare.schedserver.scormpackager.lila, \
+au.edu.labshare.schedserver.scormpackager.sahara, au.edu.labshare.schedserver.scormpackager.types, au.edu.labshare.schedserver.scormpackager.utilities, \
+au.edu.labshare.schedserver.scormpackager.manifest
+Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
+lib/=lib/;-donotcopy=.svn, \
+resources/=resources/;-donotcopy=.svn
+Export-Package: au.edu.labshare.schedserver.scormpackager
+Bundle-ClassPath: ., \
+${findpath;lib/.*.jar}

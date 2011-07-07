@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:24:30 EDT) -->
+<serviceGroup>
+    <service name="ScormPackager">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.labshare.schedserver.scormpackager.service.ScormPackagerMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">au.edu.labshare.schedserver.scormpackager.service.ScormPackager</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="deleteSCO" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/deleteSCO</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/deleteSCOResponse</outputActionMapping>
+        </operation>
+        <operation name="validateSCO" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/validateSCO</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/scormpackager/validateSCOResponse</outputActionMapping>
+        </operation>
+        <operation name="createPIF" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/createPIF</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/createPIFResponse</outputActionMapping>
+        </operation>
+        <operation name="createSCO" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/createSCO</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/createSCOResponse</outputActionMapping>
+        </operation>
+        <operation name="validatePIF" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/validatePIF</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/validatePIFResponse</outputActionMapping>
+        </operation>
+        <operation name="deletePIF" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/deletePIF</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/deletePIFResponse</outputActionMapping>
+        </operation>
+        <operation name="validateManifest" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://labshare.edu.au:8080/schedserver/scormpackager/">
+            <actionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/validateManifest</actionMapping>
+            <outputActionMapping>http://labshare.edu.au:8080/schedserver/scormpackager/validateManifestResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

@@ -66,25 +66,26 @@ public class SchedulingServiceListener implements ServiceListener
         this.context = con;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void serviceChanged(ServiceEvent event)
     {
-        ServiceReference ref;
+        ServiceReference<Runnable> ref;
         switch (event.getType())
         {
             case ServiceEvent.REGISTERED:
-                ref = event.getServiceReference();
+                ref = (ServiceReference<Runnable>) event.getServiceReference();
                 this.logger.debug("Received a registered service event for a servlet service of bundle " + 
                         ref.getBundle().getSymbolicName() + '.');
-                this.scheduler.addTask((Runnable)this.context.getService(ref), 
+                this.scheduler.addTask(this.context.getService(ref),
                         Integer.parseInt((String) ref.getProperty("period")));
                 break;
                 
             case ServiceEvent.UNREGISTERING:
-                ref = event.getServiceReference();
+                ref = (ServiceReference<Runnable>) event.getServiceReference();
                 this.logger.debug("Received a unregistering service event for a shutting down servlet service of " +
                         "bundle " + ref.getBundle().getSymbolicName() + '.');
-                this.scheduler.removeTask((Runnable) this.context.getService(ref));
+                this.scheduler.removeTask(this.context.getService(ref));
                 break;
         }
     }

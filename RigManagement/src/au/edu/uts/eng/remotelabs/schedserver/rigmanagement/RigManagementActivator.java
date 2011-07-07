@@ -37,7 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.rigmanagement;
 
-import java.util.Properties;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
@@ -58,13 +59,13 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 public class RigManagementActivator implements BundleActivator 
 {
     /** Tracker for the booking engine service. */
-    private static ServiceTracker bookingTracker;
+    private static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
     
     /** SOAP servlet service registration. */
-    private ServiceRegistration soapService;
+    private ServiceRegistration<ServletContainerService> soapService;
     
     /** Maintenance notifier. */
-    private ServiceRegistration notifierReg;
+    private ServiceRegistration<Runnable> notifierReg;
     
     /** Logger. */
     private Logger logger;
@@ -76,19 +77,20 @@ public class RigManagementActivator implements BundleActivator
         this.logger.info("The rig management bundle is starting up.");
         
         /* Open a tracker to the booking engine. */
-        bookingTracker = new ServiceTracker(context, BookingEngineService.class.getName(), null);
+        bookingTracker = 
+                new ServiceTracker<BookingEngineService, BookingEngineService>(context, BookingEngineService.class, null);
         bookingTracker.open();
         
         /* Register the maintenance notifier. */
-        Properties props = new Properties();
+        Dictionary<String, String> props = new Hashtable<String, String>();
         props.put("period", String.valueOf(RigMaintenanceNotifier.RUN_PERIOD));
-        this.notifierReg = context.registerService(Runnable.class.getName(), new RigMaintenanceNotifier(), props);
+        this.notifierReg = context.registerService(Runnable.class, new RigMaintenanceNotifier(), props);
         
         /* Register the Rig Management SOAP service. */
         this.logger.debug("Registering the Rig Management SOAP service.");
         ServletContainerService soapService = new ServletContainerService();
         soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-        this.soapService = context.registerService(ServletContainerService.class.getName(), soapService, null);
+        this.soapService = context.registerService(ServletContainerService.class, soapService, null);
 	}
 
 	@Override
@@ -111,7 +113,6 @@ public class RigManagementActivator implements BundleActivator
      */
     public static BookingEngineService getBookingService()
     {
-        if (bookingTracker == null) return null;
-        return (BookingEngineService) bookingTracker.getService();
+        return bookingTracker == null ? null : bookingTracker.getService();
     }
 }

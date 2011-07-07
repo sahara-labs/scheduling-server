@@ -1,79 +1,111 @@
 /**
- * OperatorType.java
- * This file was auto-generated from WSDL
- * by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:25:17 EDT)
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2009, University of Technology, Sydney
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names 
+ *    of its contributors may be used to endorse or promote products derived from 
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Tania Machet (tmachet)
+ * @date 13 December 2010
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.reports.intf.types;
 
+import java.util.HashMap;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMDataSource;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
+import org.apache.axis2.databinding.ADBBean;
+import org.apache.axis2.databinding.ADBDataSource;
+import org.apache.axis2.databinding.ADBException;
+import org.apache.axis2.databinding.utils.BeanUtil;
+import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReader;
+import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
 /**
- * OperatorType bean class
+ * OperatorType bean class.
  */
-
-public class OperatorType implements org.apache.axis2.databinding.ADBBean
+public class OperatorType implements ADBBean
 {
-
-    /**
-                 * 
-                 */
     private static final long serialVersionUID = -3507814399887274645L;
 
-    public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-            "http://remotelabs.eng.uts.edu.au/schedserver/reports", "operator_type1", "ns1");
+    public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/reports",
+            "operator_type1", "ns1");
 
-    private static java.lang.String generatePrefix(final java.lang.String namespace)
+    private static String generatePrefix(final String namespace)
     {
         if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/reports"))
         {
             return "ns1";
         }
-        return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+        return BeanUtil.getUniquePrefix();
     }
 
-    /**
-     * field for Operator_type0
-     */
+    protected String operator;
 
-    protected java.lang.String localOperator_type0;
-
-    private static java.util.HashMap _table_ = new java.util.HashMap();
-
-    // Constructor
-
-    protected OperatorType(final java.lang.String value, final boolean isRegisterValue)
-    {
-        this.localOperator_type0 = value;
-        if (isRegisterValue)
-        {
-
-            OperatorType._table_.put(this.localOperator_type0, this);
-
-        }
-
-    }
-
-    public static final java.lang.String _AND = org.apache.axis2.databinding.utils.ConverterUtil
-            .convertToString("AND");
-
-    public static final java.lang.String _OR = org.apache.axis2.databinding.utils.ConverterUtil
-            .convertToString("OR");
-
-    public static final java.lang.String _AND_NOT = org.apache.axis2.databinding.utils.ConverterUtil
-            .convertToString("AND NOT");
-
+    private static HashMap<String, OperatorType> _table_ = new HashMap<String, OperatorType>();
+    
+    public static final String _AND = ConverterUtil.convertToString("AND");
+    public static final String _OR = ConverterUtil.convertToString("OR");
+    public static final String _AND_NOT = ConverterUtil.convertToString("AND NOT");
+    
     public static final OperatorType AND = new OperatorType(OperatorType._AND, true);
-
     public static final OperatorType OR = new OperatorType(OperatorType._OR, true);
-
     public static final OperatorType AND_NOT = new OperatorType(OperatorType._AND_NOT, true);
 
-    public java.lang.String getValue()
+
+    protected OperatorType(final String value, final boolean isRegisterValue)
     {
-        return this.localOperator_type0;
+        this.operator = value;
+        if (isRegisterValue)
+        {
+            OperatorType._table_.put(this.operator, this);
+        }
+    }
+
+    public String getValue()
+    {
+        return this.operator;
     }
 
     @Override
-    public boolean equals(final java.lang.Object obj)
+    public boolean equals(final Object obj)
     {
         return (obj == this);
     }
@@ -85,104 +117,76 @@ public class OperatorType implements org.apache.axis2.databinding.ADBBean
     }
 
     @Override
-    public java.lang.String toString()
+    public String toString()
     {
-
-        return this.localOperator_type0.toString();
-
+        return this.operator.toString();
     }
 
-    /**
-     * isReaderMTOMAware
-     * 
-     * @return true if the reader supports MTOM
-     */
-    public static boolean isReaderMTOMAware(final javax.xml.stream.XMLStreamReader reader)
+    public static boolean isReaderMTOMAware(final XMLStreamReader reader)
     {
         boolean isReaderMTOMAware = false;
 
         try
         {
-            isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader
-                    .getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
+            isReaderMTOMAware = Boolean.TRUE.equals(reader.getProperty(OMConstants.IS_DATA_HANDLERS_AWARE));
         }
-        catch (final java.lang.IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             isReaderMTOMAware = false;
         }
         return isReaderMTOMAware;
     }
 
-    /**
-     * @param parentQName
-     * @param factory
-     * @return org.apache.axiom.om.OMElement
-     */
-    public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
-            final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException
+    public OMElement getOMElement(final QName parentQName, final OMFactory factory) throws ADBException
     {
-
-        final org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                OperatorType.MY_QNAME)
+        final OMDataSource dataSource = new ADBDataSource(this, OperatorType.MY_QNAME)
         {
-
             @Override
-            public void serialize(final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-                    throws javax.xml.stream.XMLStreamException
+            public void serialize(final MTOMAwareXMLStreamWriter xmlWriter) throws XMLStreamException
             {
                 OperatorType.this.serialize(OperatorType.MY_QNAME, factory, xmlWriter);
             }
         };
-        return new org.apache.axiom.om.impl.llom.OMSourcedElementImpl(OperatorType.MY_QNAME, factory, dataSource);
-
+        return new OMSourcedElementImpl(OperatorType.MY_QNAME, factory, dataSource);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter)
+            throws XMLStreamException, ADBException
     {
         this.serialize(parentQName, factory, xmlWriter, false);
     }
 
-    public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
-            final org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter,
-            final boolean serializeType) throws javax.xml.stream.XMLStreamException,
-            org.apache.axis2.databinding.ADBException
+    @Override
+    public void serialize(final QName parentQName, final OMFactory factory, final MTOMAwareXMLStreamWriter xmlWriter,
+            final boolean serializeType) throws XMLStreamException, ADBException
     {
-
-        //We can safely assume an element has only one type associated with it
-
-        final java.lang.String namespace = parentQName.getNamespaceURI();
-        final java.lang.String localName = parentQName.getLocalPart();
+        final String namespace = parentQName.getNamespaceURI();
+        final String localName = parentQName.getLocalPart();
 
         if (!namespace.equals(""))
         {
-            java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
+            String prefix = xmlWriter.getPrefix(namespace);
             if (prefix == null)
             {
                 prefix = OperatorType.generatePrefix(namespace);
-
                 xmlWriter.writeStartElement(prefix, localName, namespace);
                 xmlWriter.writeNamespace(prefix, namespace);
                 xmlWriter.setPrefix(prefix, namespace);
-
             }
             else
             {
                 xmlWriter.writeStartElement(namespace, localName);
             }
-
         }
         else
         {
             xmlWriter.writeStartElement(localName);
         }
 
-        // add the type details if this is used in a simple type
         if (serializeType)
         {
-            final java.lang.String namespacePrefix = this.registerPrefix(xmlWriter,
+            final String namespacePrefix = this.registerPrefix(xmlWriter,
                     "http://remotelabs.eng.uts.edu.au/schedserver/reports");
             if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0))
             {
@@ -196,58 +200,39 @@ public class OperatorType implements org.apache.axis2.databinding.ADBBean
             }
         }
 
-        if (this.localOperator_type0 == null)
+        if (this.operator == null)
         {
-
-            throw new org.apache.axis2.databinding.ADBException("Value cannot be null !!");
-
+            throw new ADBException("Value cannot be null !!");
         }
         else
         {
-
-            xmlWriter.writeCharacters(this.localOperator_type0);
-
+            xmlWriter.writeCharacters(this.operator);
         }
 
         xmlWriter.writeEndElement();
-
     }
 
-    /**
-     * Util method to write an attribute with the ns prefix
-     */
-    private void writeAttribute(final java.lang.String prefix, final java.lang.String namespace,
-            final java.lang.String attName, final java.lang.String attValue,
-            final javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException
+    private void writeAttribute(final String prefix, final String namespace, final String attName,
+            final String attValue, final XMLStreamWriter xmlWriter) throws XMLStreamException
     {
         if (xmlWriter.getPrefix(namespace) == null)
         {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
-
         }
-
         xmlWriter.writeAttribute(namespace, attName, attValue);
-
     }
 
-    /**
-     * Register a namespace prefix
-     */
-    private java.lang.String registerPrefix(final javax.xml.stream.XMLStreamWriter xmlWriter,
-            final java.lang.String namespace) throws javax.xml.stream.XMLStreamException
+    private String registerPrefix(final XMLStreamWriter xmlWriter, final String namespace) throws XMLStreamException
     {
-        java.lang.String prefix = xmlWriter.getPrefix(namespace);
-
+        String prefix = xmlWriter.getPrefix(namespace);
         if (prefix == null)
         {
             prefix = OperatorType.generatePrefix(namespace);
-
             while (xmlWriter.getNamespaceContext().getNamespaceURI(prefix) != null)
             {
-                prefix = org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
+                prefix = BeanUtil.getUniquePrefix();
             }
-
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
         }
@@ -255,62 +240,45 @@ public class OperatorType implements org.apache.axis2.databinding.ADBBean
         return prefix;
     }
 
-    /**
-     * databinding method to get an XML representation of this object
-     */
-    public javax.xml.stream.XMLStreamReader getPullParser(final javax.xml.namespace.QName qName)
-            throws org.apache.axis2.databinding.ADBException
+    @Override
+    public XMLStreamReader getPullParser(final QName qName) throws ADBException
     {
-
-        //We can safely assume an element has only one type associated with it
-        return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(OperatorType.MY_QNAME,
-                new java.lang.Object[] { org.apache.axis2.databinding.utils.reader.ADBXMLStreamReader.ELEMENT_TEXT,
-                        org.apache.axis2.databinding.utils.ConverterUtil.convertToString(this.localOperator_type0) },
-                null);
+        return new ADBXMLStreamReaderImpl(OperatorType.MY_QNAME, new Object[] { ADBXMLStreamReader.ELEMENT_TEXT,
+                ConverterUtil.convertToString(this.operator) }, null);
 
     }
 
-    /**
-     * Factory class that keeps the parse method
-     */
     public static class Factory
     {
-
-        public static OperatorType fromValue(final java.lang.String value) throws java.lang.IllegalArgumentException
+        public static OperatorType fromValue(final String value) throws IllegalArgumentException
         {
-            final OperatorType enumeration = (OperatorType)
-
-            OperatorType._table_.get(value);
-
+            final OperatorType enumeration = OperatorType._table_.get(value);
             if (enumeration == null)
             {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
             return enumeration;
         }
 
-        public static OperatorType fromString(final java.lang.String value, final java.lang.String namespaceURI)
-                throws java.lang.IllegalArgumentException
+        public static OperatorType fromString(final String value, final String namespaceURI)
+                throws IllegalArgumentException
         {
             try
             {
-
-                return Factory.fromValue(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(value));
-
+                return Factory.fromValue(ConverterUtil.convertToString(value));
             }
-            catch (final java.lang.Exception e)
+            catch (final Exception e)
             {
-                throw new java.lang.IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
         }
 
-        public static OperatorType fromString(final javax.xml.stream.XMLStreamReader xmlStreamReader,
-                final java.lang.String content)
+        public static OperatorType fromString(final XMLStreamReader xmlStreamReader, final String content)
         {
             if (content.indexOf(":") > -1)
             {
-                final java.lang.String prefix = content.substring(0, content.indexOf(":"));
-                final java.lang.String namespaceUri = xmlStreamReader.getNamespaceContext().getNamespaceURI(prefix);
+                final String prefix = content.substring(0, content.indexOf(":"));
+                final String namespaceUri = xmlStreamReader.getNamespaceContext().getNamespaceURI(prefix);
                 return OperatorType.Factory.fromString(content, namespaceUri);
             }
             else
@@ -319,70 +287,47 @@ public class OperatorType implements org.apache.axis2.databinding.ADBBean
             }
         }
 
-        /**
-         * static method to create the object
-         * Precondition: If this object is an element, the current or next start element starts this object and any
-         * intervening reader events are ignorable
-         * If this object is not an element, it is a complex type and the reader is at the event just after the outer
-         * start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element
-         * If this object is a complex type, the reader is positioned at the end element of its outer element
-         */
-        public static OperatorType parse(final javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception
+        public static OperatorType parse(final XMLStreamReader reader) throws Exception
         {
             OperatorType object = null;
-            new java.util.HashMap();
-            new java.util.ArrayList();
 
-            java.lang.String prefix = "";
-            java.lang.String namespaceuri = "";
+            String prefix = "";
+            String namespaceuri = "";
+            
             try
             {
-
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
                 }
-
-                new java.util.Vector();
-
                 while (!reader.isEndElement())
                 {
                     if (reader.isStartElement() || reader.hasText())
                     {
-
-                        final java.lang.String content = reader.getElementText();
-
+                        final String content = reader.getElementText();
                         if (content.indexOf(":") > 0)
                         {
-                            // this seems to be a Qname so find the namespace and send
                             prefix = content.substring(0, content.indexOf(":"));
                             namespaceuri = reader.getNamespaceURI(prefix);
                             object = OperatorType.Factory.fromString(content, namespaceuri);
                         }
                         else
                         {
-                            // this seems to be not a qname send and empty namespace incase of it is
-                            // check is done in fromString method
                             object = OperatorType.Factory.fromString(content, "");
                         }
-
                     }
                     else
                     {
                         reader.next();
                     }
-                } // end of while loop
-
+                }
             }
-            catch (final javax.xml.stream.XMLStreamException e)
+            catch (final XMLStreamException e)
             {
-                throw new java.lang.Exception(e);
+                throw new Exception(e);
             }
 
             return object;
         }
-
-    }//end of factory class
-
+    }
 }
