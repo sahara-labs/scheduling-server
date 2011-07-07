@@ -40,6 +40,9 @@ Date: 28th December 2009
 	<property name="component.name" value="Scheduling Server Framework" />
 	<property name="dist.dir" location="dist" />
 	
+	<!-- FIXME: Detected OSGI Jar filename. -->
+	<property name="osgi.lib" location="lib/org.eclipse.osgi_3.7.0.v20110613.jar" />
+	
 	<!-- Code compilation -->
 	<target name="build">
 		<mkdir dir="${build.classes.dir}" />
@@ -58,7 +61,7 @@ Date: 28th December 2009
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/SchedulingServer.jar" manifest="MANIFEST.MF">
 			<!-- <zipfileset src="lib/org.apache.felix.framework-2.0.1.jar"/> -->
-			<zipfileset src="lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar" dirmode="777" filemode="666">
+			<zipfileset src="${osgi.lib}" dirmode="777" filemode="666">
 				<exclude name="**/*.RSA" />
 				<exclude name="**/*.SF" />
 				<exclude name="**/eclipse.inf" />

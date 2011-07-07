@@ -44,20 +44,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.jar.JarFile;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
-import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.framework.wiring.FrameworkWiring;
 
 /**
  * Starts the Scheduling Server OSGi framework instance and shutdown it down
@@ -248,13 +248,9 @@ public class SchedulingServer
              * the newly updated bundle.
              */
             bundle.update(new FileInputStream(bundleJar));
-            final ServiceReference ref = context.getServiceReference(PackageAdmin.class.getCanonicalName());
-            if (ref != null)
-            {
-                final PackageAdmin adm = (PackageAdmin) context.getService(ref);
-                adm.refreshPackages(new Bundle[] { bundle });
-                context.ungetService(ref);
-            }
+            
+            FrameworkWiring wire = SchedulingServer.framework.adapt(FrameworkWiring.class);
+            wire.refreshBundles(Arrays.asList(new Bundle[]{ bundle }));
         }
 
         if (doStart && !(bundle.getState() == Bundle.ACTIVE || bundle.getState() == Bundle.STARTING))
