@@ -55,7 +55,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Logger"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Server"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-TaskScheduler"/>
-	<classpathentry kind="lib" path="/SchedServer-Framework/lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-Server/lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
