@@ -62,6 +62,9 @@ public class RemoteSite implements Serializable
 
     /** Record Identifier. */
     private long id;
+    
+    /** Identification GUID. */
+    private String guid;
 
     /** The name of the remote site institution. */
     private String name;
@@ -95,6 +98,17 @@ public class RemoteSite implements Serializable
     public void setId(long id)
     {
         this.id = id;
+    }
+    
+    @Column(name = "guid", unique = true, nullable = false)
+    public String getGuid()
+    {
+        return this.guid;
+    }
+    
+    public void setGuid(String guid)
+    {
+        this.guid = guid;
     }
 
     @Column(name = "name", unique = true, nullable = false)
