@@ -590,6 +590,10 @@ public class Queuer implements QueuerSkeletonInterface
                 }
             }
         }
+        else if (ResourcePermission.CONSUMER_PERMISSION.equals(type))
+        {
+            // TODO Load remote permission.
+        }
 
         return queue;
     }

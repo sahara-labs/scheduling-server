@@ -111,7 +111,7 @@ public class RemoteSite implements Serializable
         this.guid = guid;
     }
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false, length = 255)
     public String getName()
     {
         return this.name;
@@ -133,7 +133,7 @@ public class RemoteSite implements Serializable
         this.userNamespace = userNamespace;
     }
 
-    @Column(name = "service_address", nullable = false)
+    @Column(name = "service_address", nullable = false, length = 1024)
     public String getServiceAddress()
     {
         return this.serviceAddress;
@@ -155,7 +155,7 @@ public class RemoteSite implements Serializable
         this.online = online;
     }
 
-    @Column(name = "offline_reason", nullable = true)
+    @Column(name = "offline_reason", nullable = true, length = 255)
     public String getOfflineReason()
     {
         return this.offlineReason;
