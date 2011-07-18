@@ -37,11 +37,4 @@
 		<nature>org.eclipse.pde.api.tools.apiAnalysisNature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>schedulingserver.properties</name>
-			<type>1</type>
-			<location>/home/mdiponio/workspace/SchedulingServer/conf/schedulingserver.properties</location>
-		</link>
-	</linkedResources>
 </projectDescription>
