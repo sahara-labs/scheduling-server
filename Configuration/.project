@@ -37,21 +37,4 @@
 		<nature>org.eclipse.pde.api.tools.apiAnalysisNature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>consumer.properties</name>
-			<type>1</type>
-			<location>/home/mdiponio/capstone/workspace/SchedulingServer/conf/consumer.properties</location>
-		</link>
-		<link>
-			<name>provider.properties</name>
-			<type>1</type>
-			<location>/home/mdiponio/capstone/workspace/SchedulingServer/conf/provider.properties</location>
-		</link>
-		<link>
-			<name>schedulingserver.properties</name>
-			<type>1</type>
-			<location>/home/mdiponio/workspace/SchedulingServer/conf/schedulingserver.properties</location>
-		</link>
-	</linkedResources>
 </projectDescription>
