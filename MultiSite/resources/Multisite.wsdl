@@ -391,16 +391,98 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="MultiSiteSOAP" type="mut:MultiSite">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="checkAvailability">
-      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/NewOperation"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="checkAvailability">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/NewOperation" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="addToQueue">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/addToQueue" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getUserStatus">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getUserStatus" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getQueuePosition">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getQueuePosition" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getSessionInformation">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getSessionInformation" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="finishSession">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/finishSession" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="createBooking">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/createBooking" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="cancelBooking">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/cancelBooking" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="findFreeBookings">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/findFreeBookings" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="MultiSite">
     <wsdl:port binding="mut:MultiSiteSOAP" name="MultiSiteSOAP">
