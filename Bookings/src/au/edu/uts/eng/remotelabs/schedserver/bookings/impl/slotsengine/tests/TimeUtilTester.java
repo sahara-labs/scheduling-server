@@ -47,6 +47,7 @@ import static java.util.Calendar.YEAR;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -472,6 +473,68 @@ public class TimeUtilTester extends TestCase
         assertEquals(TimeUtil.getDayKey(cal), keys.get(3));
         cal.add(Calendar.DAY_OF_MONTH, 1);
         assertEquals(TimeUtil.getDayKey(cal), keys.get(4));
+    }
+    
+    public void testGetDayKeysTz() throws Exception
+    {
+        TimeZone tz = TimeZone.getTimeZone("Australia/Sydney");
+        
+        Calendar start = Calendar.getInstance(tz);
+        start.set(Calendar.YEAR, 2011);
+        start.set(Calendar.MONTH, 9);
+        start.set(Calendar.DAY_OF_MONTH, 2);
+        start.set(Calendar.HOUR_OF_DAY, 23);
+        start.set(Calendar.MINUTE, 59);
+        start.set(Calendar.SECOND, 59);
+        start.set(Calendar.MILLISECOND, 0);
+        
+        Calendar end = Calendar.getInstance(tz);
+        end.set(Calendar.YEAR, 2011);
+        end.set(Calendar.MONTH, 9);
+        end.set(Calendar.DAY_OF_MONTH, 3);
+        end.set(Calendar.HOUR_OF_DAY, 0);
+        end.set(Calendar.MINUTE, 0);
+        end.set(Calendar.SECOND, 1);
+        end.set(Calendar.MILLISECOND, 0);
+        
+        Calendar bstart = Calendar.getInstance(tz);
+        bstart.setTimeInMillis(start.getTimeInMillis());
+        Calendar bend = Calendar.getInstance(tz);
+        bend.setTimeInMillis(end.getTimeInMillis());
+        
+        List<String> keys = TimeUtil.getDayKeys(start, end);
+        
+        assertEquals(bstart, start);
+        assertEquals(bend, end);
+        
+        assertEquals(2, keys.size());
+        assertEquals("2011-09-02", keys.get(0));
+        assertEquals("2011-09-03", keys.get(1));
+    }
+    
+    public void testGetDayKeysTz2() throws Exception
+    {   
+        TimeZone tz = TimeZone.getTimeZone("Australia/Sydney");
+        
+        Calendar start = Calendar.getInstance(tz);
+        start.setTimeInMillis(1317477600000L);
+        
+        Calendar end = Calendar.getInstance(tz);
+        end.setTimeInMillis(1317563999000L);
+        
+        Calendar bstart = Calendar.getInstance(tz);
+        bstart.setTimeInMillis(start.getTimeInMillis());
+        Calendar bend = Calendar.getInstance(tz);
+        bend.setTimeInMillis(end.getTimeInMillis());
+        
+        List<String> keys = TimeUtil.getDayKeys(start, end);
+        
+        assertEquals(bstart, start);
+        assertEquals(bend, end);
+        
+        assertEquals(2, keys.size());
+        assertEquals("2011-09-02", keys.get(0));
+        assertEquals("2011-09-03", keys.get(1));
     }
     
     public void testGetDayKeysFiveDaysDate() throws Exception

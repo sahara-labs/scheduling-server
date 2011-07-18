@@ -140,11 +140,16 @@ public class BookingsService implements BookingsInterface
         
         Calendar start = booking.getStartTime();
         Calendar end = booking.getEndTime();
+        this.dstHack(start);
+        this.dstHack(end);
+        
         debug += ", start=" + start.getTime() + ", end=" + end.getTime();
         
         debug += ", send notification=" + request.getSendNotification() + ", notification time zone=" + 
                 request.getNotificationTimezone() +  '.';
         this.logger.debug(debug);
+        
+        
         
         /* --------------------------------------------------------------------
          * -- Generate default response parameters.                          --
@@ -495,10 +500,12 @@ public class BookingsService implements BookingsInterface
         
         Calendar reqStart = request.getPeriod().getStartTime();
         Calendar reqEnd = request.getPeriod().getEndTime();
+        this.dstHack(reqStart);
+        this.dstHack(reqEnd);
+        
         debug += " period start=" + reqStart.getTime() + ", period end=" + reqEnd.getTime();
         this.logger.debug(debug);
         
-
         /* --------------------------------------------------------------------
          * -- Generate valid, blank request parameters.                      --
          * -------------------------------------------------------------------- */
@@ -1206,6 +1213,26 @@ public class BookingsService implements BookingsInterface
         catch (NumberFormatException nfe)
         {
             return 0;
+        }
+    }
+    
+    /**
+     * Hack to account for day light savings time.
+     * 
+     * @param time time to modify
+     */
+    private void dstHack(Calendar time)
+    {
+        TimeZone tz = TimeZone.getDefault();
+        
+        if (tz.inDaylightTime(new Date()) && !tz.inDaylightTime(time.getTime()))
+        {
+            time.add(Calendar.MILLISECOND, tz.getDSTSavings());
+        }
+        else if (!tz.inDaylightTime(new Date()) && tz.inDaylightTime(time.getTime()))
+        {
+            time.add(Calendar.MILLISECOND, -tz.getDSTSavings());
+
         }
     }
 }

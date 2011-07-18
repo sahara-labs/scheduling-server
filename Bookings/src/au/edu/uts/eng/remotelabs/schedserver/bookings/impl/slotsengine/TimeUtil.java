@@ -357,25 +357,37 @@ public class TimeUtil
     /**
      * Returns the days in the specified date period.
      * 
+     * @param start period start
+     * @param end period end
+     * @return list of day keys
+     */
+    public static List<String> getDayKeys(Calendar start, Calendar end)
+    {
+        Calendar nstart = (Calendar)start.clone();
+        Calendar nend = Calendar.getInstance();
+        nend.setTime(end.getTime());
+        
+        List<String> days = new ArrayList<String>();
+        days.add(TimeUtil.getDayKey(nstart));
+
+        while (nstart.get(Calendar.DAY_OF_YEAR) != nend.get(Calendar.DAY_OF_YEAR))
+        {
+            nstart.add(Calendar.DAY_OF_YEAR, 1);
+            days.add(TimeUtil.getDayKey(nstart));
+        }
+        
+        return days;
+    }
+    
+    /**
+     * Returns the days in the specified date period.
+     * 
      * @param period time period
      * @return list of day keys
      */
     public static List<String> getDayKeys(TimePeriod period)
-    {
-        List<String> days = new ArrayList<String>();
-        
-        Calendar start = Calendar.getInstance();
-        start.setTimeInMillis(period.getStartTime().getTimeInMillis());
-        Calendar end = period.getEndTime();
-        
-        days.add(TimeUtil.getDayKey(start));
-        while (end.compareTo(start) < 86.4e6 && start.get(Calendar.DAY_OF_YEAR) != end.get(Calendar.DAY_OF_YEAR))
-        {
-            start.add(Calendar.DAY_OF_MONTH, 1);
-            days.add(TimeUtil.getDayKey(start));
-        }
-        
-        return days;
+    {        
+        return TimeUtil.getDayKeys(period.getStartTime(), period.getEndTime());
     }
     
     /**
@@ -386,22 +398,13 @@ public class TimeUtil
      * @return list of day keys
      */
     public static List<String> getDayKeys(Date start, Date end)
-    {
-        List<String> days = new ArrayList<String>();
-        
+    {   
         Calendar startCal = Calendar.getInstance();
         startCal.setTime(start);
         Calendar endCal = Calendar.getInstance();
         endCal.setTime(end);
         
-        days.add(TimeUtil.getDayKey(start));
-        while (end.compareTo(start) < 86.4e6 && startCal.get(Calendar.DAY_OF_YEAR) != endCal.get(Calendar.DAY_OF_YEAR))
-        {
-            startCal.add(Calendar.DAY_OF_MONTH, 1);
-            days.add(TimeUtil.getDayKey(startCal));
-        }
-        
-        return days;
+        return TimeUtil.getDayKeys(startCal, endCal);
     }
     
     /**
