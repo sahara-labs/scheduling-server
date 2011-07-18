@@ -39,7 +39,7 @@
 
 Name: SchedulingServer
 Summary: Schedules and assigns remote laboratory rigs.
-Version: 3.0
+Version: 3.1
 Release: 0
 License: BSD
 Group: Sahara
@@ -47,13 +47,24 @@ Group: Sahara
 URL: http://sourceforge.net/projects/labshare-sahara/
 Distribution: Redhat, SuSE
 Vendor: University of Technology, Sydney
-Packager: Tania Machet <tmachet@eng.uts.edu.au>, Michael Diponio <mdiponio@eng.uts.edu.au>
+Packager: Michael Diponio <mdiponio@eng.uts.edu.au>, Tania Machet <tmachet@eng.uts.edu.au>
 Requires: jre >= 1.6.0
 
 %define installdir /usr/lib/schedulingserver
 
 %description
 Schedules and assigns remote laboratory rigs.
+
+%pre
+
+# Clean up directories for previous version
+if [ -e ${installdir}/bin ] ; then
+    rm -rf ${installdir}/bin &> /dev/null
+fi
+
+if [ -e ${installdir}/bundle ] ; then 
+    rm -rf ${installdir}/bundle &> /dev/null
+fi 
 
 %install
 
@@ -134,15 +145,4 @@ rm -f  /etc/Sahara/SchedulingServer
 
 %files
 /etc/init.d/schedulingserver
-/etc/Sahara
 %{installdir}
-%{installdir}/bin
-%{installdir}/bin/SchedulingServer.jar
-%{installdir}/bundles
-%{installdir}/bundles/*.jar
-%{installdir}/conf
-%{installdir}/conf/schedulingserver.properties
-%{installdir}/conf/scheduling_service.ini
-%{installdir}/schedulingservice
-%{installdir}/LICENSE
-%{installdir}/schemas
