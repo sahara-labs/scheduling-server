@@ -37,30 +37,44 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.multisite;
 
+import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * Activator for the multisite project.
  */
 public class MultiSiteActivator implements BundleActivator 
 {
+    /** Servlet hosting service. */
+    private ServiceRegistration<ServletContainerService> soapService;
+    
     /** Logger. */
     private Logger logger;
+    
     @Override
 	public void start(BundleContext bundleContext) throws Exception 
 	{
 		this.logger = LoggerActivator.getLogger();
 		this.logger.info("Multisite bundle starting up.");
+		
+		ServletContainerService serv = new ServletContainerService();
+		serv.addServlet(new ServletContainer(new AxisServlet(), true));
+		this.soapService = bundleContext.registerService(ServletContainerService.class, serv, null);
 	}
 
     @Override
 	public void stop(BundleContext bundleContext) throws Exception 
 	{
 		this.logger.info("Multisie bundle shutting down.");
+		
+		this.soapService.unregister();
 	}
 
 }
