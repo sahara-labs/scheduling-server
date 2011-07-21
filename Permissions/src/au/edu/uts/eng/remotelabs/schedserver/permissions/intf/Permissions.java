@@ -884,11 +884,15 @@ public class Permissions implements PermissionsSkeletonInterface
                     permission.setRemoteSite(remotePerm.getSite().getName());
                 }
             }
+            else if (ResourcePermission.CONSUMER_PERMISSION.equals(rp.getType()))
+            {
+                // FIXME Consumer permission handling
+            }
             else
             {
                 this.logger.warn("Incorrect configuration of a resource permission with id " + rp.getId() + 
                         ". It has an unknown resource type " + rp.getType() + ". It should be one of " +
-                        "'RIG', 'TYPE' or 'CAPABILITY'.");
+                        "'RIG', 'TYPE', 'CAPABILITY' or 'CONSUMER'.");
             }
             
             /* Other resource permission details. */
@@ -1030,7 +1034,7 @@ public class Permissions implements PermissionsSkeletonInterface
                 {
                     this.logger.warn("Incorrect configuration of a resource permission with id " + resPerm.getId() + 
                             ". It has an unknown resource type " + resPerm.getType() + ". It should be one of " +
-                            "'RIG', 'TYPE' or 'CAPABILITY'.");
+                            "'RIG', 'TYPE', 'CONSUMER' or 'CAPABILITY'.");
                 }
 
                 /* Add information about permission. */

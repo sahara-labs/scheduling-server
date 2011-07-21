@@ -25,30 +25,30 @@
             
 
                         /**
-                        * field for Guid
+                        * field for SiteID
                         */
 
                         
-                                    protected java.lang.String localGuid ;
+                                    protected java.lang.String localSiteID ;
                                 
 
                            /**
                            * Auto generated getter method
                            * @return java.lang.String
                            */
-                           public  java.lang.String getGuid(){
-                               return localGuid;
+                           public  java.lang.String getSiteID(){
+                               return localSiteID;
                            }
 
                            
                         
                             /**
                                * Auto generated setter method
-                               * @param param Guid
+                               * @param param SiteID
                                */
-                               public void setGuid(java.lang.String param){
+                               public void setSiteID(java.lang.String param){
                             
-                                            this.localGuid=param;
+                                            this.localSiteID=param;
                                     
 
                                }
@@ -114,18 +114,18 @@
                    }
                
                                     namespace = "";
-                                    writeStartElement(null, namespace, "guid", xmlWriter);
+                                    writeStartElement(null, namespace, "siteID", xmlWriter);
                              
 
-                                          if (localGuid==null){
+                                          if (localSiteID==null){
                                               // write the nil attribute
                                               
-                                                     throw new org.apache.axis2.databinding.ADBException("guid cannot be null!!");
+                                                     throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
                                                   
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localGuid);
+                                                   xmlWriter.writeCharacters(localSiteID);
                                             
                                           }
                                     
@@ -312,12 +312,12 @@
 
                 
                                       elementList.add(new javax.xml.namespace.QName("",
-                                                                      "guid"));
+                                                                      "siteID"));
                                  
-                                        if (localGuid != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localGuid));
+                                        if (localSiteID != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSiteID));
                                         } else {
-                                           throw new org.apache.axis2.databinding.ADBException("guid cannot be null!!");
+                                           throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
                                         }
                                     
 
@@ -398,11 +398,11 @@
                                     
                                     while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
                                 
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","guid").equals(reader.getName())){
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","siteID").equals(reader.getName())){
                                 
                                     java.lang.String content = reader.getElementText();
                                     
-                                              object.setGuid(
+                                              object.setSiteID(
                                                     org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                               
                                         reader.next();

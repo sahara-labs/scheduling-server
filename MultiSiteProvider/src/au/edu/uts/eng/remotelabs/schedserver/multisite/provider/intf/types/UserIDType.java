@@ -25,30 +25,30 @@
             
 
                         /**
-                        * field for Name
+                        * field for UserID
                         */
 
                         
-                                    protected java.lang.String localName ;
+                                    protected java.lang.String localUserID ;
                                 
 
                            /**
                            * Auto generated getter method
                            * @return java.lang.String
                            */
-                           public  java.lang.String getName(){
-                               return localName;
+                           public  java.lang.String getUserID(){
+                               return localUserID;
                            }
 
                            
                         
                             /**
                                * Auto generated setter method
-                               * @param param Name
+                               * @param param UserID
                                */
-                               public void setName(java.lang.String param){
+                               public void setUserID(java.lang.String param){
                             
-                                            this.localName=param;
+                                            this.localUserID=param;
                                     
 
                                }
@@ -110,36 +110,36 @@
 
                
                                     namespace = "";
-                                    writeStartElement(null, namespace, "guid", xmlWriter);
+                                    writeStartElement(null, namespace, "siteID", xmlWriter);
                              
 
-                                          if (localGuid==null){
+                                          if (localSiteID==null){
                                               // write the nil attribute
                                               
-                                                     throw new org.apache.axis2.databinding.ADBException("guid cannot be null!!");
+                                                     throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
                                                   
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localGuid);
+                                                   xmlWriter.writeCharacters(localSiteID);
                                             
                                           }
                                     
                                    xmlWriter.writeEndElement();
                              
                                     namespace = "";
-                                    writeStartElement(null, namespace, "name", xmlWriter);
+                                    writeStartElement(null, namespace, "userID", xmlWriter);
                              
 
-                                          if (localName==null){
+                                          if (localUserID==null){
                                               // write the nil attribute
                                               
-                                                     throw new org.apache.axis2.databinding.ADBException("name cannot be null!!");
+                                                     throw new org.apache.axis2.databinding.ADBException("userID cannot be null!!");
                                                   
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localName);
+                                                   xmlWriter.writeCharacters(localUserID);
                                             
                                           }
                                     
@@ -329,21 +329,21 @@
                     attribList.add(new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","UserIDType"));
                 
                                       elementList.add(new javax.xml.namespace.QName("",
-                                                                      "guid"));
+                                                                      "siteID"));
                                  
-                                        if (localGuid != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localGuid));
+                                        if (localSiteID != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSiteID));
                                         } else {
-                                           throw new org.apache.axis2.databinding.ADBException("guid cannot be null!!");
+                                           throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
                                         }
                                     
                                       elementList.add(new javax.xml.namespace.QName("",
-                                                                      "name"));
+                                                                      "userID"));
                                  
-                                        if (localName != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localName));
+                                        if (localUserID != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localUserID));
                                         } else {
-                                           throw new org.apache.axis2.databinding.ADBException("name cannot be null!!");
+                                           throw new org.apache.axis2.databinding.ADBException("userID cannot be null!!");
                                         }
                                     
 
@@ -424,11 +424,11 @@
                                     
                                     while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
                                 
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","guid").equals(reader.getName())){
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","siteID").equals(reader.getName())){
                                 
                                     java.lang.String content = reader.getElementText();
                                     
-                                              object.setGuid(
+                                              object.setSiteID(
                                                     org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                               
                                         reader.next();
@@ -443,11 +443,11 @@
                                     
                                     while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
                                 
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","name").equals(reader.getName())){
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","userID").equals(reader.getName())){
                                 
                                     java.lang.String content = reader.getElementText();
                                     
-                                              object.setName(
+                                              object.setUserID(
                                                     org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                               
                                         reader.next();

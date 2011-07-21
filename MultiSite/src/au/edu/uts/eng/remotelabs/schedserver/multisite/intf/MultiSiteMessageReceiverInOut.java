@@ -74,7 +74,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatusResponse;
 
 /**
- * MultiSiteMessageReceiverInOut messag/home/mdiponio/capstone/workspacee receiver.
+ * MultiSiteMessageReceiverInOut message receiver.
  */
 public class MultiSiteMessageReceiverInOut extends AbstractInOutMessageReceiver
 {

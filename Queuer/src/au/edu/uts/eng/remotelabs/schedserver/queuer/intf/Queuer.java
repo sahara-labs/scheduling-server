@@ -60,6 +60,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.PermissionAvailabilityCheck;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.PermissionAvailabilityCheck.QueueTarget;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
@@ -592,7 +594,41 @@ public class Queuer implements QueuerSkeletonInterface
         }
         else if (ResourcePermission.CONSUMER_PERMISSION.equals(type))
         {
-            // TODO Load remote permission.
+            /* Sanity check to make sure the permission actually has a mapping. */
+            if (perm.getRemotePermission() == null)
+            {
+                this.logger.warn("Consumer type permission does not have a mapping to a remote permission so cannot " +
+                		"make remote request to determine availability.");
+                return queue;
+            }
+            
+            /* Make the remote call and populate the results. */
+            PermissionAvailabilityCheck check = new PermissionAvailabilityCheck();
+            if (check.checkAvailability(perm.getRemotePermission(), ses))
+            {
+                queue.setViable(check.isViable());
+                queue.setHasFree(check.hasFree());
+                queue.setIsBookable(check.isBookable());
+                queue.setIsQueuable(check.isQueueable());
+                queue.setIsCodeAssignable(check.isCodeAssignable());
+                
+                ResourceIDType res = new ResourceIDType();
+                res.setResourceName(check.getResourceName());
+                res.setType(check.getResourceType());
+                queue.setQueuedResource(res);
+                
+                for (QueueTarget qt : check.getQueueTargets())
+                {
+                    QueueTargetType target = new QueueTargetType();
+                    target.setViable(qt.isVaiable());
+                    target.setIsFree(qt.isFree());
+                    queue.addQueueTarget(target);
+                    ResourceIDType resTarget = new ResourceIDType();
+                    resTarget.setType(qt.getType());
+                    resTarget.setResourceName(qt.getName());
+                    target.setResource(resTarget);
+                }
+            }
         }
 
         return queue;

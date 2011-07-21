@@ -1,59 +1,48 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<wsdl:definitions xmlns:mut="http://remotelabs.eng.uts.edu.au/schedserver/multisite" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Multisite" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite">
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="Multisite" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite" xmlns:mut="http://remotelabs.eng.uts.edu.au/schedserver/multisite" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
     <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite">
-      <xsd:element name="checkAvailability"
-      	type="mut:PermissionIDType">
+      <xsd:element name="checkAvailability" type="mut:PermissionIDType">
       </xsd:element>
-      <xsd:element name="checkAvailabilityResponse"
-      	type="mut:AvailabilityResponseType">
+      <xsd:element name="checkAvailabilityResponse" type="mut:AvailabilityResponseType">
       </xsd:element>
       <xsd:element name="addToQueue" type="mut:QueueRequestType">
       </xsd:element>
-      <xsd:element name="addToQueueResponse"
-      	type="mut:OperationResponseType">
+      <xsd:element name="addToQueueResponse" type="mut:OperationResponseType">
       </xsd:element>
-      <xsd:element name="getUserStatus" type="mut:UserIDType"></xsd:element>
+      <xsd:element name="getUserStatus" type="mut:UserIDType"/>
       <xsd:element name="getUserStatusResponse" type="mut:UserStatusType">
       </xsd:element>
       <xsd:element name="getQueuePosition" type="mut:UserIDType">
       </xsd:element>
-      <xsd:element name="getQueuePositionResponse"
-      	type="mut:QueueType">
+      <xsd:element name="getQueuePositionResponse" type="mut:QueueType">
       </xsd:element>
       <xsd:element name="getSessionInformation" type="mut:UserIDType">
       </xsd:element>
-      <xsd:element name="getSessionInformationResponse"
-      	type="mut:SessionType">
+      <xsd:element name="getSessionInformationResponse" type="mut:SessionType">
       </xsd:element>
       <xsd:element name="finishSession" type="mut:UserIDType">
       </xsd:element>
-      <xsd:element name="finishSessionResponse"
-      	type="mut:OperationResponseType">
+      <xsd:element name="finishSessionResponse" type="mut:OperationResponseType">
       </xsd:element>
       <xsd:element name="createBooking" type="mut:CreateBookingType">
       </xsd:element>
-      <xsd:element name="createBookingResponse"
-      	type="mut:BookingResponseType">
+      <xsd:element name="createBookingResponse" type="mut:BookingResponseType">
       </xsd:element>
       <xsd:element name="cancelBooking" type="mut:BookingIDType">
       </xsd:element>
-      <xsd:element name="cancelBookingResponse"
-      	type="mut:OperationResponseType">
+      <xsd:element name="cancelBookingResponse" type="mut:OperationResponseType">
       </xsd:element>
-      <xsd:element name="findFreeBookings"
-      	type="mut:FindFreeBookingsType">
+      <xsd:element name="findFreeBookings" type="mut:FindFreeBookingsType">
       </xsd:element>
-      <xsd:element name="findFreeBookingsResponse"
-      	type="mut:FindFreeBookingsResponseType">
+      <xsd:element name="findFreeBookingsResponse" type="mut:FindFreeBookingsResponseType">
       </xsd:element>
 
       <xsd:complexType name="PermissionIDType">
       	<xsd:complexContent>
       		<xsd:extension base="mut:SiteIDType">
       			<xsd:sequence>
-      				<xsd:element name="guid"
-      					type="xsd:string">
+      				<xsd:element name="permissionID" type="xsd:string">
       				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>
@@ -62,7 +51,7 @@
 
       <xsd:complexType name="SiteIDType">
       	<xsd:sequence>
-      		<xsd:element name="guid" type="xsd:string"></xsd:element>
+      		<xsd:element name="siteID" type="xsd:string"/>
       	</xsd:sequence>
       </xsd:complexType>
     
@@ -70,11 +59,9 @@
       	<xsd:complexContent>
       		<xsd:extension base="mut:SiteIDType">
       			<xsd:sequence>
-      				<xsd:element name="permission"
-      					type="mut:PermissionIDType">
+      				<xsd:element name="permission" type="mut:PermissionIDType">
       				</xsd:element>
-      				<xsd:element name="user"
-      					type="mut:UserIDType">
+      				<xsd:element name="user" type="mut:UserIDType">
       				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>
@@ -85,8 +72,7 @@
       	<xsd:complexContent>
       		<xsd:extension base="mut:SiteIDType">
       			<xsd:sequence>
-      				<xsd:element name="name"
-      					type="xsd:string">
+      				<xsd:element name="userID" type="xsd:string">
       				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>
@@ -95,90 +81,81 @@
 
       <xsd:complexType name="UserStatusType">
       	<xsd:sequence>
-      		<xsd:element name="inQueue" type="xsd:boolean"></xsd:element>
-      		<xsd:element name="inSession" type="xsd:boolean"></xsd:element>
-      		<xsd:element name="inBooking" type="xsd:boolean"></xsd:element>
-      		<xsd:element name="queuedResource" type="mut:ResourceType"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element name="inQueue" type="xsd:boolean"/>
+      		<xsd:element name="inSession" type="xsd:boolean"/>
+      		<xsd:element name="inBooking" type="xsd:boolean"/>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="queuedResource" type="mut:ResourceType">
       		</xsd:element>
-      		<xsd:element name="bookedResource" type="mut:ResourceType"
-      			maxOccurs="1" minOccurs="0">
+      		<xsd:element maxOccurs="1" minOccurs="0" name="bookedResource" type="mut:ResourceType">
       		</xsd:element>
-      		<xsd:element name="session" type="mut:SessionType" maxOccurs="1" minOccurs="0"></xsd:element>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="session" type="mut:SessionType"/>
       	</xsd:sequence>
       </xsd:complexType>
 
       <xsd:complexType name="OperationResponseType">
             	<xsd:sequence>
-            		<xsd:element name="wasSuccessful"
-            			type="xsd:boolean">
+            		<xsd:element name="wasSuccessful" type="xsd:boolean">
             		</xsd:element>
-            		<xsd:element name="reason" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+            		<xsd:element maxOccurs="1" minOccurs="0" name="reason" type="xsd:string"/>
             	</xsd:sequence>
             </xsd:complexType>
     
             <xsd:complexType name="AvailabilityResponseType">
             	<xsd:sequence>
-            		<xsd:element name="viable" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="hasFree" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="isQueueable"
-            			type="xsd:boolean">
+            		<xsd:element name="viable" type="xsd:boolean"/>
+            		<xsd:element name="hasFree" type="xsd:boolean"/>
+            		<xsd:element name="isQueueable" type="xsd:boolean">
             		</xsd:element>
-            		<xsd:element name="isBookable" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="isCodeAssignable"
-            			type="xsd:boolean">
+            		<xsd:element name="isBookable" type="xsd:boolean"/>
+            		<xsd:element name="isCodeAssignable" type="xsd:boolean">
             		</xsd:element>
-            		<xsd:element name="queuedResource"
-            			type="mut:ResourceType">
+            		<xsd:element name="queuedResource" type="mut:ResourceType">
             		</xsd:element>
-            		<xsd:element name="queueTarget" type="mut:QueueTargetType" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+            		<xsd:element maxOccurs="unbounded" minOccurs="0" name="queueTarget" type="mut:QueueTargetType"/>
             	</xsd:sequence>
             </xsd:complexType>
     
             <xsd:complexType name="QueueTargetType">
             	<xsd:sequence>
-            		<xsd:element name="resource" type="mut:ResourceType"></xsd:element>
-            		<xsd:element name="viable" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="isFree" type="xsd:boolean"></xsd:element>
+            		<xsd:element name="resource" type="mut:ResourceType"/>
+            		<xsd:element name="viable" type="xsd:boolean"/>
+            		<xsd:element name="isFree" type="xsd:boolean"/>
             	</xsd:sequence>
             </xsd:complexType>
             
             <xsd:complexType name="ResourceType">
             	<xsd:sequence>
-            		<xsd:element name="type" type="xsd:string"></xsd:element>
-            		<xsd:element name="name" type="xsd:string"></xsd:element>
+            		<xsd:element name="type" type="xsd:string"/>
+            		<xsd:element name="name" type="xsd:string"/>
             	</xsd:sequence>
             </xsd:complexType>
     
             <xsd:complexType name="SessionType">
             	<xsd:sequence>
-            		<xsd:element name="isReady" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="isCodeAssigned"
-            			type="xsd:boolean">
+            		<xsd:element name="isReady" type="xsd:boolean"/>
+            		<xsd:element name="isCodeAssigned" type="xsd:boolean">
             		</xsd:element>
-            		<xsd:element name="resource" type="mut:ResourceType" maxOccurs="1" minOccurs="0"></xsd:element>
-            		<xsd:element name="rigType" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-            		<xsd:element name="contactURL" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-            		<xsd:element name="time" type="xsd:int"></xsd:element>
-            		<xsd:element name="timeLeft" type="xsd:int"></xsd:element>
-            		<xsd:element name="extensions" type="xsd:int"></xsd:element>
-            		<xsd:element name="warningMessage" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+            		<xsd:element maxOccurs="1" minOccurs="0" name="resource" type="mut:ResourceType"/>
+            		<xsd:element maxOccurs="1" minOccurs="0" name="rigType" type="xsd:string"/>
+            		<xsd:element maxOccurs="1" minOccurs="0" name="contactURL" type="xsd:string"/>
+            		<xsd:element name="time" type="xsd:int"/>
+            		<xsd:element name="timeLeft" type="xsd:int"/>
+            		<xsd:element name="extensions" type="xsd:int"/>
+            		<xsd:element maxOccurs="1" minOccurs="0" name="warningMessage" type="xsd:string"/>
             	</xsd:sequence>
             </xsd:complexType>
     
             <xsd:complexType name="QueueType">
             	<xsd:sequence>
-            		<xsd:element name="inQueue" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="inSession" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="inBooking" type="xsd:boolean"></xsd:element>
-            		<xsd:element name="queuedResource"
-            			type="mut:ResourceType" maxOccurs="1" minOccurs="0">
+            		<xsd:element name="inQueue" type="xsd:boolean"/>
+            		<xsd:element name="inSession" type="xsd:boolean"/>
+            		<xsd:element name="inBooking" type="xsd:boolean"/>
+            		<xsd:element maxOccurs="1" minOccurs="0" name="queuedResource" type="mut:ResourceType">
             		</xsd:element>
-            		<xsd:element name="assignedResource"
-            			type="mut:ResourceType" maxOccurs="1" minOccurs="0">
+            		<xsd:element maxOccurs="1" minOccurs="0" name="assignedResource" type="mut:ResourceType">
             		</xsd:element>
-            		<xsd:element name="position" type="xsd:int"></xsd:element>
-            		<xsd:element name="time" type="xsd:int"></xsd:element>
+            		<xsd:element name="position" type="xsd:int"/>
+            		<xsd:element name="time" type="xsd:int"/>
             	</xsd:sequence>
             </xsd:complexType>
     
@@ -186,14 +163,11 @@
             	<xsd:complexContent>
             		<xsd:extension base="mut:SiteIDType">
             			<xsd:sequence>
-            				<xsd:element name="user"
-            					type="mut:UserIDType">
+            				<xsd:element name="user" type="mut:UserIDType">
             				</xsd:element>
-            				<xsd:element name="booking"
-            					type="mut:BookingType">
+            				<xsd:element name="booking" type="mut:BookingType">
             				</xsd:element>
-            				<xsd:element name="code"
-            					type="xsd:base64Binary" maxOccurs="1" minOccurs="0">
+            				<xsd:element maxOccurs="1" minOccurs="0" name="code" type="xsd:base64Binary">
             				</xsd:element>
             			</xsd:sequence>
             		</xsd:extension>
@@ -202,11 +176,10 @@
     
             <xsd:complexType name="BookingType">
             	<xsd:sequence>
-            		<xsd:element name="permission"
-            			type="mut:PermissionIDType">
+            		<xsd:element name="permission" type="mut:PermissionIDType">
             		</xsd:element>
-            		<xsd:element name="start" type="xsd:dateTime"></xsd:element>
-            		<xsd:element name="end" type="xsd:dateTime"></xsd:element>
+            		<xsd:element name="start" type="xsd:dateTime"/>
+            		<xsd:element name="end" type="xsd:dateTime"/>
             	</xsd:sequence>
             </xsd:complexType>
     
@@ -214,11 +187,9 @@
             	<xsd:complexContent>
             		<xsd:extension base="mut:OperationResponseType">
             			<xsd:sequence>
-            				<xsd:element name="bookingID"
-            					type="mut:BookingIDType" maxOccurs="1" minOccurs="0">
+            				<xsd:element maxOccurs="1" minOccurs="0" name="bookingID" type="mut:BookingIDType">
             				</xsd:element>
-            				<xsd:element name="bestFits"
-            					type="mut:TimePeriodType" maxOccurs="unbounded" minOccurs="0">
+            				<xsd:element maxOccurs="unbounded" minOccurs="0" name="bestFits" type="mut:TimePeriodType">
             				</xsd:element>
             			</xsd:sequence>
             		</xsd:extension>
@@ -229,8 +200,7 @@
             	<xsd:complexContent>
             		<xsd:extension base="mut:SiteIDType">
             			<xsd:sequence>
-            				<xsd:element name="id"
-            					type="xsd:int">
+            				<xsd:element name="id" type="xsd:int">
             				</xsd:element>
             			</xsd:sequence>
             		</xsd:extension>
@@ -239,8 +209,8 @@
 
             <xsd:complexType name="TimePeriodType">
             	<xsd:sequence>
-            		<xsd:element name="start" type="xsd:dateTime"></xsd:element>
-            		<xsd:element name="end" type="xsd:dateTime"></xsd:element>
+            		<xsd:element name="start" type="xsd:dateTime"/>
+            		<xsd:element name="end" type="xsd:dateTime"/>
             	</xsd:sequence>
             </xsd:complexType>
     
@@ -248,11 +218,9 @@
             	<xsd:complexContent>
             		<xsd:extension base="mut:SiteIDType">
             			<xsd:sequence>
-            				<xsd:element name="permission"
-            					type="mut:PermissionIDType">
+            				<xsd:element name="permission" type="mut:PermissionIDType">
             				</xsd:element>
-            				<xsd:element name="period"
-            					type="mut:TimePeriodType">
+            				<xsd:element name="period" type="mut:TimePeriodType">
             				</xsd:element>
             			</xsd:sequence>
             		</xsd:extension>
@@ -261,14 +229,11 @@
     
             <xsd:complexType name="FindFreeBookingsResponseType">
             	<xsd:sequence>
-            		<xsd:element name="permission"
-            			type="mut:PermissionIDType">
+            		<xsd:element name="permission" type="mut:PermissionIDType">
             		</xsd:element>
-            		<xsd:element name="resource"
-            			type="mut:ResourceType">
+            		<xsd:element name="resource" type="mut:ResourceType">
             		</xsd:element>
-            		<xsd:element name="slot"
-            			type="mut:BookingSlotType" maxOccurs="unbounded" minOccurs="0">
+            		<xsd:element maxOccurs="unbounded" minOccurs="0" name="slot" type="mut:BookingSlotType">
             		</xsd:element>
             	</xsd:sequence>
             </xsd:complexType>
@@ -279,15 +244,12 @@
             			<xsd:sequence>
             				<xsd:element name="state">
             					<xsd:simpleType>
-            						<xsd:restriction
-            							base="xsd:string">
+            						<xsd:restriction base="xsd:string">
             							<xsd:enumeration value="FREE">
             							</xsd:enumeration>
-            							<xsd:enumeration
-            								value="BOOKED">
+            							<xsd:enumeration value="BOOKED">
             							</xsd:enumeration>
-            							<xsd:enumeration
-            								value="NOPERMISSION">
+            							<xsd:enumeration value="NOPERMISSION">
             							</xsd:enumeration>
             						</xsd:restriction>
             					</xsd:simpleType>
@@ -298,194 +260,220 @@
             </xsd:complexType>
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="checkAvailabilityRequest">
-    <wsdl:part element="mut:checkAvailability" name="parameters"/>
-  </wsdl:message>
-  <wsdl:message name="checkAvailabilityResponse">
-    <wsdl:part element="mut:checkAvailabilityResponse" name="parameters"/>
+  <wsdl:message name="findFreeBookingsResponse">
+    <wsdl:part name="parameters" element="mut:findFreeBookingsResponse">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:message name="addToQueueRequest">
-  	<wsdl:part name="parameters" element="mut:addToQueue"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="addToQueueResponse">
-  	<wsdl:part name="parameters" element="mut:addToQueueResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getUserStatusRequest">
-  	<wsdl:part name="parameters" element="mut:getUserStatus"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getUserStatusResponse">
-  	<wsdl:part name="parameters" element="mut:getUserStatusResponse"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getQueuePositionRequest">
-  	<wsdl:part name="parameters" element="mut:getQueuePosition"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getQueuePositionResponse">
-  	<wsdl:part name="parameters" element="mut:getQueuePositionResponse"></wsdl:part>
+    <wsdl:part name="parameters" element="mut:addToQueue">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getSessionInformationRequest">
-  	<wsdl:part name="parameters" element="mut:getSessionInformation"></wsdl:part>
+    <wsdl:part name="parameters" element="mut:getSessionInformation">
+    </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getSessionInformationResponse">
-  	<wsdl:part name="parameters" element="mut:getSessionInformationResponse"></wsdl:part>
+  <wsdl:message name="checkAvailabilityResponse">
+    <wsdl:part name="parameters" element="mut:checkAvailabilityResponse">
+    </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="finishSessionRequest">
-  	<wsdl:part name="parameters" element="mut:finishSession"></wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="finishSessionResponse">
-  	<wsdl:part name="parameters" element="mut:finishSessionResponse"></wsdl:part>
+  <wsdl:message name="getUserStatusRequest">
+    <wsdl:part name="parameters" element="mut:getUserStatus">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createBookingRequest">
-  	<wsdl:part name="parameters" element="mut:createBooking"></wsdl:part>
+    <wsdl:part name="parameters" element="mut:createBooking">
+    </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="createBookingResponse">
-  	<wsdl:part name="parameters" element="mut:createBookingResponse"></wsdl:part>
+  <wsdl:message name="getSessionInformationResponse">
+    <wsdl:part name="parameters" element="mut:getSessionInformationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getQueuePositionRequest">
+    <wsdl:part name="parameters" element="mut:getQueuePosition">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="finishSessionResponse">
+    <wsdl:part name="parameters" element="mut:finishSessionResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="checkAvailabilityRequest">
+    <wsdl:part name="parameters" element="mut:checkAvailability">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserStatusResponse">
+    <wsdl:part name="parameters" element="mut:getUserStatusResponse">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:message name="cancelBookingRequest">
-  	<wsdl:part name="parameters" element="mut:cancelBooking"></wsdl:part>
+    <wsdl:part name="parameters" element="mut:cancelBooking">
+    </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="cancelBookingResponse">
-  	<wsdl:part name="parameters" element="mut:cancelBookingResponse"></wsdl:part>
+  <wsdl:message name="getQueuePositionResponse">
+    <wsdl:part name="parameters" element="mut:getQueuePositionResponse">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:message name="findFreeBookingsRequest">
-  	<wsdl:part name="parameters" element="mut:findFreeBookings"></wsdl:part>
+    <wsdl:part name="parameters" element="mut:findFreeBookings">
+    </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="findFreeBookingsResponse">
-  	<wsdl:part name="parameters" element="mut:findFreeBookingsResponse"></wsdl:part>
+  <wsdl:message name="finishSessionRequest">
+    <wsdl:part name="parameters" element="mut:finishSession">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingResponse">
+    <wsdl:part name="parameters" element="mut:cancelBookingResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createBookingResponse">
+    <wsdl:part name="parameters" element="mut:createBookingResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addToQueueResponse">
+    <wsdl:part name="parameters" element="mut:addToQueueResponse">
+    </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="MultiSite">
     <wsdl:operation name="checkAvailability">
-      <wsdl:input message="mut:checkAvailabilityRequest"/>
-      <wsdl:output message="mut:checkAvailabilityResponse"/>
+      <wsdl:input message="mut:checkAvailabilityRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:checkAvailabilityResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="addToQueue">
-    	<wsdl:input message="mut:addToQueueRequest"></wsdl:input>
-    	<wsdl:output message="mut:addToQueueResponse"></wsdl:output>
+      <wsdl:input message="mut:addToQueueRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:addToQueueResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getUserStatus">
-    	<wsdl:input message="mut:getUserStatusRequest"></wsdl:input>
-    	<wsdl:output message="mut:getUserStatusResponse"></wsdl:output>
+      <wsdl:input message="mut:getUserStatusRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:getUserStatusResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getQueuePosition">
-    	<wsdl:input message="mut:getQueuePositionRequest"></wsdl:input>
-    	<wsdl:output message="mut:getQueuePositionResponse"></wsdl:output>
+      <wsdl:input message="mut:getQueuePositionRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:getQueuePositionResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getSessionInformation">
-    	<wsdl:input message="mut:getSessionInformationRequest"></wsdl:input>
-    	<wsdl:output message="mut:getSessionInformationResponse"></wsdl:output>
+      <wsdl:input message="mut:getSessionInformationRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:getSessionInformationResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="finishSession">
-    	<wsdl:input message="mut:finishSessionRequest"></wsdl:input>
-    	<wsdl:output message="mut:finishSessionResponse"></wsdl:output>
+      <wsdl:input message="mut:finishSessionRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:finishSessionResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createBooking">
-    	<wsdl:input message="mut:createBookingRequest"></wsdl:input>
-    	<wsdl:output message="mut:createBookingResponse"></wsdl:output>
+      <wsdl:input message="mut:createBookingRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:createBookingResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="cancelBooking">
-    	<wsdl:input message="mut:cancelBookingRequest"></wsdl:input>
-    	<wsdl:output message="mut:cancelBookingResponse"></wsdl:output>
+      <wsdl:input message="mut:cancelBookingRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:cancelBookingResponse">
+    </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="findFreeBookings">
-    	<wsdl:input message="mut:findFreeBookingsRequest"></wsdl:input>
-    	<wsdl:output message="mut:findFreeBookingsResponse"></wsdl:output>
+      <wsdl:input message="mut:findFreeBookingsRequest">
+    </wsdl:input>
+      <wsdl:output message="mut:findFreeBookingsResponse">
+    </wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="MultiSiteSOAP" type="mut:MultiSite">
-  	<soap:binding style="document"
-  		transport="http://schemas.xmlsoap.org/soap/http" />
-  	<wsdl:operation name="checkAvailability">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/NewOperation" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="addToQueue">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/addToQueue" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="getUserStatus">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getUserStatus" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="getQueuePosition">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getQueuePosition" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="getSessionInformation">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getSessionInformation" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="finishSession">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/finishSession" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="createBooking">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/createBooking" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="cancelBooking">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/cancelBooking" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
-  	<wsdl:operation name="findFreeBookings">
-  		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/findFreeBookings" />
-  		<wsdl:input>
-  			<soap:body use="literal" />
-  		</wsdl:input>
-  		<wsdl:output>
-  			<soap:body use="literal" />
-  		</wsdl:output>
-  	</wsdl:operation>
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="checkAvailability">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/NewOperation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addToQueue">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/addToQueue"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserStatus">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getUserStatus"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getQueuePosition">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getQueuePosition"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getSessionInformation">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/getSessionInformation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="finishSession">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/finishSession"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createBooking">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/createBooking"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelBooking">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/cancelBooking"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="findFreeBookings">
+      <soap:operation soapAction="http://remotelabs.eng.uts.edu.au/schedserver/multisite/findFreeBookings"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="MultiSite">
-    <wsdl:port binding="mut:MultiSiteSOAP" name="MultiSiteSOAP">
+    <wsdl:port name="MultiSiteSOAP" binding="mut:MultiSiteSOAP">
       <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-MultiSite/services/MultiSite"/>
     </wsdl:port>
   </wsdl:service>
