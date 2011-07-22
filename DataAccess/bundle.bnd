@@ -9,7 +9,8 @@ Import-Package: !bitronix.tm, !com.ibm.ejs.jts.jta, !com.ibm.websphere.jtaextens
 !com.opensymphony.oscache.base, !com.opensymphony.oscache.general, !com.sun.*, !javax.swing.*, \
 !net.sf.*, !org.apache.*, !org.jaxen.*, !org.jboss.*, !org.gjt.xpp,org.ietf.jgss, \
 !org.jgroups, !org.logicalcobwebs.*, !org.objectweb.*, !org.relaxng.datatype, \
-!javax.*, !org.xmlpull.*, !jcifs, !jcifs.smb, !au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
+!javax.resource.*, !javax.security.jacc, !org.xmlpull.*, !jcifs, !jcifs.smb, \
+!au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
 !oracle.*, !org.ietf.jgss, *
 Bundle-Name: DataAccess
 Bundle-SymbolicName: SchedulingServer-DataAccess
