@@ -8,5 +8,5 @@ Export-Package: au.edu.uts.eng.remotelabs.schedserver.messenger
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.messenger.impl
 Include-Resource: META-INF/templates=META-INF/templates;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
-Import-Package: !javax.*, !jcifs.ntlmssp, !sun.*, *
+Import-Package: !jcifs.ntlmssp, !sun.*, *
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}
