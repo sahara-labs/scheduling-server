@@ -42,14 +42,19 @@ import org.hibernate.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.MultiSiteProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSite;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSiteStub;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SiteIDType;
 
 /**
  * Base class for operation requesting classes.
  */
 public class AbstractRequest
 {
+    /** Dummy GUID. */
+    public static final String DEFAULT_SITE_ID = "00000000-0000-0000-0000-000000000000";
+    
     /** Remote site this request will go to. */
     protected RemoteSite site;
     
@@ -87,5 +92,32 @@ public class AbstractRequest
         // FIXME Configure service time outs
         
         return new MultiSiteStub(this.site.getServiceAddress());
+    }
+    
+    /**
+     * Adds the site ID of this site to the request.
+     * 
+     * @param sid site ID.
+     */
+    protected void addSiteID(SiteIDType sid)
+    {
+        String guid = MultiSiteProviderActivator.getConfigurationProperty("Site_ID", null);
+        if (guid == null)
+        {
+            this.logger.error("Could not load this site's identifier. Without having this identifier MultiSite " +
+            		"communication will fail. Make sure the property 'Site_ID' with an appropriate GUID.");
+            sid.setSiteID(DEFAULT_SITE_ID);
+        }
+        else sid.setSiteID(guid);
+    }
+    
+    /**
+     * Puts a site offline because of an error making a SOAP request.
+     * 
+     * @param e exception making request
+     */
+    protected void offlineSite(Exception e)
+    {
+        // FIXME Put site offline
     }
 }

@@ -53,7 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQue
 /**
  * Interface for the Queuer SOAP interface.
  */
-public interface QueuerSkeletonInterface
+public interface QueuerSOAP
 {
     /**
      * Adds a user to the queue.
@@ -66,7 +66,7 @@ public interface QueuerSkeletonInterface
     public RemoveUserFromQueueResponse removeUserFromQueue(RemoveUserFromQueue request);
 
     /**
-     * Returns information about the avaliability of a permission. The information
+     * Returns information about the availability of a permission. The information
      * returned is:
      * <ul>
      *  <li>viable - Whether this resource is ready to be queued.</li>

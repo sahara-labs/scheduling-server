@@ -43,7 +43,6 @@ import java.util.Date;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
@@ -62,9 +61,9 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.PermissionAvailabilityCheck;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.PermissionAvailabilityCheck.QueueTarget;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -90,7 +89,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 /**
  * Queuer SOAP interface implementation.
  */
-public class Queuer implements QueuerSkeletonInterface
+public class QueuerSOAPImpl implements QueuerSOAP
 {
     /** The booking stand off in seconds. */
     public static final int BOOKING_STANDOFF = 1800;
@@ -98,13 +97,10 @@ public class Queuer implements QueuerSkeletonInterface
     /** Logger. */
     private Logger logger;
     
-    /** The bookings engine service. */
-    private BookingEngineService bookingService;
-    
     /** Flag for unit testing to disable rig client communication. */ 
     private boolean notTest = true;
     
-    public Queuer()
+    public QueuerSOAPImpl()
     {
         this.logger = LoggerActivator.getLogger();
     }
@@ -429,7 +425,7 @@ public class Queuer implements QueuerSkeletonInterface
                 res.setResourceID(ses.getRequestedResourceId().intValue());
                 res.setResourceName(ses.getRequestedResourceName());
             }
-            else if ((booking = this.getNextBooking(user, Queuer.BOOKING_STANDOFF, dao.getSession())) != null)
+            else if ((booking = this.getNextBooking(user, QueuerSOAPImpl.BOOKING_STANDOFF, dao.getSession())) != null)
             {
                 // DODGY This uses half an hour limit probably should be a 
                 // resource permission session duration limit
@@ -515,7 +511,7 @@ public class Queuer implements QueuerSkeletonInterface
             resource.setResourceID(rig.getId().intValue());
             resource.setResourceName(rig.getName());
 
-            queue.setHasFree(this.isRigFree(rig, perm, ses));
+            queue.setHasFree(QueuerUtil.isRigFree(rig, perm, ses));
             queue.setViable(rig.isOnline());
             
             /* Code assignable is defined by the rig type of the rig. */
@@ -524,7 +520,7 @@ public class Queuer implements QueuerSkeletonInterface
             /* Only one resource, the actual rig. */
             QueueTargetType target = new QueueTargetType();
             target.setViable(rig.isOnline());
-            target.setIsFree(this.isRigFree(rig, perm, ses));
+            target.setIsFree(QueuerUtil.isRigFree(rig, perm, ses));
             target.setResource(resource);
             queue.addQueueTarget(target);
             
@@ -541,7 +537,7 @@ public class Queuer implements QueuerSkeletonInterface
             for (Rig rig : rigType.getRigs())
             {
                 if (rig.isOnline()) queue.setViable(true);
-                if (free = this.isRigFree(rig, perm, ses)) queue.setHasFree(true);
+                if (free = QueuerUtil.isRigFree(rig, perm, ses)) queue.setHasFree(true);
                 
                 QueueTargetType target = new QueueTargetType();
                 target.setViable(rig.isOnline());
@@ -577,7 +573,7 @@ public class Queuer implements QueuerSkeletonInterface
                     if (capRig.isOnline()) queue.setViable(true);
                     
                     /* To be 'has free', only one rig needs to be free. */
-                    if (free = this.isRigFree(capRig, perm, ses)) queue.setHasFree(true);
+                    if (free = QueuerUtil.isRigFree(capRig, perm, ses)) queue.setHasFree(true);
                     
                     /* Add target. */
                     QueueTargetType target = new QueueTargetType();
@@ -800,33 +796,7 @@ public class Queuer implements QueuerSkeletonInterface
             .uniqueResult();
     }
     
-    /**
-     * Returns true if the rig is not booked for the specified duration. A free 
-     * rig is one which:
-     * <ul>
-     *  <li>Is active and alive.</li>
-     *  <li>Is online.</li>
-     *  <li>Not in session.</li>
-     *  <li>Not booked for the duration of the guaranteed permission time</li>
-     * 
-     * @param rig rig to check
-     * @param perm permission to obtain duration for
-     * @param ses database session
-     * @return true if not booked
-     */
-    private boolean isRigFree(Rig rig, ResourcePermission perm, org.hibernate.Session ses)
-    {
-        if (!rig.isActive() || !rig.isOnline() || rig.isInSession()) return false;
-        
-        if (this.bookingService == null && (this.bookingService = QueueActivator.getBookingService()) == null)
-        {
-            this.logger.debug("Returning rig " + rig.getName() + " is not booked because the bookings service does " +
-            		"not appear to be running.");
-            return true;
-        }
-        
-        return this.bookingService.isFreeFor(rig, perm.getSessionDuration(), ses);
-    }
+    
     
     /**
      * Gets the user identified by the user id type. 

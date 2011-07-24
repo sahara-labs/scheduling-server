@@ -39,7 +39,9 @@ package au.edu.uts.eng.remotelabs.schedserver.multisite.provider;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
@@ -48,6 +50,9 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class MultiSiteProviderActivator implements BundleActivator 
 {
+    /** Configuration service tracker. */
+    private static ServiceTracker<Config, Config> configTracker;
+    
     /** Logger. */
     private Logger logger;
     
@@ -56,11 +61,42 @@ public class MultiSiteProviderActivator implements BundleActivator
     {
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting the MultiSite Provider bundle...");
+        
+        MultiSiteProviderActivator.configTracker = new ServiceTracker<Config, Config>(bundleContext, Config.class, null);
+        MultiSiteProviderActivator.configTracker.open();
     }
 
     @Override
 	public void stop(BundleContext bundleContext) throws Exception 
 	{
         this.logger.info("Shutting down the MultiSite Provider bundle...");
+        
+        MultiSiteProviderActivator.configTracker.close();
+        MultiSiteProviderActivator.configTracker = null;
 	}
+    
+    /**
+     * Returns the specified configuration property value or if this bundle is
+     * unloaded or the configuration property does not exist, the specified
+     * default is returned.
+     *  
+     * @param prop configuration property
+     * @param def default value
+     * @return configured value or default
+     */
+    public static String getConfigurationProperty(String prop, String def)
+    {
+        if (MultiSiteProviderActivator.configTracker == null)
+        {
+            return def;
+        }
+        
+        Config config = MultiSiteProviderActivator.configTracker.getService();
+        if (config == null)
+        {
+            return def;
+        }
+        
+        return config.getProperty(prop, def);
+    }
 }

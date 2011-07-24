@@ -143,7 +143,7 @@
                                     writeStartElement(null, namespace, "siteID", xmlWriter);
                              
 
-                                          if (localSiteID==null){
+                                          if (siteID==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
@@ -151,7 +151,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localSiteID);
+                                                   xmlWriter.writeCharacters(siteID);
                                             
                                           }
                                     
@@ -355,8 +355,8 @@
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "siteID"));
                                  
-                                        if (localSiteID != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSiteID));
+                                        if (siteID != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(siteID));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
                                         }

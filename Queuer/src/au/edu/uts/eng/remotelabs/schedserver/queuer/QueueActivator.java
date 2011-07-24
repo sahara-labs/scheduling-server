@@ -55,6 +55,8 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueListenerRun;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueStaleSessionTask;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl.QueuerServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -66,6 +68,9 @@ public class QueueActivator implements BundleActivator
 {
     /** Service registration for the Permission SOAP interface. */
     private ServiceRegistration<ServletContainerService> soapReg;
+    
+    /** Queuer service this bundle exports. */
+    private ServiceRegistration<QueuerService> queuerReg;
     
     /** Service registration for the queue stale session timeout task. */
     private ServiceRegistration<Runnable> staleTimeoutTaskReg;
@@ -83,7 +88,7 @@ public class QueueActivator implements BundleActivator
     public void start(BundleContext context) throws Exception 
     {
         this.logger = LoggerActivator.getLogger();
-        this.logger.info("Starting queuer bundle...");
+        this.logger.info("Starting Queuer bundle...");
         
         /* Reload all the active queue sessions. */
         Queue queue = Queue.getInstance();
@@ -114,8 +119,12 @@ public class QueueActivator implements BundleActivator
         /* Register the rig event listener service. */
         this.rigListenerReg = context.registerService(RigEventListener.class, new QueueListenerRun(), null);
         
-        /* Register the queuer service. */
-        this.logger.debug("Registering the Queuer SOAP interface service.");
+        /* Register the Queuer POJO service. */
+        this.logger.debug("Registering the Queuer POJO service.");
+        this.queuerReg = context.registerService(QueuerService.class, new QueuerServiceImpl(), null);
+        
+        /* Register the Queuer SOAP service. */
+        this.logger.debug("Registering the Queuer SOAP service.");
         ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
 	    this.soapReg = context.registerService(ServletContainerService.class, soapService, null);
@@ -124,8 +133,9 @@ public class QueueActivator implements BundleActivator
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
-	    this.logger.info("Shutting down the queuer bundle.");
+	    this.logger.info("Shutting down the Queuer bundle...");
 	    this.soapReg.unregister();
+	    this.queuerReg.unregister();
 	    QueueActivator.bookingTracker.close();
 	    QueueActivator.bookingTracker = null;
 	    this.staleTimeoutTaskReg.unregister();

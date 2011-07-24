@@ -6,7 +6,7 @@
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer</parameter>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="addUserToQueue" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">

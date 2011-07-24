@@ -68,7 +68,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.InnerQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -92,12 +92,12 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserNSNameSequenc
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserQueueType;
 
 /**
- * Tests the {@link Queuer} class.
+ * Tests the {@link QueuerSOAPImpl} class.
  */
-public class QueuerTester extends TestCase
+public class QueuerSOAPImplTester extends TestCase
 {
     /** Object of class under test. */ 
-    private Queuer queuer;
+    private QueuerSOAPImpl queuer;
     
     @Override
     @Before
@@ -105,7 +105,7 @@ public class QueuerTester extends TestCase
     {
         super.setUp();
         DataAccessTestSetup.setup();
-        this.queuer = new Queuer();
+        this.queuer = new QueuerSOAPImpl();
         
         Queue q = Queue.getInstance();
         Field f = Queue.class.getDeclaredField("rigQueues");
@@ -122,13 +122,13 @@ public class QueuerTester extends TestCase
         f.setAccessible(true);
         f.set(q, Boolean.FALSE);
         
-        f = Queuer.class.getDeclaredField("notTest");
+        f = QueuerSOAPImpl.class.getDeclaredField("notTest");
         f.setAccessible(true);
         f.set(this.queuer, Boolean.FALSE);
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueueHasBooking()
     {
@@ -262,7 +262,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueueHasBookingInactive()
     {
@@ -411,7 +411,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueueHasBookingFuture()
     {
@@ -560,7 +560,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueue()
     {
@@ -693,7 +693,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueueRes()
     {
@@ -828,7 +828,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueueResName()
     {
@@ -963,7 +963,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueueInQueue()
     {
@@ -1077,7 +1077,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#addUserToQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue)}.
      */
     public void testAddUserToQueueCantQueue()
     {
@@ -1165,7 +1165,7 @@ public class QueuerTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#removeUserFromQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#removeUserFromQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue)}.
      */
     public void testRemoveUserFromQueue()
     {
@@ -1265,7 +1265,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#removeUserFromQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#removeUserFromQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue)}.
      */
     public void testRemoveUserFromQueueID()
     {
@@ -1366,7 +1366,7 @@ public class QueuerTester extends TestCase
 
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailability() throws Exception
     {
@@ -1489,12 +1489,18 @@ public class QueuerTester extends TestCase
         OMElement ele = resp.getOMElement(CheckPermissionAvailabilityResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
         assertNotNull(ele);
         
+        try
+        {
         String xml = ele.toStringWithConsume();
         assertNotNull(xml);
+        } catch (Throwable e)
+        {
+            e.printStackTrace();
+        }
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityAllOffline() throws Exception
     {
@@ -1622,7 +1628,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityAllInSession() throws Exception
     {
@@ -1751,7 +1757,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityNoRigs() throws Exception
     {
@@ -1815,7 +1821,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityRig() throws Exception
     {
@@ -1903,7 +1909,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityRigOffline() throws Exception
     {
@@ -1991,7 +1997,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityRigInSession() throws Exception
     {
@@ -2080,7 +2086,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityCaps() throws Exception
     {
@@ -2200,7 +2206,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityCapsFree() throws Exception
     {
@@ -2322,7 +2328,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckResourceAvailability() throws Exception
     {
@@ -2460,7 +2466,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckResourceAvailabilityName() throws Exception
     {
@@ -2598,7 +2604,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckResourceAvailabilityRig() throws Exception
     {
@@ -2679,7 +2685,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckResourceAvailabilityRigName() throws Exception
     {
@@ -2760,7 +2766,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckResourceAvailabilityCaps() throws Exception
     {
@@ -2883,7 +2889,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#checkPermissionAvailability(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability)}.
      */
     public void testCheckPermissionAvailabilityCapsName() throws Exception
     {
@@ -3006,7 +3012,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.
      */
     public void testGetUserQueuePositionAssigned() throws Exception
     {
@@ -3177,7 +3183,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#getUserQueuePosition(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.GetUserQueuePosition)}.
      */
     public void testGetUserQueuePositionNotInQueue() throws Exception
     {
@@ -3282,7 +3288,7 @@ public class QueuerTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueue() throws Exception
@@ -3360,7 +3366,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueNSName() throws Exception
@@ -3437,7 +3443,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueBooking() throws Exception
@@ -3514,7 +3520,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueTwoBooking() throws Exception
@@ -3605,7 +3611,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueNoBooking() throws Exception
@@ -3696,7 +3702,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueActive() throws Exception
@@ -3795,7 +3801,7 @@ public class QueuerTester extends TestCase
     
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueTwoSes() throws Exception
@@ -3887,7 +3893,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueNot() throws Exception
@@ -3960,7 +3966,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueNoSessions() throws Exception
@@ -4002,7 +4008,7 @@ public class QueuerTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.Queuer#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.queuer.intf.QueuerSOAPImpl#isUserInQueue(au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.IsUserInQueue)}.
      */
     @Test
     public void testIsUserInQueueNoUser() throws Exception
@@ -4045,7 +4051,7 @@ public class QueuerTester extends TestCase
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(user.getId()));
         
-        Method meth = Queuer.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
+        Method meth = QueuerSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
         meth.setAccessible(true);
         User loaded = (User)meth.invoke(this.queuer, uid, ses);
         assertNotNull(loaded);
@@ -4077,7 +4083,7 @@ public class QueuerTester extends TestCase
         seq.setUserName(user.getName());
         uid.setUserNSNameSequence(seq);
         
-        Method meth = Queuer.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
+        Method meth = QueuerSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
         meth.setAccessible(true);
         User loaded = (User)meth.invoke(this.queuer, uid, ses);
         assertNotNull(loaded);
@@ -4106,7 +4112,7 @@ public class QueuerTester extends TestCase
         UserIDType uid = new UserIDType();
         uid.setUserQName(user.getNamespace() + ":" + user.getName());
         
-        Method meth = Queuer.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
+        Method meth = QueuerSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
         meth.setAccessible(true);
         User loaded = (User)meth.invoke(this.queuer, uid, ses);
         assertNotNull(loaded);
@@ -4130,7 +4136,7 @@ public class QueuerTester extends TestCase
         uid.setUserQName("QU_TEST:does_not_exist");
         org.hibernate.Session ses = DataAccessActivator.getNewSession();
         
-        Method meth = Queuer.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
+        Method meth = QueuerSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, org.hibernate.Session.class);
         meth.setAccessible(true);
         assertNull(meth.invoke(this.queuer, uid, ses));
         

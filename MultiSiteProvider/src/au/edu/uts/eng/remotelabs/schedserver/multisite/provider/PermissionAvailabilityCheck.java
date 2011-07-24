@@ -67,8 +67,8 @@ public class PermissionAvailabilityCheck extends AbstractRequest
         
         CheckAvailability request = new CheckAvailability();
         PermissionIDType pid = new PermissionIDType();
+        this.addSiteID(pid);
         pid.setPermissionID(permission.getGuid());
-        pid.setSiteID(permission.getSite().getGuid());
         request.setCheckAvailability(pid);
         
         try
@@ -79,14 +79,16 @@ public class PermissionAvailabilityCheck extends AbstractRequest
         }
         catch (AxisFault e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            this.logger.warn("SOAP fault making checking availability request, error reason '" + e.getReason() +
+                    "', error message is '" + e.getMessage() + "'.");
+            this.offlineSite(e);
             return false;
         }
         catch (RemoteException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            this.logger.warn("Remote error making checking availability request, error  message is '" + 
+                    e.getMessage() + "'.");
+            this.offlineSite(e);
             return false;
         }
         
@@ -140,14 +142,22 @@ public class PermissionAvailabilityCheck extends AbstractRequest
         return targets;
     }
     
+    /**
+     * A resource which may be assigned as the result of a successful queue 
+     * attempt. 
+     */
     public class QueueTarget
     {
+        /** Whether this is resource is viable. */
         private boolean viable;
         
+        /** Whether this resource is free. */
         private boolean free;
         
+        /** The name of the resource. */
         private String name;
         
+        /** The type of the resource. Should be 'RIG'. */
         private String type;
         
         QueueTarget(QueueTargetType target)
@@ -158,33 +168,21 @@ public class PermissionAvailabilityCheck extends AbstractRequest
             this.type = target.getResource().getType();
         }
 
-        /**
-         * @return the vaiable
-         */
         public boolean isVaiable()
         {
             return this.viable;
         }
 
-        /**
-         * @return the free
-         */
         public boolean isFree()
         {
             return this.free;
         }
 
-        /**
-         * @return the name
-         */
         public String getName()
         {
             return this.name;
         }
-
-        /**
-         * @return the type
-         */
+        
         public String getType()
         {
             return this.type;

@@ -41,19 +41,24 @@ import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
- * Activator for the multisite project.
+ * Activator for the Multisite project.
  */
 public class MultiSiteActivator implements BundleActivator 
 {
     /** Servlet hosting service. */
     private ServiceRegistration<ServletContainerService> soapService;
+    
+    /** Queuer service tracker. */
+    private static ServiceTracker<QueuerService, QueuerService> queuerService;
     
     /** Logger. */
     private Logger logger;
@@ -64,6 +69,11 @@ public class MultiSiteActivator implements BundleActivator
 		this.logger = LoggerActivator.getLogger();
 		this.logger.info("Multisite bundle starting up.");
 		
+		/* Track the Queuer service. */
+		MultiSiteActivator.queuerService = new 
+		        ServiceTracker<QueuerService, QueuerService>(bundleContext, QueuerService.class, null);
+		MultiSiteActivator.queuerService.open();
+
 		ServletContainerService serv = new ServletContainerService();
 		serv.addServlet(new ServletContainer(new AxisServlet(), true));
 		this.soapService = bundleContext.registerService(ServletContainerService.class, serv, null);
@@ -75,6 +85,20 @@ public class MultiSiteActivator implements BundleActivator
 		this.logger.info("Multisie bundle shutting down.");
 		
 		this.soapService.unregister();
+		
+		MultiSiteActivator.queuerService.close();
+		MultiSiteActivator.queuerService = null;
 	}
 
+    /**
+     * Gets a Queuer service instance.
+     * 
+     * @return queuer service or null if none found
+     */
+    public static QueuerService getQueuerService()
+    {
+        if (MultiSiteActivator.queuerService == null) return null;
+        
+        return MultiSiteActivator.queuerService.getService();
+    }
 }

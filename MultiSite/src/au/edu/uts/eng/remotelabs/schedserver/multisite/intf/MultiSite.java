@@ -36,8 +36,16 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AddToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AddToQueueResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AvailabilityResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CancelBooking;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CancelBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CheckAvailability;
@@ -54,12 +62,24 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetSessionInfo
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetSessionInformationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueTargetType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.ResourceType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueueAvailability;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 
 /**
  * MultiSite service implementation.
  */
 public class MultiSite implements MultiSiteInterface
-{ 
+{
+    /** Logger. */
+    private Logger logger;
+    
+    public MultiSite()
+    {
+        this.logger = LoggerActivator.getLogger();
+    }
+    
     @Override
     public GetUserStatusResponse getUserStatus(GetUserStatus getUserStatus)
     {
@@ -70,8 +90,79 @@ public class MultiSite implements MultiSiteInterface
     @Override
     public CheckAvailabilityResponse checkAvailability(CheckAvailability checkAvailability)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String site = checkAvailability.getCheckAvailability().getSiteID();
+        String pid = checkAvailability.getCheckAvailability().getPermissionID();
+        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#checkAvailability with params site=" + 
+                site + ", permission=" + pid + '.');
+        
+        /* Response parameters. */
+        CheckAvailabilityResponse response = new CheckAvailabilityResponse();
+        AvailabilityResponseType avail = new AvailabilityResponseType();
+        response.setCheckAvailabilityResponse(avail);
+        ResourceType res = new ResourceType();
+        res.setName("");
+        res.setType("");
+        avail.setQueuedResource(res);
+        
+        RemotePermissionDao dao = new RemotePermissionDao();
+        try
+        {
+            RemotePermission remotePerm = dao.findByGuid(pid);
+            if (remotePerm == null)
+            {
+                /* Permission not found. */
+                this.logger.warn("Cannot provide availability of permission '" + pid + "' because it was not found.");
+                return response;
+            }
+            
+            if (!remotePerm.getSite().getGuid().equals(site))
+            {
+                /* Origin is incorrect. */
+                this.logger.warn("Cannot provide availability of permission '" + pid + "' because the site '" + 
+                        site + "' does not match the stored site '" + remotePerm.getSite().getGuid() + "'.");
+                return response;
+            }
+            
+            QueuerService queuer = MultiSiteActivator.getQueuerService();
+            if (queuer == null)
+            {
+                this.logger.warn("Cannot provider availability of permission '" + pid + "' becase the Queuer " +
+                		"service was not found.");
+                return response;
+            }
+            
+            ResourcePermission perm = remotePerm.getPermission();
+            avail.setIsBookable(perm.getUserClass().isBookable());
+            avail.setIsQueueable(perm.getUserClass().isQueuable());
+            
+            QueueAvailability availability = queuer.checkAvailability(perm, dao.getSession());
+            avail.setViable(availability.isViable());
+            avail.setHasFree(availability.isHasFree());
+            avail.setIsCodeAssignable(availability.isCodeAssignable());
+            res.setName(availability.getName());
+            res.setType(availability.getType());
+            
+            for (Rig rig : availability.getTargets())
+            {
+                QueueTargetType target = new QueueTargetType();
+                target.setIsFree(availability.isTargetFree(rig));
+                target.setViable(rig.isActive() && rig.isOnline());
+                
+                ResourceType targetRes = new ResourceType();
+                targetRes.setName(rig.getName());
+                targetRes.setType(ResourcePermission.RIG_PERMISSION);
+                target.setResource(targetRes);
+                
+                avail.addQueueTarget(target);
+            }
+        }
+        finally
+        {
+            dao.closeSession();
+        }
+        
+        return response;
     }
 
     @Override

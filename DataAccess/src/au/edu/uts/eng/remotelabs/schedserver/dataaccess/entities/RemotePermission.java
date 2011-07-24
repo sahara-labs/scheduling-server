@@ -93,7 +93,7 @@ public class RemotePermission
         this.active = active;
     }
 
-    @Column(name = "guid", nullable = false, length = 255)
+    @Column(name = "guid", nullable = false, unique = true, length = 255)
     public String getGuid()
     {
         return this.guid;
