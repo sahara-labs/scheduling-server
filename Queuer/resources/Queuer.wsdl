@@ -165,18 +165,27 @@
 
       <xsd:complexType name="QueueType">
       	<xsd:sequence>
-      		<xsd:element name="viable" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="viable" type="xsd:boolean"></xsd:element>
       		<xsd:element name="hasFree" type="xsd:boolean"></xsd:element>
       		<xsd:element name="isQueueable" type="xsd:boolean"></xsd:element>
-                    <xsd:element name="isBookable" type="xsd:boolean"></xsd:element>
-                    <xsd:element name="isCodeAssignable" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="isBookable" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="isCodeAssignable" type="xsd:boolean"></xsd:element>
       		<xsd:element name="queuedResource"
       			type="qu:ResourceIDType">
       		</xsd:element>
       		<xsd:element name="queueTarget" type="qu:QueueTargetType"
       			maxOccurs="unbounded" minOccurs="0">
       		</xsd:element>
-      	</xsd:sequence>
+                    <xsd:element name="remoteLoad" type="qu:RemoteLoadType" maxOccurs="1" minOccurs="0"></xsd:element>
+                </xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="RemoteLoadType">
+      	<xsd:sequence>
+      		<xsd:element name="site" type="xsd:string"></xsd:element>
+      		<xsd:element name="failed" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="reason" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+                </xsd:sequence>
       </xsd:complexType>
     </xsd:schema>
   </wsdl:types>

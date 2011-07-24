@@ -51,6 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -79,6 +80,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.OperationRequestT
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueTargetType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoteLoadType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
@@ -591,29 +593,36 @@ public class QueuerSOAPImpl implements QueuerSOAP
         else if (ResourcePermission.CONSUMER_PERMISSION.equals(type))
         {
             /* Sanity check to make sure the permission actually has a mapping. */
-            if (perm.getRemotePermission() == null)
+            RemotePermission remotePerm = perm.getRemotePermission();
+            if (remotePerm == null)
             {
                 this.logger.warn("Consumer type permission does not have a mapping to a remote permission so cannot " +
                 		"make remote request to determine availability.");
                 return queue;
             }
             
+            RemoteLoadType remoteLoad = new RemoteLoadType();
+            remoteLoad.setSite(remotePerm.getSite().getName());
+            queue.setRemoteLoad(remoteLoad);
+            
             /* Make the remote call and populate the results. */
-            PermissionAvailabilityCheck check = new PermissionAvailabilityCheck();
-            if (check.checkAvailability(perm.getRemotePermission(), ses))
+            PermissionAvailabilityCheck remoteCheck = new PermissionAvailabilityCheck();
+            if (remoteCheck.checkAvailability(remotePerm, ses))
             {
-                queue.setViable(check.isViable());
-                queue.setHasFree(check.hasFree());
-                queue.setIsBookable(check.isBookable());
-                queue.setIsQueuable(check.isQueueable());
-                queue.setIsCodeAssignable(check.isCodeAssignable());
+                remoteLoad.setFailed(false);
+                
+                queue.setViable(remoteCheck.isViable());
+                queue.setHasFree(remoteCheck.hasFree());
+                queue.setIsBookable(remoteCheck.isBookable());
+                queue.setIsQueuable(remoteCheck.isQueueable());
+                queue.setIsCodeAssignable(remoteCheck.isCodeAssignable());
                 
                 ResourceIDType res = new ResourceIDType();
-                res.setResourceName(check.getResourceName());
-                res.setType(check.getResourceType());
+                res.setResourceName(remoteCheck.getResourceName());
+                res.setType(remoteCheck.getResourceType());
                 queue.setQueuedResource(res);
                 
-                for (QueueTarget qt : check.getQueueTargets())
+                for (QueueTarget qt : remoteCheck.getQueueTargets())
                 {
                     QueueTargetType target = new QueueTargetType();
                     target.setViable(qt.isVaiable());
@@ -624,6 +633,11 @@ public class QueuerSOAPImpl implements QueuerSOAP
                     resTarget.setResourceName(qt.getName());
                     target.setResource(resTarget);
                 }
+            }
+            else
+            {
+                remoteLoad.setFailed(true);
+                remoteLoad.setReason(remoteCheck.getFailureReason());
             }
         }
 

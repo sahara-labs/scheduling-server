@@ -44,7 +44,6 @@ import org.apache.axis2.AxisFault;
 import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.impl.AbstractRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.AvailabilityResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.CheckAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType;
@@ -57,6 +56,7 @@ public class PermissionAvailabilityCheck extends AbstractRequest
 {
     /** Request response. */
     private AvailabilityResponseType response;
+    
 
     public boolean checkAvailability(RemotePermission permission, Session ses)
     {
@@ -79,6 +79,8 @@ public class PermissionAvailabilityCheck extends AbstractRequest
         }
         catch (AxisFault e)
         {
+            this.failed = true;
+            this.failureReason = "Fault (" + e.getReason() + ")";
             this.logger.warn("SOAP fault making checking availability request, error reason '" + e.getReason() +
                     "', error message is '" + e.getMessage() + "'.");
             this.offlineSite(e);
@@ -86,6 +88,8 @@ public class PermissionAvailabilityCheck extends AbstractRequest
         }
         catch (RemoteException e)
         {
+            this.failed = true;
+            this.failureReason = "Remote error (" + e.getMessage() + ")";
             this.logger.warn("Remote error making checking availability request, error  message is '" + 
                     e.getMessage() + "'.");
             this.offlineSite(e);

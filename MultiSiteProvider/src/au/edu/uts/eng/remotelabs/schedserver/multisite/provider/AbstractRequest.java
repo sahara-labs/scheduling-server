@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 18th July 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.impl;
+package au.edu.uts.eng.remotelabs.schedserver.multisite.provider;
 
 import org.apache.axis2.AxisFault;
 import org.hibernate.Session;
@@ -42,7 +42,6 @@ import org.hibernate.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.MultiSiteProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSite;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSiteStub;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SiteIDType;
@@ -60,6 +59,12 @@ public class AbstractRequest
     
     /** Database session. */
     protected Session session;
+    
+    /** Whether SOAP call failed. */
+    protected boolean failed = false;
+    
+    /** Reason SOAP call failure. */
+    protected String failureReason;
     
     /** Logger. */
     protected Logger logger;
@@ -119,5 +124,15 @@ public class AbstractRequest
     protected void offlineSite(Exception e)
     {
         // FIXME Put site offline
+    }
+
+    public boolean isFailed()
+    {
+        return this.failed;
+    }
+
+    public String getFailureReason()
+    {
+        return this.failureReason;
     }
 }

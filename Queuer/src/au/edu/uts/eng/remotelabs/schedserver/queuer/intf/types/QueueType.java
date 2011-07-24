@@ -81,6 +81,9 @@ public class QueueType implements ADBBean
     protected ResourceIDType queuedResource;
     protected QueueTargetType[] queueTarget;
     protected boolean queueTargetTracker = false;
+    
+    protected RemoteLoadType remoteLoad;
+    protected boolean remoteLoadTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -183,6 +186,17 @@ public class QueueType implements ADBBean
         final List<QueueTargetType> list = ConverterUtil.toList(this.queueTarget);
         list.add(param);
         this.queueTarget = list.toArray(new QueueTargetType[list.size()]);
+    }
+    
+    public RemoteLoadType getRemoteLoad()
+    {
+        return this.remoteLoad;
+    }
+    
+    public void setRemoteLoad(final RemoteLoadType param)
+    {
+        this.remoteLoad = param;
+        this.remoteLoadTracker = param != null;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -403,6 +417,12 @@ public class QueueType implements ADBBean
                 throw new ADBException("queueTarget cannot be null!!");
             }
         }
+        
+        if (this.remoteLoadTracker)
+        {
+            this.remoteLoad.serialize(new QName("", "remoteLoad"), factory, xmlWriter);
+        }
+        
         xmlWriter.writeEndElement();
     }
 
@@ -477,6 +497,12 @@ public class QueueType implements ADBBean
             {
                 throw new ADBException("queueTarget cannot be null!!");
             }
+        }
+        
+        if (this.remoteLoadTracker)
+        {
+            elementList.add(new QName("", "remoteLoad"));
+            elementList.add(this.remoteLoad);
         }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
@@ -647,6 +673,16 @@ public class QueueType implements ADBBean
 
                     object.setQueueTarget((QueueTargetType[]) ConverterUtil
                             .convertToArray(QueueTargetType.class, targetList));
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "remoteLoad").equals(reader.getName()))
+                {
+                    object.setRemoteLoad(RemoteLoadType.Factory.parse(reader));
+                    reader.next();
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
