@@ -146,7 +146,7 @@ Date: 28th December 2009
 				<exclude name="**/.svn/* "/>
 				<exclude name="**/.*" />
 			</tarfileset>
-			<tarfileset prefix="SchedulingServer" dir="servicewrapper" username="${user.name}" group="${user.name}">
+			<tarfileset prefix="SchedulingServer" dir="servicewrapper" username="${user.name}" group="${user.name}" filemode="755">
 				<include name="schedulingservice" />
 			</tarfileset>
 			<tarfileset prefix="SchedulingServer" dir="servicewrapper/WindowsServiceWrapper/Release/" username="${user.name}" group="${user.name}">
