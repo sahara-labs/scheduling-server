@@ -1,10 +1,10 @@
-Private-Package:au.edu.uts.eng.remotelabs.schedserver.tasksched, \
- au.edu.uts.eng.remotelabs.schedserver.tasksched.impl
-Import-Package: *
-Bundle-Name: Task Scheduler
+Bundle-Name: TaskScheduler
 Bundle-SymbolicName: SchedulingServer-TaskScheduler
-Bundle-Version: 1.0.0.alpha
+Bundle-Version: 1.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.tasksched.TaskSchedulerActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .
+Private-Package:au.edu.uts.eng.remotelabs.schedserver.tasksched, \
+ au.edu.uts.eng.remotelabs.schedserver.tasksched.impl
+Import-Package: *
