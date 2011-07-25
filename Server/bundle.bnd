@@ -1,15 +1,18 @@
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.server, javax.servlet, \
-javax.servlet.http
+Bundle-Name: Server
+Bundle-SymbolicName: SchedulingServer-Server
+Bundle-Version: 1.0.0
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.server.ServerActivator
+Bundle-Vendor: University of Technology, Sydney
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.server, \
+javax.servlet, javax.servlet.http
+
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.server.impl
 Include-Resource: META-INF/images/team.jpg=META-INF/images/team.jpg, \
 lib/=lib/;-donotcopy=.svn
-Import-Package:!org.slf4j,!org.xml.sax,!org.xml.sax.helpers,*
+Import-Package: !org.slf4j, !org.xml.sax, !org.xml.sax.helpers, *
 
-Bundle-Name: Server
-Bundle-SymbolicName: SchedulingServer-Server
-Bundle-Version: 1.0.0.alpha
-Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.server.ServerActivator
-Bundle-Vendor: UTS:FEIT Remote Laboratory
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: ., \
-${findpath;lib/.*.jar}
+Include-Resource: META-INF/images/team.jpg=META-INF/images/team.jpg, \
+lib/=lib/;-donotcopy=.svn
+Bundle-ClassPath: ., ${findpath;lib/.*.jar}

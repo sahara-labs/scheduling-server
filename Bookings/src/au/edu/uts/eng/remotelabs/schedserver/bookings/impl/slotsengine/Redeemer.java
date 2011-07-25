@@ -434,7 +434,15 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         
         /* We need to remove the lag in redeeming the booking so we don't
          * propagate the lag to other bookings. */
-        session.setDuration(booking.getDuration() - (int)(now.getTime() - this.rollTime) / 1000);
+        int duration = booking.getDuration() - (int)(now.getTime() - this.rollTime) / 1000;
+        if (membooking.getEndSlot() == SlotBookingEngine.END_SLOT)
+        {
+            /* If the booking is in the last slot of the day it is pulled back a 
+             * second so it stays within the day boundary. Here we restore the 
+             * second so the booking has a nominal duration. */
+            duration += 1;
+        }
+        session.setDuration(duration);
         session.setExtensions(booking.getResourcePermission().getAllowedExtensions());
         
         session.setResourceType(booking.getResourceType());

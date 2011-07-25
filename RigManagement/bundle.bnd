@@ -1,19 +1,23 @@
 Bundle-Name: RigManagement
 Bundle-SymbolicName: SchedulingServer-RigManagement
-Bundle-Version: 1.0.0.alpha
+Bundle-Version: 1.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator
-Bundle-Vendor: Labshare
+Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
-!org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
-!org.jdom.*, !javax.*, !sun.*, !nu.xom, \
+
+Import-Package: org.w3c.dom, \
+javax.xml, javax.xml.*, javax.xml.datatype, \
+javax.xml.namespace, javax.xml.xpath, !javax.portlet, \
+org.apache.log4j, \
+!org.jdom.*, !nu.xom, \
+!com.sun.*, !org.apache.*, !org.dom4j.*, !org.relaxng.*, \
 !au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup, \
 !au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
 !org.junit, !junit.*, \
-au.edu.uts.eng.remotelabs.schedserver.server, *
+*
+
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.bookings, *
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.bookings
-Bundle-ClassPath: ., \
-${findpath;lib/.*.jar}
+Bundle-ClassPath: ., ${findpath;lib/.*.jar}

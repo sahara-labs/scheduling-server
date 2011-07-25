@@ -40,7 +40,7 @@
 Name: SchedulingServer
 Summary: Schedules and assigns remote laboratory rigs.
 Version: 3.1
-Release: 0
+Release: beta1
 License: BSD
 Group: Sahara
 
@@ -57,14 +57,14 @@ Schedules and assigns remote laboratory rigs.
 
 %pre
 
-# Clean up directories for previous version
-if [ -e ${installdir}/bin ] ; then
-    rm -rf ${installdir}/bin &> /dev/null
+# Clean up from previous version if it exists
+if [ -x /usr/lib/schedulingserver/bin ] ; then
+    rm -rf /usr/lib/schedulingserver/bin &> /dev/null
 fi
 
-if [ -e ${installdir}/bundle ] ; then 
-    rm -rf ${installdir}/bundle &> /dev/null
-fi 
+if [ -x /usr/lib/schedulingserver/bundle ] ; then 
+    rm -rf /usr/lib/schedulingserver/bundle &> /dev/null
+fi
 
 %install
 
