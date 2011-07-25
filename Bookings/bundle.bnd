@@ -6,10 +6,23 @@ Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
 !org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
-!org.jdom.*, !javax.*, !sun.*, !nu.xom, \
+!javax.jms, !javax.portlet, !org.jdom.*, !nu.xom, \
 !au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup, \
 !au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
 !org.junit, !junit.*, \
+javax.xml, javax.xml.bind, javax.xml.bind.annotation, \
+javax.xml.bind.annotation.adapters, javax.xml.bind.attachment, \
+javax.xml.bind.helpers, javax.xml.bind.util, javax.xml.crypto, \
+javax.xml.crypto.dom, javax.xml.crypto.dsig, \
+javax.xml.crypto.dsig.dom, javax.xml.crypto.dsig.keyinfo, \
+javax.xml.crypto.dsig.spec, javax.xml.datatype, javax.xml.namespace, \
+javax.xml.parsers, javax.xml.soap, javax.xml.stream, \
+javax.xml.stream.events, javax.xml.stream.util, javax.xml.transform, \
+javax.xml.transform.dom, javax.xml.transform.sax, \
+javax.xml.transform.stax, javax.xml.transform.stream, \
+javax.xml.validation, javax.xml.ws, javax.xml.ws.handler, \
+javax.xml.ws.handler.soap, javax.xml.ws.http, javax.xml.ws.soap, \
+javax.xml.ws.spi, javax.xml.xpath, org.w3c.dom, \
 au.edu.uts.eng.remotelabs.schedserver.server, *
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.bookings, *
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \

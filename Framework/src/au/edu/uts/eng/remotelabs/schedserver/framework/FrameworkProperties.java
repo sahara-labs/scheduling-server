@@ -105,6 +105,7 @@ public class FrameworkProperties
     		"javax.rmi.CORBA;" +
     		"javax.rmi.ssl;" +
     		"javax.script;" +
+    		"javax.security;" + 
     		"javax.security.auth;" +
     		"javax.security.auth.callback;" +
     		"javax.security.auth.kerberos;" +

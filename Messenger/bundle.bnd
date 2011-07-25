@@ -4,7 +4,8 @@ Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerActivator
 Bundle-Vendor: UTS:FEIT Remote Laboratory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.messenger
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.messenger, \
+javax.mail.*
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.messenger.impl
 Include-Resource: META-INF/templates=META-INF/templates;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
