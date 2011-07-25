@@ -1,8 +1,8 @@
 Bundle-Name: Messenger
 Bundle-SymbolicName: SchedulingServer-Messenger
-Bundle-Version: 1.0.0.alpha
+Bundle-Version: 1.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerActivator
-Bundle-Vendor: UTS:FEIT Remote Laboratory
+Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.messenger, \
 javax.mail.*
