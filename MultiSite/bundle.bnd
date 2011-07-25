@@ -1,19 +1,23 @@
 Bundle-Name: MultiSite 
 Bundle-SymbolicName: SchedulingServer-MultiSite
-Bundle-Version: 1.0.0.alpha
+Bundle-Version: 1.0.0.capstone
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator
-Bundle-Vendor: Michael Diponio Capstone
+Bundle-Vendor: Michael Diponio
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: !antlr.parseview, !com.sun.*, !org.apache.*, \
-!org.dom4j.*, !org.relaxng.*, javax.servlet, javax.servlet.http, \
-!org.jdom.*, !javax.*, !sun.*, !nu.xom, \
+
+Import-Package: org.w3c.dom, \
+javax.xml, javax.xml.*, javax.xml.datatype, \
+javax.xml.namespace, javax.xml.xpath, !javax.portlet, \
+org.apache.log4j, \
+!org.jdom.*, !nu.xom, \
+!com.sun.*, !org.apache.*, !org.dom4j.*, !org.relaxng.*, \
 !au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup, \
 !au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
 !org.junit, !junit.*, \
-au.edu.uts.eng.remotelabs.schedserver.server, *
+*
+
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.multisite, *
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite
+Bundle-ClassPath: ., ${findpath;lib/.*.jar}
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite
-Bundle-ClassPath: ., \
-${findpath;lib/.*.jar}
