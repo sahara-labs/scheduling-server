@@ -37,6 +37,8 @@
 package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 
 /**
  * The interface for the Queuer POJO service.
@@ -52,4 +54,14 @@ public interface QueuerService
      * @return availability type
      */
     public QueueAvailability checkAvailability(ResourcePermission perm, org.hibernate.Session ses);
+    
+    /**
+     * Adds the user to the queue denoted by the permission.
+     * 
+     * @param user user to add
+     * @param perm permission specifying resources
+     * @param db database session
+     * @return session or null if failed adding user to queue
+     */
+    public Session addUserToQueue(User user, ResourcePermission perm, org.hibernate.Session db);
 }

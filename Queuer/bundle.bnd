@@ -1,6 +1,6 @@
 Bundle-Name: Queuer
 Bundle-SymbolicName: SchedulingServer-Queuer
-Bundle-Version: 1.1.0
+Bundle-Version: 2.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

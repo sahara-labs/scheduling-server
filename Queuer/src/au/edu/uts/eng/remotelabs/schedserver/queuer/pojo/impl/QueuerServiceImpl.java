@@ -36,13 +36,15 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl;
 
-import org.hibernate.Session;
+
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.PermissionAvailabilityCheck;
@@ -65,7 +67,7 @@ public class QueuerServiceImpl implements QueuerService
     }
 
     @Override
-    public QueueAvailability checkAvailability(ResourcePermission perm, Session ses)
+    public QueueAvailability checkAvailability(ResourcePermission perm, org.hibernate.Session ses)
     {
         this.logger.debug("Received " + this.getClass().getSimpleName() + "#checkAvailability for permission '" + 
                 perm.getId() + "'.");
@@ -162,6 +164,13 @@ public class QueuerServiceImpl implements QueuerService
         }
         
         return response;
+    }
+
+    @Override
+    public Session addUserToQueue(User user, ResourcePermission perm, org.hibernate.Session db)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
