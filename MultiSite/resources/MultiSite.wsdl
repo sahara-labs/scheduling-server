@@ -8,7 +8,8 @@
       </xsd:element>
       <xsd:element name="addToQueue" type="mut:QueueRequestType">
       </xsd:element>
-      <xsd:element name="addToQueueResponse" type="mut:OperationResponseType">
+      <xsd:element name="addToQueueResponse"
+      	type="mut:UserStatusType">
       </xsd:element>
       <xsd:element name="getUserStatus" type="mut:UserIDType"/>
       <xsd:element name="getUserStatusResponse" type="mut:UserStatusType">
@@ -81,14 +82,18 @@
 
       <xsd:complexType name="UserStatusType">
       	<xsd:sequence>
-      		<xsd:element name="inQueue" type="xsd:boolean"/>
-      		<xsd:element name="inSession" type="xsd:boolean"/>
-      		<xsd:element name="inBooking" type="xsd:boolean"/>
-      		<xsd:element maxOccurs="1" minOccurs="0" name="queuedResource" type="mut:ResourceType">
+                    <xsd:element name="operation" type="mut:OperationResponseType" maxOccurs="1" minOccurs="0"></xsd:element>
+                    <xsd:element name="inQueue" type="xsd:boolean" />
+                    <xsd:element name="inSession" type="xsd:boolean" />
+      		<xsd:element name="inBooking" type="xsd:boolean" />
+      		<xsd:element maxOccurs="1" minOccurs="0"
+      			name="queuedResource" type="mut:ResourceType">
       		</xsd:element>
-      		<xsd:element maxOccurs="1" minOccurs="0" name="bookedResource" type="mut:ResourceType">
+      		<xsd:element maxOccurs="1" minOccurs="0"
+      			name="bookedResource" type="mut:ResourceType">
       		</xsd:element>
-      		<xsd:element maxOccurs="1" minOccurs="0" name="session" type="mut:SessionType"/>
+      		<xsd:element maxOccurs="1" minOccurs="0" name="session"
+      			type="mut:SessionType" />
       	</xsd:sequence>
       </xsd:complexType>
 

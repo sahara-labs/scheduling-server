@@ -209,16 +209,16 @@
                                                          throw new org.apache.axis2.databinding.ADBException("wasSuccessful cannot be null!!");
                                                       
                                                } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localWasSuccessful));
+                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(wasSuccessful));
                                                }
                                     
                                    xmlWriter.writeEndElement();
-                              if (localReasonTracker){
+                              if (reasonTracker){
                                     namespace = "";
                                     writeStartElement(null, namespace, "reason", xmlWriter);
                              
 
-                                          if (localReason==null){
+                                          if (reason==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("reason cannot be null!!");
@@ -226,7 +226,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localReason);
+                                                   xmlWriter.writeCharacters(reason);
                                             
                                           }
                                     
@@ -443,13 +443,13 @@
                                                                       "wasSuccessful"));
                                  
                                 elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localWasSuccessful));
-                             if (localReasonTracker){
+                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(wasSuccessful));
+                             if (reasonTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "reason"));
                                  
-                                        if (localReason != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localReason));
+                                        if (reason != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(reason));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("reason cannot be null!!");
                                         }

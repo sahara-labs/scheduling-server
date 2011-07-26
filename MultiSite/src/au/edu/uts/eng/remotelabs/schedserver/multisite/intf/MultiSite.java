@@ -37,9 +37,13 @@
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
@@ -62,8 +66,11 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetSessionInfo
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetSessionInformationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueTargetType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.ResourceType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.UserStatusType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 
@@ -168,8 +175,63 @@ public class MultiSite implements MultiSiteInterface
     @Override
     public AddToQueueResponse addToQueue(AddToQueue addToQueue)
     {
-        // TODO Auto-generated method stub
-        return null;
+        QueueRequestType request = addToQueue.getAddToQueue();
+        final String site = request.getSiteID();
+        final String pid = request.getPermission().getPermissionID();
+        final String username = request.getUser().getUserID();
+        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#addToQueue with params site=" + site + 
+                ", permission=" + pid + ", user=" + username + '.');
+        
+        AddToQueueResponse response = new AddToQueueResponse();
+        OperationResponseType opResp = new OperationResponseType();
+        UserStatusType userStatus = new UserStatusType();
+        response.setAddToQueueResponse(userStatus);
+        
+        opResp.setWasSuccessful(false);
+                
+        RemotePermissionDao dao = new RemotePermissionDao();
+        try
+        {
+            RemotePermission remotePerm = dao.findByGuid(pid);
+            if (remotePerm == null)
+            {
+                /* Permission not found. */
+                this.logger.warn("Cannot add user '" + username + "' to queue because the remote permission '" + pid + 
+                        "' was not found.");
+                opResp.setReason("Permission not found.");
+                return response;
+            }
+            
+            if (!remotePerm.getSite().getGuid().equals(site))
+            {
+                this.logger.warn("Cannot add user '" + username + "' to queue because the because the site '" + site + 
+                        "' does not match the store site '" + remotePerm.getSite().getGuid() + "'.");
+                opResp.setReason("Incorrect origin.");
+                return response;
+            }
+            
+            QueuerService queuer = MultiSiteActivator.getQueuerService();
+            if (queuer == null)
+            {
+                this.logger.warn("Cannot add user to '" + username + "' to queue because the because the Queuer " +
+                		"service was not found.");
+                opResp.setReason("Queuer service not found.");
+                return response;
+            }
+            
+            Session ses = queuer.addUserToQueue(this.getUser(username, remotePerm.getSite(), dao.getSession()),
+                    remotePerm.getPermission(), dao.getSession());
+            
+            
+            
+        }
+        finally
+        {
+            dao.closeSession();
+        }
+
+        return response;
     }
 
     @Override
@@ -214,4 +276,32 @@ public class MultiSite implements MultiSiteInterface
         return null;
     }
 
+    /**
+     * Gets a user. If the user does not exist, a new user is created.
+     * 
+     * @param name the name of a user
+     * @param site the site the user is from
+     * @param session database session
+     * @return user 
+     */
+    private User getUser(String name, RemoteSite site, org.hibernate.Session db)
+    {
+        UserDao dao = new UserDao(db);
+        String ns = site.getUserNamespace();
+
+        User user = dao.findByName(ns, name);
+        if (user == null)
+        {
+            this.logger.info("Remote user '" + name + "' from site '" + site + "' with namespace '" + ns + 
+                    "' does not exist so will be created.");
+            
+            user = new User();
+            user.setNamespace(ns);
+            user.setName(name);
+            user.setPersona(User.USER); // Remote users are always uses.
+            dao.persist(user);
+        }
+        
+        return user;
+    }
 }
