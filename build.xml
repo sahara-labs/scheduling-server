@@ -161,12 +161,13 @@ Date: 28th December 2009
 
 	<!-- Windows Installer. -->
 	<property name="win.target.arch" value="x86" />
-    <property name="nsis.path" value="C:/Program Files/NSIS" />
+	<property name="nsis.path" value="C:/Program Files/NSIS" />
+    <property name="nsis.path" value="${nsis.path}" />
     <target name="win-package" depends="build,schema" if="isWindows">
         <mkdir dir="${package.dir}"/>
-        <taskdef name="nsis" classpathref="project.tools" classname="net.sf.nsisant.Task" />
+        <taskdef name="nsis" classpathref="nsis.tools" classname="net.sf.nsisant.Task" />
         <echo>Building arch ${win.target.arch}.</echo>
-        <nsis script="rigclient.nsi" verbosity="3" out="${package.dir}/rigclient.log" path="${nsis.path}">
+        <nsis script="schedulingserver.nsi" verbosity="3" out="${package.dir}/schedulingserver.log" path="${nsis.path}">
             <define name="Arch" value="${win.target.arch}" />
         </nsis>
     </target>
