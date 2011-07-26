@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsServiceWrapper", "WindowsServiceWrapper\WindowsServiceWrapper.vcproj", "{3BCD94CF-D151-4580-9C68-1FAECEAEB91C}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsServiceWrapper", "WindowsServiceWrapper\WindowsServiceWrapper.vcxproj", "{3BCD94CF-D151-4580-9C68-1FAECEAEB91C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
