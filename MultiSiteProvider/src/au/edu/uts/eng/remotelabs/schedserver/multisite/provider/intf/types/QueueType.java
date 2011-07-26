@@ -119,7 +119,7 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType localQueuedResource ;
+                                    protected ResourceType localQueuedResource ;
                                 
                            /*  This tracker boolean wil be used to detect whether the user called the set method
                           *   for this attribute. It will be used to determine whether to include this field
@@ -135,9 +135,9 @@
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType
+                           * @return ResourceType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType getQueuedResource(){
+                           public  ResourceType getQueuedResource(){
                                return localQueuedResource;
                            }
 
@@ -147,7 +147,7 @@
                                * Auto generated setter method
                                * @param param QueuedResource
                                */
-                               public void setQueuedResource(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType param){
+                               public void setQueuedResource(ResourceType param){
                             localQueuedResourceTracker = param != null;
                                    
                                             this.localQueuedResource=param;
@@ -161,7 +161,7 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType localAssignedResource ;
+                                    protected ResourceType localAssignedResource ;
                                 
                            /*  This tracker boolean wil be used to detect whether the user called the set method
                           *   for this attribute. It will be used to determine whether to include this field
@@ -177,9 +177,9 @@
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType
+                           * @return ResourceType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType getAssignedResource(){
+                           public  ResourceType getAssignedResource(){
                                return localAssignedResource;
                            }
 
@@ -189,7 +189,7 @@
                                * Auto generated setter method
                                * @param param AssignedResource
                                */
-                               public void setAssignedResource(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType param){
+                               public void setAssignedResource(ResourceType param){
                             localAssignedResourceTracker = param != null;
                                    
                                             this.localAssignedResource=param;
@@ -675,7 +675,7 @@
                             if (!"QueueType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (QueueType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (QueueType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         
@@ -759,7 +759,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","queuedResource").equals(reader.getName())){
                                 
-                                                object.setQueuedResource(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType.Factory.parse(reader));
+                                                object.setQueuedResource(ResourceType.Factory.parse(reader));
                                               
                                         reader.next();
                                     
@@ -774,7 +774,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","assignedResource").equals(reader.getName())){
                                 
-                                                object.setAssignedResource(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType.Factory.parse(reader));
+                                                object.setAssignedResource(ResourceType.Factory.parse(reader));
                                               
                                         reader.next();
                                     

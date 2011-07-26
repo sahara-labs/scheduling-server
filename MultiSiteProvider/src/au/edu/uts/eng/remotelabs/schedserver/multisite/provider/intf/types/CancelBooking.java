@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType localCancelBooking ;
+                                    protected BookingIDType localCancelBooking ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType
+                           * @return BookingIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType getCancelBooking(){
+                           public  BookingIDType getCancelBooking(){
                                return localCancelBooking;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param CancelBooking
                                */
-                               public void setCancelBooking(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType param){
+                               public void setCancelBooking(BookingIDType param){
                             
                                             this.localCancelBooking=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","cancelBooking").equals(reader.getName())){
                                 
-                                                object.setCancelBooking(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType.Factory.parse(reader));
+                                                object.setCancelBooking(BookingIDType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

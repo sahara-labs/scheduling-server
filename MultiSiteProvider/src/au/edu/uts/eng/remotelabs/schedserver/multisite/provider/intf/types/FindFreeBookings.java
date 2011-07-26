@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsType localFindFreeBookings ;
+                                    protected FindFreeBookingsType localFindFreeBookings ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsType
+                           * @return FindFreeBookingsType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsType getFindFreeBookings(){
+                           public  FindFreeBookingsType getFindFreeBookings(){
                                return localFindFreeBookings;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param FindFreeBookings
                                */
-                               public void setFindFreeBookings(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsType param){
+                               public void setFindFreeBookings(FindFreeBookingsType param){
                             
                                             this.localFindFreeBookings=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","findFreeBookings").equals(reader.getName())){
                                 
-                                                object.setFindFreeBookings(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsType.Factory.parse(reader));
+                                                object.setFindFreeBookings(FindFreeBookingsType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

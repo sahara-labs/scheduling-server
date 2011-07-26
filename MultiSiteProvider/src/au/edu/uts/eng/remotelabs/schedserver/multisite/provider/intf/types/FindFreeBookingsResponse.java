@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsResponseType localFindFreeBookingsResponse ;
+                                    protected FindFreeBookingsResponseType localFindFreeBookingsResponse ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsResponseType
+                           * @return FindFreeBookingsResponseType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsResponseType getFindFreeBookingsResponse(){
+                           public  FindFreeBookingsResponseType getFindFreeBookingsResponse(){
                                return localFindFreeBookingsResponse;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param FindFreeBookingsResponse
                                */
-                               public void setFindFreeBookingsResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsResponseType param){
+                               public void setFindFreeBookingsResponse(FindFreeBookingsResponseType param){
                             
                                             this.localFindFreeBookingsResponse=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","findFreeBookingsResponse").equals(reader.getName())){
                                 
-                                                object.setFindFreeBookingsResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.FindFreeBookingsResponseType.Factory.parse(reader));
+                                                object.setFindFreeBookingsResponse(FindFreeBookingsResponseType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

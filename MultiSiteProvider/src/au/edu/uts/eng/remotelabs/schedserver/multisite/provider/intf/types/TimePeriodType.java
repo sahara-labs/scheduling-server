@@ -430,7 +430,7 @@
                             if (!"TimePeriodType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (TimePeriodType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (TimePeriodType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         

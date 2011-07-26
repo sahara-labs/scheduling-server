@@ -29,14 +29,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType localPermission ;
+                                    protected PermissionIDType localPermission ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType
+                           * @return PermissionIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType getPermission(){
+                           public  PermissionIDType getPermission(){
                                return localPermission;
                            }
 
@@ -46,7 +46,7 @@
                                * Auto generated setter method
                                * @param param Permission
                                */
-                               public void setPermission(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType param){
+                               public void setPermission(PermissionIDType param){
                             
                                             this.localPermission=param;
                                     
@@ -475,7 +475,7 @@
                             if (!"BookingType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (BookingType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (BookingType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         
@@ -502,7 +502,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","permission").equals(reader.getName())){
                                 
-                                                object.setPermission(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType.Factory.parse(reader));
+                                                object.setPermission(PermissionIDType.Factory.parse(reader));
                                               
                                         reader.next();
                                     

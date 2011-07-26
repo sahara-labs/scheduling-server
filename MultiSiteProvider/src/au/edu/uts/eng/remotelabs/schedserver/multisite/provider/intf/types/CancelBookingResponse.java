@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType localCancelBookingResponse ;
+                                    protected OperationResponseType localCancelBookingResponse ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType
+                           * @return OperationResponseType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType getCancelBookingResponse(){
+                           public  OperationResponseType getCancelBookingResponse(){
                                return localCancelBookingResponse;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param CancelBookingResponse
                                */
-                               public void setCancelBookingResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType param){
+                               public void setCancelBookingResponse(OperationResponseType param){
                             
                                             this.localCancelBookingResponse=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","cancelBookingResponse").equals(reader.getName())){
                                 
-                                                object.setCancelBookingResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType.Factory.parse(reader));
+                                                object.setCancelBookingResponse(OperationResponseType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

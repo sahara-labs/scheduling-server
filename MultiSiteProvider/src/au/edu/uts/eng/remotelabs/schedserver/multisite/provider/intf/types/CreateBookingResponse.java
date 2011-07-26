@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingResponseType localCreateBookingResponse ;
+                                    protected BookingResponseType localCreateBookingResponse ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingResponseType
+                           * @return BookingResponseType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingResponseType getCreateBookingResponse(){
+                           public  BookingResponseType getCreateBookingResponse(){
                                return localCreateBookingResponse;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param CreateBookingResponse
                                */
-                               public void setCreateBookingResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingResponseType param){
+                               public void setCreateBookingResponse(BookingResponseType param){
                             
                                             this.localCreateBookingResponse=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","createBookingResponse").equals(reader.getName())){
                                 
-                                                object.setCreateBookingResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingResponseType.Factory.parse(reader));
+                                                object.setCreateBookingResponse(BookingResponseType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

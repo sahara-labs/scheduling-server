@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType localGetQueuePosition ;
+                                    protected UserIDType localGetQueuePosition ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType
+                           * @return UserIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType getGetQueuePosition(){
+                           public  UserIDType getGetQueuePosition(){
                                return localGetQueuePosition;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param GetQueuePosition
                                */
-                               public void setGetQueuePosition(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType param){
+                               public void setGetQueuePosition(UserIDType param){
                             
                                             this.localGetQueuePosition=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","getQueuePosition").equals(reader.getName())){
                                 
-                                                object.setGetQueuePosition(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType.Factory.parse(reader));
+                                                object.setGetQueuePosition(UserIDType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

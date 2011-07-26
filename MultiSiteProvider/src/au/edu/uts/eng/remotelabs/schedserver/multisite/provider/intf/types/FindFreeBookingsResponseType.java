@@ -29,14 +29,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType localPermission ;
+                                    protected PermissionIDType localPermission ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType
+                           * @return PermissionIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType getPermission(){
+                           public  PermissionIDType getPermission(){
                                return localPermission;
                            }
 
@@ -46,7 +46,7 @@
                                * Auto generated setter method
                                * @param param Permission
                                */
-                               public void setPermission(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType param){
+                               public void setPermission(PermissionIDType param){
                             
                                             this.localPermission=param;
                                     
@@ -59,14 +59,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType localResource ;
+                                    protected ResourceType localResource ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType
+                           * @return ResourceType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType getResource(){
+                           public  ResourceType getResource(){
                                return localResource;
                            }
 
@@ -76,7 +76,7 @@
                                * Auto generated setter method
                                * @param param Resource
                                */
-                               public void setResource(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType param){
+                               public void setResource(ResourceType param){
                             
                                             this.localResource=param;
                                     
@@ -90,7 +90,7 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[] localSlot ;
+                                    protected BookingSlotType[] localSlot ;
                                 
                            /*  This tracker boolean wil be used to detect whether the user called the set method
                           *   for this attribute. It will be used to determine whether to include this field
@@ -106,9 +106,9 @@
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[]
+                           * @return BookingSlotType[]
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[] getSlot(){
+                           public  BookingSlotType[] getSlot(){
                                return localSlot;
                            }
 
@@ -120,7 +120,7 @@
                               /**
                                * validate the array for Slot
                                */
-                              protected void validateSlot(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[] param){
+                              protected void validateSlot(BookingSlotType[] param){
                              
                               }
 
@@ -129,7 +129,7 @@
                               * Auto generated setter method
                               * @param param Slot
                               */
-                              public void setSlot(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[] param){
+                              public void setSlot(BookingSlotType[] param){
                               
                                    validateSlot(param);
 
@@ -142,11 +142,11 @@
                              
                              /**
                              * Auto generated add method for the array for convenience
-                             * @param param au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType
+                             * @param param BookingSlotType
                              */
-                             public void addSlot(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType param){
+                             public void addSlot(BookingSlotType param){
                                    if (localSlot == null){
-                                   localSlot = new au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[]{};
+                                   localSlot = new BookingSlotType[]{};
                                    }
 
                             
@@ -158,8 +158,8 @@
                             org.apache.axis2.databinding.utils.ConverterUtil.toList(localSlot);
                                list.add(param);
                                this.localSlot =
-                             (au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[])list.toArray(
-                            new au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[list.size()]);
+                             (BookingSlotType[])list.toArray(
+                            new BookingSlotType[list.size()]);
 
                              }
                              
@@ -525,7 +525,7 @@
                             if (!"FindFreeBookingsResponseType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (FindFreeBookingsResponseType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (FindFreeBookingsResponseType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         
@@ -554,7 +554,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","permission").equals(reader.getName())){
                                 
-                                                object.setPermission(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType.Factory.parse(reader));
+                                                object.setPermission(PermissionIDType.Factory.parse(reader));
                                               
                                         reader.next();
                                     
@@ -570,7 +570,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","resource").equals(reader.getName())){
                                 
-                                                object.setResource(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType.Factory.parse(reader));
+                                                object.setResource(ResourceType.Factory.parse(reader));
                                               
                                         reader.next();
                                     
@@ -589,7 +589,7 @@
                                     
                                     
                                     // Process the array and step past its final element's end.
-                                    list3.add(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType.Factory.parse(reader));
+                                    list3.add(BookingSlotType.Factory.parse(reader));
                                                                 
                                                         //loop until we find a start element that is not part of this array
                                                         boolean loopDone3 = false;
@@ -607,7 +607,7 @@
                                                                 loopDone3 = true;
                                                             } else {
                                                                 if (new javax.xml.namespace.QName("","slot").equals(reader.getName())){
-                                                                    list3.add(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType.Factory.parse(reader));
+                                                                    list3.add(BookingSlotType.Factory.parse(reader));
                                                                         
                                                                 }else{
                                                                     loopDone3 = true;
@@ -616,9 +616,9 @@
                                                         }
                                                         // call the converter utility  to convert and set the array
                                                         
-                                                        object.setSlot((au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType[])
+                                                        object.setSlot((BookingSlotType[])
                                                             org.apache.axis2.databinding.utils.ConverterUtil.convertToArray(
-                                                                au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingSlotType.class,
+                                                                BookingSlotType.class,
                                                                 list3));
                                                             
                               }  // End of if for expected property start element

@@ -15,7 +15,7 @@
             */
             @SuppressWarnings({"unchecked","unused"})
         
-        public  class BookingSlotType extends au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType
+        public  class BookingSlotType extends TimePeriodType
         implements org.apache.axis2.databinding.ADBBean{
         /* This type was generated from the piece of schema that had
                 name = BookingSlotType
@@ -29,14 +29,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.State_type1 localState ;
+                                    protected State_type1 localState ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.State_type1
+                           * @return State_type1
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.State_type1 getState(){
+                           public  State_type1 getState(){
                                return localState;
                            }
 
@@ -46,7 +46,7 @@
                                * Auto generated setter method
                                * @param param State
                                */
-                               public void setState(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.State_type1 param){
+                               public void setState(State_type1 param){
                             
                                             this.localState=param;
                                     
@@ -414,7 +414,7 @@
                             if (!"BookingSlotType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (BookingSlotType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (BookingSlotType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         
@@ -479,7 +479,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","state").equals(reader.getName())){
                                 
-                                                object.setState(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.State_type1.Factory.parse(reader));
+                                                object.setState(State_type1.Factory.parse(reader));
                                               
                                         reader.next();
                                     

@@ -15,7 +15,7 @@
             */
             @SuppressWarnings({"unchecked","unused"})
         
-        public  class CreateBookingType extends au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SiteIDType
+        public  class CreateBookingType extends SiteIDType
         implements org.apache.axis2.databinding.ADBBean{
         /* This type was generated from the piece of schema that had
                 name = CreateBookingType
@@ -29,14 +29,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType localUser ;
+                                    protected UserIDType localUser ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType
+                           * @return UserIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType getUser(){
+                           public  UserIDType getUser(){
                                return localUser;
                            }
 
@@ -46,7 +46,7 @@
                                * Auto generated setter method
                                * @param param User
                                */
-                               public void setUser(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType param){
+                               public void setUser(UserIDType param){
                             
                                             this.localUser=param;
                                     
@@ -59,14 +59,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingType localBooking ;
+                                    protected BookingType localBooking ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingType
+                           * @return BookingType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingType getBooking(){
+                           public  BookingType getBooking(){
                                return localBooking;
                            }
 
@@ -76,7 +76,7 @@
                                * Auto generated setter method
                                * @param param Booking
                                */
-                               public void setBooking(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingType param){
+                               public void setBooking(BookingType param){
                             
                                             this.localBooking=param;
                                     
@@ -185,7 +185,7 @@
                                     writeStartElement(null, namespace, "siteID", xmlWriter);
                              
 
-                                          if (localSiteID==null){
+                                          if (siteID==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
@@ -193,7 +193,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localSiteID);
+                                                   xmlWriter.writeCharacters(siteID);
                                             
                                           }
                                     
@@ -413,8 +413,8 @@
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "siteID"));
                                  
-                                        if (localSiteID != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSiteID));
+                                        if (siteID != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(siteID));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
                                         }
@@ -495,7 +495,7 @@
                             if (!"CreateBookingType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (CreateBookingType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (CreateBookingType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         
@@ -541,7 +541,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","user").equals(reader.getName())){
                                 
-                                                object.setUser(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType.Factory.parse(reader));
+                                                object.setUser(UserIDType.Factory.parse(reader));
                                               
                                         reader.next();
                                     
@@ -557,7 +557,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","booking").equals(reader.getName())){
                                 
-                                                object.setBooking(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingType.Factory.parse(reader));
+                                                object.setBooking(BookingType.Factory.parse(reader));
                                               
                                         reader.next();
                                     

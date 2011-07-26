@@ -15,7 +15,7 @@
             */
             @SuppressWarnings({"unchecked","unused"})
         
-        public  class BookingResponseType extends au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType
+        public  class BookingResponseType extends OperationResponseType
         implements org.apache.axis2.databinding.ADBBean{
         /* This type was generated from the piece of schema that had
                 name = BookingResponseType
@@ -29,7 +29,7 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType localBookingID ;
+                                    protected BookingIDType localBookingID ;
                                 
                            /*  This tracker boolean wil be used to detect whether the user called the set method
                           *   for this attribute. It will be used to determine whether to include this field
@@ -45,9 +45,9 @@
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType
+                           * @return BookingIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType getBookingID(){
+                           public  BookingIDType getBookingID(){
                                return localBookingID;
                            }
 
@@ -57,7 +57,7 @@
                                * Auto generated setter method
                                * @param param BookingID
                                */
-                               public void setBookingID(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType param){
+                               public void setBookingID(BookingIDType param){
                             localBookingIDTracker = param != null;
                                    
                                             this.localBookingID=param;
@@ -72,7 +72,7 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[] localBestFits ;
+                                    protected TimePeriodType[] localBestFits ;
                                 
                            /*  This tracker boolean wil be used to detect whether the user called the set method
                           *   for this attribute. It will be used to determine whether to include this field
@@ -88,9 +88,9 @@
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[]
+                           * @return TimePeriodType[]
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[] getBestFits(){
+                           public  TimePeriodType[] getBestFits(){
                                return localBestFits;
                            }
 
@@ -102,7 +102,7 @@
                               /**
                                * validate the array for BestFits
                                */
-                              protected void validateBestFits(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[] param){
+                              protected void validateBestFits(TimePeriodType[] param){
                              
                               }
 
@@ -111,7 +111,7 @@
                               * Auto generated setter method
                               * @param param BestFits
                               */
-                              public void setBestFits(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[] param){
+                              public void setBestFits(TimePeriodType[] param){
                               
                                    validateBestFits(param);
 
@@ -124,11 +124,11 @@
                              
                              /**
                              * Auto generated add method for the array for convenience
-                             * @param param au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType
+                             * @param param TimePeriodType
                              */
-                             public void addBestFits(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType param){
+                             public void addBestFits(TimePeriodType param){
                                    if (localBestFits == null){
-                                   localBestFits = new au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[]{};
+                                   localBestFits = new TimePeriodType[]{};
                                    }
 
                             
@@ -140,8 +140,8 @@
                             org.apache.axis2.databinding.utils.ConverterUtil.toList(localBestFits);
                                list.add(param);
                                this.localBestFits =
-                             (au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[])list.toArray(
-                            new au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[list.size()]);
+                             (TimePeriodType[])list.toArray(
+                            new TimePeriodType[list.size()]);
 
                              }
                              
@@ -209,16 +209,16 @@
                                                          throw new org.apache.axis2.databinding.ADBException("wasSuccessful cannot be null!!");
                                                       
                                                } else {
-                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localWasSuccessful));
+                                                    xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(wasSuccessful));
                                                }
                                     
                                    xmlWriter.writeEndElement();
-                              if (localReasonTracker){
+                              if (reasonTracker){
                                     namespace = "";
                                     writeStartElement(null, namespace, "reason", xmlWriter);
                              
 
-                                          if (localReason==null){
+                                          if (reason==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("reason cannot be null!!");
@@ -226,7 +226,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localReason);
+                                                   xmlWriter.writeCharacters(reason);
                                             
                                           }
                                     
@@ -443,13 +443,13 @@
                                                                       "wasSuccessful"));
                                  
                                 elementList.add(
-                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localWasSuccessful));
-                             if (localReasonTracker){
+                                   org.apache.axis2.databinding.utils.ConverterUtil.convertToString(wasSuccessful));
+                             if (reasonTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "reason"));
                                  
-                                        if (localReason != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localReason));
+                                        if (reason != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(reason));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("reason cannot be null!!");
                                         }
@@ -537,7 +537,7 @@
                             if (!"BookingResponseType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (BookingResponseType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (BookingResponseType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         
@@ -603,7 +603,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","bookingID").equals(reader.getName())){
                                 
-                                                object.setBookingID(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingIDType.Factory.parse(reader));
+                                                object.setBookingID(BookingIDType.Factory.parse(reader));
                                               
                                         reader.next();
                                     
@@ -621,7 +621,7 @@
                                     
                                     
                                     // Process the array and step past its final element's end.
-                                    list4.add(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType.Factory.parse(reader));
+                                    list4.add(TimePeriodType.Factory.parse(reader));
                                                                 
                                                         //loop until we find a start element that is not part of this array
                                                         boolean loopDone4 = false;
@@ -639,7 +639,7 @@
                                                                 loopDone4 = true;
                                                             } else {
                                                                 if (new javax.xml.namespace.QName("","bestFits").equals(reader.getName())){
-                                                                    list4.add(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType.Factory.parse(reader));
+                                                                    list4.add(TimePeriodType.Factory.parse(reader));
                                                                         
                                                                 }else{
                                                                     loopDone4 = true;
@@ -648,9 +648,9 @@
                                                         }
                                                         // call the converter utility  to convert and set the array
                                                         
-                                                        object.setBestFits((au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType[])
+                                                        object.setBestFits((TimePeriodType[])
                                                             org.apache.axis2.databinding.utils.ConverterUtil.convertToArray(
-                                                                au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType.class,
+                                                                TimePeriodType.class,
                                                                 list4));
                                                             
                               }  // End of if for expected property start element

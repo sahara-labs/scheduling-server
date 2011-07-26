@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.QueueType localGetQueuePositionResponse ;
+                                    protected QueueType localGetQueuePositionResponse ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.QueueType
+                           * @return QueueType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.QueueType getGetQueuePositionResponse(){
+                           public  QueueType getGetQueuePositionResponse(){
                                return localGetQueuePositionResponse;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param GetQueuePositionResponse
                                */
-                               public void setGetQueuePositionResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.QueueType param){
+                               public void setGetQueuePositionResponse(QueueType param){
                             
                                             this.localGetQueuePositionResponse=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","getQueuePositionResponse").equals(reader.getName())){
                                 
-                                                object.setGetQueuePositionResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.QueueType.Factory.parse(reader));
+                                                object.setGetQueuePositionResponse(QueueType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType localFinishSession ;
+                                    protected UserIDType localFinishSession ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType
+                           * @return UserIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType getFinishSession(){
+                           public  UserIDType getFinishSession(){
                                return localFinishSession;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param FinishSession
                                */
-                               public void setFinishSession(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType param){
+                               public void setFinishSession(UserIDType param){
                             
                                             this.localFinishSession=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","finishSession").equals(reader.getName())){
                                 
-                                                object.setFinishSession(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType.Factory.parse(reader));
+                                                object.setFinishSession(UserIDType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType localGetSessionInformationResponse ;
+                                    protected SessionType localGetSessionInformationResponse ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType
+                           * @return SessionType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType getGetSessionInformationResponse(){
+                           public  SessionType getGetSessionInformationResponse(){
                                return localGetSessionInformationResponse;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param GetSessionInformationResponse
                                */
-                               public void setGetSessionInformationResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType param){
+                               public void setGetSessionInformationResponse(SessionType param){
                             
                                             this.localGetSessionInformationResponse=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","getSessionInformationResponse").equals(reader.getName())){
                                 
-                                                object.setGetSessionInformationResponse(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType.Factory.parse(reader));
+                                                object.setGetSessionInformationResponse(SessionType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

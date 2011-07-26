@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType localGetSessionInformation ;
+                                    protected UserIDType localGetSessionInformation ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType
+                           * @return UserIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType getGetSessionInformation(){
+                           public  UserIDType getGetSessionInformation(){
                                return localGetSessionInformation;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param GetSessionInformation
                                */
-                               public void setGetSessionInformation(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType param){
+                               public void setGetSessionInformation(UserIDType param){
                             
                                             this.localGetSessionInformation=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","getSessionInformation").equals(reader.getName())){
                                 
-                                                object.setGetSessionInformation(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType.Factory.parse(reader));
+                                                object.setGetSessionInformation(UserIDType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

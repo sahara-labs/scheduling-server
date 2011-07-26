@@ -30,14 +30,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.CreateBookingType localCreateBooking ;
+                                    protected CreateBookingType localCreateBooking ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.CreateBookingType
+                           * @return CreateBookingType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.CreateBookingType getCreateBooking(){
+                           public  CreateBookingType getCreateBooking(){
                                return localCreateBooking;
                            }
 
@@ -47,7 +47,7 @@
                                * Auto generated setter method
                                * @param param CreateBooking
                                */
-                               public void setCreateBooking(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.CreateBookingType param){
+                               public void setCreateBooking(CreateBookingType param){
                             
                                             this.localCreateBooking=param;
                                     
@@ -318,7 +318,7 @@
                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("http://remotelabs.eng.uts.edu.au/schedserver/multisite","createBooking").equals(reader.getName())){
                                 
-                                                object.setCreateBooking(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.CreateBookingType.Factory.parse(reader));
+                                                object.setCreateBooking(CreateBookingType.Factory.parse(reader));
                                             
                               }  // End of if for expected property start element
                                 

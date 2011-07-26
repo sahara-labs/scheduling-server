@@ -15,7 +15,7 @@
             */
             @SuppressWarnings({"unchecked","unused"})
         
-        public  class FindFreeBookingsType extends au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SiteIDType
+        public  class FindFreeBookingsType extends SiteIDType
         implements org.apache.axis2.databinding.ADBBean{
         /* This type was generated from the piece of schema that had
                 name = FindFreeBookingsType
@@ -29,14 +29,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType localPermission ;
+                                    protected PermissionIDType localPermission ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType
+                           * @return PermissionIDType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType getPermission(){
+                           public  PermissionIDType getPermission(){
                                return localPermission;
                            }
 
@@ -46,7 +46,7 @@
                                * Auto generated setter method
                                * @param param Permission
                                */
-                               public void setPermission(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType param){
+                               public void setPermission(PermissionIDType param){
                             
                                             this.localPermission=param;
                                     
@@ -59,14 +59,14 @@
                         */
 
                         
-                                    protected au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType localPeriod ;
+                                    protected TimePeriodType localPeriod ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType
+                           * @return TimePeriodType
                            */
-                           public  au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType getPeriod(){
+                           public  TimePeriodType getPeriod(){
                                return localPeriod;
                            }
 
@@ -76,7 +76,7 @@
                                * Auto generated setter method
                                * @param param Period
                                */
-                               public void setPeriod(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType param){
+                               public void setPeriod(TimePeriodType param){
                             
                                             this.localPeriod=param;
                                     
@@ -143,7 +143,7 @@
                                     writeStartElement(null, namespace, "siteID", xmlWriter);
                              
 
-                                          if (localSiteID==null){
+                                          if (siteID==null){
                                               // write the nil attribute
                                               
                                                      throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
@@ -151,7 +151,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localSiteID);
+                                                   xmlWriter.writeCharacters(siteID);
                                             
                                           }
                                     
@@ -355,8 +355,8 @@
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "siteID"));
                                  
-                                        if (localSiteID != null){
-                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSiteID));
+                                        if (siteID != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(siteID));
                                         } else {
                                            throw new org.apache.axis2.databinding.ADBException("siteID cannot be null!!");
                                         }
@@ -432,7 +432,7 @@
                             if (!"FindFreeBookingsType".equals(type)){
                                 //find namespace for the prefix
                                 java.lang.String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                                return (FindFreeBookingsType)au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ExtensionMapper.getTypeObject(
+                                return (FindFreeBookingsType)ExtensionMapper.getTypeObject(
                                      nsUri,type,reader);
                               }
                         
@@ -478,7 +478,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","permission").equals(reader.getName())){
                                 
-                                                object.setPermission(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType.Factory.parse(reader));
+                                                object.setPermission(PermissionIDType.Factory.parse(reader));
                                               
                                         reader.next();
                                     
@@ -494,7 +494,7 @@
                                 
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","period").equals(reader.getName())){
                                 
-                                                object.setPeriod(au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimePeriodType.Factory.parse(reader));
+                                                object.setPeriod(TimePeriodType.Factory.parse(reader));
                                               
                                         reader.next();
                                     
