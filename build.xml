@@ -162,7 +162,6 @@ Date: 28th December 2009
 	<!-- Windows Installer. -->
 	<property name="win.target.arch" value="x86" />
 	<property name="nsis.path" value="C:/Program Files/NSIS" />
-    <property name="nsis.path" value="${nsis.path}" />
     <target name="win-package" depends="build,schema" if="isWindows">
         <mkdir dir="${package.dir}"/>
         <taskdef name="nsis" classpathref="nsis.tools" classname="net.sf.nsisant.Task" />

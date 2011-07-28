@@ -49,17 +49,17 @@
 
 
 ; The name of the installer
-Name "Sahara Scheduling Server"
+Name "SAHARA Labs Scheduling Server"
 
 !define REGKEY "SOFTWARE\$(^Name)"
 
-; Sahara Scheduling Server Version
-!define Version "3.0-0"
+; SAHARA Labs Scheduling Server Version
+!define Version "3.1-0-beta1"
 
 !define JREVersion "1.6"
 
 ; The file to write
-OutFile "package/SchedulingServer-${Version}.exe"
+OutFile "package/SchedulingServer-${Version}-${Arch}.exe"
 
 ; The default installation directory
 InstallDir "C:\Program Files\Sahara"
@@ -72,12 +72,13 @@ Var skipSection
 ;Interface Settings
  
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "InstallerFiles\labshare.bmp"
+!define MUI_HEADERIMAGE_BITMAP "installer\labshare.bmp"
 
-!define MUI_ICON "InstallerFiles\labshare.ico"
+!define MUI_ICON "installer\labshare.ico"
 !define MUI_ABORTWARNING
   
-!define MUI_UNICON "InstallerFiles\win-install.ico"
+!define MUI_UNICON "installer\win-install.ico"
+
 
 !define Sahara_SSWindows_Service "Scheduling Server"
 
@@ -247,19 +248,19 @@ FunctionEnd
 
 Function .onInit
     InitPluginsDir
-    File /oname=$PLUGINSDIR\tick.bmp "InstallerFiles\tick.bmp"
-    File /oname=$PLUGINSDIR\cross.bmp "InstallerFiles\cross.bmp"
+    File /oname=$PLUGINSDIR\tick.bmp "installer\tick.bmp"
+    File /oname=$PLUGINSDIR\cross.bmp "installer\cross.bmp"
     ; Sample data file for installer
-    File /oname=$PLUGINSDIR\sampleDataMysql.sql "InstallerFiles\sampleDataMysql.sql"
-    File /oname=$PLUGINSDIR\sampleDataMssql.sql "InstallerFiles\sampleDataMssql.sql"
+    File /oname=$PLUGINSDIR\sampleDataMysql.sql "installer\sampleDataMysql.sql"
+    File /oname=$PLUGINSDIR\sampleDataMssql.sql "installer\sampleDataMssql.sql"
 
 	; Splash screen 
-	advsplash::show 1000 1000 1000 -1 ..\InstallerFiles\labshare
+	advsplash::show 1000 1000 1000 -1 ..\installer\labshare
  	StrCpy $skipSection "false"
  	StrCpy $SSAlreadyInstalled "-1"
 	call CheckSSVersion
 	${If} $SSAlreadyInstalled S== "OTHER"
-		MessageBox MB_OK|MB_ICONSTOP "A different version of Sahara is already installed on this machine. $\nPlease uninstall the existing Sahara software before continuing the installation"
+		MessageBox MB_OK|MB_ICONSTOP "A different version of SAHARA Labs is already installed on this machine. $\nPlease uninstall the existing Sahara software before continuing the installation"
 		Abort 
 	${EndIf}
     StrCpy $DBTypeStr "-- Select database --"
@@ -269,10 +270,39 @@ FunctionEnd
 
 Function checkJREVersion
 	; Check the JRE version to be 1.6 or higher
+	
+	${If} ${Arch} == "x64"
+		; If we are a 64 bit installer, we need to use a 64 bit JVM which 
+		; will have its keys in the 64 bit registry.
+		SetRegView 64
+	${EndIf}
+	
 	ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" CurrentVersion 
-	${If} $0 S< ${JREVersion} 
-		MessageBox MB_OK|MB_ICONSTOP "$(^Name) needs JRE version ${JREVersion} or higher. It is currently $0. Aborting the installation."
-		Abort ; causes installer to quit.
+	
+	${If} ${Arch} == "x64"
+		; Restore the registry back to 32 view
+		SetRegView 32
+	${EndIf}
+	
+	${If} $0 == ""
+	${AndIf} ${Arch} == "x64"
+		; It's possible a 32 bit JVM is installed, so we should alert the user to
+		; install a 64 bit JVM if this is the case.
+		ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" CurrentVersion 
+		${If} $0 != ""
+			MessageBox MB_OK|MB_ICONSTOP "As this is the 64 bit Scheduing Server, 64 bit Java (version 1.6 or later) needs to installed. Alternatively, the 32 bit Scheduling Server may be used.$\n$\nAborting the installation."
+		${Else}
+			MessageBox MB_OK|MB_ICONSTOP "Scheduling Server needs Java (version 1.6 or later) installed. None has been detected. $\n$\nAborting the installation."
+		${EndIf}
+		Abort
+	${ElseIf} $0 == ""
+		; No version detected
+		MessageBox MB_OK|MB_ICONSTOP "Scheduling Server needs Java (version 1.6 or later) installed. None has been detected. $\n$\nAborting the installation."
+		Abort
+	${ElseIf} $0 S< ${JREVersion} 
+		; Earlier version detected
+		MessageBox MB_OK|MB_ICONSTOP "Scheduling Server needs Java version ${JREVersion} or later. Detected version is $0. $\n$\nAborting the installation."
+		Abort
 	${EndIf}
 FunctionEnd
 
@@ -371,13 +401,25 @@ FunctionEnd
     Push $R1
     ReadRegStr $R1 HKLM "${REGKEY}" "Path"
     ClearErrors
-    ExecWait '"$R1\schedulingservice" uninstall'
+	
+	${If} ${Arch} == "x64"
+		ExecWait '"$R1\schedulingservice64" uninstall'
+	${Else}
+		ExecWait '"$R1\schedulingservice" uninstall'
+	${EndIf}
+
     ifErrors 0 WinServiceNoError
     MessageBox MB_ABORTRETRYIGNORE "Error in uninstalling Scheduling Server service.  $\n$\nIf the service is installed, manually \
     uninstall the service from command prompt using: '$R1\schedulingservice uninstall' as admin and press 'Retry'. $\nIf the service is \
     already uninstalled, press 'Ignore'. $\nPress 'Abort' to end the uninstallation" IDABORT AbortUninstall IDIGNORE WinServiceNoError 
     ;TryAgain
-    ExecWait '$R1\schedulingservice uninstall'
+	
+	${If} ${Arch} == "x64"
+		ExecWait '"$R1\schedulingservice64" uninstall'
+	${Else}
+		ExecWait '"$R1\schedulingservice" uninstall'
+	${EndIf}
+
     ifErrors 0 WinServiceNoError
     MessageBox MB_OK|MB_ICONSTOP "Error in uninstalling Scheduling Server service again. Aborting the ${operation}"
     AbortUninstall:
@@ -426,8 +468,8 @@ Section "Sahara Scheduling Server" SchedServer
         RMDir /r $INSTDIR\bundles
         
         SetOutPath $INSTDIR\schemas
-        File InstallerFiles\migrationScriptV2ToV3.sql
-        File InstallerFiles\migrationScriptV2ToV3Postgres.sql
+        File installer\migrationScriptV2ToV3.sql
+        File installer\migrationScriptV2ToV3Postgres.sql
     ${EndIf}
     ; Common steps for installation and upgrade
         
@@ -438,8 +480,14 @@ Section "Sahara Scheduling Server" SchedServer
     ; Copy the component files/directories
     SetOutPath $INSTDIR
     File LICENSE
-    File servicewrapper\WindowsServiceWrapper\Release\schedulingservice.exe
-    SetOutPath $INSTDIR\schemas
+	
+	${If} ${Arch} == "x64"
+		File servicewrapper\WindowsServiceWrapper\Release_x64\schedulingservice64.exe
+	${Else}
+		File servicewrapper\WindowsServiceWrapper\Release\schedulingservice.exe
+    ${EndIf}
+	
+	SetOutPath $INSTDIR\schemas
     File doc\db\schema\*.sql
     
     SetOutPath $INSTDIR\bundles
@@ -448,10 +496,16 @@ Section "Sahara Scheduling Server" SchedServer
 	File /r /x *.svn bin\*.*
 		
     SetOutPath $INSTDIR
-    ; Add the RigClient service to the windows services
-    ExecWait '"$INSTDIR\schedulingservice" install'
+    ; Add the Scheduling Server service to the windows services
+	
+	${If} ${Arch} == "x64"
+		ExecWait '"$INSTDIR\schedulingservice64" install'
+	${Else}
+		ExecWait '"$INSTDIR\schedulingservice" install'
+	${Endif}
+		
     ifErrors 0 WinServiceInstNoError
-    MessageBox MB_OK|MB_ICONSTOP "Error in executing schedulingservice.exe"
+    MessageBox MB_OK|MB_ICONSTOP "Error in executing Scheduling Server service."
     ; TODO  Revert back the installed SS in case of error?
     Abort
     WinServiceInstNoError:
@@ -1410,7 +1464,7 @@ SectionEnd
 ;Descriptions
 
 ; Language strings
-LangString DESC_SecSS ${LANG_ENGLISH} "Sahara Scheduling Server"
+LangString DESC_SecSS ${LANG_ENGLISH} "SAHARA Labs Scheduling Server"
 
 ; Assign language strings to sections
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
