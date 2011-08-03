@@ -153,7 +153,7 @@ public class Rig implements java.io.Serializable
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id", nullable = false)
     public RigType getRigType()
     {
@@ -178,7 +178,7 @@ public class Rig implements java.io.Serializable
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "caps_id", nullable = false)
+    @JoinColumn(name = "caps_id", nullable = true)
     public RigCapabilities getRigCapabilities()
     {
         return this.rigCapabilities;

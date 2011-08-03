@@ -37,8 +37,6 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
-// Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
-
 import static javax.persistence.GenerationType.AUTO;
 
 import java.util.HashSet;
@@ -71,6 +69,12 @@ public class RigType implements java.io.Serializable
     
     /** Name of the rig type. */
     private String name;
+    
+    /** Whether this rig type is managed by this rig type. */
+    private boolean managed;
+    
+    /** Meta information about the rig type. */
+    private String meta;
     
     /** The amount of grace time given during a system initiated session 
      *  termination.  */
@@ -127,6 +131,28 @@ public class RigType implements java.io.Serializable
     public void setName(final String name)
     {
         this.name = name;
+    }
+
+    @Column(name = "managed", nullable = false)
+    public boolean isManaged()
+    {
+        return this.managed;
+    }
+    
+    public void setManaged(final boolean managed)
+    {
+        this.managed = managed;
+    }
+
+    @Column(name = "meta", nullable = true, length = 255)
+    public String getMeta()
+    {
+        return this.meta;
+    }
+
+    public void setMeta(final String meta)
+    {
+        this.meta = meta;
     }
 
     @Column(name = "logoff_grace_duration", nullable = false)
