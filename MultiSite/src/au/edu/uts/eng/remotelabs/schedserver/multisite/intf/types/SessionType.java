@@ -77,6 +77,9 @@ public class SessionType implements ADBBean
 
     protected String rigType;
     protected boolean rigTypeTracker = false;
+    
+    protected String rigName;
+    protected boolean rigNameTracker = false;
 
     protected String contactURL;
     protected boolean contactURLTracker = false;
@@ -87,6 +90,8 @@ public class SessionType implements ADBBean
 
     protected int extensions;
 
+    protected boolean inGrace;
+    
     protected String warningMessage;
     protected boolean warningMessageTracker = false;
 
@@ -117,6 +122,11 @@ public class SessionType implements ADBBean
     public boolean getIsReady()
     {
         return this.isReady;
+    }
+    
+    public boolean getInGrace()
+    {
+        return this.inGrace;
     }
 
     @Override
@@ -160,6 +170,19 @@ public class SessionType implements ADBBean
             }
         }
         
+        if (this.rigNameTracker)
+        {
+            elementList.add(new QName("", "rigName"));
+            if (this.rigName != null)
+            {
+                elementList.add(ConverterUtil.convertToString(this.rigName));
+            }
+            else
+            {
+                throw new ADBException("rigName cannot be null");
+            }
+        }
+        
         if (this.contactURLTracker)
         {
             elementList.add(new QName("", "contactURL"));
@@ -181,6 +204,9 @@ public class SessionType implements ADBBean
 
         elementList.add(new QName("", "extensions"));
         elementList.add(ConverterUtil.convertToString(this.extensions));
+        
+        elementList.add(new QName("", "inGrace"));
+        elementList.add(ConverterUtil.convertToString(this.inGrace));
         
         if (this.warningMessageTracker)
         {
@@ -206,6 +232,11 @@ public class SessionType implements ADBBean
     public String getRigType()
     {
         return this.rigType;
+    }
+    
+    public String getRigName()
+    {
+        return this.rigName;
     }
 
     public int getTime()
@@ -324,6 +355,21 @@ public class SessionType implements ADBBean
             xmlWriter.writeEndElement();
         }
         
+        if (this.rigNameTracker)
+        {
+            namespace = "";
+            this.writeStartElement(null, namespace, "rigName", xmlWriter);
+            if (this.rigName == null)
+            {
+                throw new ADBException("rigName cannot be null");
+            }
+            else
+            {
+                xmlWriter.writeCharacters(this.rigName);
+            }
+            xmlWriter.writeEndElement();
+        }
+        
         if (this.contactURLTracker)
         {
             namespace = "";
@@ -373,8 +419,13 @@ public class SessionType implements ADBBean
         {
             xmlWriter.writeCharacters(ConverterUtil.convertToString(this.extensions));
         }
-
         xmlWriter.writeEndElement();
+        
+        namespace = "";
+        this.writeStartElement(null, namespace, "inGrace", xmlWriter);
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.inGrace));
+        xmlWriter.writeEndElement();
+        
         if (this.warningMessageTracker)
         {
             namespace = "";
@@ -413,11 +464,22 @@ public class SessionType implements ADBBean
     {
         this.isReady = param;
     }
+    
+    public void setInGrace(final boolean param)
+    {
+        this.inGrace = param;
+    }
 
     public void setResource(final ResourceType param)
     {
         this.resourceTracker = param != null;
         this.resource = param;
+    }
+    
+    public void setRigName(final String param)
+    {
+        this.rigNameTracker = param != null;
+        this.rigName = param;
     }
 
     public void setRigType(final String param)
@@ -566,6 +628,12 @@ public class SessionType implements ADBBean
                     object.setRigType(ConverterUtil.convertToString(content));
                     reader.next();
                 }
+                
+                while (!reader.isStartElement() && new QName("", "rigName").equals(reader.getName()))
+                {
+                    object.setRigName(ConverterUtil.convertToString(reader.getElementText()));
+                    reader.next();
+                }
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
@@ -617,6 +685,20 @@ public class SessionType implements ADBBean
                 {
                     final String content = reader.getElementText();
                     object.setExtensions(ConverterUtil.convertToInt(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "inGrace").equals(reader.getName()))
+                {
+                    object.setInGrace(ConverterUtil.convertToBoolean(reader.getElementText()));
                     reader.next();
                 }
                 else

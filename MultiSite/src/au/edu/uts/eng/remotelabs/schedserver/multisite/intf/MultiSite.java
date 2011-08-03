@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
@@ -44,6 +45,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
@@ -70,6 +74,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.OperationRespo
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueTargetType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.ResourceType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.UserStatusType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
@@ -187,7 +192,7 @@ public class MultiSite implements MultiSiteInterface
         OperationResponseType opResp = new OperationResponseType();
         UserStatusType userStatus = new UserStatusType();
         response.setAddToQueueResponse(userStatus);
-        
+        userStatus.setOperation(opResp);
         opResp.setWasSuccessful(false);
                 
         RemotePermissionDao dao = new RemotePermissionDao();
@@ -220,11 +225,20 @@ public class MultiSite implements MultiSiteInterface
                 return response;
             }
             
-            Session ses = queuer.addUserToQueue(this.getUser(username, remotePerm.getSite(), dao.getSession()),
-                    remotePerm.getPermission(), dao.getSession());
+            User user = this.getUser(username, remotePerm.getSite(), dao.getSession());
+            this.ensureAssociation(user, remotePerm.getPermission().getUserClass(), dao.getSession());
             
-            
-            
+            // TODO Batch support
+            Session ses = queuer.addUserToQueue(user, remotePerm.getPermission(), null, dao.getSession());
+            if (ses == null)
+            {
+                opResp.setReason("Failed queued session.");
+            }
+            else
+            {
+                opResp.setWasSuccessful(true);
+                this.populateSessionDetails(userStatus, ses);
+            }
         }
         finally
         {
@@ -303,5 +317,73 @@ public class MultiSite implements MultiSiteInterface
         }
         
         return user;
+    }
+    
+    /**
+     * Makes sure the user has an association to the user class. If the user doesn't have
+     * the association, then the association is added.
+     * 
+     * @param user user 
+     * @param userClass class to
+     * @param db
+     */
+    private void ensureAssociation(User user, UserClass userClass, org.hibernate.Session db)
+    {
+        UserAssociationDao dao = new UserAssociationDao(db);
+        UserAssociationId id = new UserAssociationId(user.getId(), userClass.getId());
+        
+        if (dao.get(id) == null)
+        {
+            /* User association does not exist, so add it. */
+            UserAssociation assoc = new UserAssociation();
+            assoc.setId(id);
+            assoc.setUser(user);
+            assoc.setUserClass(userClass);
+            dao.persist(assoc);
+        }
+    }
+    
+    /**
+     * Populates the details of a session to a response type.
+     * 
+     * @param status user status type
+     * @param ses session
+     */
+    private void populateSessionDetails(UserStatusType status, Session ses)
+    {
+        status.setInBooking(false);
+        status.setInQueue(false);
+        status.setInSession(false);
+            
+        if (ses.getAssignmentTime() == null)
+        {
+            /* User in queue. */
+            status.setInQueue(true);
+            
+            ResourceType res = new ResourceType();
+            status.setQueuedResource(res);
+            res.setType(ses.getResourceType());
+            res.setName(ses.getRequestedResourceName());            
+        }
+        else
+        {
+            /* User in session. */
+            status.setInSession(true);
+            
+            SessionType sesType = new SessionType();
+            status.setSession(sesType);
+            sesType.setIsReady(ses.isReady());
+            sesType.setIsCodeAssigned(ses.getCodeReference() != null);
+            
+            Rig rig = ses.getRig();
+            sesType.setRigType(rig.getRigType().getName());
+            sesType.setContactURL(rig.getContactUrl());
+            
+            // FIXME  Add session timing details & warning details
+            sesType.setTime(100);
+            sesType.setTimeLeft(200);
+            sesType.setExtensions(2);
+            
+        }
     }
 }

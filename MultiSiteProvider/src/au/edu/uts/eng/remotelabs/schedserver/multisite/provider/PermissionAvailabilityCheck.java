@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2011, University of Technology, Sydney
+ * Copyright (c) 2011, Michael Diponio
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2011
+ * @date 17th July 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.provider;
 
@@ -76,13 +76,14 @@ public class PermissionAvailabilityCheck extends AbstractRequest
             this.logger.debug("Making request to MultiSite#checkAvailability for permission '" + 
                     pid.getPermissionID() + "'.");
             this.response = this.getStub().checkAvailability(request).getCheckAvailabilityResponse();
+            return true;
         }
         catch (AxisFault e)
         {
             this.failed = true;
             this.failureReason = "Fault (" + e.getReason() + ")";
-            this.logger.warn("SOAP fault making checking availability request, error reason '" + e.getReason() +
-                    "', error message is '" + e.getMessage() + "'.");
+            this.logger.warn("SOAP fault making request, error reason '" + e.getReason() + "', error message is '" + 
+                    e.getMessage() + "'.");
             this.offlineSite(e);
             return false;
         }
@@ -90,13 +91,10 @@ public class PermissionAvailabilityCheck extends AbstractRequest
         {
             this.failed = true;
             this.failureReason = "Remote error (" + e.getMessage() + ")";
-            this.logger.warn("Remote error making checking availability request, error  message is '" + 
-                    e.getMessage() + "'.");
+            this.logger.warn("Remote error making request, error  message is '" + e.getMessage() + "'.");
             this.offlineSite(e);
             return false;
         }
-        
-        return true;
     }
     
     public boolean isViable()
