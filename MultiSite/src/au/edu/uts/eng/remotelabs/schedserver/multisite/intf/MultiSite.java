@@ -76,8 +76,9 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueTargetTyp
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.ResourceType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.UserStatusType;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
 
 /**
  * MultiSite service implementation.
@@ -229,15 +230,15 @@ public class MultiSite implements MultiSiteInterface
             this.ensureAssociation(user, remotePerm.getPermission().getUserClass(), dao.getSession());
             
             // TODO Batch support
-            Session ses = queuer.addUserToQueue(user, remotePerm.getPermission(), null, dao.getSession());
-            if (ses == null)
+            QueueSession ses = queuer.addUserToQueue(user, remotePerm.getPermission(), null, dao.getSession());
+            if (ses.wasSuccessful())
             {
-                opResp.setReason("Failed queued session.");
+                opResp.setWasSuccessful(true);
+                this.populateSessionDetails(userStatus, ses.getSession());
             }
             else
             {
-                opResp.setWasSuccessful(true);
-                this.populateSessionDetails(userStatus, ses);
+                opResp.setReason(ses.getErrorMessage());
             }
         }
         finally
@@ -354,16 +355,16 @@ public class MultiSite implements MultiSiteInterface
         status.setInBooking(false);
         status.setInQueue(false);
         status.setInSession(false);
-            
+        
+        ResourceType res = new ResourceType();
+        res.setType(ses.getResourceType());
+        res.setName(ses.getRequestedResourceName());
+
         if (ses.getAssignmentTime() == null)
         {
             /* User in queue. */
             status.setInQueue(true);
-            
-            ResourceType res = new ResourceType();
             status.setQueuedResource(res);
-            res.setType(ses.getResourceType());
-            res.setName(ses.getRequestedResourceName());            
         }
         else
         {
@@ -372,18 +373,22 @@ public class MultiSite implements MultiSiteInterface
             
             SessionType sesType = new SessionType();
             status.setSession(sesType);
+            
             sesType.setIsReady(ses.isReady());
             sesType.setIsCodeAssigned(ses.getCodeReference() != null);
+            sesType.setInGrace(ses.isInGrace());
+            
+            sesType.setResource(res);
             
             Rig rig = ses.getRig();
             sesType.setRigType(rig.getRigType().getName());
+            sesType.setRigName(rig.getName());
             sesType.setContactURL(rig.getContactUrl());
             
             // FIXME  Add session timing details & warning details
             sesType.setTime(100);
             sesType.setTimeLeft(200);
             sesType.setExtensions(2);
-            
         }
     }
 }

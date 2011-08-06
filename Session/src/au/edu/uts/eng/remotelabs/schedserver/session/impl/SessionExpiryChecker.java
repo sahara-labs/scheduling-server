@@ -65,6 +65,13 @@ public class SessionExpiryChecker implements Runnable
     /** Minimum extension duration. */
     public static final int TIME_EXT = 300;
     
+    /** The types of checked sessions. */
+    public static final String[] CHECKEED_SESSION_TYPES = new String[] { 
+        ResourcePermission.RIG_PERMISSION,
+        ResourcePermission.TYPE_PERMISSION,
+        ResourcePermission.CAPS_PERMISSION
+    };
+    
     /** Logger. */
     private Logger logger;
     
@@ -95,6 +102,7 @@ public class SessionExpiryChecker implements Runnable
             
             Criteria query = db.createCriteria(Session.class);
             query.add(Restrictions.eq("active", Boolean.TRUE))
+                 .add(Restrictions.in("resourceType", CHECKEED_SESSION_TYPES))
                  .add(Restrictions.isNotNull("assignmentTime"));
             
             Date now = new Date();

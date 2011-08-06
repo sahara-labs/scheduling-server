@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 22nd July 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo;
+package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types;
 
 import java.util.HashMap;
 import java.util.Map;

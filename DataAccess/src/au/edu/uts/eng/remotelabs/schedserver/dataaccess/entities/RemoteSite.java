@@ -84,6 +84,12 @@ public class RemoteSite implements Serializable
     /** The time the site sent a status update. */
     private Date lastPush;
     
+    /** The rig types that are from this site. */
+    private Set<RigType> rigTypes = new HashSet<RigType>(0);
+    
+    /** The rigs that are from this site. */
+    private Set<Rig> rigs = new HashSet<Rig>(0);
+    
     /** The remote permissions that relate to this site. */
     private Set<RemotePermission> remotePermissions = new HashSet<RemotePermission>(0);
 
@@ -176,8 +182,30 @@ public class RemoteSite implements Serializable
     {
         this.lastPush = lastPush;
     }
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "site")
+    public Set<RigType> getRigTypes()
+    {
+        return this.rigTypes;
+    }
+    
+    public void setRigTypes(Set<RigType> rigTypes)
+    {
+        this.rigTypes = rigTypes;
+    }
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "site")
+    public Set<Rig> getRigs()
+    {
+        return this.rigs;
+    }
+    
+    public void setRigs(Set<Rig> rigs)
+    {
+        this.rigs = rigs;
+    }
 
-    @OneToMany(fetch =FetchType.LAZY, mappedBy = "site")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "site")
     public Set<RemotePermission> getRemotePermissions()
     {
         return this.remotePermissions;

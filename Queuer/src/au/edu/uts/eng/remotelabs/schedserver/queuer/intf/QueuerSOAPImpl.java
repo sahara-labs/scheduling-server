@@ -157,7 +157,7 @@ public class QueuerSOAPImpl implements QueuerSOAP
             else if (entry.isInQueue(user))
             {
                 this.logger.warn("Cannot queue user " + user.qName() + " because already in queue.");
-                inQu.setFailureReason("Already in queue.");
+                inQu.setFailureReason(entry.getErrorMessage());
             }
             /**********************************************************************
              ** 3) Check the user has permission to use either the requested     **
@@ -168,7 +168,7 @@ public class QueuerSOAPImpl implements QueuerSOAP
             {            
                 this.logger.warn("Cannot queue user " + user.qName()  + " because does not have permission to access " +
                 		"requested resource permission or resource.");
-                inQu.setFailureReason("No permission.");
+                inQu.setFailureReason(entry.getErrorMessage());
             }
             /**********************************************************************
              ** 4) Check the user doesn't have a bookingService starting before  **
@@ -188,10 +188,10 @@ public class QueuerSOAPImpl implements QueuerSOAP
              **********************************************************************/
             else if (!entry.canUserQueue())
             {
-                this.logger.warn("Cannot queue user " + user.qName() + " because the user cannot queue. This may be " +
+                this.logger.warn("Cannot queue user " + user.qName() + " because a queue condition fails. This may be " +
                 		"because the requested resource is offline or the user does not have the queue permission " +
                 		"for in use resources.");
-                inQu.setFailureReason("Cannot queue.");
+                inQu.setFailureReason(entry.getErrorMessage());
             }
             /**********************************************************************
              ** 6) Every pre-queue predicate is satisfied so add the user to the **
@@ -205,7 +205,11 @@ public class QueuerSOAPImpl implements QueuerSOAP
             
             /* Populate queue return details if successful. */
             Session activeSes = entry.getActiveSession();
-            if (activeSes != null)
+            if (activeSes == null)
+            {
+                inQu.setFailureReason(entry.getErrorMessage());
+            }
+            else
             {
                 ResourceIDType resource = new ResourceIDType();
                 resource.setType(activeSes.getResourceType());

@@ -45,7 +45,6 @@ import org.hibernate.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.AddToQueue;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.QueueRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType;
@@ -105,10 +104,7 @@ public class QueueRequest extends AbstractRequest
             return false;
         }
         
-        OperationResponseType opResp = this.response.getOperation();
-        if (!opResp.getWasSuccessful()) this.failureReason = "Provider response: " + opResp.getReason();
-        
-        return opResp.getWasSuccessful();
+        return true;
     }
     
     public boolean wasOperationSuccessful()

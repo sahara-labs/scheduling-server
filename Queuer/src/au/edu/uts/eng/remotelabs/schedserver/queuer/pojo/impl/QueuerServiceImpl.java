@@ -49,9 +49,12 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.PermissionAvailabilityCheck;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.PermissionAvailabilityCheck.QueueTarget;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
 
 /**
  * Implementation of the Queuer POJO service.
@@ -167,10 +170,43 @@ public class QueuerServiceImpl implements QueuerService
     }
 
     @Override
-    public Session addUserToQueue(User user, ResourcePermission perm, org.hibernate.Session db)
+    public QueueSession addUserToQueue(User user, ResourcePermission perm, String code, org.hibernate.Session db)
     {
-        // TODO Auto-generated method stub
-        return null;
+        QueueEntry entry = new QueueEntry(db);
+        
+        /* If user is already in the queue, they can be added again. */
+        if (entry.isInQueue(user))
+        {
+            this.logger.warn("User '" + user.qName() + "' cannot queue because they are already in the queue.");
+            return new QueueSession(entry.getErrorMessage());
+        }
+        else if (!entry.hasPermission(perm))
+        {
+            this.logger.warn("User '" + user.qName() + "' cannot queue because they do not have permission to use " +
+            		"the ri or the permission is inactive.");
+            return new QueueSession(entry.getErrorMessage());
+        }
+        else if (!entry.canUserQueue())
+        {
+            this.logger.warn("User '" + user.qName() + "' cannot queue because the resource may be offline.");
+            return new QueueSession(entry.getErrorMessage());
+        }
+        else if (entry.addToQueue(code))
+        {
+            Session ses = entry.getActiveSession();
+            if (ses.getAssignmentTime() == null)
+            {
+                /* In queue. */
+                return new QueueSession(ses, Queue.getInstance().getEntryPosition(ses, db));
+            }
+            else return new QueueSession(ses); // Assigned session
+        }
+        else
+        {
+            this.logger.warn("User '" + user.qName() + "' cannot queue because the resource may be offline or the " +
+                    "user does not have permission to use the rig.");
+            return new QueueSession("User does not have permission or rig is offline.");
+        }
     }
 
 }

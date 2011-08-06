@@ -123,11 +123,12 @@ public class RigTypeDaoTester extends TestCase
         ses.close();
         
      
-        RigType same = this.dao.loadOrCreate("testType");
+        RigType same = this.dao.loadOrCreate("testType", true);
         assertNotNull(same);
         assertEquals("testType", same.getName());
         assertTrue(same.isCodeAssignable());
         assertEquals(600, same.getLogoffGraceDuration());
+        assertFalse(type.isManaged());
         
         this.dao.delete(same);
     }
@@ -138,7 +139,7 @@ public class RigTypeDaoTester extends TestCase
     @Test
     public void testLoadOrCreateNotExist()
     {
-        RigType type = this.dao.loadOrCreate("testType");
+        RigType type = this.dao.loadOrCreate("testType", true, "bar", null);
         assertNotNull(type);
         assertEquals("testType", type.getName());
         assertFalse(type.isCodeAssignable());
@@ -150,6 +151,8 @@ public class RigTypeDaoTester extends TestCase
         assertEquals(type.getName(), same.getName());
         assertEquals(type.getLogoffGraceDuration(), same.getLogoffGraceDuration());
         assertEquals(type.isCodeAssignable(), same.isCodeAssignable());
+        assertTrue(type.isManaged());
+        assertEquals(type.getMeta(), same.getMeta());
         
         this.dao.delete(type);
     }

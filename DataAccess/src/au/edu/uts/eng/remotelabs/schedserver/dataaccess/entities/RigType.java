@@ -47,6 +47,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -89,6 +91,9 @@ public class RigType implements java.io.Serializable
     
     /** The duration in seconds that release is expected to take. */
     private int tearDownTime;
+    
+    /** The site at which this rig type resides if not local. */
+    private RemoteSite site;
     
     /** Foreign key relations. */
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
@@ -197,6 +202,18 @@ public class RigType implements java.io.Serializable
     public void setTearDownTime(final int tearDownTime)
     {
         this.tearDownTime = tearDownTime;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "site_id", nullable = true)
+    public RemoteSite getSite()
+    {
+        return this.site;
+    }
+
+    public void setSite(RemoteSite site)
+    {
+        this.site = site;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "rigType")

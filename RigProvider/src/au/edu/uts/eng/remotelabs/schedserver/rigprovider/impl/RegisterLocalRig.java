@@ -134,7 +134,7 @@ public class RegisterLocalRig
             this.rig.setName(name);
         }
         
-        RigType rigType = this.typeDao.loadOrCreate(type);
+        RigType rigType = this.typeDao.loadOrCreate(type, true);
         this.rig.setRigType(rigType);
         
         RigCapabilities caps = this.capsDao.findCapabilites(capabilities);

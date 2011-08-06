@@ -32,38 +32,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 22nd July 2011
+ * @date 5th August 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo;
+package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
 /**
- * The interface for the Queuer POJO service.
+ * Queued session information.
  */
-public interface QueuerService
+public class QueueSession
 {
-    /**
-     * Checks the availability of a permission to be used. A permission is
-     * available if one or more of its resources is online.
-     * 
-     * @param perm permission to check
-     * @param ses database session
-     * @return availability type
-     */
-    public QueueAvailability checkAvailability(ResourcePermission perm, org.hibernate.Session ses);
+    /** Whether the queue entry was successful. */
+    private boolean successful;
     
-    /**
-     * Adds the user to the queue denoted by the permission.
-     * 
-     * @param user user to add
-     * @param perm permission specifying resources
-     * @param code batch code reference
-     * @param db database session
-     * @return queue session information
-     */
-    public QueueSession addUserToQueue(User user, ResourcePermission perm, String code, org.hibernate.Session db);
+    /** Session generated from adding to queue. */
+    private Session session;
+    
+    /** Queue position. */
+    private int pos;
+    
+    /** Error message if not successful. */
+    private String errorMessage;
+
+    public QueueSession(Session session)
+    {
+        this.session = session;
+        this.successful = true;
+    }
+    
+    public QueueSession(Session session, int position)
+    {
+        this.successful = true;
+        this.session = session;
+        this.pos = position;
+    }
+    
+    public QueueSession(String error)
+    {
+        this.successful = false;
+        this.errorMessage = error;
+    }
+    
+    public boolean wasSuccessful()
+    {
+        return this.successful;
+    }
+
+    public Session getSession()
+    {
+        return this.session;
+    }
+    
+    public int getPosition()
+    {
+        return this.pos;
+    }
+
+    public String getErrorMessage()
+    {
+        return this.errorMessage;
+    }
 }

@@ -39,6 +39,6 @@
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-annotations.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-Queuer"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
-	<classpathentry kind="lib" path="/SchedServer-Queuer/bin"/>
+	<classpathentry kind="lib" path="/SchedServer-Queuer/bin" sourcepath="/SchedServer-Queuer/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

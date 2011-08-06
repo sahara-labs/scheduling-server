@@ -629,7 +629,11 @@ public class SessionType implements ADBBean
                     reader.next();
                 }
                 
-                while (!reader.isStartElement() && new QName("", "rigName").equals(reader.getName()))
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "rigName").equals(reader.getName()))
                 {
                     object.setRigName(ConverterUtil.convertToString(reader.getElementText()));
                     reader.next();

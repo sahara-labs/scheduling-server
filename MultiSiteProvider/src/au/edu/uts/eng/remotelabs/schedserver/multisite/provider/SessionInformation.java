@@ -63,6 +63,11 @@ public class SessionInformation extends AbstractRequest
         return this.response.getIsCodeAssigned();
     }
     
+    public boolean isInGrace()
+    {
+        return this.response.getInGrace();
+    }
+    
     public String getResourceName()
     {
         return this.response.getResource() == null ? null : this.response.getResource().getName();
@@ -76,6 +81,11 @@ public class SessionInformation extends AbstractRequest
     public String getRigType()
     {
         return this.response.getRigType();
+    }
+    
+    public String getRigName()
+    {
+        return this.response.getRigName();
     }
     
     public String getContactURL()
