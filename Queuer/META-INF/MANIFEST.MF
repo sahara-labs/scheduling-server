@@ -7,11 +7,12 @@ Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings,
+ au.edu.uts.eng.remotelabs.schedserver.bookings.pojo,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
  au.edu.uts.eng.remotelabs.schedserver.logger,
- au.edu.uts.eng.remotelabs.schedserver.multisite.provider,
+ au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests,
  au.edu.uts.eng.remotelabs.schedserver.rigoperations,
  au.edu.uts.eng.remotelabs.schedserver.rigprovider,
  au.edu.uts.eng.remotelabs.schedserver.rigproxy,

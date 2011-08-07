@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -394,7 +394,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     private void fireFreeEvent(Rig rig, org.hibernate.Session db)
     {
         /* Fire event the rig is online. */
-        for (RigEventListener evt : BookingActivator.getRigEventListeners())
+        for (RigEventListener evt : BookingsActivator.getRigEventListeners())
         {
             /* Check so we don't fire event to us. */
             if (evt == this) continue;

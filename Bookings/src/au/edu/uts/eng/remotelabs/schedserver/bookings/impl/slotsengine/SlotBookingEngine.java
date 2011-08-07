@@ -49,9 +49,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;

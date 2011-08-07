@@ -52,7 +52,7 @@ public class ExtensionMapper
         if ("http://remotelabs.eng.uts.edu.au/schedserver/multisite".equals(namespaceURI)
                 && "state_type1".equals(typeName))
         {
-            return State_type1.Factory.parse(reader);
+            return BookingSlotState.Factory.parse(reader);
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/multisite".equals(namespaceURI)
@@ -112,7 +112,7 @@ public class ExtensionMapper
         if ("http://remotelabs.eng.uts.edu.au/schedserver/multisite".equals(namespaceURI)
                 && "state_type1".equals(typeName))
         {
-            return State_type1.Factory.parse(reader);
+            return BookingSlotState.Factory.parse(reader);
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/multisite".equals(namespaceURI)

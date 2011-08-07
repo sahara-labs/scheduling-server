@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2011, University of Technology, Sydney
+ * Copyright (c) 2011, Michael Diponio
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -34,45 +34,82 @@
  * @author Michael Diponio (mdiponio)
  * @date 30th January 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
+package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType;
 
 /**
- * Utility methods for Queuer service implementations.
+ * 
  */
-public class QueuerUtil
+public class SessionInformation extends AbstractRequest
 {
-    /**
-     * Returns true if the rig is not booked for the specified duration. A free 
-     * rig is one which:
-     * <ul>
-     *  <li>Is active and alive.</li>
-     *  <li>Is online.</li>
-     *  <li>Not in session.</li>
-     *  <li>Not booked for the duration of the guaranteed permission time</li>
-     * 
-     * @param rig rig to check
-     * @param perm permission to obtain duration for
-     * @param ses database session
-     * @return true if not booked
-     */
-    public static boolean isRigFree(Rig rig, ResourcePermission perm, org.hibernate.Session ses)
+    /** Response. */
+    private SessionType response;
+    
+    static SessionInformation load(SessionType type)
     {
-        if (!rig.isActive() || !rig.isOnline() || rig.isInSession()) return false;
-        
-        BookingEngineService bs = QueueActivator.getBookingService();
-        if (bs == null)
-        {
-            LoggerActivator.getLogger().debug("Returning rig " + rig.getName() + " is not booked because the bookings " +
-            		"service does not appear to be running.");
-            return true;
-        }
-        
-        return bs.isFreeFor(rig, perm.getSessionDuration(), ses);
+        SessionInformation info = new SessionInformation();
+        info.response = type;
+        return info;
+    }
+    
+    public boolean isReady()
+    {
+        return this.response.getIsReady();
+    }
+    
+    public boolean isCodeAssigned()
+    {
+        return this.response.getIsCodeAssigned();
+    }
+    
+    public boolean isInGrace()
+    {
+        return this.response.getInGrace();
+    }
+    
+    public String getResourceName()
+    {
+        return this.response.getResource() == null ? null : this.response.getResource().getName();
+    }
+    
+    public String getResourceType()
+    {
+        return this.response.getResource() == null ? null :this.response.getResource().getType();
+    }
+    
+    public String getRigType()
+    {
+        return this.response.getRigType();
+    }
+    
+    public String getRigName()
+    {
+        return this.response.getRigName();
+    }
+    
+    public String getContactURL()
+    {
+        return this.response.getContactURL();
+    }
+    
+    public int getTime()
+    {
+        return this.response.getTime();
+    }
+    
+    public int getTimeLeft()
+    {
+        return this.response.getTimeLeft();
+    }
+    
+    public int getExtensions()
+    {
+        return this.response.getExtensions();
+    }
+    
+    public String getWarningMessage()
+    {
+        return this.response.getWarningMessage();
     }
 }

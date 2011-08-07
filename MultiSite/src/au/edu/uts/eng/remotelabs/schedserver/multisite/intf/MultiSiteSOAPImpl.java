@@ -36,6 +36,11 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf;
 
+import java.util.Calendar;
+
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod.BookingSlot;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
@@ -57,6 +62,8 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AddToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AddToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AvailabilityResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.BookingSlotState;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.BookingSlotType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CancelBooking;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CancelBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CheckAvailability;
@@ -65,6 +72,8 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CreateBooking;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.CreateBookingResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.FindFreeBookings;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.FindFreeBookingsResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.FindFreeBookingsResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.FindFreeBookingsType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.FinishSessionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetQueuePosition;
@@ -270,8 +279,69 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
     @Override
     public FindFreeBookingsResponse findFreeBookings(FindFreeBookings findFreeBookings)
     {
-        // TODO Auto-generated method stub
-        return null;
+        FindFreeBookingsType request = findFreeBookings.getFindFreeBookings();
+        String siteId = request.getSiteID();
+        String permId = request.getPermission().getPermissionID();
+        Calendar start = request.getPeriod().getStart();
+        Calendar end = request.getPeriod().getEnd();
+        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#findFreeBookings with params: site=" +
+                siteId + ", permission=" + permId + ", start=" + start.getTime() + ", end=" + end.getTime() + ".");
+        
+        /* Response types. */
+        FindFreeBookingsResponse response = new FindFreeBookingsResponse();
+        FindFreeBookingsResponseType respType = new FindFreeBookingsResponseType();
+        response.setFindFreeBookingsResponse(respType);
+        respType.setPermission(request.getPermission());
+        
+        ResourceType res = new ResourceType();
+        respType.setResource(res);
+        res.setName("");
+        res.setType("");
+        
+        RemotePermissionDao dao = new RemotePermissionDao();
+        try
+        {
+            RemotePermission remotePerm = dao.findByGuid(permId);
+            if (remotePerm == null)
+            {
+                this.logger.warn("Cannot find free times of remote permission because the permission '" + permId + 
+                		"' was not found.");
+                return response;
+            }
+            
+            /* Make sure the site is correct. */
+            if (!remotePerm.getSite().getGuid().equals(siteId))
+            {
+                this.logger.warn("Cannot find free times of remote permission because the site identifier '" +
+                        siteId + "' was not found.");
+                return response;
+            }
+            
+            BookingsService bookings = MultiSiteActivator.getBookingsService();
+            if (bookings == null)
+            {
+                this.logger.error("Cannot find free times of remote permission because the Bookings service was not " +
+                        "running.");
+                return response;
+            }
+            
+            BookingsPeriod periods = bookings.getFreeBookings(start, end, remotePerm.getPermission(), dao.getSession());
+            for (BookingSlot slot : periods.getSlots())
+            {
+                BookingSlotType s = new BookingSlotType();
+                s.setStart(slot.getStart());
+                s.setEnd(slot.getEnd());
+                s.setState(BookingSlotState.Factory.fromValue(slot.getState()));
+                respType.addSlot(s);
+            }
+        }
+        finally
+        {
+            dao.closeSession();
+        }
+        
+        return response;
     }
 
     @Override

@@ -43,6 +43,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
@@ -64,6 +65,9 @@ public class MultiSiteActivator implements BundleActivator
     /** Session service tracker. */
     private static ServiceTracker<SessionService, SessionService> sessionService;
     
+    /** Bookings service tracker. */
+    private static ServiceTracker<BookingsService, BookingsService> bookingsService;
+    
     /** Logger. */
     private Logger logger;
     
@@ -77,9 +81,14 @@ public class MultiSiteActivator implements BundleActivator
 		MultiSiteActivator.queuerService = new 
 		        ServiceTracker<QueuerService, QueuerService>(bundleContext, QueuerService.class, null);
 		MultiSiteActivator.queuerService.open();
+		
 		MultiSiteActivator.sessionService = new 
 		        ServiceTracker<SessionService, SessionService>(bundleContext, SessionService.class, null);
 		MultiSiteActivator.sessionService.open();
+		
+		MultiSiteActivator.bookingsService = new
+		        ServiceTracker<BookingsService, BookingsService>(bundleContext, BookingsService.class, null);
+		MultiSiteActivator.bookingsService.open();
 
 		ServletContainerService serv = new ServletContainerService();
 		serv.addServlet(new ServletContainer(new AxisServlet(), true));
@@ -93,6 +102,8 @@ public class MultiSiteActivator implements BundleActivator
 		
 		this.soapService.unregister();
 		
+		MultiSiteActivator.bookingsService.close();
+		MultiSiteActivator.bookingsService = null;
 		MultiSiteActivator.sessionService.close();
 		MultiSiteActivator.sessionService = null;
 		MultiSiteActivator.queuerService.close();
@@ -121,5 +132,17 @@ public class MultiSiteActivator implements BundleActivator
         if (MultiSiteActivator.sessionService == null) return null;
         
         return MultiSiteActivator.sessionService.getService();
+    }
+    
+    /**
+     * Gets a bookings service instance.
+     * 
+     * @return bookings server or null if none found
+     */
+    public static BookingsService getBookingsService()
+    {
+        if (MultiSiteActivator.bookingsService == null) return null;
+        
+        return MultiSiteActivator.bookingsService.getService();
     }
 }

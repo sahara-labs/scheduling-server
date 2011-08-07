@@ -16,8 +16,11 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite.provider
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite.provider, \
+au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests
+
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.multisite, *
+
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}

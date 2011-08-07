@@ -43,7 +43,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;

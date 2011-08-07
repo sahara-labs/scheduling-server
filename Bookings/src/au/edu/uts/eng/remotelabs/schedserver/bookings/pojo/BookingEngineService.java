@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 12th Decemeber 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.pojo;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;

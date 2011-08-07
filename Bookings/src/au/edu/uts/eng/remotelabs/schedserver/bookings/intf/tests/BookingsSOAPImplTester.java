@@ -49,9 +49,10 @@ import org.hibernate.Session;
 import org.hibernate.StatelessSession;
 import org.junit.Test;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.BookingsService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.BookingsSOAPImpl;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
@@ -98,12 +99,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 
 /**
- * Tests the {@link BookingsService} class.
+ * Tests the {@link BookingsSOAPImpl} class.
  */
-public class BookingsServiceTester extends TestCase
+public class BookingsSOAPImplTester extends TestCase
 {
     /** Object of class under test. */
-    private BookingsService service;
+    private BookingsSOAPImpl service;
     
     /** A day string. */
     private String dayStr;
@@ -114,18 +115,22 @@ public class BookingsServiceTester extends TestCase
         super.setUp();
         
         DataAccessTestSetup.setup();
-        this.service = new BookingsService();
+        this.service = new BookingsSOAPImpl();
         
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
         this.dayStr = TimeUtil.getDayKey(cal);
         
-        Field f = BookingsService.class.getDeclaredField("engine");
+        Field f = BookingsSOAPImpl.class.getDeclaredField("engine");
         f.setAccessible(true);
         
         SlotBookingEngine sbe = new SlotBookingEngine();
         sbe.init();
         f.set(this.service, sbe);
+        
+        f = BookingsActivator.class.getDeclaredField("engine");
+        f.setAccessible(true);
+        f.set(null, sbe);
         
         sbe.cleanUp();
     }
@@ -6296,7 +6301,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#findFreeBookings(types.FindFreeBookings)}.
+     * Test method for {@link BookingsSOAPImpl#findFreeBookings(types.FindFreeBookings)}.
      */
     public void testFindFreeBookingsNoPermission()
     {
@@ -6347,7 +6352,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#findFreeBookings(types.FindFreeBookings)}.
+     * Test method for {@link BookingsSOAPImpl#findFreeBookings(types.FindFreeBookings)}.
      */
     public void testFindFreeBookingsNoUser()
     {
@@ -6384,7 +6389,7 @@ public class BookingsServiceTester extends TestCase
     }
 
     /**
-     * Test method for {@link BookingsService#getBooking(types.GetBooking)}.
+     * Test method for {@link BookingsSOAPImpl#getBooking(types.GetBooking)}.
      */
     public void testGetBooking()
     {
@@ -6483,7 +6488,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBooking(types.GetBooking)}.
+     * Test method for {@link BookingsSOAPImpl#getBooking(types.GetBooking)}.
      */
     public void testGetBookingCancelled()
     {
@@ -6582,7 +6587,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBooking(types.GetBooking)}.
+     * Test method for {@link BookingsSOAPImpl#getBooking(types.GetBooking)}.
      */
     public void testGetBookingNotFound()
     {
@@ -6617,7 +6622,7 @@ public class BookingsServiceTester extends TestCase
     }
 
     /**
-     * Test method for {@link BookingsService#getBookings(types.GetBookings)}.
+     * Test method for {@link BookingsSOAPImpl#getBookings(types.GetBookings)}.
      */
     public void testGetBookings()
     {
@@ -6821,7 +6826,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBookings(types.GetBookings)}.
+     * Test method for {@link BookingsSOAPImpl#getBookings(types.GetBookings)}.
      */
     public void testGetBookingsCancelled()
     {
@@ -7044,7 +7049,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBookings(types.GetBookings)}.
+     * Test method for {@link BookingsSOAPImpl#getBookings(types.GetBookings)}.
      */
     public void testGetBookingsPermission()
     {
@@ -7218,7 +7223,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBookings(types.GetBookings)}.
+     * Test method for {@link BookingsSOAPImpl#getBookings(types.GetBookings)}.
      */
     public void testGetBookingsResourceID()
     {
@@ -7396,7 +7401,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBookings(types.GetBookings)}.
+     * Test method for {@link BookingsSOAPImpl#getBookings(types.GetBookings)}.
      */
     public void testGetBookingsResourceName()
     {
@@ -7580,7 +7585,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBookings(types.GetBookings)}.
+     * Test method for {@link BookingsSOAPImpl#getBookings(types.GetBookings)}.
      */
     public void testGetBookingsResourceRig()
     {
@@ -7771,7 +7776,7 @@ public class BookingsServiceTester extends TestCase
     }
     
     /**
-     * Test method for {@link BookingsService#getBookings(types.GetBookings)}.
+     * Test method for {@link BookingsSOAPImpl#getBookings(types.GetBookings)}.
      */
     public void testGetBookingsResourceCaps()
     {

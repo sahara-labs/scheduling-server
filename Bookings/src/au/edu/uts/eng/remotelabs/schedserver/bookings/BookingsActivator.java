@@ -59,6 +59,9 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.Booking
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.impl.BookingsServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
@@ -69,10 +72,13 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 /**
  * Bookings bundle activator.
  */
-public class BookingActivator implements BundleActivator 
+public class BookingsActivator implements BundleActivator 
 {
     /** SOAP interface hosting server service registration. */
     private ServiceRegistration<ServletContainerService> soapService;
+    
+    /** POJO service service. */
+    private ServiceRegistration<BookingsService> pojoService;
     
     /** Engine management service registration tasks. */
     private Map<ServiceRegistration<Runnable>, BookingManagementTask> engineTasks;
@@ -105,16 +111,16 @@ public class BookingActivator implements BundleActivator
 		this.logger.info("Starting bookings bundle...");
 		
 		/* Start listening for the messenger service. */
-		BookingActivator.messengerService = 
+		BookingsActivator.messengerService = 
 		        new ServiceTracker<MessengerService, MessengerService>(context, MessengerService.class, null);
-		BookingActivator.messengerService.open();
+		BookingsActivator.messengerService.open();
 		
 		/* Initialise the booking engine and register the engine management 
 		 * tasks to periodically run. */
 		SlotBookingEngine slots = new SlotBookingEngine();
 		BookingInit init = slots.init();
-		BookingActivator.engine = slots;
-		BookingActivator.service = slots;
+		BookingsActivator.engine = slots;
+		BookingsActivator.service = slots;
 		
 		this.engineTasks = new HashMap<ServiceRegistration<Runnable>, BookingManagementTask>();
 		Dictionary<String, String> props = new Hashtable<String, String>(1);
@@ -130,7 +136,7 @@ public class BookingActivator implements BundleActivator
 		    this.notifServices.add(context.registerService(RigEventListener.class, listener, null));		    
 		}
 		
-		BookingActivator.listenerList = new ArrayList<RigEventListener>();
+		BookingsActivator.listenerList = new ArrayList<RigEventListener>();
 		RigEventServiceListener servListener = new RigEventServiceListener(listenerList, context);
         context.addServiceListener(servListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         
@@ -141,10 +147,13 @@ public class BookingActivator implements BundleActivator
         }
 		
 		/* Register the booking engine service. */
-        this.engineService = context.registerService(BookingEngineService.class, BookingActivator.service, null);
+        this.engineService = context.registerService(BookingEngineService.class, BookingsActivator.service, null);
 		
 		/* Register the Bookings SOAP service. */
-		this.logger.debug("Registering the Bookings SOAP service.");
+		this.logger.debug("Registering the Bookings services.");
+		
+		this.pojoService = context.registerService(BookingsService.class, new BookingsServiceImpl(), null);
+		
 		ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
 	    this.soapService = context.registerService(ServletContainerService.class, soapService, null);
@@ -155,6 +164,7 @@ public class BookingActivator implements BundleActivator
 	{
 	    this.logger.info("Shutting down bookings bundle.");
 		this.soapService.unregister();
+		this.pojoService.unregister();
 		this.engineService.unregister();
 		
 		for (ServiceRegistration<RigEventListener> s : this.notifServices) s.unregister();
@@ -167,10 +177,10 @@ public class BookingActivator implements BundleActivator
 		
 		listenerList = null;
 		
-		BookingActivator.engine.cleanUp();
+		BookingsActivator.engine.cleanUp();
 		
-		BookingActivator.messengerService.close();
-		BookingActivator.messengerService = null;
+		BookingsActivator.messengerService.close();
+		BookingsActivator.messengerService = null;
 	}
 	
 	/**
@@ -180,7 +190,7 @@ public class BookingActivator implements BundleActivator
 	 */
 	public static BookingEngine getBookingEngine()
 	{
-	    return BookingActivator.engine;
+	    return BookingsActivator.engine;
 	}
 	
 	/**
@@ -208,8 +218,8 @@ public class BookingActivator implements BundleActivator
      */
     public static MessengerService getMessengerService()
     {
-        if (BookingActivator.messengerService == null) return null;
+        if (BookingsActivator.messengerService == null) return null;
         
-        return BookingActivator.messengerService.getService();
+        return BookingsActivator.messengerService.getService();
     }
 }

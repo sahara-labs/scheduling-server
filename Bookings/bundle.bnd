@@ -1,7 +1,7 @@
 Bundle-Name: Bookings
 Bundle-SymbolicName: SchedulingServer-Bookings
-Bundle-Version: 2.0.0
-Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator
+Bundle-Version: 3.0.0.capstone
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
@@ -16,7 +16,10 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.bookings
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.bookings, \
+au.edu.uts.eng.remotelabs.schedserver.bookings.pojo, \
+au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types
+
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.bookings, *
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \

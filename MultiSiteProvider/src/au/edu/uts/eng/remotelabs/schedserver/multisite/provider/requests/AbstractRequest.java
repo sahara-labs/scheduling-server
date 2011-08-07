@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 18th July 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.multisite.provider;
+package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests;
 
 import org.apache.axis2.AxisFault;
 import org.hibernate.Session;
@@ -42,6 +42,7 @@ import org.hibernate.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.MultiSiteProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSite;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSiteStub;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SiteIDType;

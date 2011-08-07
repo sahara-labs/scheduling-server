@@ -62,8 +62,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.QueueRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.SessionInformation;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.QueueRequest;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.SessionInformation;
 
 /**
  * Class which provides utility for entry to the queue. To add a user to the

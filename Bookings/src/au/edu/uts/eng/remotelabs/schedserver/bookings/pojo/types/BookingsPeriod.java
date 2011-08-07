@@ -34,45 +34,69 @@
  * @author Michael Diponio (mdiponio)
  * @date 30th January 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.SlotState;
+
 
 /**
- * Utility methods for Queuer service implementations.
+ * Bookings period.
  */
-public class QueuerUtil
+public class BookingsPeriod
 {
-    /**
-     * Returns true if the rig is not booked for the specified duration. A free 
-     * rig is one which:
-     * <ul>
-     *  <li>Is active and alive.</li>
-     *  <li>Is online.</li>
-     *  <li>Not in session.</li>
-     *  <li>Not booked for the duration of the guaranteed permission time</li>
-     * 
-     * @param rig rig to check
-     * @param perm permission to obtain duration for
-     * @param ses database session
-     * @return true if not booked
-     */
-    public static boolean isRigFree(Rig rig, ResourcePermission perm, org.hibernate.Session ses)
+    /** Time designators. */
+    public static final String NO_PERMISSION = SlotState._NOPERMISSION;
+    public static final String BOOKED = SlotState._BOOKED;
+    public static final String FREE = SlotState._FREE;
+    
+    /** List of slots. */
+    private List<BookingSlot> slots;
+    
+    public BookingsPeriod()
     {
-        if (!rig.isActive() || !rig.isOnline() || rig.isInSession()) return false;
-        
-        BookingEngineService bs = QueueActivator.getBookingService();
-        if (bs == null)
+        this.slots = new ArrayList<BookingSlot>();
+    }
+    
+    public void addSlot(Calendar start, Calendar end, String state)
+    {
+        BookingSlot slot = new BookingSlot();
+        slot.start = start;
+        slot.end = end;
+        slot.state = state;
+        this.slots.add(slot);
+    }
+    
+    public List<BookingSlot> getSlots()
+    {
+        return this.slots;
+    }
+    
+    /**
+     * Booking slot.
+     */
+    public class BookingSlot
+    {
+        private Calendar start;
+        private Calendar end;
+        private String state;
+
+        public Calendar getStart()
         {
-            LoggerActivator.getLogger().debug("Returning rig " + rig.getName() + " is not booked because the bookings " +
-            		"service does not appear to be running.");
-            return true;
+            return this.start;
         }
-        
-        return bs.isFreeFor(rig, perm.getSessionDuration(), ses);
+
+        public Calendar getEnd()
+        {
+            return this.end;
+        }
+
+        public String getState()
+        {
+            return this.state;
+        }
     }
 }

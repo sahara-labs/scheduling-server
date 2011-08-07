@@ -74,4 +74,5 @@ Bundle-ClassPath: .,
  lib/wsdl4j-1.6.2.jar,
  lib/wstx-asl-3.2.9.jar,
  lib/XmlSchema-1.4.7.jar
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite.provider
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite.provider,
+ au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests

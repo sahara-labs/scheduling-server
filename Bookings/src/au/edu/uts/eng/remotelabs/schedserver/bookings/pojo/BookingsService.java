@@ -32,84 +32,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2011
+ * @date 7th August 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.multisite.provider;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.pojo;
 
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType;
+import java.util.Calendar;
+
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 
 /**
- * 
+ * POJO Bookings service.
  */
-public class SessionInformation extends AbstractRequest
+public interface BookingsService
 {
-    /** Response. */
-    private SessionType response;
-    
-    static SessionInformation load(SessionType type)
-    {
-        SessionInformation info = new SessionInformation();
-        info.response = type;
-        return info;
-    }
-    
-    public boolean isReady()
-    {
-        return this.response.getIsReady();
-    }
-    
-    public boolean isCodeAssigned()
-    {
-        return this.response.getIsCodeAssigned();
-    }
-    
-    public boolean isInGrace()
-    {
-        return this.response.getInGrace();
-    }
-    
-    public String getResourceName()
-    {
-        return this.response.getResource() == null ? null : this.response.getResource().getName();
-    }
-    
-    public String getResourceType()
-    {
-        return this.response.getResource() == null ? null :this.response.getResource().getType();
-    }
-    
-    public String getRigType()
-    {
-        return this.response.getRigType();
-    }
-    
-    public String getRigName()
-    {
-        return this.response.getRigName();
-    }
-    
-    public String getContactURL()
-    {
-        return this.response.getContactURL();
-    }
-    
-    public int getTime()
-    {
-        return this.response.getTime();
-    }
-    
-    public int getTimeLeft()
-    {
-        return this.response.getTimeLeft();
-    }
-    
-    public int getExtensions()
-    {
-        return this.response.getExtensions();
-    }
-    
-    public String getWarningMessage()
-    {
-        return this.response.getWarningMessage();
-    }
+    /**
+     * Finds the times where bookings can be made within a time period.
+     * 
+     * @param start range start
+     * @param end range end
+     * @param permission permission to find bookings
+     * @param db database
+     * @return free bookings times
+     */
+    public BookingsPeriod getFreeBookings(Calendar start, Calendar end, ResourcePermission permission, Session db);
 }

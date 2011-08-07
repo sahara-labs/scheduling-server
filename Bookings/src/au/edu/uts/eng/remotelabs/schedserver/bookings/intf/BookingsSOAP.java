@@ -53,7 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.GetTimezoneProf
 /**
  * Interface for the Bookings service.
  */
-public interface BookingsInterface
+public interface BookingsSOAP
 {
     /**
      * Creates a booking for the user.

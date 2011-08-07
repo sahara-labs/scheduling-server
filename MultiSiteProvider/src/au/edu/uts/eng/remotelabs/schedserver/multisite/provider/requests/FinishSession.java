@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 7th August 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.multisite.provider;
+package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests;
 
 import java.rmi.RemoteException;
 
