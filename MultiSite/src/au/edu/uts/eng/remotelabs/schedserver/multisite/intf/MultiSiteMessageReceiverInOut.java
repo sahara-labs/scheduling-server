@@ -86,7 +86,7 @@ public class MultiSiteMessageReceiverInOut extends AbstractInOutMessageReceiver
         {
             final Object obj = this.getTheImplementationObject(msgContext);
 
-            final MultiSiteInterface skel = (MultiSiteInterface) obj;
+            final MultiSiteSOAP skel = (MultiSiteSOAP) obj;
 
             SOAPEnvelope envelope = null;
             final AxisOperation op = msgContext.getOperationContext().getAxisOperation();

@@ -57,61 +57,82 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatusResponse;
 
 /**
- * MultiSite skeleton implementation.
+ * Interface for the MultiSite service.
  */
-public class MultiSiteSkeleton implements MultiSiteInterface
+public interface MultiSiteSOAP
 {
-    @Override
-    public GetUserStatusResponse getUserStatus(final GetUserStatus getUserStatus0)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#getUserStatus skeleton implmentation.");
-    }
-    @Override
-    public CancelBookingResponse cancelBooking(final CancelBooking cancelBooking2)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#cancelBooking skeleton implmentation.");
-    }
+    /**
+     * Gets the status of the user including whether they are in a queue, in
+     * a booking or in session.
+     * 
+     * @param getUserStatus request
+     * @return response	
+     */
+    public GetUserStatusResponse getUserStatus(GetUserStatus getUserStatus);
 
-    @Override
-    public CheckAvailabilityResponse checkAvailability(final CheckAvailability checkAvailability4)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#checkAvailability skeleton implmentation.");
-    }
+    /**
+     * Checks the availability of a permission to determine whether a user may
+     * use the permissions resources.
+     * 
+     * @param checkAvailability request
+     * @return response
+     */
+    public CheckAvailabilityResponse checkAvailability(CheckAvailability checkAvailability);
     
-    @Override
-    public FindFreeBookingsResponse findFreeBookings(final FindFreeBookings findFreeBookings6)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#findFreeBookings skeleton implmentation.");
-    }
+    /**
+     * Adds a user to the queue.
+     * 
+     * @param addToQueue request
+     * @return response
+     */
+    public AddToQueueResponse addToQueue(AddToQueue addToQueue);
+    
+    /**
+     * Gets the users position in the queue.
+     * 
+     * @param getQueuePosition request
+     * @return response
+     */
+    public GetQueuePositionResponse getQueuePosition(GetQueuePosition getQueuePosition);
+    
+    /**
+     * Gets the session information for a in-progress session.
+     * 
+     * @param getSessionInformation request
+     * @return response
+     */
+    public GetSessionInformationResponse getSessionInformation(GetSessionInformation getSessionInformation);
 
-    @Override
-    public GetSessionInformationResponse getSessionInformation(final GetSessionInformation getSessionInformation8)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName()
-                + "#getSessionInformation");
-    }
+    /**
+     * Finds the times a resource may be booked within a time period.
+     * 
+     * @param findFreeBookings request 
+     * @return response
+     */
+    public FindFreeBookingsResponse findFreeBookings(FindFreeBookings findFreeBookings);
+    
+    /**
+     * Creates a booking for a user.
+     * 
+     * @param createBooking request
+     * @return response
+     */
+    public CreateBookingResponse createBooking(CreateBooking createBooking);
+    
+    /**
+     * Cancels a booking.
+     * 
+     * @param cancelBooking request 
+     * @return response
+     */
+    public CancelBookingResponse cancelBooking(CancelBooking cancelBooking);
 
-    @Override
-    public GetQueuePositionResponse getQueuePosition(final GetQueuePosition getQueuePosition10)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#getQueuePosition skeleton implmentation.");
-    }
-
-    @Override
-    public AddToQueueResponse addToQueue(final AddToQueue addToQueue12)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#addToQueue skeleton implmentation.");
-    }
-
-    @Override
-    public CreateBookingResponse createBooking(final CreateBooking createBooking14)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#createBooking skeleton implmentation.");
-    }
-
-    @Override
-    public FinishSessionResponse finishSession(final FinishSession finishSession16)
-    {
-        throw new UnsupportedOperationException(this.getClass().getName() + "#finishSession skeleton implmentation.");
-    }
+    
+    /**
+     * Finishes a session.
+     * 
+     * @param finishSession request
+     * @return response
+     */
+    public FinishSessionResponse finishSession(FinishSession finishSession);
 }

@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2011, Michael Diponio
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,36 +32,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 6th April 2010
+ * @date 9th August
  */
+package au.edu.uts.eng.remotelabs.schedserver.session.pojo;
 
-package au.edu.uts.eng.remotelabs.schedserver.session.intf;
-
-import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
-import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
-import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
-import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
 /**
- * SessionSkeletonInterface java skeleton interface for the axisService
+ * The interface for the Session POJO service.
  */
-public interface SessionSkeletonInterface
+public interface SessionService
 {
     /**
-     * Terminates the users rig session if they have one.
+     * Finishes the session.
      * 
-     * @param request
-     * @return response
+     * @param session session to finish
+     * @param db database
+     * @return true if successful
      */
-    public FinishSessionResponse finishSession(FinishSession request);
-
-    /**
-     * Provides information about the users session. If the <tt>isInSession</tt> 
-     * field is <tt>false</tt>, not other information is provide, otherwise if it
-     * is <tt>true</tt>, all other fields are populated.
-     * 
-     * @param request
-     * @return response
-     */
-    public GetSessionInformationResponse getSessionInformation(GetSessionInformation request);
+    public boolean finishSession(Session session, org.hibernate.Session db);
 }

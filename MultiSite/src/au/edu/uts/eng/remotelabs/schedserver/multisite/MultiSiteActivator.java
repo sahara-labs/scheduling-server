@@ -48,6 +48,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
 /**
  * Activator for the Multisite project.
@@ -60,6 +61,9 @@ public class MultiSiteActivator implements BundleActivator
     /** Queuer service tracker. */
     private static ServiceTracker<QueuerService, QueuerService> queuerService;
     
+    /** Session service tracker. */
+    private static ServiceTracker<SessionService, SessionService> sessionService;
+    
     /** Logger. */
     private Logger logger;
     
@@ -69,10 +73,13 @@ public class MultiSiteActivator implements BundleActivator
 		this.logger = LoggerActivator.getLogger();
 		this.logger.info("Multisite bundle starting up.");
 		
-		/* Track the Queuer service. */
+		/* Track the required services. */
 		MultiSiteActivator.queuerService = new 
 		        ServiceTracker<QueuerService, QueuerService>(bundleContext, QueuerService.class, null);
 		MultiSiteActivator.queuerService.open();
+		MultiSiteActivator.sessionService = new 
+		        ServiceTracker<SessionService, SessionService>(bundleContext, SessionService.class, null);
+		MultiSiteActivator.sessionService.open();
 
 		ServletContainerService serv = new ServletContainerService();
 		serv.addServlet(new ServletContainer(new AxisServlet(), true));
@@ -86,6 +93,8 @@ public class MultiSiteActivator implements BundleActivator
 		
 		this.soapService.unregister();
 		
+		MultiSiteActivator.sessionService.close();
+		MultiSiteActivator.sessionService = null;
 		MultiSiteActivator.queuerService.close();
 		MultiSiteActivator.queuerService = null;
 	}
@@ -100,5 +109,17 @@ public class MultiSiteActivator implements BundleActivator
         if (MultiSiteActivator.queuerService == null) return null;
         
         return MultiSiteActivator.queuerService.getService();
+    }
+    
+    /**
+     * Gets a Session service instance.
+     * 
+     * @return session service or null if none found
+     */
+    public static SessionService getSessionService()
+    {
+        if (MultiSiteActivator.sessionService == null) return null;
+        
+        return MultiSiteActivator.sessionService.getService();
     }
 }

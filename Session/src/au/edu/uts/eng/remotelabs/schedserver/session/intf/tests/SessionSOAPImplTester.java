@@ -57,7 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
-import au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionSOAPImpl;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
@@ -66,29 +66,34 @@ import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.InSessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl.SessionServiceImpl;
 
 /**
  * Tests the {@link Session} class.
  */
-public class SessionInterfaceTester extends TestCase
+public class SessionSOAPImplTester extends TestCase
 {
     /** Object of class under test. */
-    private SessionInterface sessionIntf;
+    private SessionSOAPImpl sessionIntf;
 
     @Override
     @Before
     public void setUp() throws Exception
     {
         DataAccessTestSetup.setup();
-        this.sessionIntf = new SessionInterface();
+        this.sessionIntf = new SessionSOAPImpl();
         
-        Field f = SessionInterface.class.getDeclaredField("notTest");
+        Field f = SessionSOAPImpl.class.getDeclaredField("notTest");
         f.setAccessible(true);
         f.set(this.sessionIntf, Boolean.FALSE);
+        
+        f = SessionServiceImpl.class.getDeclaredField("notTest");
+        f.setAccessible(true);
+        f.set(null, Boolean.FALSE);
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface#finishSession(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionSOAPImpl#finishSession(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession)}.
      */
     @Test
     public void testFinishSession() throws Exception
@@ -204,7 +209,7 @@ public class SessionInterfaceTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionSOAPImpl#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
      */
     @Test
     public void testGetSessionInformation() throws Exception
@@ -337,7 +342,7 @@ public class SessionInterfaceTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionSOAPImpl#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
      */
     @Test
     public void testGetSessionInformationExtension() throws Exception
@@ -470,7 +475,7 @@ public class SessionInterfaceTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionSOAPImpl#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
      */
     @Test
     public void testGetSessionInformationPartialDuration() throws Exception
@@ -603,7 +608,7 @@ public class SessionInterfaceTester extends TestCase
     }
     
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionInterface#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.intf.SessionSOAPImpl#getSessionInformation(au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation)}.
      */
     @Test
     public void testGetSessionInformationPartialDuration2() throws Exception

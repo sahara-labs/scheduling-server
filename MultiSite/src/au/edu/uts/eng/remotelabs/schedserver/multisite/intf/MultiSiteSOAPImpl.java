@@ -36,7 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
@@ -79,16 +82,17 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.UserStatusType
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
 /**
  * MultiSite service implementation.
  */
-public class MultiSite implements MultiSiteInterface
+public class MultiSiteSOAPImpl implements MultiSiteSOAP
 {
     /** Logger. */
     private Logger logger;
     
-    public MultiSite()
+    public MultiSiteSOAPImpl()
     {
         this.logger = LoggerActivator.getLogger();
     }
@@ -287,8 +291,63 @@ public class MultiSite implements MultiSiteInterface
     @Override
     public FinishSessionResponse finishSession(FinishSession finishSession)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String siteId = finishSession.getFinishSession().getSiteID();
+        String userId = finishSession.getFinishSession().getUserID();
+       
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#finishSession with params site=" + siteId +
+                ", user=" + userId);
+        
+        FinishSessionResponse response = new FinishSessionResponse();
+        OperationResponseType opResp = new OperationResponseType();
+        response.setFinishSessionResponse(opResp);
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            /* Load site. */
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.warn("Unable to finish session for user '" + userId + "' because the site '" + siteId + 
+                        "' was not found.");
+                opResp.setReason("Site not found");
+                return response;
+            }
+            
+            /* Load user. */
+            User user = new UserDao(db).findByName(site.getUserNamespace(), userId);
+            if (user == null)
+            {
+                this.logger.warn("Unable to finish session for user '" + userId + "' because the user was not found.");
+                opResp.setReason("User not found.");
+                return response;
+            }
+            
+            Session ses = new SessionDao(db).findActiveSession(user);
+            if (ses == null)
+            {
+                this.logger.warn("Unable to finish session for user '" + userId + "' because the user does not have " +
+                		"an active session.");
+                opResp.setReason("User does not have active session");
+                return response;
+            }
+            
+            SessionService service = MultiSiteActivator.getSessionService();
+            if (service == null)
+            {
+                this.logger.error("Unable to finish session because the Session Service was not loaded.");
+                opResp.setReason("Session not loaded.");
+                return response;
+            }
+            
+            opResp.setWasSuccessful(service.finishSession(ses, db));
+        }
+        finally
+        {
+            db.close();
+        }
+
+        return response;
     }
 
     /**
@@ -374,7 +433,7 @@ public class MultiSite implements MultiSiteInterface
             SessionType sesType = new SessionType();
             status.setSession(sesType);
             
-            sesType.setIsReady(ses.isReady());
+            sesType.setIsReady(true); //ses.isReady());
             sesType.setIsCodeAssigned(ses.getCodeReference() != null);
             sesType.setInGrace(ses.isInGrace());
             

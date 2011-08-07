@@ -58,6 +58,8 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.RigShutdownSessonStopper;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionExpiryChecker;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl.SessionServiceImpl;
 
 /**
  * Activator for the Session bundle which handles running sessions.
@@ -68,10 +70,13 @@ public class SessionActivator implements BundleActivator
     private ServiceRegistration<ServletContainerService> soapReg;
     
     /** Session expiry checked runnable task service. */
-    private ServiceRegistration<Runnable> sessionCheckerReg;
+    private ServiceRegistration<Runnable> checkerTask;
     
     /** Shutdown event notifier session terminator service. */
     private ServiceRegistration<RigEventListener> terminatorService;
+    
+    /** Session POJO service registration. */
+    private ServiceRegistration<SessionService> pojoReg;
     
     /** Booking service tracker. */
     private static ServiceTracker<BookingEngineService, BookingEngineService> bookingsTracker;
@@ -95,12 +100,15 @@ public class SessionActivator implements BundleActivator
         props.put("period", "10");
         SessionExpiryChecker task = new SessionExpiryChecker();
         task.run(); // Expire any old sessions
-        this.sessionCheckerReg = context.registerService(Runnable.class, task, props);
+        this.checkerTask = context.registerService(Runnable.class, task, props);
         
         /* Register the rig event notifier. */
         this.terminatorService = context.registerService(RigEventListener.class, new RigShutdownSessonStopper(), null);
         
-        /* Register the queuer service. */
+        /* Register the Session POJO service. */
+        this.pojoReg = context.registerService(SessionService.class, new SessionServiceImpl(), null);
+        
+        /* Register the Session SOAP service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
         soapService.addServlet(new ServletContainer(new AxisServlet(), true));
@@ -112,8 +120,9 @@ public class SessionActivator implements BundleActivator
 	{
 	    this.logger.info("Stopping the Session bundle...");
 	    this.soapReg.unregister();
+	    this.pojoReg.unregister();
 	    this.terminatorService.unregister();
-	    this.sessionCheckerReg.unregister();
+	    this.checkerTask.unregister();
 	    SessionActivator.bookingsTracker.close();
 	    
 	    /* Terminate all in progress sessions. */

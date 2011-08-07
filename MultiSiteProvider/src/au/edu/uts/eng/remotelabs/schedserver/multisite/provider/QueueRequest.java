@@ -90,7 +90,7 @@ public class QueueRequest extends AbstractRequest
         {
             this.failed = true;
             this.failureReason = "Fault (" + e.getReason() + ")";
-            this.logger.warn("SOAP fault making checking request, error reason '" + e.getReason() +
+            this.logger.warn("SOAP fault request, error reason '" + e.getReason() +
                     "', error message is '" + e.getMessage() + "'.");
             this.offlineSite(e);
             return false;
@@ -99,7 +99,7 @@ public class QueueRequest extends AbstractRequest
         {
             this.failed = true;
             this.failureReason = "Remote error (" + e.getMessage() + ")";
-            this.logger.warn("Remote error making checking request, error  message is '" + e.getMessage() + "'.");
+            this.logger.warn("Remote error request, error  message is '" + e.getMessage() + "'.");
             this.offlineSite(e);
             return false;
         }

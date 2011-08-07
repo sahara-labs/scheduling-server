@@ -47,7 +47,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientService;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectableResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
@@ -55,15 +54,15 @@ import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionRes
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.InSessionType;
-import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.OperationRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl.SessionServiceImpl;
 
 /**
  * Session SOAP interface implementation.
  */
-public class SessionInterface implements SessionSkeletonInterface
+public class SessionSOAPImpl implements SessionSOAP
 {
     /** Logger. */
     private Logger logger;
@@ -71,7 +70,7 @@ public class SessionInterface implements SessionSkeletonInterface
     /** Flag for unit testing to disable rig client communication. */ 
     private boolean notTest = true;
     
-    public SessionInterface()
+    public SessionSOAPImpl()
     {
         this.logger = LoggerActivator.getLogger();
     }
@@ -88,31 +87,22 @@ public class SessionInterface implements SessionSkeletonInterface
         FinishSessionResponse resp = new FinishSessionResponse();
         InSessionType inSes = new InSessionType();
         resp.setFinishSessionResponse(inSes);
-        inSes.setIsInSession(false);
-        
-        if (!this.checkPermission(uID))
-        {
-            this.logger.warn("Unable to finish session because of invalid permission.");
-            return resp;
-        }
         
         SessionDao dao = new SessionDao();
-        Session ses;
-        User user = this.getUserFromUserID(uID, new UserDao(dao.getSession()));
-        if (user != null && (ses = dao.findActiveSession(user)) != null)
+        try
         {
-            /* Finish the session. */
-            ses.setActive(false);
-            ses.setRemovalReason("User request.");
-            ses.setRemovalTime(new Date());
-            dao.flush();
+            Session ses;
+            User user = this.getUserFromUserID(uID, new UserDao(dao.getSession()));
             
-            /* Call rig release. */
-            // TODO terminate code assigned
-            if (this.notTest) new RigReleaser().release(ses, dao.getSession());
+            if (user != null && (ses = dao.findActiveSession(user)) != null)
+            {
+                inSes.setIsInSession(!new SessionServiceImpl().finishSession(ses, dao.getSession()));
+            }
         }
-        
-        dao.closeSession();
+        finally
+        {
+            dao.closeSession();
+        }
         return resp;
     }
 
@@ -238,17 +228,4 @@ public class SessionInterface implements SessionSkeletonInterface
         
         return null;
     }
-    
-    /**
-     * Checks whether the request has the specified permission. Currently this
-     * is a stub and always return, irrespective of the provided user.
-     * 
-     * @return true if the request has the appropriate permission
-     */
-    private boolean checkPermission(OperationRequestType req)
-    {
-        // TODO Check request permissions for queuer
-        return true;
-    }
-
 }
