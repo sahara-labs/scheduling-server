@@ -49,7 +49,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserI
 /**
  * Finishes a session.
  */
-public class FinishSession extends AbstractRequest
+public class FinishSessionRequest extends AbstractRequest
 {
     /** Response. */
     private OperationResponseType response;

@@ -63,7 +63,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.QueueRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.SessionInformation;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.SessionInformationRequest;
 
 /**
  * Class which provides utility for entry to the queue. To add a user to the
@@ -675,7 +675,7 @@ public class QueueEntry
             
             /* Since in session state, we now need to unpack session 
              * information. */
-            SessionInformation provSes = providerCall.getSession();
+            SessionInformationRequest provSes = providerCall.getSession();
             if (provSes == null)
             {
                 this.logger.error("PROVIDER BUG: Queue response specifies the user is in session, but no session " +

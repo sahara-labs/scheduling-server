@@ -34,42 +34,93 @@
  * @author Michael Diponio (mdiponio)
  * @date 7th August 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.pojo;
+package au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
-import org.hibernate.Session;
-
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 
 /**
- * POJO Bookings service.
+ * Booking creation response.
  */
-public interface BookingsService
+public class BookingOperation
 {
-    /**
-     * Finds the times where bookings can be made within a time period.
-     * 
-     * @param start range start
-     * @param end range end
-     * @param permission permission to find bookings
-     * @param db database
-     * @return free bookings times
-     */
-    public BookingsPeriod getFreeBookings(Calendar start, Calendar end, ResourcePermission permission, Session db);
+    /** Whether the booking operation successful. */
+    private boolean success;
     
-    /**
-     * Creates a booking.
-     * 
-     * @param start booking start
-     * @param end booking end 
-     * @param user user to creation booking for
-     * @param permission permission to create booking
-     * @param db database
-     * @return booking creation
-     */
-    public BookingOperation createBooking(Calendar start, Calendar end, User user, ResourcePermission permission, Session db);
+    /** The booking. */
+    private Bookings booking;
+    
+    /** Best fits. */
+    private final List<BestFit> bestFits;
+    
+    /** Failure reason. */
+    private String failureReason;
+    
+    public BookingOperation()
+    {
+        this.bestFits = new ArrayList<BookingOperation.BestFit>();
+    }
+
+    public boolean successful()
+    {
+        return this.success;
+    }
+
+    public Bookings getBooking()
+    {
+        return this.booking;
+    }
+
+    public void setBooking(Bookings booking)
+    {
+        this.booking = booking;
+    }
+    
+    public List<BestFit> getBestFits()
+    {
+        return this.bestFits;
+    }
+    
+    public void addBestFit(Calendar start, Calendar end)
+    {
+        BestFit bf = new BestFit();
+        bf.start = start;
+        bf.end = end;
+        this.bestFits.add(bf);
+    }
+    
+    public void setSuccess(boolean success)
+    {
+        this.success = success;
+    }
+
+    public String getFailureReason()
+    {
+        return this.failureReason;
+    }
+
+    public void setFailureReason(String errorReason)
+    {
+        this.failureReason = errorReason;
+    }
+    
+    public class BestFit
+    {
+        private Calendar start;
+        
+        private Calendar end;
+
+        public Calendar getStart()
+        {
+            return this.start;
+        }
+        
+        public Calendar getEnd()
+        {
+            return this.end;
+        }
+    }
 }

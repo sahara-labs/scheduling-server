@@ -160,8 +160,8 @@ public class QueueRequest extends AbstractRequest
         return null;
     }
 
-    public SessionInformation getSession()
+    public SessionInformationRequest getSession()
     {
-        return this.response.getSession() == null ? null : SessionInformation.load(this.response.getSession());
+        return this.response.getSession() == null ? null : SessionInformationRequest.load(this.response.getSession());
     }
 }

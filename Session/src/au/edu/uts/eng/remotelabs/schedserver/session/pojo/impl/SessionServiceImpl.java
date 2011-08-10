@@ -42,7 +42,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSession;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSessionRequest;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
@@ -79,7 +79,7 @@ public class SessionServiceImpl implements SessionService
         
         if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourcePermission().getType()))
         {
-            FinishSession multiSiteReq = new FinishSession();
+            FinishSessionRequest multiSiteReq = new FinishSessionRequest();
             if (!multiSiteReq.finishSession(ses.getUser(), ses.getRig().getSite(), db))
             {
                 this.logger.warn("Failed to finish session at site '" + ses.getRig().getSite().getName() + "' because " +

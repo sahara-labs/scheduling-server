@@ -41,14 +41,14 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.Sessi
 /**
  * 
  */
-public class SessionInformation extends AbstractRequest
+public class SessionInformationRequest extends AbstractRequest
 {
     /** Response. */
     private SessionType response;
     
-    static SessionInformation load(SessionType type)
+    static SessionInformationRequest load(SessionType type)
     {
-        SessionInformation info = new SessionInformation();
+        SessionInformationRequest info = new SessionInformationRequest();
         info.response = type;
         return info;
     }

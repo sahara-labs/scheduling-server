@@ -47,8 +47,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityCheck;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityCheck.QueueTarget;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest.QueueTarget;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
@@ -149,7 +149,7 @@ public class QueuerServiceImpl implements QueuerService
             }
             
             /* Make the remote call and populate the results. */
-            PermissionAvailabilityCheck check = new PermissionAvailabilityCheck();
+            PermissionAvailabilityRequest check = new PermissionAvailabilityRequest();
             if (check.checkAvailability(perm.getRemotePermission(), ses))
             {
                 response.setViable(check.isViable());

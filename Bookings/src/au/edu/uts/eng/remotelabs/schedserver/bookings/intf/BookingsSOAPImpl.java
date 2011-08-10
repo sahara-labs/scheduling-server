@@ -48,13 +48,10 @@ import java.util.TreeMap;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingCreation;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
@@ -87,6 +84,8 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.TimePeriodType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.TimezoneType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.impl.BookingsServiceImpl;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation.BestFit;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod.BookingSlot;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -197,132 +196,32 @@ public class BookingsSOAPImpl implements BookingsSOAP
                 return response;
             }
             
-            /* ----------------------------------------------------------------
-             * -- Check permission constraints.                              --
-             * ---------------------------------------------------------------- */
-            Date startDate = start.getTime();
-            Date endDate = end.getTime();
-            
-            if (!perm.getUserClass().isBookable())
+            BookingOperation operation = new BookingsServiceImpl().createBooking(start, end, user, perm, ses);
+            status.setSuccess(operation.successful());
+            status.setFailureReason(operation.getFailureReason());
+            if (operation.successful())
             {
-                this.logger.info("Unable to create a booking because the permission " + pid + " is not bookable.");
-                status.setFailureReason("Permission not bookable.");
-                return response;
-            }
-            
-            if (startDate.before(perm.getStartTime()) || endDate.after(perm.getExpiryTime()))
-            {
-                this.logger.info("Unable to create a booking because the booking time is outside the permission time. " +
-                		"Permission start: " + perm.getStartTime() + ", expiry: " + perm.getExpiryTime() + 
-                		", booking start: " + startDate + ", booking end: " + endDate + '.');
-                status.setFailureReason("Booking time out of permission range.");
-                return response;
-            }
-            
-            /* Time horizon is a moving offset when bookings can be made. */
-            Calendar horizon = Calendar.getInstance();
-            horizon.add(Calendar.SECOND, perm.getUserClass().getTimeHorizon());
-            if (horizon.after(start))
-            {
-                this.logger.info("Unable to create a booking because the booking start time (" + startDate +
-                        ") is before the time horizon (" + horizon.getTime() + ").");
-                status.setFailureReason("Before time horizon.");
-                return response;
-            }
-
-            /* Maximum concurrent bookings. */
-            int numBookings = (Integer) ses.createCriteria(Bookings.class)
-                .add(Restrictions.eq("active", Boolean.TRUE))
-                .add(Restrictions.eq("user", user))
-                .add(Restrictions.eq("resourcePermission", perm))
-                .setProjection(Projections.rowCount())
-                .uniqueResult();
-            if (numBookings >= perm.getMaximumBookings())
-            {
-                this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' + 
-                        user.getName() + " already has the maxiumum numnber of bookings (" + numBookings + ").");
-                status.setFailureReason("User has maximum number of bookings.");
-                return response;
-            }
-            
-            /* User bookings at the same time. */
-            numBookings = (Integer) ses.createCriteria(Bookings.class)
-                 .setProjection(Projections.rowCount())
-                 .add(Restrictions.eq("active", Boolean.TRUE))
-                 .add(Restrictions.eq("user", user))
-                 .add(Restrictions.disjunction()
-                         .add(Restrictions.and(
-                                 Restrictions.gt("startTime", startDate),
-                                 Restrictions.lt("startTime", endDate)
-                         ))       
-                         .add(Restrictions.and(
-                                 Restrictions.gt("endTime", startDate),
-                                 Restrictions.le("endTime", endDate)
-                         ))
-                         .add(Restrictions.and(
-                                 Restrictions.le("startTime", startDate),
-                                 Restrictions.gt("endTime", endDate)))
-                 ).uniqueResult();
-            if (numBookings > 0)
-            {
-                this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' +
-                        user.getName() + " has concurrent bookings.");
-                status.setFailureReason("User has concurrent bookings.");
-                return response;
-            }
-            
-            /* ----------------------------------------------------------------
-             * -- Create booking.                                            --
-             * ---------------------------------------------------------------- */
-            BookingCreation bc = this.engine.createBooking(user, perm, new TimePeriod(start, end), ses);
-            if (bc.wasCreated())
-            {
-                status.setSuccess(true);
                 BookingIDType bid = new BookingIDType();
-                bid.setBookingID(bc.getBooking().getId().intValue());
+                bid.setBookingID(operation.getBooking().getId().intValue());
                 status.setBookingID(bid);
-                
-                new BookingNotification(bc.getBooking()).notifyCreation();
             }
-            else
+            else if (operation.getBestFits().size() > 0)
             {
-                status.setSuccess(false);
-                status.setFailureReason("Resource not free.");
-                
                 BookingListType bestFits = new BookingListType();
                 status.setBestFits(bestFits);
-                for (TimePeriod tp : bc.getBestFits())
+                
+                PermissionIDType pt = new PermissionIDType();
+                pt.setPermissionID(perm.getId().intValue());
+                
+                for (BestFit bf :  operation.getBestFits())
                 {
-                    numBookings = (Integer) ses.createCriteria(Bookings.class)
-                         .setProjection(Projections.rowCount())
-                         .add(Restrictions.eq("active", Boolean.TRUE))
-                         .add(Restrictions.eq("user", user))
-                         .add(Restrictions.disjunction()
-                                 .add(Restrictions.and(
-                                         Restrictions.gt("startTime", tp.getStartTime().getTime()),
-                                         Restrictions.lt("startTime", tp.getEndTime().getTime())
-                                 ))       
-                                 .add(Restrictions.and(
-                                         Restrictions.gt("endTime", tp.getStartTime().getTime()),
-                                         Restrictions.le("endTime", tp.getEndTime().getTime())
-                                 ))
-                                 .add(Restrictions.and(
-                                         Restrictions.le("startTime", tp.getStartTime().getTime()),
-                                         Restrictions.gt("endTime", tp.getEndTime().getTime())))
-                         ).uniqueResult();
-                    if (numBookings > 0)
-                    {
-                        this.logger.debug("Excluding best fit option for user " + user.qName() + " because it is " +
-                        		"concurrent with an existing.");
-                        continue;
-                    }
-                    BookingType fit = new BookingType();
-                    fit.setPermissionID(booking.getPermissionID());
-                    fit.setStartTime(tp.getStartTime());
-                    fit.setEndTime(tp.getEndTime());
-                    bestFits.addBookings(fit);
+                    BookingType bt = new BookingType();
+                    bt.setStartTime(bf.getStart());
+                    bt.setEndTime(bf.getEnd());
+                    bt.setPermissionID(pt);
+                    bestFits.addBookings(bt);
                 }
-            }
+            }            
         }
         finally
         {

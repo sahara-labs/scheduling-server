@@ -55,7 +55,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.TimeP
 /**
  * Request to find free times.
  */
-public class BookingsTimes extends AbstractRequest
+public class BookingsTimesRequest extends AbstractRequest
 {
     /** Response. */
     private FindFreeBookingsResponseType response;
@@ -153,11 +153,11 @@ public class BookingsTimes extends AbstractRequest
     /**
      * Booking slot.
      */
-    public class BookingTime
+    public static class BookingTime
     {
-        private Calendar start;
-        private Calendar end;
-        private String state;
+        Calendar start;
+        Calendar end;
+        String state;
 
         public Calendar getStart()
         {

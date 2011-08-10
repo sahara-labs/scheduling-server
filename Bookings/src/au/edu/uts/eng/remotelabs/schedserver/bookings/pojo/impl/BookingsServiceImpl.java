@@ -38,21 +38,31 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingCreation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimes;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimes.BookingTime;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimesRequest;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimesRequest.BookingTime;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.CreateBookingRequest;
 
 /**
  * Bookings service implementation.
@@ -159,7 +169,7 @@ public class BookingsServiceImpl implements BookingsService
         {
             free = new ArrayList<BookingEngine.TimePeriod>();
             /* We need to ask the remote site about times. */
-            BookingsTimes multiSiteReq = new BookingsTimes();
+            BookingsTimesRequest multiSiteReq = new BookingsTimesRequest();
             if (multiSiteReq.findFreeTimes(perm.getRemotePermission(), reqStart, searchEnd, db))
             {
                 /* We are integrated the multisite result set with the local 
@@ -212,6 +222,182 @@ public class BookingsServiceImpl implements BookingsService
         {
             /* Add a no permission at the end. */
             response.addSlot(permEnd, reqEnd, BookingsPeriod.NO_PERMISSION);
+        }
+
+        return response;
+    }
+
+    @Override
+    public BookingOperation createBooking(Calendar start, Calendar end, User user, ResourcePermission perm, Session db)
+    {
+        BookingOperation response = new BookingOperation();
+        response.setSuccess(false);
+        
+        /* ----------------------------------------------------------------
+         * -- Check permission constraints.                              --
+         * ---------------------------------------------------------------- */
+        Date startDate = start.getTime();
+        Date endDate = end.getTime();
+        
+        if (!perm.getUserClass().isBookable())
+        {
+            this.logger.info("Unable to create a booking because the permission " + perm.getId() + " is not bookable.");
+            response.setFailureReason("Permission not bookable.");
+            return response;
+        }
+
+        if (startDate.before(perm.getStartTime()) || endDate.after(perm.getExpiryTime()))
+        {
+            this.logger.info("Unable to create a booking because the booking time is outside the permission time. " +
+                    "Permission start: " + perm.getStartTime() + ", expiry: " + perm.getExpiryTime() + 
+                    ", booking start: " + startDate + ", booking end: " + endDate + '.');
+            response.setFailureReason("Booking time out of permission range.");
+            return response;
+        }
+
+        /* Time horizon is a moving offset when bookings can be made. */
+        Calendar horizon = Calendar.getInstance();
+        horizon.add(Calendar.SECOND, perm.getUserClass().getTimeHorizon());
+        if (horizon.after(start))
+        {
+            this.logger.info("Unable to create a booking because the booking start time (" + startDate +
+                    ") is before the time horizon (" + horizon.getTime() + ").");
+            response.setFailureReason("Before time horizon.");
+            return response;
+        }
+
+        /* Maximum concurrent bookings. */
+        int numBookings = (Integer) db.createCriteria(Bookings.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.eq("user", user))
+                .add(Restrictions.eq("resourcePermission", perm))
+                .setProjection(Projections.rowCount())
+                .uniqueResult();
+        if (numBookings >= perm.getMaximumBookings())
+        {
+            this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' + 
+                    user.getName() + " already has the maxiumum numnber of bookings (" + numBookings + ").");
+            response.setFailureReason("User has maximum number of bookings.");
+            return response;
+        }
+
+        /* User bookings at the same time. */
+        numBookings = (Integer) db.createCriteria(Bookings.class)
+                .setProjection(Projections.rowCount())
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.eq("user", user))
+                .add(Restrictions.disjunction()
+                        .add(Restrictions.and(
+                                Restrictions.gt("startTime", startDate),
+                                Restrictions.lt("startTime", endDate))) 
+                        .add(Restrictions.and(
+                                Restrictions.gt("endTime", startDate),
+                                Restrictions.le("endTime", endDate)))
+                        .add(Restrictions.and(
+                                Restrictions.le("startTime", startDate),
+                                Restrictions.gt("endTime", endDate)))
+                 ).uniqueResult();
+        
+        if (numBookings > 0)
+        {
+            this.logger.info("Unable to create a booking because the user " + user.getNamespace() + ':' +
+                    user.getName() + " has concurrent bookings.");
+            response.setFailureReason("User has concurrent bookings.");
+            return response;
+        }
+
+        /* ----------------------------------------------------------------
+         * -- Create booking.                                            --
+         * ---------------------------------------------------------------- */
+        if (ResourcePermission.CONSUMER_PERMISSION.equals(perm.getType()))
+        {
+            CreateBookingRequest request = new CreateBookingRequest();
+            if (request.createBooking(user, perm.getRemotePermission(), start, end, db))
+            {
+                response.setSuccess(request.wasSuccessful());
+                response.setFailureReason(request.getReason());
+                if (request.wasSuccessful())
+                {
+                    /* Provider created booking so we now need to create it 
+                     * locally. */
+                    this.logger.debug("Successfullly created booking at provider with identifier " + 
+                            request.getBookingID() + '.');
+                    Bookings bk = new Bookings();
+                    bk.setActive(true);
+                    bk.setStartTime(startDate);
+                    bk.setEndTime(endDate);
+                    bk.setDuration((int)(end.getTimeInMillis() - start.getTimeInMillis()) / 1000);
+                    bk.setResourcePermission(perm);
+                    bk.setResourceType(ResourcePermission.CONSUMER_PERMISSION);
+                    bk.setProviderId(request.getBookingID());
+                    bk.setUser(user);
+                    bk.setUserNamespace(user.getNamespace());
+                    bk.setUserName(user.getName());
+                    response.setBooking(new BookingsDao(db).persist(bk));
+                }
+                else
+                {
+                    this.logger.info("Provider failed to create booking with reason " + request.getReason());
+                    
+                    /* Provider returned that it couldn't create booking. */
+                    for (BookingTime bt : request.getBestFits())
+                    {
+                        response.addBestFit(bt.getStart(), bt.getEnd());
+                    }
+                }
+            }
+            else
+            {
+                /* Provider call failed. */
+                this.logger.info("Provider call to create booking failed with reason " + request.getFailureReason());
+                response.setSuccess(false);
+                response.setFailureReason("Provider request failed (" + request.getFailureReason()  + ")");
+            }
+        }
+        else
+        {
+            BookingCreation bc = this.engine.createBooking(user, perm, new TimePeriod(start, end), db);
+            if (bc.wasCreated())
+            {
+                response.setSuccess(true);
+                response.setBooking(bc.getBooking());
+    
+                new BookingNotification(bc.getBooking()).notifyCreation();
+            }
+            else
+            {
+                response.setSuccess(false);
+                response.setFailureReason("Resource not free.");
+    
+                for (TimePeriod tp : bc.getBestFits())
+                {
+                    numBookings = (Integer) db.createCriteria(Bookings.class)
+                            .setProjection(Projections.rowCount())
+                            .add(Restrictions.eq("active", Boolean.TRUE))
+                            .add(Restrictions.eq("user", user))
+                            .add(Restrictions.disjunction()
+                                    .add(Restrictions.and(
+                                            Restrictions.gt("startTime", tp.getStartTime().getTime()),
+                                            Restrictions.lt("startTime", tp.getEndTime().getTime())
+                                            ))       
+                                            .add(Restrictions.and(
+                                                    Restrictions.gt("endTime", tp.getStartTime().getTime()),
+                                                    Restrictions.le("endTime", tp.getEndTime().getTime())
+                                                    ))
+                                                    .add(Restrictions.and(
+                                                            Restrictions.le("startTime", tp.getStartTime().getTime()),
+                                                            Restrictions.gt("endTime", tp.getEndTime().getTime())))
+                                    ).uniqueResult();
+                    if (numBookings > 0)
+                    {
+                        this.logger.debug("Excluding best fit option for user " + user.qName() + " because it is " +
+                                "concurrent with an existing.");
+                        continue;
+                    }
+                    
+                    response.addBestFit(tp.getStartTime(), tp.getEndTime());
+                }
+            }
         }
 
         return response;

@@ -52,7 +52,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.Queue
 /**
  * Checks the availability of a remote permission.
  */
-public class PermissionAvailabilityCheck extends AbstractRequest
+public class PermissionAvailabilityRequest extends AbstractRequest
 {
     /** Request response. */
     private AvailabilityResponseType response;
