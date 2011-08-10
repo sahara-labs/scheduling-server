@@ -43,11 +43,13 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperatio
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod.BookingSlot;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -427,8 +429,62 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
     @Override
     public CancelBookingResponse cancelBooking(CancelBooking cancelBooking)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String siteId = cancelBooking.getCancelBooking().getSiteID();
+        long bId = cancelBooking.getCancelBooking().getId();
+        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#cancelBooking with params site=" + siteId +
+                ", booking identifer=" + bId + '.');
+        
+        CancelBookingResponse response = new CancelBookingResponse();
+        OperationResponseType opResp = new OperationResponseType();
+        response.setCancelBookingResponse(opResp);
+                
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.warn("Unable to cancel booking (" + bId + ") because the site '" + siteId + "' was not " +
+                		"found.");
+                opResp.setReason("Site not found.");
+                return response;
+            }
+            
+            Bookings booking = new BookingsDao(db).get(bId);
+            if (booking == null)
+            {
+                this.logger.warn("Unable to cancel booking (" + bId + ") because the booking was not found.");
+                opResp.setReason("Booking not found.");
+                return response;
+            }
+                                    
+            RemotePermission remotePerm = booking.getResourcePermission().getRemotePermission();
+            if (remotePerm == null || !remotePerm.getSite().getGuid().equals(siteId))
+            {
+                this.logger.warn("Unable to cancel booking (" + bId + ") because it is not from the correct site.");
+                opResp.setReason("Not from correct site.");
+                return response;
+            }
+            
+            BookingsService bookingsService = MultiSiteActivator.getBookingsService();
+            if (bookingsService == null)
+            {
+                this.logger.error("Cannot cancel booking because the bookings service was not loaded.");
+                opResp.setReason("Booking service not loaded.");
+                return response;
+            }
+            
+            BookingOperation bk = bookingsService.cancelBooking(booking, "Multisite request.", false, db);
+            opResp.setWasSuccessful(bk.successful());
+            opResp.setReason(bk.getFailureReason());
+        }
+        finally
+        {
+            db.close();
+        }
+
+        return response;
     }
 
     @Override
@@ -438,7 +494,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
         String userId = finishSession.getFinishSession().getUserID();
        
         this.logger.debug("Received " + this.getClass().getSimpleName() + "#finishSession with params site=" + siteId +
-                ", user=" + userId);
+                ", user=" + userId + '.');
         
         FinishSessionResponse response = new FinishSessionResponse();
         OperationResponseType opResp = new OperationResponseType();

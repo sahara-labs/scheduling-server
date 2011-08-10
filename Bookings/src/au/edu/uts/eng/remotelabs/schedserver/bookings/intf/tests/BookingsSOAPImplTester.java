@@ -120,15 +120,11 @@ public class BookingsSOAPImplTester extends TestCase
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
         this.dayStr = TimeUtil.getDayKey(cal);
-        
-        Field f = BookingsSOAPImpl.class.getDeclaredField("engine");
-        f.setAccessible(true);
-        
+       
         SlotBookingEngine sbe = new SlotBookingEngine();
         sbe.init();
-        f.set(this.service, sbe);
         
-        f = BookingsActivator.class.getDeclaredField("engine");
+        Field f = BookingsActivator.class.getDeclaredField("engine");
         f.setAccessible(true);
         f.set(null, sbe);
         

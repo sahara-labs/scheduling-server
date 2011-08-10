@@ -42,6 +42,7 @@ import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 
@@ -72,4 +73,15 @@ public interface BookingsService
      * @return booking creation
      */
     public BookingOperation createBooking(Calendar start, Calendar end, User user, ResourcePermission permission, Session db);
+    
+    /**
+     * Cancels a booking.
+     * 
+     * @param booking booking that is to be canceled
+     * @param reason reason for canceling booking
+     * @param user whether the cancellation is user requested
+     * @param db database
+     * @return booking operation details 
+     */
+    public BookingOperation cancelBooking(Bookings booking, String reason, boolean user, Session db);
 }

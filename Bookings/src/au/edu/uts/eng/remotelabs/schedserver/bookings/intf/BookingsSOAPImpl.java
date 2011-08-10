@@ -50,9 +50,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingIDType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingListType;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types.BookingRequestType;
@@ -109,17 +106,12 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class BookingsSOAPImpl implements BookingsSOAP
 {
-    /** The booking engine. */
-    private BookingEngine engine;
-    
     /** Logger. */
     private Logger logger;
     
     public BookingsSOAPImpl()
     {
         this.logger = LoggerActivator.getLogger();
-        
-        this.engine = BookingsActivator.getBookingEngine();
     }
 
     @Override
@@ -286,16 +278,8 @@ public class BookingsSOAPImpl implements BookingsSOAP
             }
             
             /* ----------------------------------------------------------------
-             * -- Check whether the booking can get canceled and if the     --
-             * -- user has permission to cancel it.                          --
+             * -- Check whether the user has permission to cancel it.        --
              * ---------------------------------------------------------------- */
-            if (!booking.isActive())
-            {
-                this.logger.info("Unable to delete booking because the booking has already been canceled or redeemed.");
-                status.setFailureReason("Booking already canceled or redeemed.");
-                return response;
-            }
-            
             String persona = user.getPersona();
             if (User.USER.equals(persona) && !user.getId().equals(booking.getUser().getId()))
             {
@@ -350,26 +334,10 @@ public class BookingsSOAPImpl implements BookingsSOAP
             /* ----------------------------------------------------------------
              * -- Actually cancel the booking.                               --
              * ---------------------------------------------------------------- */
-            if (!this.engine.cancelBooking(booking, request.getReason(), ses))
-            {
-                status.setFailureReason("System error.");
-            }
-            else
-            {
-                status.setSuccess(true);
-                
-                /* Provide notification. */
-                if (user.getId().equals(booking.getUser().getId()))
-                {
-                    /* User cancelling their own booking. */
-                    new BookingNotification(booking).notifyUserCancel();
-                }
-                else
-                {
-                    /* Admin cancelling their another users booking. */
-                    new BookingNotification(booking).notifyCancel();
-                }
-            }   
+            BookingOperation opResp = new BookingsServiceImpl().cancelBooking(booking, request.getReason(), 
+                    user.getId().equals(booking.getUser().getId()), dao.getSession());
+            status.setSuccess(opResp.successful());
+            status.setFailureReason(opResp.getFailureReason());
         }
         finally
         {

@@ -62,6 +62,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimesRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimesRequest.BookingTime;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.CancelBookingRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.CreateBookingRequest;
 
 /**
@@ -334,6 +335,9 @@ public class BookingsServiceImpl implements BookingsService
                     bk.setUserNamespace(user.getNamespace());
                     bk.setUserName(user.getName());
                     response.setBooking(new BookingsDao(db).persist(bk));
+                    
+                    /* Notification emails are only sent to home users. */
+                    new BookingNotification(bk).notifyCreation();
                 }
                 else
                 {
@@ -362,7 +366,8 @@ public class BookingsServiceImpl implements BookingsService
                 response.setSuccess(true);
                 response.setBooking(bc.getBooking());
     
-                new BookingNotification(bc.getBooking()).notifyCreation();
+                /* Notification emails are only sent to home users. */
+                if (perm.getRemotePermission() == null) new BookingNotification(bc.getBooking()).notifyCreation();
             }
             else
             {
@@ -383,10 +388,11 @@ public class BookingsServiceImpl implements BookingsService
                                             .add(Restrictions.and(
                                                     Restrictions.gt("endTime", tp.getStartTime().getTime()),
                                                     Restrictions.le("endTime", tp.getEndTime().getTime())
-                                                    ))
-                                                    .add(Restrictions.and(
-                                                            Restrictions.le("startTime", tp.getStartTime().getTime()),
-                                                            Restrictions.gt("endTime", tp.getEndTime().getTime())))
+                                            ))
+                                            .add(Restrictions.and(
+                                                    Restrictions.le("startTime", tp.getStartTime().getTime()),
+                                                    Restrictions.gt("endTime", tp.getEndTime().getTime()))
+                                            )
                                     ).uniqueResult();
                     if (numBookings > 0)
                     {
@@ -403,4 +409,61 @@ public class BookingsServiceImpl implements BookingsService
         return response;
     }
 
+    @Override
+    public BookingOperation cancelBooking(Bookings booking, String reason, boolean user, Session db)
+    {
+        BookingOperation status = new BookingOperation();
+        
+        if (!booking.isActive())
+        {
+            this.logger.info("Unable to delete booking because the booking has already been canceled or redeemed.");
+            status.setFailureReason("Booking already canceled or redeemed.");
+            return status;
+        }
+        
+        if (ResourcePermission.CONSUMER_PERMISSION.equals(booking.getResourcePermission().getType()))
+        {
+            CancelBookingRequest multiSite = new CancelBookingRequest();
+            if (multiSite.cancelBooking(booking, db) && multiSite.wasSuccessful())
+            {
+                status.setSuccess(true);
+                this.logger.debug("Provider successfully cancelled booking with ID '" + booking.getId() + "'.");
+                
+                /* Since the provider has cancelled the booking, the local mapped
+                 * booked also needs to be cancelled. */
+                db.beginTransaction();
+                booking.setActive(false);
+                booking.setCancelReason(reason);
+                db.getTransaction().commit();
+            }
+            else
+            {
+                String error = multiSite.getFailureReason();
+                if (multiSite.getReason() != null) error = multiSite.getReason();
+                this.logger.warn("Failed to cancel booking because provider failed with reason: " + error);
+                status.setFailureReason(error);
+            }
+        }
+        else
+        {
+            if (!this.engine.cancelBooking(booking, reason, db))
+            {
+                status.setFailureReason("System error.");
+            }
+            else
+            {
+                status.setSuccess(true);
+            }
+        }
+        
+        /* Only send notification to home users. */
+        if (booking.getResourcePermission().getRemotePermission() == null || 
+                ResourcePermission.CONSUMER_PERMISSION.equals(booking.getResourceType()))
+        {
+            if (user) new BookingNotification(booking).notifyUserCancel();
+            else      new BookingNotification(booking).notifyCancel();
+        }
+        
+        return status;
+    }
 }
