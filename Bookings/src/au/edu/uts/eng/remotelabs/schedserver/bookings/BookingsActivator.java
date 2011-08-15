@@ -74,6 +74,9 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
  */
 public class BookingsActivator implements BundleActivator 
 {
+    /** Stand-off time for bookings. */
+    public static final int BOOKING_STANDOFF = 1800;
+    
     /** SOAP interface hosting server service registration. */
     private ServiceRegistration<ServletContainerService> soapService;
     

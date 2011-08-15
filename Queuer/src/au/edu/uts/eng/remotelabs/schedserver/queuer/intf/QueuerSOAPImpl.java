@@ -37,12 +37,10 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
-import java.util.Calendar;
 import java.util.Date;
 
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
@@ -92,10 +90,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
  * Queuer SOAP interface implementation.
  */
 public class QueuerSOAPImpl implements QueuerSOAP
-{
-    /** The booking stand off in seconds. */
-    public static final int BOOKING_STANDOFF = 1800;
-    
+{   
     /** Logger. */
     private Logger logger;
     
@@ -174,7 +169,7 @@ public class QueuerSOAPImpl implements QueuerSOAP
              ** 4) Check the user doesn't have a bookingService starting before  **
              **    the queued session would finish.                              **
              **********************************************************************/
-            else if ((booking = this.getNextBooking(user, entry.getResourcePermission().getSessionDuration(), db)) != null)
+            else if ((booking = new BookingsDao(db).getNextBookingWithin(user, entry.getResourcePermission().getSessionDuration())) != null)
             {
                 this.logger.info("Cannot queue user " + user.qName() + " because has a booking starting before queued " +
                 		"session would end.");
@@ -431,7 +426,8 @@ public class QueuerSOAPImpl implements QueuerSOAP
                 res.setResourceID(ses.getRequestedResourceId().intValue());
                 res.setResourceName(ses.getRequestedResourceName());
             }
-            else if ((booking = this.getNextBooking(user, QueuerSOAPImpl.BOOKING_STANDOFF, dao.getSession())) != null)
+            else if ((booking = new BookingsDao(
+                    dao.getSession()).getNextBookingWithin(user, BookingsActivator.BOOKING_STANDOFF)) != null)
             {
                 // DODGY This uses half an hour limit probably should be a 
                 // resource permission session duration limit
@@ -790,31 +786,6 @@ public class QueuerSOAPImpl implements QueuerSOAP
 
         return resp;
     }
-
-    /**
-     * Gets the next user bookingService within a specified limit, from now to now
-     * plus limit. If no bookingService exists within the limit, null is returned.
-     * 
-     * @param user user who has bookingService
-     * @param sec limit 
-     * @param ses database session
-     * @return bookingService or null if none exists 
-     */
-    private Bookings getNextBooking(User user, int sec, org.hibernate.Session ses)
-    {
-        Calendar start = Calendar.getInstance();
-        start.add(Calendar.SECOND, sec);
-        
-        return (Bookings) ses.createCriteria(Bookings.class)
-            .add(Restrictions.eq("active", Boolean.TRUE))
-            .add(Restrictions.eq("user", user))
-            .add(Restrictions.lt("startTime", start.getTime()))
-            .setMaxResults(1)
-            .addOrder(Order.asc("startTime"))
-            .uniqueResult();
-    }
-    
-    
     
     /**
      * Gets the user identified by the user id type. 

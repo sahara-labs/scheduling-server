@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.capstone
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator
 Bundle-Vendor: Michael Diponio
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings.pojo,
+Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings,
+ au.edu.uts.eng.remotelabs.schedserver.bookings.pojo,
  au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types,
  au.edu.uts.eng.remotelabs.schedserver.config,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,

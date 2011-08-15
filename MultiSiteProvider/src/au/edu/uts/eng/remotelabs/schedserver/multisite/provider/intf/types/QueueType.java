@@ -124,25 +124,6 @@ public class QueueType implements ADBBean
         this.queuedResource = param;
     }
 
-    protected ResourceType assignedResource;
-    protected boolean assignedResourceTracker = false;
-
-    public boolean isAssignedResourceSpecified()
-    {
-        return this.assignedResourceTracker;
-    }
-
-    public ResourceType getAssignedResource()
-    {
-        return this.assignedResource;
-    }
-
-    public void setAssignedResource(final ResourceType param)
-    {
-        this.assignedResourceTracker = param != null;
-        this.assignedResource = param;
-    }
-
     protected int position;
 
     public int getPosition()
@@ -226,15 +207,6 @@ public class QueueType implements ADBBean
                 throw new ADBException("queuedResource cannot be null!!");
             }
             this.queuedResource.serialize(new QName("", "queuedResource"), xmlWriter);
-        }
-        
-        if (this.assignedResourceTracker)
-        {
-            if (this.assignedResource == null)
-            {
-                throw new ADBException("assignedResource cannot be null!!");
-            }
-            this.assignedResource.serialize(new QName("", "assignedResource"), xmlWriter);
         }
         
         namespace = "";
@@ -350,16 +322,6 @@ public class QueueType implements ADBBean
             elementList.add(this.queuedResource);
         }
         
-        if (this.assignedResourceTracker)
-        {
-            elementList.add(new QName("", "assignedResource"));
-            if (this.assignedResource == null)
-            {
-                throw new ADBException("assignedResource cannot be null!!");
-            }
-            elementList.add(this.assignedResource);
-        }
-        
         elementList.add(new QName("", "position"));
         elementList.add(ConverterUtil.convertToString(this.position));
 
@@ -457,16 +419,6 @@ public class QueueType implements ADBBean
                 if (reader.isStartElement() && new QName("", "queuedResource").equals(reader.getName()))
                 {
                     object.setQueuedResource(ResourceType.Factory.parse(reader));
-                    reader.next();
-                }
-
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "assignedResource").equals(reader.getName()))
-                {
-                    object.setAssignedResource(ResourceType.Factory.parse(reader));
                     reader.next();
                 }
 

@@ -32,29 +32,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2011
+ * @date 10th August 2011 
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests;
 
 import java.rmi.RemoteException;
 
 import org.apache.axis2.AxisFault;
+import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.GetSessionInformation;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.GetUserStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserStatusType;
 
 /**
- * Makes a session information request.
+ * Gets the user's status.
  */
-public class SessionInformationRequest extends AbstractRequest
+public class UserStatusRequest extends AbstractRequest
 {
     /** Response. */
-    private SessionType response;
+    private UserStatusType response;
     
-    public boolean getSessionInformation(User user, RemoteSite site, org.hibernate.Session db)
+    /**
+     * Makes the request to know the user's status.
+     * 
+     * @param user user to find status of
+     * @param site site to request
+     * @param db database
+     * @return true if call succeeded
+     */
+    public boolean getUserStatus(User user, RemoteSite site, Session db)
     {
         this.session = db;
         this.site = site;
@@ -62,16 +71,16 @@ public class SessionInformationRequest extends AbstractRequest
         if (!this.checkPreconditions()) return false;
         
         /* Set up request parameters. */
-        GetSessionInformation request = new GetSessionInformation();
+        GetUserStatus request = new GetUserStatus();
         UserIDType uid = new UserIDType();
         this.addSiteID(uid);
         uid.setUserID(user.getName());
-        request.setGetSessionInformation(uid);
+        request.setGetUserStatus(uid);
         
         /* Make the remote call. */
         try
         {
-            this.response = this.getStub().getSessionInformation(request).getGetSessionInformationResponse();
+            this.response = this.getStub().getUserStatus(request).getGetUserStatusResponse();
         }
         catch (AxisFault e)
         {
@@ -94,70 +103,61 @@ public class SessionInformationRequest extends AbstractRequest
         return true;
     }
     
-    static SessionInformationRequest load(SessionType type)
+    public boolean wasOperationSuccessful()
     {
-        SessionInformationRequest info = new SessionInformationRequest();
-        info.response = type;
-        return info;
+        return this.response.getOperation() == null ? false : this.response.getOperation().getWasSuccessful();
     }
     
-    public boolean isReady()
+    public String getOperationReason()
     {
-        return this.response.getIsReady();
+        return this.response.getOperation() == null ? null : this.response.getOperation().getReason();
+    }
+   
+    public boolean isInQueue()
+    {
+        return this.response.getInQueue();
     }
     
-    public boolean isCodeAssigned()
+    public boolean isInBooking()
     {
-        return this.response.getIsCodeAssigned();
+        return this.response.getInBooking();
     }
     
-    public boolean isInGrace()
+    public boolean isInSession()
     {
-        return this.response.getInGrace();
+        return this.response.getInSession();
     }
     
     public String getResourceName()
     {
-        return this.response.getResource() == null ? null : this.response.getResource().getName();
+        if (this.response.getInQueue() && this.response.getQueuedResource() != null)
+        {
+            return this.response.getQueuedResource().getName();
+        }
+        else if (this.response.getInBooking() && this.response.getBookedResource() != null)
+        {
+            return this.response.getBookedResource().getName();
+        }
+        
+        return null;
     }
     
     public String getResourceType()
     {
-        return this.response.getResource() == null ? null :this.response.getResource().getType();
+        if (this.response.getInQueue() && this.response.getQueuedResource() != null)
+        {
+            return this.response.getQueuedResource().getType();
+        }
+        else if (this.response.getInBooking() && this.response.getBookedResource() != null)
+        {
+            return this.response.getBookedResource().getType();
+        }
+        
+        return null;
     }
-    
-    public String getRigType()
+
+    public SessionInformationRequest getSession()
     {
-        return this.response.getRigType();
-    }
-    
-    public String getRigName()
-    {
-        return this.response.getRigName();
-    }
-    
-    public String getContactURL()
-    {
-        return this.response.getContactURL();
-    }
-    
-    public int getTime()
-    {
-        return this.response.getTime();
-    }
-    
-    public int getTimeLeft()
-    {
-        return this.response.getTimeLeft();
-    }
-    
-    public int getExtensions()
-    {
-        return this.response.getExtensions();
-    }
-    
-    public String getWarningMessage()
-    {
-        return this.response.getWarningMessage();
+        return this.response.getSession() == null ? null : SessionInformationRequest.load(this.response.getSession());
     }
 }

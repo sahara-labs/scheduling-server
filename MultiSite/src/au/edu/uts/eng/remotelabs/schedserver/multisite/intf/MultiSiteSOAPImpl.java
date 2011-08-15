@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.multisite.intf;
 
 import java.util.Calendar;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
@@ -117,8 +118,74 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
     @Override
     public GetUserStatusResponse getUserStatus(GetUserStatus getUserStatus)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String siteId = getUserStatus.getGetUserStatus().getSiteID();
+        String userId = getUserStatus.getGetUserStatus().getUserID();
+        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getUserStatus with params site=" + siteId +
+                ", user=" + userId + '.');
+        
+        GetUserStatusResponse response = new GetUserStatusResponse();
+        UserStatusType status = new UserStatusType();
+        response.setGetUserStatusResponse(status);
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.info("Cannot get user status for user '" + userId + "' because the site '" + siteId + 
+                        "' because the site was not found.");
+                return response;
+            }
+            
+            User user = new UserDao(db).findByName(site.getUserNamespace(), userId);
+            if (user == null)
+            {
+                this.logger.info("Cannot get user status for user '" + userId + "' because the site '" + siteId + 
+                        "' because the user was not found.");
+                return response;
+            }
+            
+            Session session = new SessionDao(db).findActiveSession(user);
+            if (session != null)
+            {
+                /* The user has an active session which accounts for the queuing 
+                 * and actual session usage. */
+                this.populateStatusDetails(status, session);
+                return response;
+            }
+
+            /* The other status a user may have is a 'booking' status where 
+             * they are in a booking stand-off. */
+            Bookings booking = new BookingsDao(db).getNextBookingWithin(user, BookingsActivator.BOOKING_STANDOFF);
+            if (booking != null)
+            {
+                status.setInBooking(true);
+                
+                ResourceType res = new ResourceType();
+                res.setType(booking.getResourceType());
+                if (ResourcePermission.RIG_PERMISSION.equals(booking.getResourceType()))
+                {
+                    res.setName(booking.getRig().getName());
+                }
+                else if (ResourcePermission.TYPE_PERMISSION.equals(booking.getResourceType()))
+                {
+                    res.setName(booking.getRigType().getName());
+                }
+                else if (ResourcePermission.CAPS_PERMISSION.equals(booking.getResourceType()))
+                {
+                    res.setName(booking.getRequestCapabilities().getCapabilities());
+                }
+                status.setBookedResource(res);
+            }
+        }
+        finally
+        {
+            db.close();
+        }
+               
+        return response;
     }
 
     @Override
@@ -255,7 +322,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             if (ses.wasSuccessful())
             {
                 opResp.setWasSuccessful(true);
-                this.populateSessionDetails(userStatus, ses.getSession());
+                this.populateStatusDetails(userStatus, ses.getSession());
             }
             else
             {
@@ -280,9 +347,58 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
     @Override
     public GetSessionInformationResponse getSessionInformation(GetSessionInformation getSessionInformation)
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        String siteId = getSessionInformation.getGetSessionInformation().getSiteID();
+        String userId = getSessionInformation.getGetSessionInformation().getUserID();
+        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getSessionInformation with params site=" + siteId +
+                ", user=" + userId + '.');
+
+        GetSessionInformationResponse response = new GetSessionInformationResponse();
+        SessionType sesType = new SessionType();
+        response.setGetSessionInformationResponse(sesType);
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.info("Cannot get session information for user '" + userId + "' because the site '" + siteId + 
+                        "' was not found.");
+                return response;
+            }
+            
+            User user = new UserDao(db).findByName(site.getUserNamespace(), userId);
+            if (user == null)
+            {
+                this.logger.info("Cannot get session information for user '" + userId + "' because the user was not found.");
+                return response;
+            }
+            
+            Session session = new SessionDao(db).findActiveSession(user);
+            if (session != null)
+            {
+                /* The user has an active session which accounts for the queuing 
+                 * and actual session usage. */
+                this.populateSessionDetails(sesType, session);
+            }
+            else
+            {
+                this.logger.debug("Session information for user '" + userId + "' returning dummy information because " +
+                		"the user does not have an active session.");
+                sesType.setTime(-1);
+                sesType.setTimeLeft(-1);
+                sesType.setExtensions(-1);
+            }
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        
+        return response;
+    } 
 
     @Override
     public FindFreeBookingsResponse findFreeBookings(FindFreeBookings findFreeBookings)
@@ -603,25 +719,24 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
     }
     
     /**
-     * Populates the details of a session to a response type.
+     * Populates the details of a session to a user status response type.
      * 
      * @param status user status type
-     * @param ses session
+     * @param session session
      */
-    private void populateSessionDetails(UserStatusType status, Session ses)
+    private void populateStatusDetails(UserStatusType status, Session session)
     {
         status.setInBooking(false);
         status.setInQueue(false);
         status.setInSession(false);
         
-        ResourceType res = new ResourceType();
-        res.setType(ses.getResourceType());
-        res.setName(ses.getRequestedResourceName());
-
-        if (ses.getAssignmentTime() == null)
+        if (session.getAssignmentTime() == null)
         {
             /* User in queue. */
             status.setInQueue(true);
+            ResourceType res = new ResourceType();
+            res.setType(session.getResourceType());
+            res.setName(session.getRequestedResourceName());
             status.setQueuedResource(res);
         }
         else
@@ -631,22 +746,37 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             
             SessionType sesType = new SessionType();
             status.setSession(sesType);
-            
-            sesType.setIsReady(true); //ses.isReady());
-            sesType.setIsCodeAssigned(ses.getCodeReference() != null);
-            sesType.setInGrace(ses.isInGrace());
-            
-            sesType.setResource(res);
-            
-            Rig rig = ses.getRig();
-            sesType.setRigType(rig.getRigType().getName());
-            sesType.setRigName(rig.getName());
-            sesType.setContactURL(rig.getContactUrl());
-            
-            // FIXME  Add session timing details & warning details
-            sesType.setTime(100);
-            sesType.setTimeLeft(200);
-            sesType.setExtensions(2);
+            this.populateSessionDetails(sesType, session);
         }
+    }
+    
+    /**
+     * Populates session details to session type.
+     * 
+     * @param sesType session type
+     * @param session session
+     */
+    private void populateSessionDetails(SessionType sesType, Session session)
+    {
+        sesType.setIsReady(true); //ses.isReady());
+        sesType.setIsCodeAssigned(session.getCodeReference() != null);
+        sesType.setInGrace(session.isInGrace());
+
+        ResourceType res = new ResourceType();
+        res.setType(session.getResourceType());
+        res.setName(session.getRequestedResourceName());
+
+
+        sesType.setResource(res);
+
+        Rig rig = session.getRig();
+        sesType.setRigType(rig.getRigType().getName());
+        sesType.setRigName(rig.getName());
+        sesType.setContactURL(rig.getContactUrl());
+
+        // FIXME  Add session timing details & warning details
+        sesType.setTime(100);
+        sesType.setTimeLeft(200);
+        sesType.setExtensions(2);
     }
 }

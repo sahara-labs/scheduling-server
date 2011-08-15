@@ -32,46 +32,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2011
+ * @date 11th August 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests;
 
 import java.rmi.RemoteException;
 
 import org.apache.axis2.AxisFault;
+import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.GetSessionInformation;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.GetQueuePosition;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.QueueType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType;
 
 /**
- * Makes a session information request.
+ * Makes a queue position request
  */
-public class SessionInformationRequest extends AbstractRequest
+public class QueuePositionRequest extends AbstractRequest
 {
     /** Response. */
-    private SessionType response;
+    private QueueType response;
     
-    public boolean getSessionInformation(User user, RemoteSite site, org.hibernate.Session db)
+    public boolean getQueuePosition(User user, RemoteSite site, Session db)
     {
-        this.session = db;
         this.site = site;
+        this.session = db;
         
-        if (!this.checkPreconditions()) return false;
+        GetQueuePosition request = new GetQueuePosition();
+        UserIDType userId = new UserIDType();
+        this.addSiteID(userId);
+        userId.setUserID(user.getName());
+        request.setGetQueuePosition(userId);
         
-        /* Set up request parameters. */
-        GetSessionInformation request = new GetSessionInformation();
-        UserIDType uid = new UserIDType();
-        this.addSiteID(uid);
-        uid.setUserID(user.getName());
-        request.setGetSessionInformation(uid);
-        
-        /* Make the remote call. */
         try
         {
-            this.response = this.getStub().getSessionInformation(request).getGetSessionInformationResponse();
+            this.response = this.getStub().getQueuePosition(request).getGetQueuePositionResponse();
         }
         catch (AxisFault e)
         {
@@ -94,51 +91,24 @@ public class SessionInformationRequest extends AbstractRequest
         return true;
     }
     
-    static SessionInformationRequest load(SessionType type)
+    public boolean isInQueue()
     {
-        SessionInformationRequest info = new SessionInformationRequest();
-        info.response = type;
-        return info;
+        return this.response.getInQueue();
     }
     
-    public boolean isReady()
+    public boolean isInBooking()
     {
-        return this.response.getIsReady();
+        return this.response.getInBooking();
     }
     
-    public boolean isCodeAssigned()
+    public boolean isInSession()
     {
-        return this.response.getIsCodeAssigned();
+        return this.response.getInSession();
     }
     
-    public boolean isInGrace()
+    public int getPosition()
     {
-        return this.response.getInGrace();
-    }
-    
-    public String getResourceName()
-    {
-        return this.response.getResource() == null ? null : this.response.getResource().getName();
-    }
-    
-    public String getResourceType()
-    {
-        return this.response.getResource() == null ? null :this.response.getResource().getType();
-    }
-    
-    public String getRigType()
-    {
-        return this.response.getRigType();
-    }
-    
-    public String getRigName()
-    {
-        return this.response.getRigName();
-    }
-    
-    public String getContactURL()
-    {
-        return this.response.getContactURL();
+        return this.response.getPosition();
     }
     
     public int getTime()
@@ -146,18 +116,13 @@ public class SessionInformationRequest extends AbstractRequest
         return this.response.getTime();
     }
     
-    public int getTimeLeft()
+    public String getQueueResourceType()
     {
-        return this.response.getTimeLeft();
+        return this.response.getQueuedResource() == null ? null : this.response.getQueuedResource().getType();
     }
     
-    public int getExtensions()
+    public String getQueuedResourceName()
     {
-        return this.response.getExtensions();
-    }
-    
-    public String getWarningMessage()
-    {
-        return this.response.getWarningMessage();
+        return this.response.getQueuedResource() == null ? null : this.response.getQueuedResource().getName();
     }
 }
