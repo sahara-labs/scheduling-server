@@ -38,7 +38,6 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import java.io.Serializable;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
@@ -76,18 +75,40 @@ public class UserDao extends GenericDao<User>
     }
     
     /**
-     * Finds the user with the specified name space and name or 
+     * Finds the user with the specified qualified name. A qualified name has
+     * the format &lt;namespace&gt;:&lt;name&gt;. If the user isn't found or
+     * the specified qualified name is incorrect <code>null</code> is returned.
+     * 
+     * @param qname user qualified name
+     * @return user or null if not found
+     */
+    public User findByQName(String qName)
+    {
+        String parts[] = qName.split(":", 2);
+        
+        /* Sanity check for incorrect format. */
+        if (parts.length < 2) return null;
+        
+        return (User) this.session.createCriteria(User.class)
+                .add(Restrictions.eq("namespace", parts[0]))
+                .add(Restrictions.eq("name", parts[1]))
+                .uniqueResult();        
+    }
+    
+    /**
+     * Returns the user with the specified name space and name or 
      * <code>null</code> if not found.
      * 
+     * @param ns user namespace
      * @param name user name
      * @return user or null if not found
      */
     public User findByName(String ns, String name)
     {
-        Criteria cri = this.session.createCriteria(User.class);
-        cri.add(Restrictions.eq("namespace", ns));
-        cri.add(Restrictions.eq("name", name));
-        return (User) cri.uniqueResult();
+        return (User) this.session.createCriteria(User.class)
+            .add(Restrictions.eq("namespace", ns))
+            .add(Restrictions.eq("name", name))
+            .uniqueResult();
     }
     
     @Override
