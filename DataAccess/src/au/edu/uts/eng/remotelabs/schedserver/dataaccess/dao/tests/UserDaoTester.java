@@ -99,6 +99,32 @@ public class UserDaoTester extends TestCase
     }
     
     @Test
+    public void testGetUserQName()
+    {
+        User user = new User("tuser", "test", "USER");
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        ses.save(user);
+        ses.getTransaction().commit();
+        ses.close();
+        
+        User ldUser = this.dao.findByQName("test:tuser");
+        assertNotNull(ldUser);
+        
+        assertEquals("test", ldUser.getNamespace());
+        assertEquals("tuser", ldUser.getName());
+        assertEquals("USER", ldUser.getPersona());
+        
+        this.dao.delete(ldUser);
+    }
+    
+    @Test
+    public void testGetUserQName2()
+    {        
+        assertNull(this.dao.findByQName("testtuser"));
+    }
+    
+    @Test
     public void testDeleteUser()
     {
         Session ses = DataAccessActivator.getNewSession();
