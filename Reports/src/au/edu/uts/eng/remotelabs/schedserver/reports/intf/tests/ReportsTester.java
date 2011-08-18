@@ -166,7 +166,7 @@ public class ReportsTester extends TestCase
         db.save(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -416,7 +416,7 @@ public class ReportsTester extends TestCase
         db.save(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -437,7 +437,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -597,7 +597,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -618,7 +618,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -786,7 +786,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -807,7 +807,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -977,7 +977,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -998,7 +998,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -1185,7 +1185,7 @@ public class ReportsTester extends TestCase
         db.persist(p2);
 
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -1206,7 +1206,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -1377,7 +1377,7 @@ public class ReportsTester extends TestCase
         db.persist(p2);
 
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -1398,7 +1398,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -1596,7 +1596,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -1618,7 +1618,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -1817,7 +1817,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(now);
         ses.setExtensions((short) 5);
@@ -1839,7 +1839,7 @@ public class ReportsTester extends TestCase
 
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -2067,7 +2067,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(after);
         ses.setExtensions((short) 5);
@@ -2088,7 +2088,7 @@ public class ReportsTester extends TestCase
         db.persist(ses);
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -2109,7 +2109,7 @@ public class ReportsTester extends TestCase
         db.persist(ses2);
         
         Session ses3 = new Session();
-        ses3.setActive(true);
+        ses3.setActive(false);
         ses3.setReady(true);
         ses3.setActivityLastUpdated(later);
         ses3.setExtensions((short) 5);
@@ -2130,7 +2130,7 @@ public class ReportsTester extends TestCase
         db.persist(ses3);
 
         Session ses4 = new Session();
-        ses4.setActive(true);
+        ses4.setActive(false);
         ses4.setReady(true);
         ses4.setActivityLastUpdated(later);
         ses4.setExtensions((short) 5);
@@ -2392,7 +2392,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(after);
         ses.setExtensions((short) 5);
@@ -2413,7 +2413,7 @@ public class ReportsTester extends TestCase
         db.persist(ses);
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -2434,7 +2434,7 @@ public class ReportsTester extends TestCase
         db.persist(ses2);
         
         Session ses3 = new Session();
-        ses3.setActive(true);
+        ses3.setActive(false);
         ses3.setReady(true);
         ses3.setActivityLastUpdated(later);
         ses3.setExtensions((short) 5);
@@ -2455,7 +2455,7 @@ public class ReportsTester extends TestCase
         db.persist(ses3);
 
         Session ses4 = new Session();
-        ses4.setActive(true);
+        ses4.setActive(false);
         ses4.setReady(true);
         ses4.setActivityLastUpdated(later);
         ses4.setExtensions((short) 5);
@@ -2719,7 +2719,7 @@ public class ReportsTester extends TestCase
         db.persist(p1);
         
         Session ses = new Session();
-        ses.setActive(true);
+        ses.setActive(false);
         ses.setReady(true);
         ses.setActivityLastUpdated(after);
         ses.setExtensions((short) 5);
@@ -2740,7 +2740,7 @@ public class ReportsTester extends TestCase
         db.persist(ses);
         
         Session ses2 = new Session();
-        ses2.setActive(true);
+        ses2.setActive(false);
         ses2.setReady(true);
         ses2.setActivityLastUpdated(later);
         ses2.setExtensions((short) 5);
@@ -2761,7 +2761,7 @@ public class ReportsTester extends TestCase
         db.persist(ses2);
         
         Session ses3 = new Session();
-        ses3.setActive(true);
+        ses3.setActive(false);
         ses3.setReady(true);
         ses3.setActivityLastUpdated(later);
         ses3.setExtensions((short) 5);
@@ -2782,7 +2782,7 @@ public class ReportsTester extends TestCase
         db.persist(ses3);
 
         Session ses4 = new Session();
-        ses4.setActive(true);
+        ses4.setActive(false);
         ses4.setReady(true);
         ses4.setActivityLastUpdated(later);
         ses4.setExtensions((short) 5);
