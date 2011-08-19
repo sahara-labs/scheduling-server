@@ -36,20 +36,11 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.server.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
@@ -68,6 +59,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import au.edu.uts.eng.remotelabs.schedserver.server.root.RootServlet;
 
 /**
  * The server implementation. Listens for service events filter by the 
@@ -117,7 +109,6 @@ public class ServerImpl
      * 
      * @throws Exception error occurs initializing server
      */
-    @SuppressWarnings("serial")
     public synchronized void init() throws Exception
 	{
 	    this.logger.debug("Starting the Scheduling Server server up.");
@@ -214,49 +205,7 @@ public class ServerImpl
 	    this.contextCollection.addHandler(context);
 	    this.contexts.put(new Object(), context);
 
-	    final ServletHolder holder =  new ServletHolder(new HttpServlet()
-	    {
-	        @Override
-	        public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-	        {
-	            /* Setting response code to 404 Not Found because this response
-	             * occurs where an address is unbound to a servlet. */
-	            res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	            
-	            if (req.getRequestURI().endsWith("team.jpg"))
-	            {
-	                res.setContentType("image/jpeg");
-	                URL img = this.getClass().getResource("/META-INF/images/team.jpg");
-	                if (img != null)
-	                {
-	                    ServletOutputStream output = res.getOutputStream();
-	                    InputStream imgInput = img.openStream();
-	                    int b = -1;
-	                    byte buf[] = new byte[1024];
-	                    while (imgInput.available() > 0 && (b = imgInput.read(buf)) != -1) output.write(buf, 0, b);
-	                }
-	            }
-	            else
-	            {
-	                PrintWriter writer = res.getWriter();
-	                writer.println("<html>");
-	                writer.println("   <head>");
-	                writer.println("       <title>Sahara Scheduling Server R3</title>");
-	                writer.println("   <head>");
-	                writer.println("   <body>");
-	                writer.println("       <div align=\"center\">");
-	                writer.println("           <h1>Sahara R3: Your lack of faith is disturbing...</h1>");
-	                writer.println("           <img src=\"team.jpg\" />");
-	                writer.println("           <p style=\"font-size:0.8em\"><strong>The Sahara team:</strong> " +
-	                		"Michael Diponio (Developer), Tania Machet (Software Engineer), " +
-	                		"Michel de la Villefromoy (Project Manager), Tejaswini Deshpande (Tester).<br />");
-	                writer.println("           &copy;University of Technology, Sydney 2009 - 2011</p>");
-	                writer.println("       </div>");
-	                writer.println("   </body>");
-	                writer.println("</html>");
- 	            }
-	        }
-	    });
+	    final ServletHolder holder =  new ServletHolder(new RootServlet());
 	    context.addServlet(holder, "/");
 	}
     
