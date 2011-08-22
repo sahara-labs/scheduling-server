@@ -1,0 +1,211 @@
+<h3 class='helptitle ui-widget-header ui-corner-all'>Brief description:</h3>
+The diagnostics page displays information about the running rig client. This
+is to help diagnose potential problems and investigate error conditions. The 
+diagnostics displayed on this page is automatically updated every 10
+seconds.
+
+<h3 class='helptitle ui-widget-header ui-corner-all'>Runtime information:</h3>
+The information shown on this tab is about the execution of the rig client.
+The information fields are:
+<ul>
+	<li><span class='bold'>Name</span> - The runtime name of the Java virtual
+	machine. The exact name format is virtual machine specific but is usually
+	composed of &lt;Process PID&gt;@&lt;Computer hostname&gt;.</li>
+	<li><span class='bold'>Start time</span> - The time when the rig client
+	was started.</li>
+	<li><span class='bold'>Uptime</span> - How long the rig client has been
+	running in terms of days, hours, minutes and seconds.</li>
+	<li><span class='bold'>Working directory</span> - The current / working
+	directory (CWD) of the rig client which is the base path of relative file paths.
+	<div class='ui-state ui-state-error ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-alert helphinticon'> </span>
+		<span class='bold'>NOTE:</span> The working directory is extremely
+		important as the configuration files are loaded relative to it. 
+	</div>
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> The rig client service sets the working
+		directory to the installation directory of the rig client.
+	</div></li>
+	<li><span class='bold'>Class path</span> - The list of directories and Jar
+	files where classes are loaded from. Any class path location starting with
+	'.' is relative to the working directory of the rig client.
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> Any Jar file added to the 
+		<span class='code'>'./lib'</span> directory is automatically added
+		to class path on rig client start by the rig client service.
+	</div>
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> The rig client service allows explicit
+		Jar files to be configured.
+	</div></li>
+	<li><span class='bold'>Boot class path</span> - The list of directories and
+	Jar	files where the Java classes are loaded.</li>
+	<li><span class='bold'>Library path:</span> The list of directories where 
+	native libraries (i.e. for use with JNI) are loaded from.</li>
+	<li><span class='bold'>System properties</span> - The system properties of the
+	rig client. System properties are used to configure the rig client 
+	configuration system (i.e. configuration files).
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> The rig client service can be 
+		configured to add system properties.
+	</div></li>
+	<li><span class='bold'>Environment variables</span> - The environment 
+	variables given to the rig client by the invocation environment. These
+	are <span class='bold'>not</span> used to control rig client behavior
+	but are by default inherited by any batch control processes.</li>
+</ul>
+
+<h3 class='helptitle ui-widget-header ui-corner-all'>System</h3>
+The information shown on this tab displays memory being used by the rig client
+and active threads.
+<ul>
+	<li><span class='bold'>In use memory</span> - Shows the amount of memory
+	current in use by the rig client in megabytes.
+		<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT: Performing a garbage collection will reduce
+		this.</span>
+	</div></li> 
+	<li><span class='bold'>Free memory</span> - Free memory shows the amount
+	of memory that is assigned to the rig client and not being used.</li>
+	<li><span class='bold'>Total memory</span> - Total memory shows the memory
+	assigned to the rig client by the operating system.</li>
+	<li><span class='bold'>Max memory</span> - Max memory shows the amount of
+	memory that can be assigned to the rig client by the operating system if it
+	is needed.
+		<div class='ui-state ui-state-error ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-alert helphinticon'> </span>
+		<span class='bold'>NOTE:</span> If the rig client in use memory 
+		approaches the max memory limit there is most likely an underlying
+		memory leak issue and should be further investigated.
+	</div></li>
+	<li><span class='bold'>Current threads</span> - Shows the number of currently 
+	active threads. Thread allocation in the rig client is:
+	<ul>
+		<li>Startup thread, 'main', which manages rig client startup, restart
+		and shutdown.</li>
+		<li>Exerciser threads with one thread per test. These are named after
+		the tests they run.</li>
+		<li>Scheduling server update thread which is named 'Status Updater' and 
+		periodically updates the scheduling server of the rig client status..</li>
+		<li>HTTP server thread. This accepts threads requests and dispatches them
+		to a worker.</li>
+		<li>HTTP worker threads which have 'qtp' in their name.
+		<div class='ui-state ui-state-error ui-corner-all helphint'>
+			<span class='ui-icon ui-icon-alert helphinticon'> </span>
+			<span class='bold'>NOTE:</span> The number of these threads should
+			not	exceed the configured concurrent request limit.
+		</div></li>
+		<li>Other miscellaneous Java virtual machine threads such as 
+		'Finalizer'.</li> 
+	</ul></li>
+	<li><span class='bold'>Daemon threads</span> - Daemon threads do not keep
+	the Java virtual machine running (i.e. when all threads are daemon threads,
+	the rig client terminates). Exerciser tests and HTTP worker threads are
+	daemon threads.</li>
+	<li><span class='bold'>Peak threads</span> - The highest number of
+	concurrent threads that have been running.</li>
+	<li><span class='bold'>Total started threads</span> - The total number of
+	tests that have been started. If a test action involves running a system 
+	process, this number can get quite large.</li>
+	<li><span class='bold'>Thread stack traces</span> - These list of active 
+	threads. The information shown about thread is:
+	<ul>
+		<li>Thread unique identifier.</li>
+		<li>Thread name.</li>
+		<li>Thread state.</li>
+		<li>Thread CPU time, rather how long the thread has been in the 
+		runnable state.</li>
+		<li>Thread stack trace. This shows the currently executing method at the
+		top of the stack and the list of method invocations that from thread start
+		got to the current method.</li>
+	</ul></li>
+</ul>
+
+<h3 class='helptitle ui-widget-header ui-corner-all'>Java</h3>
+The information show on this tab displays Java virtual machine details.
+<ul>
+	<li><span class='bold'>Virtual machine</span> - The name of the
+	virtual machine.
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> Java usually comes with a few virtual
+		machine implementations including 'Client' and 'Server' (the virtual
+		machine name will specifies this). It is recommended to use the 'Server'
+		virtual machine which trades memory and startup time for better 
+		performance. This may be configured in the rig client service INI file 
+		by setting the path of the virtual machine implementation library.
+	</div></li>
+	<li><span class='bold'>version</span> - The Java virtual machine version.
+	<div class='ui-state ui-state-error ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-alert helphinticon'> </span>
+		<span class='bold'>NOTE:</span>The minimum required version is '1.6.x', 
+		also known as Java 6 (this might be displayed as 16.x). Earlier 
+		versions of Java are unsupported and probably will not work.
+	</div></li>
+	<li><span class='bold'>Vendor</span> - The Java virtual machine vendor.</li>
+	<li><span class='bold'>Specification</span> - The virtual machine
+	specification.</li>
+	<li><span class='bold'>JIT compilation</span> - Whether the virtual machine
+	support just-in-time compilation.</li>
+	<li><span class='bold'>JIT compiler</span> - The name of the JIT 
+	compiler.</li>
+	<li><span class='bold'>Compilation time</span> - The amount of time the
+	virtual machine has spent compiling byte code to native code.</li>
+	<li><span class='bold'>Number of garbage collectors</span> - The number
+	of garbage collectors in use.</li>
+	<li><span class='bold'>Garbage collectors</span> - The name of the garbage
+	collectors.</li>
+	<li><span class='bold'>Garbage collections</span> - The number of times
+	garbage collection has run.</li>
+	<li><span class='bold'>Garbage collection CPU time</span> - The cumulative
+	time taken to run garbage collections.</li>
+	<li><span class='bold'>Loaded classes</span> - The number of loaded 
+	classes.</li>
+	<li><span class='bold'>Unloaded classes</span> - The number of unloaded
+	classes.</li>
+	<li><span class='bold'>Total loaded classes</span> - The total number of 
+	loaded classes.</li>
+</ul>
+
+<h3 class='helptitle ui-widget-header ui-corner-all'>OS</h3>
+The information show on this tab display host operating system details.
+<ul>
+	<li><span class='bold'>Operating system</span> - The name of the 
+	operating system.</li>
+	<li><span class='bold'>Version</span> - The operating system version.</li>
+	<li><span class='bold'>Arch</span> - The operating system architecture.
+	<div class='ui-state ui-state-error ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-alert helphinticon'> </span>
+		<span class='bold'>NOTE: </span>On Linux 64bit architectures (displayed
+		as 'amd64') should use a rig client service executable compiled for 
+		64bit Linux.
+	</div></li>
+	<li><span class='bold'>Processors</span> - The number of processors 
+	available to the Java virtual machine.</li>
+	<li><span class='bold'>File separator</span> - The separator between 
+	directories in file paths. This is dependent on the operating 
+	system running.
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> The separtor '/' works on both
+		UNIX and Windows and should be used Windows instead of the displayed
+		character '\'. The '\' character is used as the special character
+		escape character, so if '\' is used, it should be escaped using
+		'\' (i.e. C:\\foo\\bar\\baz).
+	</div></li>
+	<li><span class='bold'>Path separator</span> - The character delimiting 
+	file paths in the rig clients class path and library path. This is 
+	dependant on the operating system running.</li>
+	<li><span class='bold'>File system roots</span> - The list of top
+	most directories in the filesystem.</li>
+	<li><span class='bold'>File system &lt;x&gt;</span> - The free and total
+	space on the file system &lt;x&gt;.</li>
+	<li><span class='bold'>Temp directory</span> - The operating system 
+	temporary directory. The rig client by default stores uploaded batch files
+	in this directory.</li>
+</ul>

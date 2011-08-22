@@ -135,7 +135,7 @@ int loadConfig(void)
 	if (jvmSo == NULL)
 	{
 		HKEY regKey;
-		char regData[FILENAME_MAX], errMessage[255];
+		char regData[FILENAME_MAX], *clstart;
 		DWORD regDataSize = FILENAME_MAX, err;
 		float version;
 
@@ -158,6 +158,19 @@ int loadConfig(void)
 					strcpy(jvmSo, regData);
 					logMessage("The detected Java runtime library location is '%s'.\n", jvmSo);
 					RegCloseKey(regKey);
+
+#ifdef _WIN64
+					/* The Sun Java 6 (v26) sets the RuntimeLib registry key to 
+					 * the 'client' VM, but no client VM is actually installed.
+					 * So, we are putting a hack to make change it to the server
+					 * VM. */
+					if (clstart = strstr(jvmSo, "client"))
+					{
+						memcpy(clstart, "server", 6);
+						logMessage("QUIRK: Changed to using server JVM as there is no client JVM installed on 64bit Windows.");
+						logMessage("New Java runtime library location is '%s'.\n", jvmSo);
+					}
+#endif
 				}
 			}
 			else
@@ -167,9 +180,8 @@ int loadConfig(void)
 		}
 		else
 		{
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, FORMAT_MESSAGE_FROM_HMODULE, err, 0, errMessage, 255, NULL);
 			logMessage("Failed to read registry key (HKEY_LOCAL_MACHINE\\SOFTWARE\\JavaSoft\\Java Runtime Environment"
-				"\\CurrentVersion). %s", errMessage);
+				"\\CurrentVersion). Error code %i.\n", err);
 		}
 	}
 #endif
@@ -422,6 +434,8 @@ void logMessage(char *fmt, ...)
 		vprintf(fmt, argp);
 		va_end(argp);
 	}
+
+	fflush(logFile);
 }
 
 /**

@@ -1,0 +1,85 @@
+<h3 class='helptitle ui-widget-header ui-corner-all'>Pages:</h3>
+The <em>Pages</em> list contains links to pages of the rig client 
+administrative interface. The links consist of:
+<ul>
+	<li><span class='bold'>Status</span> - Shows the current status of the
+	rig client including session details and exerciser tests statuses.</li>
+	<li><span class='bold'>Configuration</span> - Allows the configuration 
+	properties of the rig client to be viewed and changed.</li>
+	<li><span class='bold'>Logs</span> - Log viewer displaying the latest
+	log messages of the rig client since startup.</li>
+	<li><span class='bold'>Diagnostics</span> - Runtime information about
+	the rig client including process details; important paths (class path,
+	library path, ...); memory utilization; threads and their stack traces;
+	Java virtual machine details and host operating system details.</li>
+	<li><span class='bold'>Documentation</span> - All the important 
+	information required for effective development, customization and use of
+	the rig client.</li>
+	<li><span class='bold'>About</span> - Information about the Rig Client.</li>
+</ul>
+
+<h3 class='helptitle ui-widget-header ui-corner-all'>Operations:</h3>
+The <em>Operations</em> list contains operations which change the 
+temporal state of the rig client. The operations are:
+<ul>
+	<li><span class='bold'>Clear Maintenance</span> - Clears any maintenance 
+	states the rig may having putting it back online. A rig client maintenance
+	state is one which requires manual intervention to put it back online. Two
+	maintenance states a rig may be in are:
+		<ul>
+			<li>Action failure threshold has been exceeded. If any action has failure
+			more than an allowed limit, the rig is taken offline so it is not
+			subsequently assigned to a user when it may not be in a usable state.</li>
+			<li>The rig is explicitly put it into maintenance.</li>
+		</ul>
+	</li>
+	<li><span class='bold'>Expunge Cache</span> - Clears the direct control cache.
+	The direct control cache stores instances of controller classes that have 
+	been instantiated during their first control request. As controllers may store
+	state, this effectively clears direct control state.</li>
+	<li><span class='bold'>Clean Files</span> - Cleans backup files that the 
+	rig client has created. These backup files are:
+		<ul>
+			<li>Configuration backups - These files are created in the rig client 
+			configuration directories and backup the configuration state before 
+			a change is made.</li>
+			<li>Log backups - When using the <span class='code'>RolledFile</span>
+			logger, when the log files reaches the configured maximum log file size,
+			the log file is rolled to a backup file (has a number appended to it).</li>
+		</ul>
+	</li>
+	<li><span class='bold'>Garbage Collection</span> - Performs a Java virtual
+	machine garbage collection which frees unused memory. The Java virtual
+	machine automatically performs this operation and it is safe to manually
+	request this as many times as necessary.</li>
+	<li><span class='bold'>Restart</span> - Soft restarts the rig client.
+	This is a soft restart because the Java virtual machine is not
+	restarted. Any in progress sessions are terminated, the scheduling
+	server registration is removed, the server is stopped and all 
+	exerciser tests are stopped before all being restarted. The rig type
+	class is instantiated anew causing any all action classes and exerciser
+	tests to be freshly loaded.
+	<div class='ui-state ui-state-error ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-alert helphinticon'> </span>
+		<span class='bold'>NOTE:</span> Any modifications to the rig client 
+		class path, such as dropping a Jar file in './lib', requires the rig 
+		client service to be restarted using an operating system specific 
+		mechanism.
+	</div></li>
+	<li><span class='bold'>Shutdown</span> - Shuts down the rig client. The
+	rig client service is stopped and to subsequently start the rig client
+	the rig client service must be started in some operating system specific
+	mechanism.
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> On Windows, to start the rig client open
+		'Control&nbsp;Panel'&nbsp;-&gt;&nbsp;'Administrative&nbsp;'Tools'&nbsp;-&gt;&nbsp;'Services'
+		and in the list of services, start the rig client.
+	</div>
+	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
+		<span class='ui-icon ui-icon-info helphinticon'> </span>
+		<span class='bold'>HINT:</span> On Linux, to start the rig client 
+		execute <span class='code'>'/etc/init.d/rigclient&nbsp;start'</span> with
+		root privileges.
+	</div></li>
+</ul>

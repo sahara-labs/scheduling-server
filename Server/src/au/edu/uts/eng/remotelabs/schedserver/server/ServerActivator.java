@@ -44,7 +44,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.impl.ServerImpl;
@@ -59,6 +61,9 @@ public class ServerActivator implements BundleActivator
     /** The server implementation. */
     private ServerImpl server;
     
+    /** Configuration tracker. */
+    private static ServiceTracker<Config, Config> configTracker;
+    
     /** Logger. */
     private Logger logger;
 
@@ -66,6 +71,9 @@ public class ServerActivator implements BundleActivator
     public void start(final BundleContext context) throws Exception
     {
         this.logger = LoggerActivator.getLogger();
+        
+        ServerActivator.configTracker = new ServiceTracker<Config, Config>(context, Config.class, null);
+        ServerActivator.configTracker.open();
         
         this.server = new ServerImpl(context);
         this.server.init();
@@ -96,5 +104,21 @@ public class ServerActivator implements BundleActivator
         /* The framework will cleanup any services in use and remove the service listener. */
         this.logger.warn("Stopping the server bundle.");
         this.server.stop();
+        
+        ServerActivator.configTracker.close();
+        ServerActivator.configTracker = null;
     } 
+    
+    /**
+     * Gets a configuration service instance. If this bundle is not running or 
+     * the service could not be found <tt>null</tt> is returned.
+     * 
+     * @return configuration service instance or null
+     */
+    public static Config getConfig()
+    {
+        if (ServerActivator.configTracker == null) return null;
+        
+        return ServerActivator.configTracker.getService();
+    }
 }
