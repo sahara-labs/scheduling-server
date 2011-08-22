@@ -44,11 +44,13 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 public interface SessionService
 {
     /**
-     * Finishes the session.
+     * Finishes the session provided the user is in session. If the user
+     * is not in session (i.e. queue) the session is not finished.
      * 
      * @param session session to finish
+     * @param reason reason for finishing session
      * @param db database
-     * @return true if successful
+     * @return true if session finished
      */
-    public boolean finishSession(Session session, org.hibernate.Session db);
+    public boolean finishSession(Session session, String reason, org.hibernate.Session db);
 }

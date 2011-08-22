@@ -64,15 +64,19 @@ public class SessionServiceImpl implements SessionService
     }
     
     @Override
-    public boolean finishSession(Session ses, org.hibernate.Session db)
+    public boolean finishSession(Session ses, String reason, org.hibernate.Session db)
     {
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#finishSession for session '" + ses.getId() +
-                "'.");
+        /* Only sessions that are active and in session will be finished. */
+        if (!ses.isActive() || ses.getAssignmentTime() == null)
+        {
+            this.logger.warn("Session '" + ses.getId() + "' not assigned to rig so will not be finished.");
+            return false;
+        }
        
         /* Finish session. */
         db.beginTransaction();
         ses.setActive(false);
-        ses.setRemovalReason("User request.");
+        ses.setRemovalReason(reason);
         ses.setRemovalTime(new Date());
         db.flush();
         db.getTransaction().commit();

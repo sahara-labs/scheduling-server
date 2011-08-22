@@ -90,6 +90,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserNSNameSequence;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserQueueType;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl.QueuerServiceImpl;
 
 /**
  * Tests the {@link QueuerSOAPImpl} class.
@@ -122,7 +123,7 @@ public class QueuerSOAPImplTester extends TestCase
         f.setAccessible(true);
         f.set(q, Boolean.FALSE);
         
-        f = QueuerSOAPImpl.class.getDeclaredField("notTest");
+        f = QueuerServiceImpl.class.getDeclaredField("notTest");
         f.setAccessible(true);
         f.set(this.queuer, Boolean.FALSE);
     }

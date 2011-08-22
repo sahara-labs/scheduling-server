@@ -38,6 +38,8 @@ package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl;
 
 
 
+import java.util.Date;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -55,6 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 /**
  * Implementation of the Queuer POJO service.
@@ -63,6 +66,9 @@ public class QueuerServiceImpl implements QueuerService
 {
     /** Logger. */
     private Logger logger;
+    
+    /** Flag for unit testing to disable rig client communication. */ 
+    private boolean notTest = true;
     
     public QueuerServiceImpl()
     {
@@ -170,7 +176,7 @@ public class QueuerServiceImpl implements QueuerService
     }
 
     @Override
-    public QueueSession addUserToQueue(User user, ResourcePermission perm, String code, org.hibernate.Session db)
+    public QueueSession addToQueue(User user, ResourcePermission perm, String code, org.hibernate.Session db)
     {
         QueueEntry entry = new QueueEntry(db);
         
@@ -209,4 +215,26 @@ public class QueuerServiceImpl implements QueuerService
         }
     }
 
+    @Override
+    public int getQueuePosition(Session ses, org.hibernate.Session db)
+    {
+        return Queue.getInstance().getEntryPosition(ses, db);
+    }
+
+    @Override
+    public boolean removeFromQueue(Session ses, String reason, org.hibernate.Session db)
+    {
+        Queue.getInstance().removeEntry(ses, db);
+        
+        db.beginTransaction();
+        ses.setActive(false);
+        ses.setRemovalTime(new Date());
+        ses.setRemovalReason("User request.");
+        db.getTransaction().commit();
+        
+        /* If the user is assigned to a rig, free the rig. */
+        if (ses.getRig() != null && this.notTest) new RigReleaser().release(ses, db);
+
+        return true;
+    }
 }

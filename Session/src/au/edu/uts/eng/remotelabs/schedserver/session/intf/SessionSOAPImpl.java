@@ -96,7 +96,7 @@ public class SessionSOAPImpl implements SessionSOAP
             
             if (user != null && (ses = dao.findActiveSession(user)) != null)
             {
-                inSes.setIsInSession(!new SessionServiceImpl().finishSession(ses, dao.getSession()));
+                inSes.setIsInSession(!new SessionServiceImpl().finishSession(ses, "User request", dao.getSession()));
             }
         }
         finally

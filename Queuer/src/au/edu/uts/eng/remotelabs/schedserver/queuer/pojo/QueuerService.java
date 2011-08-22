@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
@@ -65,5 +66,25 @@ public interface QueuerService
      * @param db database session
      * @return queue session information
      */
-    public QueueSession addUserToQueue(User user, ResourcePermission perm, String code, org.hibernate.Session db);
+    public QueueSession addToQueue(User user, ResourcePermission perm, String code, org.hibernate.Session db);
+    
+    /**
+     * Gets the sessions position in the queue. If the user is not in the queue,
+     * <tt>-1</tt> is returned.
+     *  
+     * @param ses session whose position to get
+     * @param db database session
+     * @return position or -1 if not in queue
+     */
+    public int getQueuePosition(Session ses, org.hibernate.Session db);
+    
+    /**
+     * Remove the session from the queue.
+     * 
+     * @param ses session to remove
+     * @param reason reason for removal
+     * @param db database
+     * @return true if user removed from queue
+     */
+    public boolean removeFromQueue(Session ses, String reason, org.hibernate.Session db);
 }

@@ -93,6 +93,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.GetUserStatusR
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueRequestType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueTargetType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.QueueType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.ResourceType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.TimePeriodType;
@@ -318,7 +319,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             this.ensureAssociation(user, remotePerm.getPermission().getUserClass(), dao.getSession());
             
             // TODO Batch support
-            QueueSession ses = queuer.addUserToQueue(user, remotePerm.getPermission(), null, dao.getSession());
+            QueueSession ses = queuer.addToQueue(user, remotePerm.getPermission(), null, dao.getSession());
             if (ses.wasSuccessful())
             {
                 opResp.setWasSuccessful(true);
@@ -340,8 +341,69 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
     @Override
     public GetQueuePositionResponse getQueuePosition(GetQueuePosition getQueuePosition)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String siteId = getQueuePosition.getGetQueuePosition().getSiteID();
+        String userId = getQueuePosition.getGetQueuePosition().getUserID();
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#getQueuePosition with params: site=" + 
+                siteId + ", user=" + userId + '.');
+        
+        GetQueuePositionResponse response = new GetQueuePositionResponse();
+        QueueType queue = new QueueType();
+        queue.setTime(-1);
+        queue.setPosition(-1);
+        response.setGetQueuePositionResponse(queue);
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.warn("Unable to provide queue position because the site '" + siteId + "' was not found.");
+                return response;
+            }
+            
+            User user = this.getUser(userId, site, db);
+            if (user == null)
+            {
+                this.logger.warn("Unable to provide queue position because the user '" + userId + "' from '" + siteId + 
+                        "' was not found.");
+                return response;
+            }
+            
+            Session ses = new SessionDao(db).findActiveSession(user);
+            if (ses == null)
+            {
+                /* User not in session, may be in booking. */
+                queue.setInBooking(
+                        new BookingsDao(db).getNextBookingWithin(user, BookingsActivator.BOOKING_STANDOFF) != null);
+            }
+            else
+            {
+                /* User in session, may be in queue or assigned to rig. */
+                if (ses.getAssignmentTime() == null)
+                {
+                    queue.setInSession(true);
+                }
+                else
+                {
+                    queue.setInQueue(true);
+                    queue.setTime((int)((System.currentTimeMillis() - ses.getRequestTime().getTime()) / 1000));
+                    
+                    QueuerService service = MultiSiteActivator.getQueuerService();
+                    if (service == null)
+                    {
+                        this.logger.error("Unable to provide queue position because the Queuer service is not running.");
+                    }
+                    else queue.setPosition(service.getQueuePosition(ses, db));
+                }
+            }
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        return response;
     }
 
     @Override
@@ -647,15 +709,30 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
                 return response;
             }
             
-            SessionService service = MultiSiteActivator.getSessionService();
-            if (service == null)
+            if (ses.getAssignmentTime() == null)
             {
-                this.logger.error("Unable to finish session because the Session Service was not loaded.");
-                opResp.setReason("Session not loaded.");
-                return response;
+                QueuerService service = MultiSiteActivator.getQueuerService();
+                if (service == null)
+                {
+                    this.logger.error("Unable to finish session because the Queuer service was not loaded.");
+                    opResp.setReason("Queuer service not loaded.");
+                    return response;
+                }
+                
+                opResp.setWasSuccessful(service.removeFromQueue(ses, "Consumer request", db));
             }
-            
-            opResp.setWasSuccessful(service.finishSession(ses, db));
+            else
+            {
+                SessionService service = MultiSiteActivator.getSessionService();
+                if (service == null)
+                {
+                    this.logger.error("Unable to finish session because the Session service was not loaded.");
+                    opResp.setReason("Session service not loaded.");
+                    return response;
+                }
+                
+                opResp.setWasSuccessful(service.finishSession(ses, "Consumer request", db));
+            }
         }
         finally
         {
@@ -687,7 +764,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             user = new User();
             user.setNamespace(ns);
             user.setName(name);
-            user.setPersona(User.USER); // Remote users are always uses.
+            user.setPersona(User.USER); // Remote users are always users.
             dao.persist(user);
         }
         
