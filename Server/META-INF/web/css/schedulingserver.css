@@ -979,7 +979,12 @@ span.code {
 	margin-bottom: 10px;
 }
 
+.licensetext { 
+	padding: 15px;
+	background-color: #FCFCFC;
+}
+
 .licenseline {
-	font-family: monospace;
-	font-size: 10pt;
+	font-family: Courier New, Monospace;
+	font-size: 10.5pt;
 }

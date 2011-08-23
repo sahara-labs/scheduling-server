@@ -231,7 +231,7 @@ public class AboutPage extends AbstractPage
     protected void lcTab()
     {
         this.println("<div id='saharalicense'>");
-        this.println("  <div class='licensebrief'>SAHARA Labs r3.1 is released under the terms:</div>");
+        this.println("  <div class='licensebrief'>SAHARA Labs is released under the terms:</div>");
         this.println("  <div class='licensetext'>");
         this.printLicense("/META-INF/web/lic/SAHARA_Labs");
         this.println("  </div>");
