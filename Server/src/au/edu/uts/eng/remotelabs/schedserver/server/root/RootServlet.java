@@ -56,6 +56,7 @@ import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.AboutPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.AbstractPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.DocPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.ErrorPage;
+import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.FrameworkPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.IndexPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.InfoPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.LoginPage;
@@ -101,6 +102,7 @@ public class RootServlet extends HttpServlet
         this.pages.put("doc", DocPage.class);
         this.pages.put("info", InfoPage.class);
         this.pages.put("about", AboutPage.class);
+        this.pages.put("internals", FrameworkPage.class);
     }
     
     @Override

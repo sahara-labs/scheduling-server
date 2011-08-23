@@ -1,9 +1,7 @@
 /**
- * SAHARA Rig Client
- * 
- * Software abstraction of physical rig to provide rig session control
- * and rig device control. Automatically tests rig hardware and reports
- * the rig status to ensure rig goodness.
+ * SAHARA Scheduling Server
+ *
+ * Schedules and assigns local laboratory rigs.
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
@@ -34,11 +32,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 20th September 2010
+ * @date 19th August 2011
  */
+
 package au.edu.uts.eng.remotelabs.schedserver.server.root.pages;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -53,68 +53,35 @@ import javax.servlet.http.HttpServletResponse;
 public class IndexPage extends AbstractPage
 {
     /** Page links. */
-    private final Map<String, String> links;
-    
-    /** Operations. */
-    private final Map<String, String> operations;
-    
-    /** Icons. */
-    private final Map<String, String> icons;
-    
-    /** Tooltips. */
-    private final Map<String, String> toolTips;
-    
-    public IndexPage()
+    private static final Map<String, String> links = Collections.synchronizedMap(new LinkedHashMap<String, String>());
+    static
     {
-        this.links = new LinkedHashMap<String, String>(5);
-        this.links.put("Status", "/status");
-        this.links.put("Configuration", "/config");
-//        this.links.put("Direct_Control", "/control");
-        this.links.put("Logs", "/logs");
-        this.links.put("Diagnostics", "/info");
-        this.links.put("Documentation", "/doc");
-        this.links.put("About", "/about");
-        
-        this.operations = new LinkedHashMap<String, String>(4);
-        this.operations.put("Clear_Maintenance", "/op/clear");
-        this.operations.put("Expunge_Cache", "/op/cache");
-        this.operations.put("Clean_Files", "/op/clean");
-        this.operations.put("Garbage_Collection", "/op/gc");
-        this.operations.put("Restart", "/op/restart");
-        this.operations.put("Shutdown", "/op/shutdown");
-        
-        this.icons = new HashMap<String, String>(9);
-        this.icons.put("Status", "status");
-        this.icons.put("Configuration", "config");
-//        this.icons.put("Direct_Control", "control");
-        this.icons.put("Logs", "logs");
-        this.icons.put("Documentation", "doc");
-        this.icons.put("About", "about");
-        this.icons.put("Diagnostics", "runtime");
-        this.icons.put("Restart", "restart");
-        this.icons.put("Shutdown", "shutdown");
-        this.icons.put("Clear_Maintenance", "clearmain");
-        this.icons.put("Expunge_Cache", "cache");
-        this.icons.put("Garbage_Collection", "trash");
-        this.icons.put("Clean_Files", "clean");
-        
-        this.toolTips = new HashMap<String, String>(9);
-        this.toolTips.put("Status", "The current status of the rig client.");
-        this.toolTips.put("Configuration", "Allows configuration properties of the rig client to be viewed and " +
-        		"changed.");
-  //      this.toolTips.put("Direct_Control", "Allows the direct control cache to be viewed and cleared.");
-        this.toolTips.put("About", "About Rig Client.");
-        this.toolTips.put("Logs", "Log viewer displaying the latest log messages.");
-        this.toolTips.put("Documentation", "Documentation about the rig client.");
-        this.toolTips.put("Diagnostics", "Runtime information about the rig client.");
-        this.toolTips.put("Restart", "Soft restarts the rig client.");
-        this.toolTips.put("Shutdown", "Shuts down the rig client. The rig client service is stopped.");
-        this.toolTips.put("Clear_Maintenance", "Clears any maintenance states the rig may have.");
-        this.toolTips.put("Expunge_Cache", "Clears the direct control cache.");
-        this.toolTips.put("Garbage_Collection", "Runs garbage collection which frees unused memory.");
-        this.toolTips.put("Clean_Files", "Cleans configuration and log backup files.");
+        IndexPage.links.put("Diagnostics", "/info");
+        IndexPage.links.put("Internals", "/internals");
+        IndexPage.links.put("Documentation", "/doc");
+        IndexPage.links.put("About", "/about");
     }
     
+    /** Icons. */
+    private static final Map<String, String> icons = Collections.synchronizedMap(new HashMap<String, String>());
+    static
+    {
+        IndexPage.icons.put("Documentation", "doc");
+        IndexPage.icons.put("Internals", "framework");
+        IndexPage.icons.put("About", "about");
+        IndexPage.icons.put("Diagnostics", "runtime");        
+    }
+    
+    /** Tooltips. */
+    private static final Map<String, String> toolTips = Collections.synchronizedMap(new HashMap<String, String>());
+    static 
+    {
+        IndexPage.toolTips.put("About", "About Rig Client.");
+        IndexPage.toolTips.put("Internals", "Information about the internals of the Scheduling Server.");
+        IndexPage.toolTips.put("Documentation", "Documentation about the rig client.");
+        IndexPage.toolTips.put("Diagnostics", "Runtime information about the rig client.");
+    }
+
     @Override
     public void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
@@ -128,22 +95,22 @@ public class IndexPage extends AbstractPage
         this.println("  <ul class='ullinklist'>");
 
         int i = 0;
-        for (Entry<String, String> e : this.links.entrySet())
+        for (Entry<String, String> e : IndexPage.links.entrySet())
         {
             String name = e.getKey();
             String classes = "linkbut indexlinkbut plaina";
             if (i == 0) classes += " ui-corner-top";
-            else if (i == this.links.size() - 1) classes += " ui-corner-bottom";
+            else if (i == IndexPage.links.size() - 1) classes += " ui-corner-bottom";
 
             this.println("       <li><a id='" + name + "link' class='" + classes + "' href='" + e.getValue() + "'>");
             this.println("           <div class='linkbutcont'>");
             this.println("               <div class='linkbutconticon'>");
-            this.println("                   <img src='/img/" + this.icons.get(name) + "_small.png' alt='" + name + "' />");
+            this.println("                   <img src='/img/" + IndexPage.icons.get(name) + "_small.png' alt='" + name + "' />");
             this.println("               </div>");
             this.println("               <div class='linkbutcontlabel'>" + this.stringTransform(name) + "</div>");
             this.println("               <div id='" + name + "hover' class='tooltiphov ui-corner-all'>");
-            this.println("                  <div class='tooltipimg'><img src='/img/" + this.icons.get(name) + ".png' alt='"+ name + "' /></div>");
-            this.println("                  <div class='tooltipdesc'>" + this.toolTips.get(name) + "</div>");
+            this.println("                  <div class='tooltipimg'><img src='/img/" + IndexPage.icons.get(name) + ".png' alt='"+ name + "' /></div>");
+            this.println("                  <div class='tooltipdesc'>" + IndexPage.toolTips.get(name) + "</div>");
             this.println("               </div>");
             this.println("           </div>");
             this.println("      </a></li>");
@@ -153,41 +120,7 @@ public class IndexPage extends AbstractPage
        
        this.println("   </ul>"); // ullinklist
        this.println("</div>"); // linklist
-       
-       /* Operations pages. */
-       this.println("<div id='operationlist'>");
-       this.println("  <div class='listtitle'>");
-       this.println("      Operations");
-       this.println("  </div>");
-       this.println("  <ul class='ullinklist'>");
-
-       i = 0;
-       for (Entry<String, String> e : this.operations.entrySet())
-       {
-           String name = e.getKey();
-           String classes = "linkbut indexlinkbut plaina";
-           if (i == 0) classes += " ui-corner-top";
-           else if (i == this.operations.size() - 1) classes += " ui-corner-bottom";
-
-           this.println("       <li><a id='" + name + "link' class='" + classes + "' href='" + e.getValue() + "'>");
-           this.println("           <div class='linkbutcont'>");
-           this.println("               <div class='linkbutconticon'>");
-           this.println("                   <img src='/img/" + this.icons.get(name) + "_small.png' alt='" + name + "' />");
-           this.println("               </div>");
-           this.println("               <div class='linkbutcontlabel'>" + this.stringTransform(name) + "</div>");
-           this.println("               <div id='" + name + "hover' class='tooltiphov ui-corner-all'>");
-           this.println("                   <div class='tooltipimg'><img src='/img/" + this.icons.get(name) + ".png' alt='"+ name + "' /></div>");
-           this.println("                   <div class='tooltipdesc'>" + this.toolTips.get(name) + "</div>");
-           this.println("               </div>");
-           this.println("           </div>");
-           this.println("      </a></li>");
-
-           i++;
-       }
-      
-      this.println("   </ul>"); // ullinklist
-      this.println("</div>"); // operationlist
-      
+             
       this.println("</div>");
       
       this.println("<div style='clear:both; margin-bottom:20px'> </div>");
@@ -208,7 +141,7 @@ public class IndexPage extends AbstractPage
       		"}\n");
       
       this.println("$(document).ready(function() {");
-      for (String name : this.toolTips.keySet())
+      for (String name : IndexPage.toolTips.keySet())
       {
           this.println("    ttStates['" + name + "'] = false;");
           this.println("    $('#" + name + "link').hover(");
