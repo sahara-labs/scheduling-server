@@ -167,7 +167,7 @@ public class IndexPage extends AbstractPage
     @Override
     protected String getPageHeader()
     {
-        return "Welcome to " + this.config.getProperty("Rig_Name");
+        return "Welcome to SAHARA Labs r3.1";
     }
     
     @Override

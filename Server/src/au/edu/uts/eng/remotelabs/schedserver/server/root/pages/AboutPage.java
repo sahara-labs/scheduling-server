@@ -37,7 +37,10 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.server.root.pages;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -124,7 +127,7 @@ public class AboutPage extends AbstractPage
             if (i == 0) classes = "ui-corner-tl selectedtab";
             else if (i == this.tabNames.size() - 1) classes += " ui-corner-bl";
 
-            this.println("<li><a id='" + name + "tab' class='" + classes + "' onclick='loadInfoTab(\"" + name + "\")'>");
+            this.println("<li><a id='" + name + "tab' class='" + classes + "' onclick='loadAboutTab(\"" + name + "\")'>");
             this.println("  <div class='linkbutcont'>");
             this.println("    <div class='linkbutconticon'>");
             this.println("      <img src='/img/" + this.tabIcons.get(name) + "_small.png' alt='" + name + "' />");
@@ -163,6 +166,7 @@ public class AboutPage extends AbstractPage
             {
                 this.logger.error("Error invoking about page method. This is a bug so please report it.");
             }
+            this.println("</div>");
         }
         this.println("</div>");
 
@@ -226,17 +230,70 @@ public class AboutPage extends AbstractPage
     
     protected void lcTab()
     {
-        this.println("license");
+        this.println("<div id='saharalicense'>");
+        this.println("  <div class='licensebrief'>SAHARA Labs r3.1 is released under the terms:</div>");
+        this.println("  <div class='licensetext'>");
+        this.printLicense("/META-INF/web/lic/SAHARA_Labs");
+        this.println("  </div>");
+        this.println("</div>");
     }
     
+    /**
+     * The license tab which prints out information about the 
+     */
     protected void ldTab()
     {
-        this.println("libraries");
+        this.println("lib");
     }
 
     @Override
     protected String getPageType()
     {
         return "About";
+    }
+    
+    /** 
+     * Prints out a license given by the name.
+     * 
+     * @param path file path
+     */
+    private void printLicense(String path)
+    {
+        BufferedReader reader = null;
+        try
+        {
+            InputStream is = PageResource.class.getResourceAsStream(path);
+            if (is == null)
+            {
+                this.logger.error("Unable to find license file '" + path + "', this is a bug so please report.");
+                return;
+            }
+            
+            reader = new BufferedReader(new InputStreamReader(is));
+
+            String line = null;
+            while ((line = reader.readLine()) != null)
+            {
+                if ("".equals(line)) line = "&nbsp;";
+                else line = line.replace(" ", "&nbsp;");
+                this.println("<div class='licenseline'>" + line + "</div>");
+            }
+        }
+        catch (IOException ex)
+        {
+            this.logger.error("Exception reading license file '" + path + "', this is a bug so please report.");
+        }
+        finally 
+        {
+            if (reader != null)
+                try
+                {
+                    reader.close();
+                }
+                catch (IOException e)
+                {
+                    this.logger.error("Exception closing license file '" + path + "', this is a bug so please report.");
+                }
+        }
     }
 }

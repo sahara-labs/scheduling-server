@@ -74,7 +74,7 @@ public abstract class AbstractPage
     {
         headCss.add("/css/schedulingserver.css");
         headCss.add("/css/smoothness/jquery-ui.custom.css");
-        headCss.add("/css/jqtransform.css'");
+        headCss.add("/css/jqtransform.css");
         headCss.add("/css/validationEngine.jquery.css");
     }
     
@@ -117,13 +117,6 @@ public abstract class AbstractPage
         
         this.buf = new StringBuilder();
         this.framing = true;
-        
-        
-
-        
-        
-
-       
     }
     
     /**

@@ -962,3 +962,24 @@ span.code {
 	width: 350px;
 	padding: 5px;
 }
+
+/******************************************************************************
+ ** About page.                                                              **
+ ******************************************************************************/
+.notdisplayed {
+	display: none;
+}
+
+#saharalicense {
+	padding: 10px;
+}
+
+.licensebrief {
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.licenseline {
+	font-family: monospace;
+	font-size: 10pt;
+}
