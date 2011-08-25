@@ -66,21 +66,33 @@ public class DocPage extends AbstractPage
         
         this.links = new LinkedHashMap<String, String>(4);
         this.links.put("Installation", "/pdf/Installation.pdf");
-        this.links.put("Configuration", "/pdf/RigClientConfiguration.pdf");
-        this.links.put("Extensions", "/pdf/RigClientExtensions.pdf");
+        this.links.put("Server Config", "/pdf/SchedulingServerConfiguration.pdf");
+        this.links.put("RC Config", "/pdf/RigClientConfiguration.pdf");
+        this.links.put("WI Config", "/pdf/WIConfiguration.pdf");
         this.links.put("Development", "/pdf/Handbook.pdf");
+        this.links.put("RC Extensions", "/pdf/RigClientExtensions.pdf");
+        this.links.put("WI Elements", "/pdf/WebInterfaceElements.pdf");
+        
 
         this.icons = new HashMap<String, String>(4);
         this.icons.put("Installation", "install");
-        this.icons.put("Configuration", "config");
-        this.icons.put("Extensions", "exten");
+        this.icons.put("Server Config", "config");
+        this.icons.put("RC Config", "config");
+        this.icons.put("WI Config", "config");
         this.icons.put("Development", "handbook");
+        this.icons.put("RC Extensions", "exten");
+        this.icons.put("WI Elements", "exten");
+        
         
         this.toolTips = new HashMap<String, String>(4);
         this.toolTips.put("Installation", "How to install Sahara.");
-        this.toolTips.put("Configuration", "Rig Client configuration properties appendix.");
-        this.toolTips.put("Extensions", "Rig Client actions, controllers and runners extension documentation.");
+        this.toolTips.put("Server Config", "Scheduling Server configuration properties appendix.");
+        this.toolTips.put("RC Config", "Rig Client configuration properties appendix.");
+        this.toolTips.put("WI Config", "Web Interface configuration properties appendix.");
         this.toolTips.put("Development", "How to develop rigs for Sahara.");
+        this.toolTips.put("RC Extensions", "Rig Client actions, controllers and runners extension documentation.");
+        this.toolTips.put("WI Elements", "Web Interface elements documentation.");
+
     }
     
     @Override

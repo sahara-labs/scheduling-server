@@ -1,22 +1,22 @@
 <h3 class='helptitle ui-widget-header ui-corner-all'>Brief description:</h3>
-The diagnostics page displays information about the running rig client. This
+The diagnostics page displays information about the running Scheduling Server. This
 is to help diagnose potential problems and investigate error conditions. The 
 diagnostics displayed on this page is automatically updated every 10
 seconds.
 
 <h3 class='helptitle ui-widget-header ui-corner-all'>Runtime information:</h3>
-The information shown on this tab is about the execution of the rig client.
+The information shown on this tab is about the execution of the Scheduling Server.
 The information fields are:
 <ul>
 	<li><span class='bold'>Name</span> - The runtime name of the Java virtual
 	machine. The exact name format is virtual machine specific but is usually
 	composed of &lt;Process PID&gt;@&lt;Computer hostname&gt;.</li>
-	<li><span class='bold'>Start time</span> - The time when the rig client
+	<li><span class='bold'>Start time</span> - The time when the Scheduling Server
 	was started.</li>
-	<li><span class='bold'>Uptime</span> - How long the rig client has been
+	<li><span class='bold'>Uptime</span> - How long the Scheduling Server has been
 	running in terms of days, hours, minutes and seconds.</li>
 	<li><span class='bold'>Working directory</span> - The current / working
-	directory (CWD) of the rig client which is the base path of relative file paths.
+	directory (CWD) of the Scheduling Server which is the base path of relative file paths.
 	<div class='ui-state ui-state-error ui-corner-all helphint'>
 		<span class='ui-icon ui-icon-alert helphinticon'> </span>
 		<span class='bold'>NOTE:</span> The working directory is extremely
@@ -24,94 +24,45 @@ The information fields are:
 	</div>
 	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
 		<span class='ui-icon ui-icon-info helphinticon'> </span>
-		<span class='bold'>HINT:</span> The rig client service sets the working
-		directory to the installation directory of the rig client.
+		<span class='bold'>HINT:</span> The Scheduling Server service sets the working
+		directory to the installation directory of the Scheduling Server.
 	</div></li>
 	<li><span class='bold'>Class path</span> - The list of directories and Jar
 	files where classes are loaded from. Any class path location starting with
-	'.' is relative to the working directory of the rig client.
-	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
-		<span class='ui-icon ui-icon-info helphinticon'> </span>
-		<span class='bold'>HINT:</span> Any Jar file added to the 
-		<span class='code'>'./lib'</span> directory is automatically added
-		to class path on rig client start by the rig client service.
-	</div>
-	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
-		<span class='ui-icon ui-icon-info helphinticon'> </span>
-		<span class='bold'>HINT:</span> The rig client service allows explicit
-		Jar files to be configured.
-	</div></li>
+	'.' is relative to the working directory of the Scheduling Server.</li>
 	<li><span class='bold'>Boot class path</span> - The list of directories and
 	Jar	files where the Java classes are loaded.</li>
 	<li><span class='bold'>Library path:</span> The list of directories where 
 	native libraries (i.e. for use with JNI) are loaded from.</li>
 	<li><span class='bold'>System properties</span> - The system properties of the
-	rig client. System properties are used to configure the rig client 
-	configuration system (i.e. configuration files).
-	<div class='ui-state ui-state-highlight ui-corner-all helphint'>
-		<span class='ui-icon ui-icon-info helphinticon'> </span>
-		<span class='bold'>HINT:</span> The rig client service can be 
-		configured to add system properties.
-	</div></li>
+	Scheduling Server. System properties are used to configure the Scheduling Server 
+	configuration system (i.e. configuration files).</li>
 	<li><span class='bold'>Environment variables</span> - The environment 
-	variables given to the rig client by the invocation environment. These
-	are <span class='bold'>not</span> used to control rig client behavior
-	but are by default inherited by any batch control processes.</li>
+	variables given to the Scheduling Server by the invocation environment.</li>
 </ul>
 
 <h3 class='helptitle ui-widget-header ui-corner-all'>System</h3>
-The information shown on this tab displays memory being used by the rig client
+The information shown on this tab displays memory being used by the Scheduling Server
 and active threads.
 <ul>
 	<li><span class='bold'>In use memory</span> - Shows the amount of memory
-	current in use by the rig client in megabytes.
-		<div class='ui-state ui-state-highlight ui-corner-all helphint'>
-		<span class='ui-icon ui-icon-info helphinticon'> </span>
-		<span class='bold'>HINT: Performing a garbage collection will reduce
-		this.</span>
-	</div></li> 
+	current in use by the Scheduling Server in megabytes.</li> 
 	<li><span class='bold'>Free memory</span> - Free memory shows the amount
-	of memory that is assigned to the rig client and not being used.</li>
+	of memory that is assigned to the Scheduling Server and not being used.</li>
 	<li><span class='bold'>Total memory</span> - Total memory shows the memory
-	assigned to the rig client by the operating system.</li>
+	assigned to the Scheduling Server by the operating system.</li>
 	<li><span class='bold'>Max memory</span> - Max memory shows the amount of
-	memory that can be assigned to the rig client by the operating system if it
-	is needed.
-		<div class='ui-state ui-state-error ui-corner-all helphint'>
-		<span class='ui-icon ui-icon-alert helphinticon'> </span>
-		<span class='bold'>NOTE:</span> If the rig client in use memory 
-		approaches the max memory limit there is most likely an underlying
-		memory leak issue and should be further investigated.
-	</div></li>
+	memory that can be assigned to the Scheduling Server by the operating system if it
+	is needed.</li>
 	<li><span class='bold'>Current threads</span> - Shows the number of currently 
-	active threads. Thread allocation in the rig client is:
-	<ul>
-		<li>Startup thread, 'main', which manages rig client startup, restart
-		and shutdown.</li>
-		<li>Exerciser threads with one thread per test. These are named after
-		the tests they run.</li>
-		<li>Scheduling server update thread which is named 'Status Updater' and 
-		periodically updates the scheduling server of the rig client status..</li>
-		<li>HTTP server thread. This accepts threads requests and dispatches them
-		to a worker.</li>
-		<li>HTTP worker threads which have 'qtp' in their name.
-		<div class='ui-state ui-state-error ui-corner-all helphint'>
-			<span class='ui-icon ui-icon-alert helphinticon'> </span>
-			<span class='bold'>NOTE:</span> The number of these threads should
-			not	exceed the configured concurrent request limit.
-		</div></li>
-		<li>Other miscellaneous Java virtual machine threads such as 
-		'Finalizer'.</li> 
-	</ul></li>
+	active threads.</li>
 	<li><span class='bold'>Daemon threads</span> - Daemon threads do not keep
 	the Java virtual machine running (i.e. when all threads are daemon threads,
-	the rig client terminates). Exerciser tests and HTTP worker threads are
-	daemon threads.</li>
+	the Scheduling Server terminates).</li>
 	<li><span class='bold'>Peak threads</span> - The highest number of
 	concurrent threads that have been running.</li>
 	<li><span class='bold'>Total started threads</span> - The total number of
-	tests that have been started. If a test action involves running a system 
-	process, this number can get quite large.</li>
+	tests that have been started.</li>
 	<li><span class='bold'>Thread stack traces</span> - These list of active 
 	threads. The information shown about thread is:
 	<ul>
@@ -137,7 +88,7 @@ The information show on this tab displays Java virtual machine details.
 		machine implementations including 'Client' and 'Server' (the virtual
 		machine name will specifies this). It is recommended to use the 'Server'
 		virtual machine which trades memory and startup time for better 
-		performance. This may be configured in the rig client service INI file 
+		performance. This may be configured in the Scheduling Server service INI file 
 		by setting the path of the virtual machine implementation library.
 	</div></li>
 	<li><span class='bold'>version</span> - The Java virtual machine version.
@@ -182,7 +133,7 @@ The information show on this tab display host operating system details.
 	<div class='ui-state ui-state-error ui-corner-all helphint'>
 		<span class='ui-icon ui-icon-alert helphinticon'> </span>
 		<span class='bold'>NOTE: </span>On Linux 64bit architectures (displayed
-		as 'amd64') should use a rig client service executable compiled for 
+		as 'amd64') should use a Scheduling Server service executable compiled for 
 		64bit Linux.
 	</div></li>
 	<li><span class='bold'>Processors</span> - The number of processors 
@@ -199,13 +150,13 @@ The information show on this tab display host operating system details.
 		'\' (i.e. C:\\foo\\bar\\baz).
 	</div></li>
 	<li><span class='bold'>Path separator</span> - The character delimiting 
-	file paths in the rig clients class path and library path. This is 
+	file paths in the Scheduling Servers class path and library path. This is 
 	dependant on the operating system running.</li>
 	<li><span class='bold'>File system roots</span> - The list of top
 	most directories in the filesystem.</li>
 	<li><span class='bold'>File system &lt;x&gt;</span> - The free and total
 	space on the file system &lt;x&gt;.</li>
 	<li><span class='bold'>Temp directory</span> - The operating system 
-	temporary directory. The rig client by default stores uploaded batch files
+	temporary directory. The Scheduling Server by default stores uploaded batch files
 	in this directory.</li>
 </ul>
