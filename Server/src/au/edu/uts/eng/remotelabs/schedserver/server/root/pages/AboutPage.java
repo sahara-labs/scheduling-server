@@ -243,7 +243,101 @@ public class AboutPage extends AbstractPage
      */
     protected void ldTab()
     {
-        this.println("lib");
+        this.println("<div id='saharalibs'>");
+        this.println("  <div id='saharalibsbrief'>");
+        this.println("      SAHARA Labs is built on the following libraries:");
+        this.println("  </div>");
+        
+        /* -- Jetty ---------------------------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      Jetty");
+        this.println("      <img src='/img/libs/jetty.gif' alt='Jetty' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/Jetty");
+        this.println("  </div>");
+        this.println("</div>");
+        
+        /* -- Axis2 ---------------------------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      Apache Axis2");
+        this.println("      <img src='/img/libs/axis.jpg' alt='Axis2' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/Axis2");
+        this.println("  </div>");
+        this.println("</div>");
+
+        /* -- Equinox -------------------------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      Equinox");
+        this.println("      <img src='/img/libs/equinox.png' alt='Equinox' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/Equinox");
+        this.println("  </div>");
+        this.println("</div>");
+        
+        /* -- Hibernate ------------------------------------------------------ */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      Hibernate");
+        this.println("      <img src='/img/libs/hibernate.png' alt='Hibernate' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/Hibernate");
+        this.println("  </div>");
+        this.println("</div>");
+        
+        /* -- log4j ---------------------------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      log4j");
+        this.println("      <img src='/img/libs/log4j.png' alt='log4j' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/log4j");
+        this.println("  </div>");
+        this.println("</div>");
+
+        /* -- MySQL connector ------------------------------------------------ */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      MySQL JDBC Connector");
+        this.println("      <img src='/img/libs/mysql.png' alt='MySQL' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/MySQLConnector");
+        this.println("  </div>");
+        this.println("</div>");
+        
+        /* -- PostgreSQL connector ------------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      Hibernate");
+        this.println("      <img src='/img/libs/hibernate.png' alt='Hibernate' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/Hibernate");
+        this.println("  </div>");
+        this.println("</div>");
+        
+        /* -- jQuery --------------------------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      Hibernate");
+        this.println("      <img src='/img/libs/hibernate.png' alt='Hibernate' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.printLicense("/META-INF/web/lic/Hibernate");
+        this.println("  </div>");
+        this.println("</div>");
+        
+        
+        this.println("</div>");
     }
 
     @Override
@@ -295,5 +389,5 @@ public class AboutPage extends AbstractPage
                     this.logger.error("Exception closing license file '" + path + "', this is a bug so please report.");
                 }
         }
-    }
+    }    
 }
