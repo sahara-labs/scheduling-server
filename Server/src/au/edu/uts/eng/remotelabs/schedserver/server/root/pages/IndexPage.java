@@ -57,7 +57,7 @@ public class IndexPage extends AbstractPage
     static
     {
         IndexPage.links.put("Diagnostics", "/info");
-        IndexPage.links.put("Internals", "/internals");
+//        IndexPage.links.put("Internals", "/internals"); // TODO Internals page
         IndexPage.links.put("Documentation", "/doc");
         IndexPage.links.put("About", "/about");
     }
@@ -76,10 +76,10 @@ public class IndexPage extends AbstractPage
     private static final Map<String, String> toolTips = Collections.synchronizedMap(new HashMap<String, String>());
     static 
     {
-        IndexPage.toolTips.put("About", "About Rig Client.");
+        IndexPage.toolTips.put("About", "About Scheduling Server.");
         IndexPage.toolTips.put("Internals", "Information about the internals of the Scheduling Server.");
-        IndexPage.toolTips.put("Documentation", "Documentation about the rig client.");
-        IndexPage.toolTips.put("Diagnostics", "Runtime information about the rig client.");
+        IndexPage.toolTips.put("Documentation", "Documentation about the Scheduling Server.");
+        IndexPage.toolTips.put("Diagnostics", "Runtime information.");
     }
 
     @Override
@@ -89,9 +89,6 @@ public class IndexPage extends AbstractPage
         
         /* Link pages. */
         this.println("<div id='linklist'>");
-        this.println("  <div class='listtitle'>");
-        this.println("      Pages");
-        this.println("  </div>");
         this.println("  <ul class='ullinklist'>");
 
         int i = 0;

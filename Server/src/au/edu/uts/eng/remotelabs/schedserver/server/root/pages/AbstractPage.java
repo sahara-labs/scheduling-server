@@ -96,7 +96,7 @@ public abstract class AbstractPage
     {
         navLinks.put("Main", "/");
         navLinks.put("Diagnostics", "/info");
-        navLinks.put("Internals", "/internals");
+//        navLinks.put("Internals", "/internals"); // TODO
         navLinks.put("Documentation", "/doc");
         navLinks.put("About", "/about");
     }
