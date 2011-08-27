@@ -325,13 +325,25 @@ public class AboutPage extends AbstractPage
         /* -- PostgreSQL connector ------------------------------------------- */
         this.println("<div class='libblock'>");
         this.println("  <div class='libname'>");
-        this.println("      <img src='/img/libs/postgresql.png' alt='PostgreSQL' />");
+        this.println("      <img src='/img/libs/postgresql.jpeg' alt='PostgreSQL' />");
         this.println("  </div>");
         this.println("  <div class='liblicense'>");
         this.println("      <div class='liblicenseheader'>PostgreSQL JDBC Connector</div>"); 
         this.printLicense("/META-INF/web/lic/PostgreSQLConnector");
         this.println("  </div>");
         this.println("</div>");
+        
+        /* -- jTDS SQLServer connector --------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      <img src='/img/libs/jTDS.gif' alt='jTDS' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.println("      <div class='liblicenseheader'>jTDS SQLServer JDBC driver</div>"); 
+        this.printLicense("/META-INF/web/lic/jTDS");
+        this.println("  </div>");
+        this.println("</div>");
+        
         
         /* -- c3p0 connector ------------------------------------------------- */
         this.println("<div class='libblock'>");

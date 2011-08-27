@@ -32,12 +32,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Tejaswini Deshpande (tdeshpan)
+ * @author Michael Diponio (mdiponio)
  * @date 12th March 2010
  */
  
- ; SchedulingServer.nsi
-;
-;--------------------------------
+; -----------------------------------------------------------------------------
+; --- SchedulingServer.nsi                                                  ---
+; -----------------------------------------------------------------------------
 !include MUI2.nsh
 !include TextFunc.nsh
 !include nsDialogs.nsh
@@ -49,12 +50,12 @@
 
 
 ; The name of the installer
-Name "SAHARA Labs Scheduling Server"
+Name "SAHARA Labs :: Scheduling Server"
 
-!define REGKEY "SOFTWARE\$(^Name)"
+!define REGKEY "SOFTWARE\Sahara Scheduling Server"
 
 ; SAHARA Labs Scheduling Server Version
-!define Version "3.1-0-beta1"
+!define Version "3.1-0"
 
 !define JREVersion "1.6"
 
@@ -66,11 +67,12 @@ InstallDir "C:\Program Files\Sahara"
 
 BrandingText "$(^Name)"
 WindowIcon off
-XPStyle on
+XPStyle On
 Var skipSection
-;--------------------------------
-;Interface Settings
- 
+
+; -----------------------------------------------------------------------------
+; --- Interface Settings                                                    ---
+;------------------------------------------------------------------------------
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "installer\labshare.bmp"
 
@@ -82,10 +84,9 @@ Var skipSection
 
 !define Sahara_SSWindows_Service "Scheduling Server"
 
-;--------------------------------
-
-; Pages
-;
+; -----------------------------------------------------------------------------
+; --- Pages                                                                 ---
+; -----------------------------------------------------------------------------
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "License"
 Page custom getInstallChoice selectionDone
@@ -102,8 +103,10 @@ Var DirHeaderSubText
 !insertmacro MUI_PAGE_DIRECTORY
 !define MUI_PAGE_CUSTOMFUNCTION_Pre SetInstallDir
 !insertmacro MUI_PAGE_INSTFILES
-;-------------------------------------------------------------
-; Custom pages for database setup and the required variables 
+
+; -----------------------------------------------------------------------------
+; --- Custom pages for database setup and the required variables            ---
+; -----------------------------------------------------------------------------
 Var Dialog
 Var InfoLabel
 Var SSInstallClick
@@ -138,8 +141,6 @@ PageExEnd
 Page custom getDBDetails getDetails
 Page custom createDB
 Page custom printSummary revertBack
-; End Custom pages
-;-------------------------------------------------------------
 
 Var finishTitle
 Var finishText
@@ -152,12 +153,10 @@ Var finishText
 !insertmacro MUI_UNPAGE_COMPONENTS
 !insertmacro MUI_UNPAGE_INSTFILES
 
-;--------------------------------
-;Languages
- 
+; -----------------------------------------------------------------------------
+; --- Language                                                              ---
+; -----------------------------------------------------------------------------
 !insertmacro MUI_LANGUAGE "English"
-
-;--------------------------------
 
 Var ExitInstall
 Var UpgradeSelected
@@ -166,7 +165,10 @@ Var NoSectionSelectedUninstall
 Var SSAlreadyInstalled ;NI=Not installed, V2=2.x version installed, SAME=installed and same version, 
                        ;V3=Major version 3 is installed but with different minor version/build,
                        ;OTHER=some other version than thsi version or 2.x is installed
-
+					   
+; -----------------------------------------------------------------------------
+; --- Pre install actions                                                   ---
+; -----------------------------------------------------------------------------
 Function DirectoryPagePre
     ${If} $DBSetupOnly S== "true"
         Abort
@@ -203,8 +205,8 @@ Function CheckSSVersion
     ${ElseIf} $SSVersion S== ${Version}
         ; Same SS version is installed. No action
         StrCpy $SSAlreadyInstalled "SAME"
-    ${ElseIf} $R0 S== "3"
-        ; SS version 3.x is installed (with different minor versiobn or build). Can be upgraded
+    ${ElseIf} $SSVersion S<= ${Version}
+        ; SS version 3.x is installed (with different minor version or build). Can be upgraded
         StrCpy $SSAlreadyInstalled "V3"
     ${Else}
         ; Some other version is installed
@@ -219,7 +221,6 @@ FunctionEnd
 
 
 Function DirectoryPageShow
-
 	; If there is already an installation of Sahara, disable the destination folder selection and use the same folder for this installation. 
 	; Else let the user select the installation folder
     
@@ -234,7 +235,6 @@ Function DirectoryPageShow
 		EnableWindow $R1 0
 	${EndIf}
 FunctionEnd
-
 
 Function SetInstallDir
     ${If} $DBSetupOnly S== "true"
@@ -260,7 +260,7 @@ Function .onInit
  	StrCpy $SSAlreadyInstalled "-1"
 	call CheckSSVersion
 	${If} $SSAlreadyInstalled S== "OTHER"
-		MessageBox MB_OK|MB_ICONSTOP "A different version of SAHARA Labs is already installed on this machine. $\nPlease uninstall the existing Sahara software before continuing the installation"
+		MessageBox MB_OK|MB_ICONSTOP "A different version of is already installed and there is no upgrade path from the installers version.$\nThis may be because the installed version is newer than version ${Version}.$\n$\nIf you want to install version ${Version}, please uninstall the existing Scheduling Server before$\nreattempting installation."
 		Abort 
 	${EndIf}
     StrCpy $DBTypeStr "-- Select database --"
@@ -379,7 +379,7 @@ FunctionEnd
 	; - If the function "WordReplace" is not successful and the errorlevel (value of $R0) is 1 (the word "RUNNING" not found), the service is stopped or not installed
 	; - If the function "WordReplace" is not successful and the errorlevel (value of $R0) is anything other than 1 then some error has occured in
 	;   executing function "WordReplace"
-	
+
 	nsExec::ExecToStack /OEM '"sc" query "${Sahara_SSWindows_Service}"'
 	Pop $0	; $0 contains return value/error/timeout
 	Pop $1	; $1 contains printed text, up to ${NSIS_MAX_STRLEN}
@@ -387,11 +387,11 @@ FunctionEnd
 	ClearErrors
 	${WordReplace} '$1' 'RUNNING' 'RUNNING' 'E+1' $R0
 	IfErrors Errors 0
-	MessageBox MB_OK|MB_ICONSTOP "Please stop the '${Sahara_SSWindows_Service}' service before continuing"
+	MessageBox MB_OK|MB_ICONSTOP "Please stop the '${Sahara_SSWindows_Service}' service before continuing."
 	Abort
 	Errors:
 	StrCmp $R0 '1' NotRunning 0
-	MessageBox MB_OK|MB_ICONSTOP "Error is detecting if '${Sahara_SSWindows_Service}' service is installed"
+	MessageBox MB_OK|MB_ICONSTOP "Error is detecting if '${Sahara_SSWindows_Service}' service is installed."
 	Abort
 	NotRunning:
 !macroend
@@ -448,9 +448,10 @@ FunctionEnd
 	AdminUser:
 !macroend
 
-;--------------------------------
-; Install Scheduling Server
-Section "Sahara Scheduling Server" SchedServer
+; -----------------------------------------------------------------------------
+; --- Install Scheduling Server                                             ---
+; -----------------------------------------------------------------------------
+Section "Scheduling Server" SchedServer
 	!insertmacro checkAdminUser "installation"
 
     ${If} $SSAlreadyInstalled S== "NI"
@@ -516,37 +517,29 @@ Section "Sahara Scheduling Server" SchedServer
     StrCpy $finishText "$(^Name) is installed at $INSTDIR" 
 SectionEnd
 
-;--------------------------------
-; Post install actions
-Function .onInstSuccess
-	ClearErrors
-	EnumRegKey $2 HKLM  "${REGKEY}" 0
-	ifErrors installEnd createRegKey 
-	createRegKey:
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "DisplayName"  "$(^Name)"
-	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "DisplayVersion" "${VERSION}"
-	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "InstallLocation" "$INSTDIR\SchedulingServer"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "UninstallString" "$\"$INSTDIR\uninstallSchedulingServer.exe$\""
-	WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "NoModify" 1
-	WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "NoRepair" 1
-installEnd:
-FunctionEnd
-
-;--------------------------------
-; Create uninstaller
+; -----------------------------------------------------------------------------
+; --- Create uninstaller                                                     --
+; -----------------------------------------------------------------------------
 Section -createUninstaller
 	ClearErrors
 	EnumRegKey $1 HKLM  "${REGKEY}" 0
 	ifErrors 0 createUninstaller
 	MessageBox MB_OK|MB_ICONSTOP  "No component selected for installation. Aborting the installation"
-	ABort
+	Abort
 	createUninstaller:
 	SetOutPath $INSTDIR
 	WriteUninstaller $INSTDIR\uninstallSchedulingServer.exe
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SchedulingServer" "DisplayName"  "$(^Name)"
+	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SchedulingServer" "DisplayVersion" "${VERSION}"
+	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SchedulingServer" "InstallLocation" "$INSTDIR\SchedulingServer"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SchedulingServer" "UninstallString" "$\"$INSTDIR\uninstallSchedulingServer.exe$\""
+	WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SchedulingServer" "NoModify" 1
+	WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SchedulingServer" "NoRepair" 1
 SectionEnd
 
-; --------------------------------------------------
-; Functions added for database setup functionality
+; -----------------------------------------------------------------------------
+; --- Functions added for database setup functionality                      ---
+; -----------------------------------------------------------------------------
 
 ; Function to display installation choice after the license page
 Function getInstallChoice
@@ -570,7 +563,7 @@ ${IfNot} $SSAlreadyInstalled S== "NI"
     ${ElseIf} $SSAlreadyInstalled S== "SAME"
         ${NSD_CreateLabel} 0 0 100% 15% "$(^Name) version ${Version} is already installed on this machine.\
         $\nPlease select one of the following install options:"
-        ${NSD_CreateRadioButton} 0 15% 100% 15% "Database setup only"
+        ${NSD_CreateRadioButton} 0 15% 100% 15% "Database setup"
         Pop $DBSetupClick
         ${NSD_CreateRadioButton} 0 30% 100% 15% "Exit installation"
         Pop $ExitInstall
@@ -661,7 +654,7 @@ Function confirmDBPost
     ${If} $Checkbox_State == ${BST_UNCHECKED}
         ${NSD_GetState} $noClick $Checkbox_State
         ${If} $Checkbox_State == ${BST_CHECKED}
-            MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL "Installer will be terminated without setting up the database" IDCANCEL GoBack
+            MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL "Installer will close without setting up the database. $\nYou may run the installer later or setup the database manually." IDCANCEL GoBack
             ; User chose to cancel DB setup. Quit the installer
             Quit
         GoBack:
@@ -1367,12 +1360,10 @@ Function revertBack
 FinishSetup:
 FunctionEnd 
 
-; End functions added for database setup functionality
-; --------------------------------------------------
-
-;--------------------------------
-; Uninstall Scheduling Server
-Section "un.Sahara Scheduling Server" un.SchedulingServer
+; -----------------------------------------------------------------------------
+; --- Uninstall Scheduling Server                                           ---
+; -----------------------------------------------------------------------------
+Section "un.Scheduling Server" un.SchedulingServer
 	!insertmacro checkAdminUser "uninstallation"
 	!insertmacro uninstallWindowsService "uninstallation"
 	Push $R1
@@ -1385,13 +1376,14 @@ Section "un.Sahara Scheduling Server" un.SchedulingServer
     RMDir /r $R1\schemas
     Delete $R1\LICENSE
     Delete $R1\schedulingservice*
-    Delete $R1\DatabaseSetup.log
+    Delete $R1\*.log
     
     Pop $R1
 SectionEnd 
 
-;--------------------------------
-; Uninstaller functions
+; -----------------------------------------------------------------------------
+; --- Uninstaller functions                                                 ---
+; -----------------------------------------------------------------------------
 Function un.onInit
 
 	; Get the Rig Client path
@@ -1423,7 +1415,7 @@ Function un.CheckSlectedComponents
 	${EndIf}
 
 	${If} $NoSectionSelectedUninstall S== "false"
-		StrCpy $DisplayText "Following sections are selected for uninstallation. Do you want to continue?$DisplayText" 
+		StrCpy $DisplayText "The following is selected for uninstallation. Do you want to continue?$DisplayText" 
 		MessageBox MB_YESNO "$DisplayText" IDYES selectionEnd
 		StrCpy $NoSectionSelectedUninstall "true"
 		Abort
@@ -1443,7 +1435,7 @@ Section -un.postactions
     ClearErrors
 	ReadRegStr $R0 HKLM "${REGKEY}" "Path"
 	${If} $R0 S== ""
-		DeleteRegKey /IfEmpty HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
+		DeleteRegKey /IfEmpty HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SchedulingServer"
 		Delete $INSTDIR\uninstallSchedulingServer.exe
 		ClearErrors
         RMDir $INSTDIR
@@ -1458,10 +1450,9 @@ Section -un.postactions
 	${EndIf}
 SectionEnd
 
-;--------------------------------
-
-
-;Descriptions
+; -----------------------------------------------------------------------------
+; --- Descriptions                                                          ---
+; -----------------------------------------------------------------------------
 
 ; Language strings
 LangString DESC_SecSS ${LANG_ENGLISH} "SAHARA Labs Scheduling Server"
@@ -1474,6 +1465,3 @@ LangString DESC_SecSS ${LANG_ENGLISH} "SAHARA Labs Scheduling Server"
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
 !insertmacro MUI_DESCRIPTION_TEXT ${un.SchedulingServer} $(DESC_SecSS)
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
-
-;--------------------------------
-
