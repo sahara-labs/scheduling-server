@@ -42,4 +42,8 @@ Date: 18th May 2011
   					messengerBundle,rigOperationsBundle,serverBundle">
         <buildProject/>
     </target>
+	
+	<target name="servicearchive">
+		<fail message="Cannot generate service archive. Requires manual packing." />
+	</target>
 </project>
