@@ -2,7 +2,7 @@
 <wsdl:definitions name="Multisite" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite" xmlns:mut="http://remotelabs.eng.uts.edu.au/schedserver/multisite" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
     <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisitens">
-      <xsd:import namespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite" schemaLocation="xsd/MultiSite.xsd"/>
+      <xsd:import namespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite" schemaLocation="../MultiSite.xsd"/>
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="findFreeBookingsResponse">

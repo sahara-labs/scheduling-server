@@ -5,7 +5,7 @@
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.multisite.intf.MultiSiteMessageReceiverInOut"/>
         </messageReceivers>
         <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.multisite.intf.MultiSiteSOAPImpl</parameter>
-        <parameter name="useOriginalwsdl">false</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="getUserStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/multisite/getUserStatus</actionMapping>
