@@ -1,281 +1,197 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite"
-	xmlns:mut="http://remotelabs.eng.uts.edu.au/schedserver/multisite"
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
-	
-	<xsd:element name="checkAvailability" type="mut:PermissionIDType" />
-
-	<xsd:element name="checkAvailabilityResponse" type="mut:AvailabilityResponseType" />
-
-	<xsd:element name="addToQueue" type="mut:QueueRequestType" />
-
-	<xsd:element name="addToQueueResponse" type="mut:UserStatusType" />
-
-	<xsd:element name="getUserStatus" type="mut:UserIDType" />
-	<xsd:element name="getUserStatusResponse" type="mut:UserStatusType" />
-
-	<xsd:element name="getQueuePosition" type="mut:UserIDType" />
-
-	<xsd:element name="getQueuePositionResponse" type="mut:QueueType" />
-
-	<xsd:element name="getSessionInformation" type="mut:UserIDType" />
-
-	<xsd:element name="getSessionInformationResponse" type="mut:SessionType" />
-
-	<xsd:element name="finishSession" type="mut:UserIDType" />
-
-	<xsd:element name="finishSessionResponse" type="mut:OperationResponseType" />
-
-	<xsd:element name="createBooking" type="mut:CreateBookingType" />
-
-	<xsd:element name="createBookingResponse" type="mut:BookingResponseType" />
-
-	<xsd:element name="cancelBooking" type="mut:BookingIDType" />
-
-	<xsd:element name="cancelBookingResponse" type="mut:OperationResponseType" />
-
-	<xsd:element name="findFreeBookings" type="mut:FindFreeBookingsType" />
-
-	<xsd:element name="findFreeBookingsResponse" type="mut:FindFreeBookingsResponseType" />
-
-
-	<xsd:complexType name="PermissionIDType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:SiteIDType">
-				<xsd:sequence>
-					<xsd:element name="permissionID" type="xsd:string" />
-
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="SiteIDType">
-		<xsd:sequence>
-			<xsd:element name="siteID" type="xsd:string" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="QueueRequestType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:SiteIDType">
-				<xsd:sequence>
-					<xsd:element name="permission" type="mut:PermissionIDType" />
-
-					<xsd:element name="user" type="mut:UserIDType" />
-
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="UserIDType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:SiteIDType">
-				<xsd:sequence>
-					<xsd:element name="userID" type="xsd:string" />
-
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="UserStatusType">
-		<xsd:sequence>
-			<xsd:element name="operation" type="mut:OperationResponseType"
-				maxOccurs="1" minOccurs="0" />
-			<xsd:element name="inQueue" type="xsd:boolean" />
-			<xsd:element name="inSession" type="xsd:boolean" />
-			<xsd:element name="inBooking" type="xsd:boolean" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="queuedResource"
-				type="mut:ResourceType" />
-
-			<xsd:element maxOccurs="1" minOccurs="0" name="bookedResource"
-				type="mut:ResourceType" />
-
-			<xsd:element maxOccurs="1" minOccurs="0" name="session"
-				type="mut:SessionType" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="OperationResponseType">
-		<xsd:sequence>
-			<xsd:element name="wasSuccessful" type="xsd:boolean" />
-
-			<xsd:element maxOccurs="1" minOccurs="0" name="reason"
-				type="xsd:string" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="AvailabilityResponseType">
-		<xsd:sequence>
-			<xsd:element name="viable" type="xsd:boolean" />
-			<xsd:element name="hasFree" type="xsd:boolean" />
-			<xsd:element name="isQueueable" type="xsd:boolean" />
-
-			<xsd:element name="isBookable" type="xsd:boolean" />
-			<xsd:element name="isCodeAssignable" type="xsd:boolean" />
-
-			<xsd:element name="queuedResource" type="mut:ResourceType" />
-
-			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="queueTarget" type="mut:QueueTargetType" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="QueueTargetType">
-		<xsd:sequence>
-			<xsd:element name="resource" type="mut:ResourceType" />
-			<xsd:element name="viable" type="xsd:boolean" />
-			<xsd:element name="isFree" type="xsd:boolean" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="ResourceType">
-		<xsd:sequence>
-			<xsd:element name="type" type="xsd:string" />
-			<xsd:element name="name" type="xsd:string" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="SessionType">
-		<xsd:sequence>
-			<xsd:element name="isReady" type="xsd:boolean" />
-			<xsd:element name="isCodeAssigned" type="xsd:boolean" />
-
-			<xsd:element maxOccurs="1" minOccurs="0" name="resource"
-				type="mut:ResourceType" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="rigType"
-				type="xsd:string" />
-			<xsd:element name="rigName" type="xsd:string" maxOccurs="1"
-				minOccurs="0" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="contactURL"
-				type="xsd:string" />
-			<xsd:element name="time" type="xsd:int" />
-			<xsd:element name="timeLeft" type="xsd:int" />
-			<xsd:element name="extensions" type="xsd:int" />
-			<xsd:element name="inGrace" type="xsd:boolean" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="warningMessage"
-				type="xsd:string" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="QueueType">
-		<xsd:sequence>
-			<xsd:element name="inQueue" type="xsd:boolean" />
-			<xsd:element name="inSession" type="xsd:boolean" />
-			<xsd:element name="inBooking" type="xsd:boolean" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="queuedResource"
-				type="mut:ResourceType" />
-
-			<xsd:element name="position" type="xsd:int" />
-			<xsd:element name="time" type="xsd:int" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="CreateBookingType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:SiteIDType">
-				<xsd:sequence>
-					<xsd:element name="user" type="mut:UserIDType" />
-
-					<xsd:element name="booking" type="mut:BookingType" />
-
-					<xsd:element maxOccurs="1" minOccurs="0" name="code"
-						type="xsd:base64Binary" />
-
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="BookingType">
-		<xsd:sequence>
-			<xsd:element name="permission" type="mut:PermissionIDType" />
-
-			<xsd:element name="start" type="xsd:dateTime" />
-			<xsd:element name="end" type="xsd:dateTime" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="BookingResponseType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:OperationResponseType">
-				<xsd:sequence>
-					<xsd:element maxOccurs="1" minOccurs="0" name="bookingID"
-						type="mut:BookingIDType" />
-
-					<xsd:element maxOccurs="unbounded" minOccurs="0" name="bestFits"
-						type="mut:TimePeriodType" />
-
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="BookingIDType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:SiteIDType">
-				<xsd:sequence>
-					<xsd:element name="id" type="xsd:int" />
-
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="TimePeriodType">
-		<xsd:sequence>
-			<xsd:element name="start" type="xsd:dateTime" />
-			<xsd:element name="end" type="xsd:dateTime" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="FindFreeBookingsType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:SiteIDType">
-				<xsd:sequence>
-					<xsd:element name="permission" type="mut:PermissionIDType" />
-
-					<xsd:element name="period" type="mut:TimePeriodType" />
-
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="FindFreeBookingsResponseType">
-		<xsd:sequence>
-			<xsd:element name="permission" type="mut:PermissionIDType" />
-
-			<xsd:element name="resource" type="mut:ResourceType" />
-
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="slot"
-				type="mut:BookingSlotType" />
-
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="BookingSlotType">
-		<xsd:complexContent>
-			<xsd:extension base="mut:TimePeriodType">
-				<xsd:sequence>
-					<xsd:element name="state">
-						<xsd:simpleType>
-							<xsd:restriction base="xsd:string">
-								<xsd:enumeration value="FREE" />
-
-								<xsd:enumeration value="BOOKED" />
-
-								<xsd:enumeration value="NOPERMISSION" />
-
-							</xsd:restriction>
-						</xsd:simpleType>
-					</xsd:element>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:mut="http://remotelabs.eng.uts.edu.au/schedserver/multisite" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite">
+    <element name="checkAvailability" type="mut:PermissionIDType"/>
+    <element name="checkAvailabilityResponse" type="mut:AvailabilityResponseType"/>
+    <element name="addToQueue" type="mut:QueueRequestType"/>
+    <element name="addToQueueResponse" type="mut:UserStatusType"/>
+    <element name="getUserStatus" type="mut:UserIDType"/>
+    <element name="getUserStatusResponse" type="mut:UserStatusType"/>
+    <element name="getQueuePosition" type="mut:UserIDType"/>
+    <element name="getQueuePositionResponse" type="mut:QueueType"/>
+    <element name="getSessionInformation" type="mut:UserIDType"/>
+    <element name="getSessionInformationResponse" type="mut:SessionType"/>
+    <element name="finishSession" type="mut:UserIDType"/>
+    <element name="finishSessionResponse" type="mut:OperationResponseType"/>
+    <element name="createBooking" type="mut:CreateBookingType"/>
+    <element name="createBookingResponse" type="mut:BookingResponseType"/>
+    <element name="cancelBooking" type="mut:BookingIDType"/>
+    <element name="cancelBookingResponse" type="mut:OperationResponseType"/>
+    <element name="findFreeBookings" type="mut:FindFreeBookingsType"/>
+    <element name="findFreeBookingsResponse" type="mut:FindFreeBookingsResponseType"/>
+    <complexType name="PermissionIDType">
+        <complexContent>
+            <extension base="mut:SiteIDType">
+                <sequence>
+                    <element name="permissionID" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="SiteIDType">
+        <sequence>
+            <element name="siteID" type="string"/>
+        </sequence>
+    </complexType>
+    <complexType name="QueueRequestType">
+        <complexContent>
+            <extension base="mut:SiteIDType">
+                <sequence>
+                    <element name="permission" type="mut:PermissionIDType"/>
+                    <element name="user" type="mut:UserIDType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="UserIDType">
+        <complexContent>
+            <extension base="mut:SiteIDType">
+                <sequence>
+                    <element name="userID" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="UserStatusType">
+        <sequence>
+            <element minOccurs="0" name="operation" type="mut:OperationResponseType"/>
+            <element name="inQueue" type="boolean"/>
+            <element name="inSession" type="boolean"/>
+            <element name="inBooking" type="boolean"/>
+            <element minOccurs="0" name="queuedResource" type="mut:ResourceType"/>
+            <element minOccurs="0" name="bookedResource" type="mut:ResourceType"/>
+            <element minOccurs="0" name="session" type="mut:SessionType"/>
+        </sequence>
+    </complexType>
+    <complexType name="OperationResponseType">
+        <sequence>
+            <element name="wasSuccessful" type="boolean"/>
+            <element minOccurs="0" name="reason" type="string"/>
+        </sequence>
+    </complexType>
+    <complexType name="AvailabilityResponseType">
+        <sequence>
+            <element name="viable" type="boolean"/>
+            <element name="hasFree" type="boolean"/>
+            <element name="isQueueable" type="boolean"/>
+            <element name="isBookable" type="boolean"/>
+            <element name="isCodeAssignable" type="boolean"/>
+            <element name="queuedResource" type="mut:ResourceType"/>
+            <element maxOccurs="unbounded" minOccurs="0" name="queueTarget" type="mut:QueueTargetType"/>
+        </sequence>
+    </complexType>
+    <complexType name="QueueTargetType">
+        <sequence>
+            <element name="resource" type="mut:ResourceType"/>
+            <element name="viable" type="boolean"/>
+            <element name="isFree" type="boolean"/>
+        </sequence>
+    </complexType>
+    <complexType name="ResourceType">
+        <sequence>
+            <element name="type" type="string"/>
+            <element name="name" type="string"/>
+        </sequence>
+    </complexType>
+    <complexType name="SessionType">
+        <sequence>
+            <element name="isReady" type="boolean"/>
+            <element name="isCodeAssigned" type="boolean"/>
+            <element minOccurs="0" name="resource" type="mut:ResourceType"/>
+            <element minOccurs="0" name="rigType" type="string"/>
+            <element minOccurs="0" name="rigName" type="string"/>
+            <element minOccurs="0" name="contactURL" type="string"/>
+            <element name="time" type="int"/>
+            <element name="timeLeft" type="int"/>
+            <element name="extensions" type="int"/>
+            <element name="inGrace" type="boolean"/>
+            <element minOccurs="0" name="warningMessage" type="string"/>
+        </sequence>
+    </complexType>
+    <complexType name="QueueType">
+        <sequence>
+            <element name="inQueue" type="boolean"/>
+            <element name="inSession" type="boolean"/>
+            <element name="inBooking" type="boolean"/>
+            <element minOccurs="0" name="queuedResource" type="mut:ResourceType"/>
+            <element name="position" type="int"/>
+            <element name="time" type="int"/>
+        </sequence>
+    </complexType>
+    <complexType name="CreateBookingType">
+        <complexContent>
+            <extension base="mut:SiteIDType">
+                <sequence>
+                    <element name="user" type="mut:UserIDType"/>
+                    <element name="booking" type="mut:BookingType"/>
+                    <element minOccurs="0" name="code" type="base64Binary"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="BookingType">
+        <sequence>
+            <element name="permission" type="mut:PermissionIDType"/>
+            <element name="start" type="dateTime"/>
+            <element name="end" type="dateTime"/>
+        </sequence>
+    </complexType>
+    <complexType name="BookingResponseType">
+        <complexContent>
+            <extension base="mut:OperationResponseType">
+                <sequence>
+                    <element minOccurs="0" name="bookingID" type="mut:BookingIDType"/>
+                    <element maxOccurs="unbounded" minOccurs="0" name="bestFits" type="mut:TimePeriodType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="BookingIDType">
+        <complexContent>
+            <extension base="mut:SiteIDType">
+                <sequence>
+                    <element name="id" type="int"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="TimePeriodType">
+        <sequence>
+            <element name="start" type="dateTime"/>
+            <element name="end" type="dateTime"/>
+        </sequence>
+    </complexType>
+    <complexType name="FindFreeBookingsType">
+        <complexContent>
+            <extension base="mut:SiteIDType">
+                <sequence>
+                    <element name="permission" type="mut:PermissionIDType"/>
+                    <element name="period" type="mut:TimePeriodType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="FindFreeBookingsResponseType">
+        <sequence>
+            <element name="permission" type="mut:PermissionIDType"/>
+            <element name="resource" type="mut:ResourceType"/>
+            <element maxOccurs="unbounded" minOccurs="0" name="slot" type="mut:BookingSlotType"/>
+        </sequence>
+    </complexType>
+    <complexType name="BookingSlotType">
+        <complexContent>
+            <extension base="mut:TimePeriodType">
+                <sequence>
+                    <element name="state">
+                        <simpleType>
+                            <restriction base="string">
+                                <enumeration value="FREE"/>
+                                <enumeration value="BOOKED"/>
+                                <enumeration value="NOPERMISSION"/>
+                            </restriction>
+                        </simpleType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
 </schema>

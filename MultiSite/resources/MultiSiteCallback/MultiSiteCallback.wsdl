@@ -14,12 +14,7 @@
       <xsd:element name="sessionStartedResponse"
       	type="Q1:OperationResponseType">
       </xsd:element>
-      <xsd:element name="sessionFinished">
-      	<xsd:complexType>
-      		<xsd:sequence>
-      			<xsd:element name="in" type="xsd:string"></xsd:element>
-      		</xsd:sequence>
-      	</xsd:complexType>
+      <xsd:element name="sessionFinished" type="Q1:UserIDType">
       </xsd:element>
       <xsd:element name="sessionFinishedResponse"
       	type="mutcb:UserSessionType">
