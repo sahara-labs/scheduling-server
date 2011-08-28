@@ -32,20 +32,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 10th August 2011
+ * @date 28th August 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.impl;
+
+package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback;
+
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.BookingCancelledResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionFinishedResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionStartedResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionUpdateResponse;
 
 /**
- * Redeemer of Multisite bookings.
+ * Handler for async operation responses or faults.
  */
-public class MultisiteRedeemer implements Runnable
+public abstract class MultiSiteCallbackHandler
 {
-
-    @Override
-    public void run()
+    public void receiveResultbookingCancelled(final BookingCancelledResponse result)
     {
-        // TODO Auto-generated method stub
-        
+        /* Should be overridden. */
+    }
+
+    public void receiveErrorbookingCancelled(final Exception e)
+    {
+        /* Should be overridden. */
+    }
+
+    public void receiveResultsessionStarted(final SessionStartedResponse result)
+    {
+        /* Should be overridden. */
+    }
+
+    public void receiveErrorsessionStarted(final Exception e)
+    {
+        /* Should be overridden. */
+    }
+
+    public void receiveResultsessionFinished(final SessionFinishedResponse result)
+    {
+        /* Should be overridden. */
+    }
+
+    public void receiveErrorsessionFinished(final Exception e)
+    {
+        /* Should be overridden. */
+    }
+
+    public void receiveResultsessionUpdate(final SessionUpdateResponse result)
+    {
+        /* Should be overridden. */
+    }
+
+    public void receiveErrorsessionUpdate(final Exception e)
+    {
+        /* Should be overridden. */
     }
 }
