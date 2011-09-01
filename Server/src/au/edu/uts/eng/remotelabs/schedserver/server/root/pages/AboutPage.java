@@ -222,6 +222,7 @@ public class AboutPage extends AbstractPage
     {
         this.println("<div id='slbanner'>");
         this.println("    <span>Scheduling Server r3.1</span><br />");
+        this.println("    <img src='/img/logo_large.png' alt='SAHARA Labs' />");
         this.println("    Part of the SAHARA Labs r3.1 suite that schedules and assigns local laboratory rigs.");
         this.println("</div>");
         
