@@ -17,7 +17,8 @@ org.apache.log4j, \
 *
 
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite.provider, \
-au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests
+au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests, \
+au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback
 
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.multisite, *
 

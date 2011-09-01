@@ -55,6 +55,7 @@ import org.apache.axis2.databinding.utils.BeanUtil;
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl;
 
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.UserIDType;
 
@@ -65,7 +66,19 @@ public class UserSessionType extends UserIDType implements ADBBean
 {
     private static final long serialVersionUID = 32229611238573498L;
     
+    protected PermissionIDType permission;
+    
     protected SessionType session;
+    
+    public PermissionIDType getPermission()
+    {
+        return this.permission;
+    }
+    
+    public void setPermission(PermissionIDType param)
+    {
+        this.permission = param;
+    }
 
     public SessionType getSession()
     {
@@ -135,6 +148,12 @@ public class UserSessionType extends UserIDType implements ADBBean
             xmlWriter.writeCharacters(this.userID);
         }
         xmlWriter.writeEndElement();
+        
+        if (this.permission == null)
+        {
+            throw new ADBException("permission cannot be null");
+        }
+        this.permission.serialize(new QName("", "permission"), xmlWriter);
 
         if (this.session == null)
         {
@@ -237,6 +256,12 @@ public class UserSessionType extends UserIDType implements ADBBean
             throw new ADBException("userID cannot be null!!");
         }
         elementList.add(new QName("", "session"));
+        
+        if (this.permission == null)
+        {
+            throw new ADBException("permission cannot be null");
+        }
+        elementList.add(this.permission);
 
         if (this.session == null)
         {
@@ -311,6 +336,16 @@ public class UserSessionType extends UserIDType implements ADBBean
                 else
                 {
                     throw new ADBException("Unexpected subelement " + reader.getName());
+                }
+                
+                while (!reader.isStandalone() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "permission").equals(reader.getName()))
+                {
+                    object.setPermission(PermissionIDType.Factory.parse(reader));
+                    reader.next();
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

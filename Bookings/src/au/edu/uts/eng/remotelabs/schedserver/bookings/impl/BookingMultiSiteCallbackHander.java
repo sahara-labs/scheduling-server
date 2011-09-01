@@ -32,69 +32,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 28th August 2011
+ * @date 31st August 2011
  */
+package au.edu.uts.eng.remotelabs.schedserver.bookings.impl;
 
-package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback;
-
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionFinishedResponse;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionStartedResponse;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionUpdateResponse;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.MultiSiteCallbackHandler;
 
 /**
- * Handler for async operation responses or faults.
+ * Handler for MultiSite Callback async communication.
  */
-public abstract class MultiSiteCallbackHandler
+public class BookingMultiSiteCallbackHander extends MultiSiteCallbackHandler
 {
-    /**
-     * Invoked when the response is from sending notification of booking 
-     * cancellation is received.
-     * 
-     * @param result response
-     */
+    /** Logger. */
+    private final Logger logger = LoggerActivator.getLogger();
+
+    @Override
     public void receiveResultBookingCancelled(boolean successful, String reason)
     {
-        /* Should be overridden. */
+        if (successful)
+        {
+            this.logger.info("Successfully notified consumer site of booking cancellation.");
+        }
+        else
+        {
+            this.logger.warn("Consumer site returned error from notification of booking cancellation. " +
+            		"Provided reason:" + reason);
+        }
     }
 
-    /**
-     * Invoked when an error from sending notification of booking 
-     * occurs.
-     * 
-     * @param e error exception
-     */
+    @Override
     public void receiveErrorBookingCancelled(final Exception e)
     {
-        /* Should be overridden. */
-    }
-
-    public void receiveResultsessionStarted(final SessionStartedResponse result)
-    {
-        /* Should be overridden. */
-    }
-
-    public void receiveErrorsessionStarted(final Exception e)
-    {
-        /* Should be overridden. */
-    }
-
-    public void receiveResultsessionFinished(final SessionFinishedResponse result)
-    {
-        /* Should be overridden. */
-    }
-
-    public void receiveErrorsessionFinished(final Exception e)
-    {
-        /* Should be overridden. */
-    }
-
-    public void receiveResultsessionUpdate(final SessionUpdateResponse result)
-    {
-        /* Should be overridden. */
-    }
-
-    public void receiveErrorsessionUpdate(final Exception e)
-    {
-        /* Should be overridden. */
+        this.logger.warn("Booking cancellation request failed. Exception message: " + e.getMessage());
     }
 }

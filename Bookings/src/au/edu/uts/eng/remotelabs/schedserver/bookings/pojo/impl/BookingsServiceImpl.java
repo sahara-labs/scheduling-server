@@ -49,6 +49,7 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingCreation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.TimePeriod;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingMultiSiteCallbackHander;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
@@ -64,6 +65,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.Booking
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimesRequest.BookingTime;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.CancelBookingRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.CreateBookingRequest;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.BookingCancellationAsyncRequest;
 
 /**
  * Bookings service implementation.
@@ -454,12 +456,20 @@ public class BookingsServiceImpl implements BookingsService
             {
                 status.setSuccess(true);
             }
+            
+            if (booking.getResourcePermission().isRemote() && !user)
+            {
+                /* Notify the consumer site of cancellation. */
+                new BookingCancellationAsyncRequest()
+                        .bookingCancelled(booking, db, new BookingMultiSiteCallbackHander());
+            }
         }
         
-        /* Only send notification to home users. */
         if (booking.getResourcePermission().getRemotePermission() == null || 
                 ResourcePermission.CONSUMER_PERMISSION.equals(booking.getResourceType()))
         {
+            /* Only send notification to home users. */
+            
             if (user) new BookingNotification(booking).notifyUserCancel();
             else      new BookingNotification(booking).notifyCancel();
         }

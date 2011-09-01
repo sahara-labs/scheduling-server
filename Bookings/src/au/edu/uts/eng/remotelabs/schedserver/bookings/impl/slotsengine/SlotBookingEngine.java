@@ -50,6 +50,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingMultiSiteCallbackHander;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -62,6 +63,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.BookingCancellationAsyncRequest;
 
 /**
  * The slot booking engine. This is an in-memory booking engine with uses 
@@ -118,7 +120,14 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             bk.setActive(false);
             bk.setCancelReason("Expired when Scheduling Server was not running.");
             
-            new BookingNotification(bk).notifyCancel();
+            if (bk.getResourcePermission().isRemote())
+            {
+                new BookingCancellationAsyncRequest().bookingCancelled(bk, db, new BookingMultiSiteCallbackHander());
+            }
+            else
+            {
+                new BookingNotification(bk).notifyCancel();
+            }
         }
         if (bookings.size() > 0)
         {

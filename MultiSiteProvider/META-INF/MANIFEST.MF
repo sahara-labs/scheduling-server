@@ -75,4 +75,5 @@ Bundle-ClassPath: .,
  lib/wstx-asl-3.2.9.jar,
  lib/XmlSchema-1.4.7.jar
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite.provider,
- au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests
+ au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests,
+ au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback

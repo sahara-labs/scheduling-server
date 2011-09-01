@@ -37,6 +37,25 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.hibernate.criterion.Restrictions;
+
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.BookingCancelled;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.BookingCancelledResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionFinished;
@@ -45,27 +64,187 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.Sessi
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionStartedResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionUpdate;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionUpdateResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.UserSessionType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SessionType;
 
 /**
  * Implementation of the MultiSite Callback service.
  */
 public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
 {
-
-    @Override
-    public BookingCancelledResponse bookingCancelled(final BookingCancelled bookingCancelled0)
+    /** Logger. */
+    private Logger logger;
+    
+    public MultiSiteCallbackSOAPImpl()
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#bookingCancelled");
+        this.logger = LoggerActivator.getLogger();
+    }
+    
+    @Override
+    public BookingCancelledResponse bookingCancelled(final BookingCancelled request)
+    {
+        String site = request.getBookingCancelled().getSiteID();
+        String username = request.getBookingCancelled().getUser().getUserID();
+        String pId = request.getBookingCancelled().getBooking().getPermission().getPermissionID();
+        Date start = request.getBookingCancelled().getBooking().getStart().getTime();
+        Date end = request.getBookingCancelled().getBooking().getEnd().getTime();
+        
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#bookingCancelled with params site=" + 
+                site + ", user=" + username + ", permission=" + pId + ", start=" + start + ", end=" + end + '.');
+        
+        BookingCancelledResponse response = new BookingCancelledResponse();
+        OperationResponseType respType = new OperationResponseType();
+        respType.setWasSuccessful(false);
+        response.setBookingCancelledResponse(respType);
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            User user = this.getUser(username, db);
+            if (user == null)
+            {
+                this.logger.info("Unable to cancel remote site booking because the user '" + username + 
+                        "' was not found.");
+                respType.setReason("User not found.");
+                return response;
+            }
+            
+            RemotePermission perm = new RemotePermissionDao(db).findByGuid(pId);
+            if (perm == null)
+            {
+                this.logger.info("Unable to cancel remote site booking because the remote permission '" + 
+                        pId + "' was not found.");
+                respType.setReason("Permission not found.");
+                return response;
+            }
+            
+            /* Sanity check to ensure the correct site is making the request. */
+            if (!perm.getSite().getGuid().equals(site))
+            {
+                this.logger.warn("Unable to cancel remote site booking because the incorrect site is requesting the " +
+                		" cancellation. Requesting site '" + site + "', stored site '" + perm.getSite().getGuid() + "'.");
+                respType.setReason("Stored site does not match remote site.");
+                return response;
+            }
+            
+            Bookings booking = (Bookings) db.createCriteria(Bookings.class)
+                    .add(Restrictions.eq("active", Boolean.TRUE))
+                    .add(Restrictions.eq("user", user))
+                    .add(Restrictions.ge("startTime", start))
+                    .add(Restrictions.le("endTime", end))
+                    .add(Restrictions.eq("resourcePermission", perm.getPermission()))
+                    .uniqueResult();
+            if (booking == null)
+            {
+                this.logger.info("Unable to cancel remote site booking for user '" + username + "' because the " +
+                		"booking was not found.");
+                respType.setReason("Booking not found.");
+                return response;
+            }
+            
+            this.logger.info("Cancelling provider site booking (id=" + booking.getId() + ") for user '" + 
+                    user.qName() + "' because of provider request.");
+            
+            booking.setActive(false);
+            booking.setCancelReason("Provider site request");
+            db.beginTransaction();
+            db.flush();
+            db.getTransaction().commit();
+            
+            /* Notify the user of cancellation. */
+           MessengerService service = BookingsActivator.getMessengerService();
+           if (service == null)
+           {
+               this.logger.warn("Unable send booking cancellation email to user '" + user.qName() +
+                       "' because the messenger service wasn't loaded.");
+           }
+           else
+           {
+               Map<String, String> macros = new HashMap<String, String>();
+               macros.put("firstname", user.getFirstName());
+               macros.put("lastname", user.getLastName());
+               macros.put("resource", booking.getResourcePermission().getDisplayName());
+               macros.put("starttime", start.toString());
+               macros.put("cancelreason", "Provider cancelled booking.");
+
+               service.sendTemplatedMessage(user, "BOOKING_CANCELLATION", macros);
+           }
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        return response;
     }
 
     @Override
-    public SessionStartedResponse sessionStarted(final SessionStarted sessionStarted2)
+    public SessionStartedResponse sessionStarted(final SessionStarted sessionStarted)
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#sessionStarted");
+        UserSessionType request = sessionStarted.getSessionStarted();
+        String pId = request.getPermission().getPermissionID();
+        SessionType sesInfo = request.getSession();
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#sessionStarted with params: site=" + 
+                request.getSiteID() + ", user=" + request.getUserID() + ", permission=" + pId);
+        
+        SessionStartedResponse response = new SessionStartedResponse();
+        OperationResponseType respType = new OperationResponseType();
+        respType.setWasSuccessful(false);
+        response.setSessionStartedResponse(respType);
+        
+        SessionDao dao = new SessionDao();
+        try
+        {
+            User user = this.getUser(request.getUserID(), dao.getSession());
+            if (user == null)
+            {
+                this.logger.info("Unable to start session for user '" + request.getUserID() + "' because the user was " +
+                		"not found.");
+                respType.setReason("User not found");
+                return response;
+            }
+            
+            RemotePermission remotePerm = new RemotePermissionDao(dao.getSession()).findByGuid(pId);
+            if (remotePerm == null)
+            {
+                this.logger.info("Unable to start session for user '" + user.qName() + "' because the permission " +
+                		"was not found.");
+                respType.setReason("Permission not found");
+                return response;
+            }
+            
+            /* Sanity check - may sure the requesting site is correct. */
+            if (!remotePerm.getSite().getGuid().equals(request.getSiteID()))
+            {
+                this.logger.info("Unable to start session for user '" + user.qName() + "' because the requesting " +
+                        "site does not match the stored permission site.");
+                respType.setReason("Site does not match");
+                return response;
+            }
+            
+            Session userSes;
+            if ((userSes = dao.findActiveSession(user)) != null)
+            {
+                if (userSes.getAssignmentTime() != null)
+                {
+                    this.logger.info("Unable to start session for user '" + user.qName() + "' because they are "
+                            + "already in session.");
+                    respType.setReason("User already in session");
+                }
+                else
+                {
+                    /* May be remote queuing assignment. */
+                    
+                }
+            }
+        }
+        finally
+        {
+           dao.closeSession();
+        }
+        
+        return response;
     }
 
     @Override
@@ -84,4 +263,22 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
                 + "#sessionUpdate");
     }
 
+    /**
+     * Returns the user with the specified name. The user must belong to this 
+     * site.
+     * 
+     * @param username name of user
+     * @return user or null if not found
+     */
+    private User getUser(String username, org.hibernate.Session db)
+    {
+        String ns = MultiSiteActivator.getConfigValue("Site_Namespace", null);
+        if (ns == null)
+        {
+            this.logger.error("Unable to find local user because the local site namespace is not configured.");
+            return null;
+        }
+        
+        return new UserDao(db).findByName(ns, username);
+    }
 }

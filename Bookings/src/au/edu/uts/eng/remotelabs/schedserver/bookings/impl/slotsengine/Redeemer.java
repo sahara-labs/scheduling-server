@@ -47,6 +47,7 @@ import java.util.Map.Entry;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingMultiSiteCallbackHander;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
@@ -56,6 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.BookingCancellationAsyncRequest;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
@@ -157,7 +159,18 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                                 " because no free resources were found in the slot period.");
                         
                         this.currentDay.removeBooking(mb);
-                        new BookingNotification(b).notifyCancel();
+                        
+                        if (b.getResourcePermission().isRemote())
+                        {
+                            /* Booking for a consumer site so they need to be notified. */
+                            new BookingCancellationAsyncRequest()
+                                    .bookingCancelled(b, db, new BookingMultiSiteCallbackHander());
+                        }
+                        else
+                        {
+                            /* Local user, so notify them. */
+                            new BookingNotification(b).notifyCancel();
+                        }
                     }
 
                     if (this.redeemingBookings.size() > 0)

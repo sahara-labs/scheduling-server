@@ -76,6 +76,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.ty
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionStartedResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionUpdate;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionUpdateResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.MultiSiteCallbackHandler;
 
 /**
@@ -305,11 +306,13 @@ public class MultiSiteCallbackStub extends Stub implements MultiSiteCallback
                     final SOAPEnvelope resultEnv = resultContext.getEnvelope();
                     final Object object = MultiSiteCallbackStub.this.fromOM(resultEnv.getBody().getFirstElement(),
                             BookingCancelledResponse.class, MultiSiteCallbackStub.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultbookingCancelled((BookingCancelledResponse) object);
+                    
+                    OperationResponseType response = ((BookingCancelledResponse) object).getBookingCancelledResponse();
+                    callback.receiveResultBookingCancelled(response.getWasSuccessful(), response.getReason());
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorbookingCancelled(e);
+                    callback.receiveErrorBookingCancelled(e);
                 }
             }
 
@@ -341,50 +344,50 @@ public class MultiSiteCallbackStub extends Stub implements MultiSiteCallback
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorbookingCancelled(new RemoteException(ex.getMessage(), ex));
+                                callback.receiveErrorBookingCancelled(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {
-                                callback.receiveErrorbookingCancelled(f);
+                                callback.receiveErrorBookingCancelled(f);
                             }
                             catch (final ClassNotFoundException e)
                             {
-                                callback.receiveErrorbookingCancelled(f);
+                                callback.receiveErrorBookingCancelled(f);
                             }
                             catch (final NoSuchMethodException e)
                             {
-                                callback.receiveErrorbookingCancelled(f);
+                                callback.receiveErrorBookingCancelled(f);
                             }
                             catch (final InvocationTargetException e)
                             {
-                                callback.receiveErrorbookingCancelled(f);
+                                callback.receiveErrorBookingCancelled(f);
                             }
                             catch (final IllegalAccessException e)
                             {
-                                callback.receiveErrorbookingCancelled(f);
+                                callback.receiveErrorBookingCancelled(f);
                             }
                             catch (final InstantiationException e)
                             {
-                                callback.receiveErrorbookingCancelled(f);
+                                callback.receiveErrorBookingCancelled(f);
                             }
                             catch (final AxisFault e)
                             {
-                                callback.receiveErrorbookingCancelled(f);
+                                callback.receiveErrorBookingCancelled(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorbookingCancelled(f);
+                            callback.receiveErrorBookingCancelled(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorbookingCancelled(f);
+                        callback.receiveErrorBookingCancelled(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorbookingCancelled(error);
+                    callback.receiveErrorBookingCancelled(error);
                 }
             }
 
@@ -404,7 +407,7 @@ public class MultiSiteCallbackStub extends Stub implements MultiSiteCallback
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorbookingCancelled(axisFault);
+                    callback.receiveErrorBookingCancelled(axisFault);
                 }
             }
         });

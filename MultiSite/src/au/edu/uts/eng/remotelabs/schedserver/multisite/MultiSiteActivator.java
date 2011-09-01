@@ -44,8 +44,10 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -68,6 +70,12 @@ public class MultiSiteActivator implements BundleActivator
     /** Bookings service tracker. */
     private static ServiceTracker<BookingsService, BookingsService> bookingsService;
     
+    /** Configuration service tracker. */
+    private static ServiceTracker<Config, Config> configService;
+    
+    /** Messenger service tracker. */
+    private static ServiceTracker<MessengerService, MessengerService> messengerTracker;
+    
     /** Logger. */
     private Logger logger;
     
@@ -78,6 +86,12 @@ public class MultiSiteActivator implements BundleActivator
 		this.logger.info("Multisite bundle starting up.");
 		
 		/* Track the required services. */
+		MultiSiteActivator.configService = new ServiceTracker<Config, Config>(bundleContext, Config.class, null);
+		MultiSiteActivator.configService.open();
+		
+		MultiSiteActivator.messengerTracker = 
+		        new ServiceTracker<MessengerService, MessengerService>(bundleContext, MessengerService.class, null);
+		
 		MultiSiteActivator.queuerService = new 
 		        ServiceTracker<QueuerService, QueuerService>(bundleContext, QueuerService.class, null);
 		MultiSiteActivator.queuerService.open();
@@ -108,6 +122,10 @@ public class MultiSiteActivator implements BundleActivator
 		MultiSiteActivator.sessionService = null;
 		MultiSiteActivator.queuerService.close();
 		MultiSiteActivator.queuerService = null;
+		MultiSiteActivator.messengerTracker.close();
+		MultiSiteActivator.messengerTracker = null;
+		MultiSiteActivator.configService.close();
+		MultiSiteActivator.configService = null;
 	}
 
     /**
@@ -144,5 +162,21 @@ public class MultiSiteActivator implements BundleActivator
         if (MultiSiteActivator.bookingsService == null) return null;
         
         return MultiSiteActivator.bookingsService.getService();
+    }
+    
+    /**
+     * Gets a configuration value.
+     * 
+     * @param property the configuration property name
+     * @param defValue value to return if the config service isn't running or \
+     *          property not found
+     * @return configuration value or default if not found
+     */
+    public static String getConfigValue(String property, String defValue)
+    {
+        if (MultiSiteActivator.configService == null) return defValue;
+        
+        Config config = MultiSiteActivator.configService.getService();
+        return config == null ? defValue : config.getProperty(property, defValue);
     }
 }

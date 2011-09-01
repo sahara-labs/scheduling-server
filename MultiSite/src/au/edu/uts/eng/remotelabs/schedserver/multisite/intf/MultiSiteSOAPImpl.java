@@ -653,7 +653,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
                 return response;
             }
             
-            BookingOperation bk = bookingsService.cancelBooking(booking, "Multisite request.", false, db);
+            BookingOperation bk = bookingsService.cancelBooking(booking, "Multisite request.", true, db);
             opResp.setWasSuccessful(bk.successful());
             opResp.setReason(bk.getFailureReason());
         }
