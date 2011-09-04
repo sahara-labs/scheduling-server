@@ -47,12 +47,14 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -229,12 +231,10 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
                 return response;
             }
             
-            
-            
-            
-
             SessionType provSes = request.getSession();
             Session ses;
+            Bookings booking = null;
+            
             if ((ses = new SessionDao(db).findActiveSession(user)) != null && ses.getAssignmentTime() != null)
             {
                 /* User already has a session. */
@@ -260,7 +260,7 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             {
                 /* The starting session maybe because the user has a booking
                  *  scheduled to start now. */
-                Bookings booking = new BookingsDao(db).getNextBookingWithin(user, 800);
+                booking = new BookingsDao(db).getNextBookingWithin(user, 450); // HACK number that is half a slot
                 if (booking == null)
                 {
                     /* FAILURE CONDITION: This is an uninitiated session. This 
@@ -272,9 +272,13 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
                 }
                 else if (!booking.getResourcePermission().getId().equals(remotePerm.getPermission().getId()))
                 {
-                    
+                    /* FAILURE CONDITION: The user has a booking, but not for
+                     * this is session. */
+                    this.logger.info("Unable to start session for user '" + user.qName() + "' because the user has a " +
+                    		"booking for a different permission starting soon.");
+                    respType.setReason("User is booked for another permission.");
+                    return response;
                 }
-                
                 
                 /* User isn't in session, so create them a session. */
                 ses = new Session();
@@ -354,6 +358,17 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             
             this.updateSessionDetails(ses, provSes, db);
             
+            /* mark the booking as redeemed, if this was caused by a booking. */
+            if (booking != null)
+            {
+                booking.setActive(true);
+                booking.setSession(ses);
+                
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
+            }
+            
             respType.setWasSuccessful(true);
         }
         finally
@@ -365,19 +380,119 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
     }
 
     @Override
-    public SessionFinishedResponse sessionFinished(final SessionFinished sessionFinished4)
+    public SessionUpdateResponse sessionUpdate(final SessionUpdate sessionUpdate)
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#sessionFinished");
-    }
+        UserSessionType request = sessionUpdate.getSessionUpdate();
+        String siteId = request.getSiteID();
+        String userId = request.getUserID();
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#sessionUpdate with params: site=" +
+                siteId + ", user=" + userId + ".");
+        
+        SessionUpdateResponse response = new SessionUpdateResponse();
+        OperationResponseType opResp = new OperationResponseType();
+        opResp.setWasSuccessful(false);
+        response.setSessionUpdateResponse(opResp);
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.warn("Unable to update session for user '" + userId + "' because the site '" + siteId + 
+                        "' was not found.");
+                opResp.setReason("Site not found");
+                return response;
+            }
+            
+            Session ses = (Session) db.createCriteria(Session.class)
+                    .add(Restrictions.eq("active", Boolean.TRUE))
+                    .createCriteria("user")
+                        .add(Restrictions.eq("namespace", site.getUserNamespace()))
+                        .add(Restrictions.eq("name", userId))
+                    .uniqueResult();
+            if (ses == null)
+            {
+                this.logger.warn("Unable to update session for user '" + userId + "' because they do not have " +
+                		"an active session.");
+                opResp.setReason("Session not found.");
+            }
+            else
+            {
+                this.logger.info("Updating session for user '" + userId + "' because of notification from " +
+                		"provider site '" + site.getName() + "'.");
 
+                this.updateSessionDetails(ses, request.getSession(), db);
+                opResp.setWasSuccessful(true);
+            }
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        return response;     
+    }
+    
     @Override
-    public SessionUpdateResponse sessionUpdate(final SessionUpdate sessionUpdate6)
+    public SessionFinishedResponse sessionFinished(final SessionFinished sessionFinished)
     {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#sessionUpdate");
+        String siteId = sessionFinished.getSessionFinished().getSiteID();
+        String userId = sessionFinished.getSessionFinished().getUserID();
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#sessionFinished with params: site=" +
+                siteId + ", user=" + userId + '.');
+        
+        SessionFinishedResponse response = new SessionFinishedResponse();
+        OperationResponseType opResp = new OperationResponseType();
+        opResp.setWasSuccessful(false);
+        response.setSessionFinishedResponse(opResp);
+        
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.warn("Unable to finish session for user '" + userId + "' because the site '" + siteId + 
+                        "' was not found.");
+                opResp.setReason("Site not found");
+                return response;
+            }
+            
+            Session ses = (Session) db.createCriteria(Session.class)
+                    .add(Restrictions.eq("active", Boolean.TRUE))
+                    .createCriteria("user")
+                        .add(Restrictions.eq("namespace", site.getUserNamespace()))
+                        .add(Restrictions.eq("name", userId))
+                    .uniqueResult();
+            if (ses == null)
+            {
+                this.logger.warn("Unable to terminate session for user '" + userId + "' because they do not have " +
+                		"an active session.");
+                opResp.setReason("Session not found.");
+            }
+            else
+            {
+                this.logger.info("Terminating session for user '" + userId + "' because of notification from " +
+                		"provider site '" + site.getName() + "'.");
+                
+                ses.setActive(false);
+                ses.setRemovalTime(new Date());
+                ses.setRemovalReason("Provider notification.");
+                
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
+                
+                opResp.setWasSuccessful(true);
+            }
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        return response;
     }
 
     /**

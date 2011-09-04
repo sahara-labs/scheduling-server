@@ -49,6 +49,8 @@ import org.apache.axis2.databinding.ADBBean;
 import org.apache.axis2.databinding.ADBDataSource;
 import org.apache.axis2.databinding.ADBException;
 
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.OperationResponseType;
+
 /**
  * SessionFinishedResponse bean class.
  */
@@ -59,14 +61,14 @@ public class SessionFinishedResponse implements ADBBean
     public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/",
             "sessionFinishedResponse", "ns2");
 
-    protected UserSessionType response;
+    protected OperationResponseType response;
 
-    public UserSessionType getSessionFinishedResponse()
+    public OperationResponseType getSessionFinishedResponse()
     {
         return this.response;
     }
 
-    public void setSessionFinishedResponse(final UserSessionType param)
+    public void setSessionFinishedResponse(final OperationResponseType param)
     {
         this.response = param;
     }
@@ -122,7 +124,7 @@ public class SessionFinishedResponse implements ADBBean
                                 && new QName("http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/",
                                         "sessionFinishedResponse").equals(reader.getName()))
                         {
-                            object.setSessionFinishedResponse(UserSessionType.Factory.parse(reader));
+                            object.setSessionFinishedResponse(OperationResponseType.Factory.parse(reader));
                         }
                         else
                         {

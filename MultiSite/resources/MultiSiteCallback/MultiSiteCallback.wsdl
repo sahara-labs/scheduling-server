@@ -225,7 +225,8 @@
 			</xsd:element>
 			<xsd:element name="sessionFinished" type="Q1:UserIDType">
 			</xsd:element>
-			<xsd:element name="sessionFinishedResponse" type="mutcb:UserSessionType">
+			<xsd:element name="sessionFinishedResponse"
+				type="Q1:OperationResponseType">
 			</xsd:element>
 			<xsd:element name="sessionUpdate" type="mutcb:UserSessionType">
 			</xsd:element>
