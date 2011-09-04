@@ -56,10 +56,10 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.BookingCancellationAsyncRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.SessionStartedAsyncRequest;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
 
 /**
@@ -495,18 +495,12 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         this.logger.info("Assigned " + session.getUser().qName() + " to rig " + rig.getName() + " (session=" +
                 session.getId() + ").");
 
-        if (this.notTest)
-        {
-            new RigAllocator().allocate(session, db);
-        }
         
-        /* If the booking for a consumer site, notify the consumer site the 
-         * booking has been redeemed. */
-        if (booking.getResourcePermission().isRemote())
-        {
-            BookingMultiSiteCallbackHander handler = new BookingMultiSiteCallbackHander();
-            new SessionStartedAsyncRequest().sessionStarted(session, db, handler);
-        }
+        /* Notify a session has started. */
+        BookingsActivator.notifySessionEvent(SessionEvent.ASSIGNED, session, db);
+        
+        /* Allocate the rig to the user. */
+        if (this.notTest)  new RigAllocator().allocate(session, db);
     }
     
     /**
