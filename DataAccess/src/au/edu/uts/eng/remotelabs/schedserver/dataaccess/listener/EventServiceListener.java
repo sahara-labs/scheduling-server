@@ -43,17 +43,16 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Event listener for SessinEventListener services.
+ * Event listener for a event listener service.
  */
-public class SessionEventServiceListener implements ServiceListener
+public class EventServiceListener<T> implements ServiceListener
 {
     /** List of services. */
-    private final List<SessionEventListener> services;
+    private final List<T> services;
     
     /** Bundle context. */
     private final BundleContext context;
@@ -62,11 +61,10 @@ public class SessionEventServiceListener implements ServiceListener
     /** Logger. */
     private final Logger logger;
     
-    public SessionEventServiceListener(List<SessionEventListener> services, BundleContext context)
+    public EventServiceListener(List<T> services, BundleContext context)
     {
         this.logger = LoggerActivator.getLogger();
-        this.logger.debug("Creating a session event listener for bundle '" + context.getBundle().getSymbolicName() +
-                "'.");
+        this.logger.debug("Creating a event listener for bundle '" + context.getBundle().getSymbolicName() + "'.");
         
         this.context = context;
         this.services = services;
@@ -76,20 +74,18 @@ public class SessionEventServiceListener implements ServiceListener
     public void serviceChanged(ServiceEvent evt)
     {
         @SuppressWarnings("unchecked")
-        ServiceReference<SessionEventListener> ref = (ServiceReference<SessionEventListener>) evt.getServiceReference();
+        ServiceReference<T> ref = (ServiceReference<T>) evt.getServiceReference();
         switch (evt.getType())
         {
             case ServiceEvent.REGISTERED:
-                this.logger.debug("Registering a session event listener from bundle '" + 
-                        ref.getBundle().getSymbolicName() + "'.");
+                this.logger.debug("Registering a event listener from bundle '" + ref.getBundle().getSymbolicName() + "'.");
                 synchronized (this.services)
                 {
                     this.services.add(this.context.getService(ref));
                 }
                 break;
             case ServiceEvent.UNREGISTERING:
-                this.logger.debug("Removing a session event listener from bundle '" + 
-                        ref.getBundle().getSymbolicName() + "'.");
+                this.logger.debug("Removing a event listener from bundle '" + ref.getBundle().getSymbolicName() + "'.");
                 synchronized (this.services)
                 {
                     this.services.remove(this.context.getService(ref));
