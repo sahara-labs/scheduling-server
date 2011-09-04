@@ -55,16 +55,15 @@ import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RigEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.StatusTimeoutChecker;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -120,16 +119,18 @@ public class RigProviderActivator implements BundleActivator
         
         /* Add service listener to add and remove registered rig event listeners. */
         RigProviderActivator.rigListeners = new ArrayList<RigEventListener>();
-        RigEventServiceListener listener = new RigEventServiceListener(RigProviderActivator.rigListeners, context);
-        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
+        EventServiceListener<RigEventListener> rigServListener = 
+                new EventServiceListener<RigEventListener>(RigProviderActivator.rigListeners, context);
+        context.addServiceListener(rigServListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         for (ServiceReference<RigEventListener> ref : context.getServiceReferences(RigEventListener.class, null))
         {
-            listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+            rigServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
         
         /* Add service listener to add and remove registered session event listeners. */
         RigProviderActivator.sessionListeners = new ArrayList<SessionEventListener>();
-        SessionEventServiceListener sesServListener = new SessionEventServiceListener(sessionListeners, context);
+        EventServiceListener<SessionEventListener> sesServListener = 
+                new EventServiceListener<SessionEventListener>(sessionListeners, context);
         context.addServiceListener(sesServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
         for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))

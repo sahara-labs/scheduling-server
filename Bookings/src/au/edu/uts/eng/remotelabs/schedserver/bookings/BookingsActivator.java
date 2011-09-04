@@ -57,16 +57,15 @@ import org.osgi.util.tracker.ServiceTracker;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingEngine.BookingInit;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.RigEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBookingEngine;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.impl.BookingsServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
@@ -148,7 +147,8 @@ public class BookingsActivator implements BundleActivator
 		
 		/* Add service listener to add and remove registered rig event listeners. */
 		BookingsActivator.rigListeners = new ArrayList<RigEventListener>();
-		RigEventServiceListener servListener = new RigEventServiceListener(rigListeners, context);
+		EventServiceListener<RigEventListener> servListener = 
+		        new EventServiceListener<RigEventListener>(rigListeners, context);
         context.addServiceListener(servListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         for (ServiceReference<RigEventListener> ref : context.getServiceReferences(RigEventListener.class, null))
         {
@@ -157,7 +157,8 @@ public class BookingsActivator implements BundleActivator
         
         /* Add service listener to add and remove registered session event listeners. */
         BookingsActivator.sessionListeners = new ArrayList<SessionEventListener>();
-        SessionEventServiceListener sesServListener = new SessionEventServiceListener(sessionListeners, context);
+        EventServiceListener<SessionEventListener> sesServListener = 
+                new EventServiceListener<SessionEventListener>(sessionListeners, context);
         context.addServiceListener(sesServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
         for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))

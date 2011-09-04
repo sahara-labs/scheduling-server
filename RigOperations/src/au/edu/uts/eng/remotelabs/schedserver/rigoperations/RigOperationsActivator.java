@@ -48,14 +48,13 @@ import org.osgi.framework.ServiceReference;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.impl.RigEventServiceListener;
 
 /**
  * Activator for the Rig Operations bundle.
@@ -79,7 +78,8 @@ public class RigOperationsActivator implements BundleActivator
         
         /* Add service listener to add and remove registered rig event listeners. */
         rigListeners = new ArrayList<RigEventListener>();
-        RigEventServiceListener rigServListener = new RigEventServiceListener(rigListeners, context);
+        EventServiceListener<RigEventListener> rigServListener = 
+                new EventServiceListener<RigEventListener>(rigListeners, context);
         context.addServiceListener(rigServListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         for (ServiceReference<RigEventListener> ref : context.getServiceReferences(RigEventListener.class, null))
         {
@@ -88,7 +88,7 @@ public class RigOperationsActivator implements BundleActivator
         
         /* Add service listener to add and remove registered session event listeners. */
         RigOperationsActivator.sessionListeners = new ArrayList<SessionEventListener>();
-        SessionEventServiceListener sesServListener = new SessionEventServiceListener(sessionListeners, context);
+        EventServiceListener<SessionEventListener> sesServListener = new EventServiceListener<SessionEventListener>(sessionListeners, context);
         context.addServiceListener(sesServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
         for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))

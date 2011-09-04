@@ -57,7 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventServiceListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
@@ -131,7 +131,8 @@ public class QueueActivator implements BundleActivator
         
         /* Set up the session event service listener to add and remove event listeners. */
         QueueActivator.sessionListeners = new ArrayList<SessionEventListener>();
-        SessionEventServiceListener sesServListener = new SessionEventServiceListener(QueueActivator.sessionListeners, context);
+        EventServiceListener<SessionEventListener> sesServListener = 
+                new EventServiceListener<SessionEventListener>(QueueActivator.sessionListeners, context);
         context.addServiceListener(sesServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
         for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))
