@@ -38,7 +38,6 @@
 package au.edu.uts.eng.remotelabs.schedserver.rigoperations;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.osgi.framework.BundleActivator;
@@ -47,7 +46,13 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.impl.RigEventServiceListener;
@@ -58,7 +63,10 @@ import au.edu.uts.eng.remotelabs.schedserver.rigoperations.impl.RigEventServiceL
 public class RigOperationsActivator implements BundleActivator 
 {
     /** Rig event listeners list. */
-    private static List<RigEventListener> listenerList;
+    private static List<RigEventListener> rigListeners;
+    
+    /** The list of session event listeners. */
+    private static List<SessionEventListener> sessionListeners;
     
     /** Logger. */
     private Logger logger;
@@ -70,16 +78,22 @@ public class RigOperationsActivator implements BundleActivator
         this.logger.info("Started the Rig Operations bundle.");
         
         /* Add service listener to add and remove registered rig event listeners. */
-        listenerList = new ArrayList<RigEventListener>();
-        RigEventServiceListener listener = new RigEventServiceListener(listenerList, context);
-        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
-        
-        /* Fire pseudo events for all registered services. */
-        Collection<ServiceReference<RigEventListener>> refs = context.getServiceReferences(RigEventListener.class, null);
-        
-        for (ServiceReference<RigEventListener> ref : refs)
+        rigListeners = new ArrayList<RigEventListener>();
+        RigEventServiceListener rigServListener = new RigEventServiceListener(rigListeners, context);
+        context.addServiceListener(rigServListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
+        for (ServiceReference<RigEventListener> ref : context.getServiceReferences(RigEventListener.class, null))
         {
-                listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+                rigServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+        }
+        
+        /* Add service listener to add and remove registered session event listeners. */
+        sessionListeners = new ArrayList<SessionEventListener>();
+        SessionEventServiceListener sesServListener = new SessionEventServiceListener(sessionListeners, context);
+        context.addServiceListener(sesServListener, 
+                '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
+        for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))
+        {
+            sesServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
 	}
 
@@ -87,24 +101,40 @@ public class RigOperationsActivator implements BundleActivator
 	public void stop(BundleContext context) throws Exception 
 	{
 	    this.logger.info("Stopping the Rig Operations bundle.");
-		listenerList = null;
+		rigListeners = null;
 	}
 
 	/**
-     * Returns the list of registered rig state change event listeners.
+     * Notifies the rig event listeners of an event.
      * 
-     * @return list of event listeners
+     * @param event type of event
+     * @param rig the rig that the event refers to
+     * @param db database
      */
-    public static RigEventListener[] getRigEventListeners()
+    public static void notifyRigEvent(RigStateChangeEvent event, Rig rig, org.hibernate.Session db)
     {
-        if (listenerList == null)
-        {
-            return new RigEventListener[0];
-        }
+        if (sessionListeners == null) return;
         
-        synchronized (listenerList)
+        for (RigEventListener listener : rigListeners)
         {
-            return listenerList.toArray(new RigEventListener[listenerList.size()]);
+            listener.eventOccurred(event, rig, db);
+        }
+    }
+    
+    /**
+     * Notifies the session event listeners of an event.
+     * 
+     * @param event type of event
+     * @param session session change
+     * @param db database
+     */
+    public static void notifySessionEvent(SessionEvent event, Session session, org.hibernate.Session db)
+    {
+        if (sessionListeners == null) return;
+        
+        for (SessionEventListener listener : sessionListeners)
+        {
+            listener.eventOccurred(event, session, db);
         }
     }
 }

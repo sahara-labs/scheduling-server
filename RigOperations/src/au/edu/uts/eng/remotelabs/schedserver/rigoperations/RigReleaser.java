@@ -42,7 +42,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -99,11 +98,7 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             rigLogDao.addOfflineLog(this.rig, "Release failed with error: " + e.getMessage());
             
             /* Fire event the rig is offline. */
-            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-            for (RigEventListener evt : evts)
-            {
-                evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, db);
-            }
+            RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, this.rig, db);
         }
     }
     
@@ -132,12 +127,8 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             this.rig.setSession(null);
             dao.flush();
 
-            /* Fire event the rig is offline. */
-            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-            for (RigEventListener evt : evts)
-            {
-                evt.eventOccurred(RigStateChangeEvent.FREE, this.rig, dao.getSession());
-            }
+            /* Fire event the rig is free. */
+            RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.FREE, this.rig, dao.getSession());
         }
         else
         {
@@ -153,11 +144,7 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
             rigLogDao.addOfflineLog(this.rig, "Release failed with reason: " + op.getError().getReason());
             
             /* Fire event the rig is offline. */
-            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-            for (RigEventListener evt : evts)
-            {
-                evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, dao.getSession());
-            }
+            RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, this.rig, dao.getSession());
         }
         
         dao.closeSession();
@@ -184,11 +171,7 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         rigLogDao.addOfflineLog(this.rig, "Release failed with error: " + e.getMessage());
         
         /* Fire event the rig is offline. */
-        RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-        for (RigEventListener evt : evts)
-        {
-            evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, dao.getSession());
-        }
+        RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, this.rig, dao.getSession());
         
         dao.closeSession();
     }

@@ -42,8 +42,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
@@ -102,6 +102,9 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
+            
+            /* Fire event the session is terminated. */
+            RigOperationsActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
 
             /* Put the rig offline. */
             rig.setInSession(false);
@@ -117,11 +120,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
             rigLogDao.addOfflineLog(rig, "Allocation failed with error: " + e.getMessage());
             
             /* Fire event the rig is offline. */
-            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-            for (RigEventListener evt : evts)
-            {
-                evt.eventOccurred(RigStateChangeEvent.OFFLINE, rig, db);
-            }
+            RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, db);
         }
     }
     
@@ -147,6 +146,8 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
             /* The session is being set to ready, so it may be used. */
             this.session.setReady(true);
             dao.flush();
+            
+            RigOperationsActivator.notifySessionEvent(SessionEvent.READY, this.session, dao.getSession());
         }
         else
         {
@@ -160,6 +161,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
             this.session.setRemovalReason("Allocation failure with reason: " + err.getReason());
             this.session.setRemovalTime(new Date());
             dao.flush();
+            RigOperationsActivator.notifySessionEvent(SessionEvent.FINISHED, this.session, dao.getSession());
             
             if (err.getCode() == 4) // Error code 4 is an existing session exists
             {
@@ -180,11 +182,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
                 rigLogDao.addOfflineLog(rig, "Allocation failed with reason: " + err.getReason());
                 
                 /* Fire event the rig is offline. */
-                RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-                for (RigEventListener evt : evts)
-                {
-                    evt.eventOccurred(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
-                }
+                RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
             }
         }
         
@@ -208,6 +206,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
         this.session.setRemovalReason("Allocation failure with SOAP error '" + e.getMessage() + "'.");
         this.session.setRemovalTime(new Date());
         dao.flush();
+        RigOperationsActivator.notifySessionEvent(SessionEvent.FINISHED, this.session, dao.getSession());
         
         rig.setInSession(false);
         rig.setOnline(false);
@@ -221,11 +220,8 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
         
         
         /* Fire event the rig is offline. */
-        RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-        for (RigEventListener evt : evts)
-        {
-            evt.eventOccurred(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
-        }
+        RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
+
         dao.closeSession();
     }
 }

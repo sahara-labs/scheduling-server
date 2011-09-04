@@ -41,7 +41,6 @@ import org.hibernate.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -132,11 +131,7 @@ public class RigMaintenance extends RigClientAsyncServiceCallbackHandler
                     ", tests=" + tests + ".");
             
             /* Fire event the rig is offline. */
-            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-            for (RigEventListener evt : evts)
-            {
-                evt.eventOccurred(RigStateChangeEvent.OFFLINE, rig, db);
-            }
+            RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, db);
         }
     }
     
@@ -165,11 +160,7 @@ public class RigMaintenance extends RigClientAsyncServiceCallbackHandler
             rigLogDao.addOfflineLog(this.rig, "Set maintenance failed with reason: " + err.getReason());
 
             /* Fire event the rig is offline. */
-            RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-            for (RigEventListener evt : evts)
-            {
-                evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, db);
-            }
+            RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, this.rig, db);
         }
     }
     
@@ -196,10 +187,6 @@ public class RigMaintenance extends RigClientAsyncServiceCallbackHandler
                 ", message: " + e.getMessage() + "'.");
 
         /* Fire event the rig is offline. */
-        RigEventListener evts[] = RigOperationsActivator.getRigEventListeners();
-        for (RigEventListener evt : evts)
-        {
-            evt.eventOccurred(RigStateChangeEvent.OFFLINE, this.rig, db);
-        }
+        RigOperationsActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, this.rig, db);
     }
 }
