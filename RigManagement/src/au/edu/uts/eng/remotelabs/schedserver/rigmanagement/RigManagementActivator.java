@@ -121,8 +121,9 @@ public class RigManagementActivator implements BundleActivator
 		this.logger.info("The rig management bundle is shutting down.");
 		
 		this.soapService.unregister();
-		
 		this.notifierReg.unregister();
+		
+		RigManagementActivator.sessionListeners = null;
 		
 		bookingTracker.close();
 		bookingTracker = null;

@@ -87,7 +87,7 @@ public class RigOperationsActivator implements BundleActivator
         }
         
         /* Add service listener to add and remove registered session event listeners. */
-        sessionListeners = new ArrayList<SessionEventListener>();
+        RigOperationsActivator.sessionListeners = new ArrayList<SessionEventListener>();
         SessionEventServiceListener sesServListener = new SessionEventServiceListener(sessionListeners, context);
         context.addServiceListener(sesServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
@@ -101,7 +101,8 @@ public class RigOperationsActivator implements BundleActivator
 	public void stop(BundleContext context) throws Exception 
 	{
 	    this.logger.info("Stopping the Rig Operations bundle.");
-		rigListeners = null;
+		RigOperationsActivator.rigListeners = null;
+		RigOperationsActivator.sessionListeners = null;
 	}
 
 	/**
