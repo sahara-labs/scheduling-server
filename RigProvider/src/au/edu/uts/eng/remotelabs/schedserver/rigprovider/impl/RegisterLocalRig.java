@@ -46,7 +46,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -168,10 +167,7 @@ public class RegisterLocalRig
         this.logDao.addRegisteredLog(this.rig, "Rig was registered.");
         
         /* Provide notification a new rig is registered. */
-        for (RigEventListener list : RigProviderActivator.getRigEventListeners())
-        {
-            list.eventOccurred(RigStateChangeEvent.REGISTERED, this.rig, this.rigDao.getSession());
-        }
+        RigProviderActivator.notifyRigEvent(RigStateChangeEvent.REGISTERED, this.rig, this.rigDao.getSession());
 
         return this.rig.getId() > 0;
     }

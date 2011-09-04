@@ -42,8 +42,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
@@ -70,7 +70,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigSta
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigType;
 
 /**
- * Local rig provider SOAP interface operation implementations.
+ * Rig provider SOAP interface operation implementations.
  */
 public class RigProviderSOAPImpl implements RigProvider
 {
@@ -224,6 +224,8 @@ public class RigProviderSOAPImpl implements RigProvider
            ses.setReady(true);
            status.setSuccessful(true);
            rig.setLastUpdateTimestamp(new Date());
+           
+           RigProviderActivator.notifySessionEvent(SessionEvent.READY, ses, dao.getSession());
         }
         else
         {
@@ -236,6 +238,8 @@ public class RigProviderSOAPImpl implements RigProvider
             ses.setReady(false);
             ses.setRemovalReason("Allocation failure with reason: " + err.getReason());
             ses.setRemovalTime(new Date());
+            
+            RigProviderActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
         
             if (err.getCode() == 4) // Error code 4 is an existing session exists
             {
@@ -252,6 +256,8 @@ public class RigProviderSOAPImpl implements RigProvider
                 /* Log the rig going offline. */
                 RigLogDao logDao = new RigLogDao(dao.getSession());
                 logDao.addOfflineLog(rig, "Allocation failed with reason: " + err.getReason() + "");
+                
+                RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
             }
             
             rig.setLastUpdateTimestamp(new Date());
@@ -298,10 +304,7 @@ public class RigProviderSOAPImpl implements RigProvider
             dao.flush();
             
             /* Provide notification a new rig is free. */
-            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
-            {
-                list.eventOccurred(RigStateChangeEvent.ONLINE, rig, dao.getSession());
-            }
+            RigProviderActivator.notifyRigEvent(RigStateChangeEvent.ONLINE, rig, dao.getSession());
         }
         else
         {
@@ -331,10 +334,7 @@ public class RigProviderSOAPImpl implements RigProvider
             }
             
             /* Provide notification a new rig is offline. */
-            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
-            {
-                list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
-            }
+            RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
         }
         
         dao.flush();

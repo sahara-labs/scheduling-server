@@ -47,7 +47,6 @@ import org.hibernate.criterion.Restrictions;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -166,10 +165,7 @@ public class StatusTimeoutChecker implements Runnable
                 db.getTransaction().commit();
                 
                 /* Fire a notification the rig has gone offline. */
-                for (RigEventListener list : RigProviderActivator.getRigEventListeners())
-                {
-                    list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, db);
-                }
+                RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, db);
             }
         }
         catch (HibernateException hex)
