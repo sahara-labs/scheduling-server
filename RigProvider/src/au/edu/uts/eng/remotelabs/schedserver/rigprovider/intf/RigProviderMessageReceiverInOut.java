@@ -75,7 +75,7 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
         try
         {
             final Object obj = this.getTheImplementationObject(msgContext);
-            final RigProviderInterface skel = (RigProviderInterface) obj;
+            final RigProvider skel = (RigProvider) obj;
 
             
             SOAPEnvelope envelope = null;
