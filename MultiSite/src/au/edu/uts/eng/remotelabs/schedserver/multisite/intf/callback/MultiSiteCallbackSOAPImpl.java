@@ -45,11 +45,16 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemotePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -66,6 +71,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.Sessi
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionUpdateResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.UserSessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.OperationResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.ResourceType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SessionType;
 
 /**
@@ -183,20 +189,20 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
     public SessionStartedResponse sessionStarted(final SessionStarted sessionStarted)
     {
         UserSessionType request = sessionStarted.getSessionStarted();
+        String remoteSite = request.getSiteID();
         String pId = request.getPermission().getPermissionID();
-        SessionType sesInfo = request.getSession();
         this.logger.debug("Received " + this.getClass().getSimpleName() + "#sessionStarted with params: site=" + 
-                request.getSiteID() + ", user=" + request.getUserID() + ", permission=" + pId);
+                remoteSite + ", user=" + request.getUserID() + ", permission=" + pId);
         
         SessionStartedResponse response = new SessionStartedResponse();
         OperationResponseType respType = new OperationResponseType();
         respType.setWasSuccessful(false);
         response.setSessionStartedResponse(respType);
         
-        SessionDao dao = new SessionDao();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
         try
         {
-            User user = this.getUser(request.getUserID(), dao.getSession());
+            User user = this.getUser(request.getUserID(), db);
             if (user == null)
             {
                 this.logger.info("Unable to start session for user '" + request.getUserID() + "' because the user was " +
@@ -205,7 +211,7 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
                 return response;
             }
             
-            RemotePermission remotePerm = new RemotePermissionDao(dao.getSession()).findByGuid(pId);
+            RemotePermission remotePerm = new RemotePermissionDao(db).findByGuid(pId);
             if (remotePerm == null)
             {
                 this.logger.info("Unable to start session for user '" + user.qName() + "' because the permission " +
@@ -223,25 +229,136 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
                 return response;
             }
             
-            Session userSes;
-            if ((userSes = dao.findActiveSession(user)) != null)
+            
+            
+            
+
+            SessionType provSes = request.getSession();
+            Session ses;
+            if ((ses = new SessionDao(db).findActiveSession(user)) != null && ses.getAssignmentTime() != null)
             {
-                if (userSes.getAssignmentTime() != null)
+                /* User already has a session. */
+                this.logger.info("Unable to start session for user '" + user.qName() + "' because they are " +
+                            "already in session.");
+                respType.setReason("User already in session");
+                return response;
+            }
+            else if (ses != null)
+            {
+                /* This is a remote queuing assignment if the queued permission
+                 * is the same as the assignment permission. */
+                if (!remotePerm.getPermission().getId().equals(ses.getResourcePermission().getId()))
                 {
-                    this.logger.info("Unable to start session for user '" + user.qName() + "' because they are "
-                            + "already in session.");
-                    respType.setReason("User already in session");
+                    /* FAILURE CONDITION: The sites do not match. */
+                    this.logger.info("Unable to start session for user '" + user.qName() + "' because they are " +
+                            "in the queue for a different resource.");
+                    respType.setReason("User already in queue");
+                    return response;
+                }
+            }
+            else
+            {
+                /* The starting session maybe because the user has a booking
+                 *  scheduled to start now. */
+                Bookings booking = new BookingsDao(db).getNextBookingWithin(user, 800);
+                if (booking == null)
+                {
+                    /* FAILURE CONDITION: This is an uninitiated session. This 
+                     * isn't allowed for no good reason. */
+                    this.logger.info("Unable to start session for user '" + user.qName() + "' because no session is " +
+                    		"expected. The user is currently neither in queue or in session.");
+                    respType.setReason("Unexpected session.");
+                    return response;
+                }
+                else if (!booking.getResourcePermission().getId().equals(remotePerm.getPermission().getId()))
+                {
+                    
+                }
+                
+                
+                /* User isn't in session, so create them a session. */
+                ses = new Session();
+                ses.setActive(true);
+                
+                ses.setRequestTime(new Date());
+                ses.setPriority((short)1);
+                ses.setResourcePermission(remotePerm.getPermission());
+                ses.setRequestedResourceId(-1L);
+                
+                ResourceType res = provSes.getResource();
+                if (res == null)
+                {
+                    this.logger.error("Provider site did not provide resource information when starting a session.");
+                    ses.setResourceType(remotePerm.getPermission().getType());
+                    ses.setRequestedResourceName("NoT_PROvIDED_BY_CONSUMER");
                 }
                 else
                 {
-                    /* May be remote queuing assignment. */
-                    
+                    ses.setResourceType(res.getType());
+                    ses.setRequestedResourceName(res.getName());
                 }
+                
+                ses.setUser(user);
+                ses.setUserNamespace(user.getNamespace());
+                ses.setUserName(user.getName());
             }
+            
+            /* Remote rig type may not exist either, if not will need to be added. */
+            RigType remoteType = new RigTypeDao(db).
+                    loadOrCreate(request.getSiteID() + ':' + provSes.getRigType(), false, "provider=" + remoteSite,
+                    remotePerm.getSite());
+            
+            RigDao rigDao = new RigDao(db);
+            Rig remoteRig = rigDao.findMetaRig(remoteSite + ':' + provSes.getRigName(), "provider=" + remoteSite);
+            if (remoteRig == null)
+            {
+                /* Provider rig has not previously been used at site so it 
+                 * must be created. */
+                remoteRig = new Rig();
+                /* Rig name format is <Provider>:<Specificed rig name>. */
+                remoteRig.setName(remoteSite + ':' + provSes.getRigName());
+                /* Meta information about source. */
+                remoteRig.setMeta("provider=" + remoteSite);
+                remoteRig.setActive(false);  // The rig cannot take local sessions so cannot be online
+                remoteRig.setOnline(false);  
+                remoteRig.setManaged(false); // Is not managed because normal watch dogging does not apply
+                remoteRig.setContactUrl(provSes.getContactURL());
+                remoteRig.setLastUpdateTimestamp(new Date());
+                remoteRig.setRigType(remoteType);
+                remoteRig.setSite(remotePerm.getSite());
+                
+                rigDao.persist(remoteRig);
+            }
+            else
+            {
+                /* Rig details may have changed since last used session. */
+                boolean requiresFlush = false;
+                if (remoteRig.getContactUrl() == null || !remoteRig.getContactUrl().equals(provSes.getContactURL()))
+                {
+                    remoteRig.setContactUrl(provSes.getContactURL());
+                    remoteRig.setLastUpdateTimestamp(new Date());
+                    requiresFlush = true;
+                }
+                
+                if (!remoteRig.getRigType().getId().equals(remoteType.getId()))
+                {
+                    remoteRig.setRigType(remoteType);
+                    requiresFlush = true;
+                }
+                      
+                if (requiresFlush) rigDao.flush();
+            }
+            
+            ses.setRig(remoteRig);
+            ses.setAssignmentTime(new Date());
+            
+            this.updateSessionDetails(ses, provSes, db);
+            
+            respType.setWasSuccessful(true);
         }
         finally
         {
-           dao.closeSession();
+           db.close();
         }
         
         return response;
@@ -280,5 +397,29 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
         }
         
         return new UserDao(db).findByName(ns, username);
+    }
+    
+    /**
+     * Update session details with provider provided details.
+     * 
+     * @param ses session
+     * @param provSes provider session details
+     * @param db database
+     */
+    private void updateSessionDetails(Session ses, SessionType provSes, org.hibernate.Session db)
+    {
+        ses.setActivityLastUpdated(new Date());
+        
+        ses.setReady(provSes.getIsReady());
+        
+        // FIXME warning message
+        ses.setInGrace(provSes.getInGrace());
+        ses.setExtensions((short) provSes.getExtensions());
+        ses.setDuration(provSes.getTime() + provSes.getTimeLeft());
+        
+        db.beginTransaction();
+        if (ses.getId() == null) db.persist(ses);
+        else db.flush();
+        db.getTransaction().commit();
     }
 }

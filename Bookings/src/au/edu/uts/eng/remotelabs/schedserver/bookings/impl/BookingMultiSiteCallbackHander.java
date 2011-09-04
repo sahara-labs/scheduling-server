@@ -67,4 +67,10 @@ public class BookingMultiSiteCallbackHander extends MultiSiteCallbackHandler
     {
         this.logger.warn("Booking cancellation request failed. Exception message: " + e.getMessage());
     }
+    
+    @Override
+    public void receiveErrorsessionStarted(final Exception e)
+    {
+        e.printStackTrace();
+    }
 }

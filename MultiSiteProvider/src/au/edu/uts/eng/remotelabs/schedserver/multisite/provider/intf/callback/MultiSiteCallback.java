@@ -61,7 +61,7 @@ public interface MultiSiteCallback
 
     public SessionStartedResponse sessionStarted(SessionStarted response) throws RemoteException;
 
-    public void startsessionStarted(SessionStarted response, final MultiSiteCallbackHandler callback)
+    public void startSessionStarted(SessionStarted response, final MultiSiteCallbackHandler callback)
             throws RemoteException;
 
 

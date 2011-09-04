@@ -525,7 +525,7 @@ public class MultiSiteCallbackStub extends Stub implements MultiSiteCallback
     }
 
     @Override
-    public void startsessionStarted(final SessionStarted request, final MultiSiteCallbackHandler callback)
+    public void startSessionStarted(final SessionStarted request, final MultiSiteCallbackHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[1].getName());

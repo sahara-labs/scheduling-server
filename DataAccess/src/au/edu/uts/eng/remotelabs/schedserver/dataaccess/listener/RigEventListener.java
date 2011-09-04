@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2011, University of Technology, Sydney
+ * Copyright (c) 2010, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,27 +32,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 19th January 2011
+ * @date 6th April 2010
  */
-package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener;
 
 import org.hibernate.Session;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 
 /**
- * Listener for rigs that have been registered.
+ * Rig event call listener which can be implemented and registered 
+ * as a service to receive notification of rig state changes. The service 
+ * must be registered under the qualified name of this interface. The following
+ * events provide notification:
+ * <ul>
+ *  <li>Registered - The rig has been registered.</li>
+ *  <li>Online - An off line rig has come online.</li>
+ *  <li>Free - The rig has become free, so the previous session is finished.</li>
+ *  <li>Off line - An online rig has gone off line.</li>
+ *  <li>Removal - A registered rig is being removed.</li>
+ * </ul>
  */
-public class RigRegisteredListener implements RigEventListener
+public interface RigEventListener
 {
-    @Override
-    public void eventOccurred(RigStateChangeEvent event, Rig rig, Session db)
+    enum RigStateChangeEvent
     {
-        if (event == RigStateChangeEvent.REGISTERED)
-        {
-            ((SlotBookingEngine)BookingsActivator.getBookingEngine()).rigRegistered(rig, db);
-        }
+        /** The rig being registered. */
+        REGISTERED, /** The rig has come online. */
+        ONLINE, /** The rig has become free. */
+        FREE, /** The rig has gone off line. */
+        OFFLINE, /** The rig is being removed. */
+        REMOVED
     }
+    
+    /**
+     * Receives the event caused by the rig state change.
+     * 
+     * @param event type of event
+     * @param rig the rig which caused the state change
+     * @param db the database session the rig is attached to
+     */
+    public void eventOccurred(RigStateChangeEvent event, Rig rig, Session db);
 }

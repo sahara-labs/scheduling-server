@@ -32,72 +32,108 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 31st August 2011
+ * @date 2nd September 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback;
 
 import java.rmi.RemoteException;
-import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.axis2.AxisFault;
-import org.hibernate.Session;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.BookingCancelType;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.BookingCancelled;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.BookingType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.SessionStarted;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.types.UserSessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.PermissionIDType;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.UserIDType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.ResourceType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.AbstractRequest;
 
 /**
- * Request to notify consumer site of booking cancellation.
+ * Notifies a consumer site that a session has started.
  */
-public class BookingCancellationAsyncRequest extends AbstractRequest
+public class SessionStartedAsyncRequest extends AbstractRequest
 {
-    public boolean bookingCancelled(Bookings booking, Session db, MultiSiteCallbackHandler callback)
+    /**
+     * Notifies a consumer site a session has started.
+     * 
+     * @param ses session
+     * @param db database 
+     * @param callback callback when response or error received
+     * @return true if successful
+     */
+    public boolean sessionStarted(Session ses, org.hibernate.Session db, MultiSiteCallbackHandler callback)
     {
         this.session = db;
         
-        RemotePermission remotePerm = booking.getResourcePermission().getRemotePermission();
+        RemotePermission remotePerm = ses.getResourcePermission().getRemotePermission();
         if (remotePerm == null)
         {
-            this.logger.warn("Cannot sent booking notification cancellation to consumer because the remote mapping " +
-            		"permission was not found.");
+            this.logger.warn("Unable to send session started notification because the session permission does not " +
+            		"have a remote permission mapping.");
             return false;
         }
+        
+        if (ses.getRig() == null || ses.getAssignmentTime() == null)
+        {
+            this.logger.error("Unable to send session started notificatio because the session is not assigned to a rig.");
+            return false;
+        }
+        
         this.site = remotePerm.getSite();
+
+        this.logger.debug("Sending session starting notification for session for user '" + ses.getUser().qName() + 
+                "' to site '" + this.site.getName() + "'.");
         
         if (!this.checkPreconditions()) return false;
         
-        BookingCancelled request = new BookingCancelled();
-        BookingCancelType cancel = new BookingCancelType();
-        this.addSiteID(cancel);
-        request.setBookingCancelled(cancel);
-        
-        UserIDType user = new UserIDType();
-        this.addSiteID(user);
-        user.setUserID(booking.getUser().getName());
-        cancel.setUser(user);
-        
-        BookingType bt = new BookingType();
-        Calendar start = Calendar.getInstance();
-        start.setTime(booking.getStartTime());
-        bt.setStart(start);
-        Calendar end = Calendar.getInstance();
-        end.setTime(booking.getEndTime());
-        bt.setEnd(end);
-        cancel.setBooking(bt);
+        SessionStarted request = new SessionStarted();
+        UserSessionType userSession = new UserSessionType();
+        this.addSiteID(userSession);
+        userSession.setUserID(ses.getUser().getName());
+        request.setSessionStarted(userSession);
         
         PermissionIDType permId = new PermissionIDType();
         this.addSiteID(permId);
         permId.setPermissionID(remotePerm.getGuid());
-        bt.setPermission(permId);
+        userSession.setPermission(permId);
+        
+        SessionType sesType = new SessionType();
+        sesType.setIsReady(ses.isReady());
+        sesType.setInGrace(ses.isInGrace());
+        userSession.setSession(sesType);
+        
+        ResourceType resType = new ResourceType();
+        resType.setType(ses.getResourceType());
+        resType.setName(ses.getRequestedResourceName());
+        sesType.setResource(resType);
+        
+        {
+            Rig rig = ses.getRig();
+            sesType.setRigType(rig.getRigType().getName());
+            sesType.setRigName(rig.getName());
+            sesType.setContactURL(rig.getContactUrl());
+        }
+        
+        Date assignmentTime = ses.getAssignmentTime();
+        Date now = new Date();
+        
+        sesType.setExtensions(ses.getExtensions());
+        
+        int time = (int)(now.getTime() - assignmentTime.getTime()) / 1000;
+        sesType.setTime(time);
+        
+        /* Time left is allowed guarenteed time plus extension time minus elapsed time. */
+        sesType.setTimeLeft(ses.getDuration() + ((ses.getResourcePermission().getAllowedExtensions() - ses.getExtensions()) 
+                    * ses.getResourcePermission().getExtensionDuration()) - time);
+        
+        // FIXME warning messages
         
         try
         {
-            this.getCallbackStub().startbookingCancelled(request, callback);
+            this.getCallbackStub().startSessionStarted(request, callback);
         }
         catch (AxisFault e)
         {
@@ -116,7 +152,7 @@ public class BookingCancellationAsyncRequest extends AbstractRequest
             this.offlineSite(e);
             return false;
         }
-                
+        
         return true;
     }
 }

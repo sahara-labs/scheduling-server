@@ -60,10 +60,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.QueueRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.SessionInformationRequest;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 
 /**
  * Class which provides utility for entry to the queue. To add a user to the
@@ -622,6 +624,11 @@ public class QueueEntry
         
         /* Add the session to the queue. */
         this.activeSession = Queue.getInstance().addEntry(ses, this.db);
+        
+        if (this.activeSession != null) QueueActivator.notifySessionEvent(
+                    this.activeSession.getRig() == null ? SessionEvent.QUEUED : SessionEvent.ASSIGNED,
+                    this.activeSession, this.db);
+        
         return this.activeSession != null;
     }
 
@@ -651,7 +658,6 @@ public class QueueEntry
             this.errorMessage = "COMMUNICATION ERROR: '" + remoteSite + "' failed (" + providerCall.getFailureReason() + ")";
             return false;
         }
-        
         
         if (!providerCall.wasOperationSuccessful() || providerCall.isInBooking())
         {
@@ -691,17 +697,15 @@ public class QueueEntry
             /* Session state conditions. */
             ses.setReady(provSes.isReady());
             ses.setInGrace(provSes.isInGrace());
+
+            /* Remote rig type may not exist either, if not will need to be added. */
+            RigType remoteType = new RigTypeDao(this.db).
+                    loadOrCreate(remoteSite + ':' + provSes.getRigType(), false, "provider=" + remoteSite, remote.getSite());
             
             RigDao rigDao = new RigDao(this.db);
             Rig remoteRig = rigDao.findMetaRig(remoteSite + ':' + provSes.getRigName(), "provider=" + remoteSite);
             if (remoteRig == null)
             {
-                /* Remote rig type may not exist either, if not will need 
-                 * to be added. */
-                RigType remoteType = new RigTypeDao(this.db).
-                        loadOrCreate(remoteSite + ':' + provSes.getRigType(), false, "provider=" + remoteSite, remote.getSite());
-             
-                
                 /* Provider rig has not previously been used at site so it 
                  * must be created. */
                 remoteRig = new Rig();
@@ -718,6 +722,25 @@ public class QueueEntry
                 remoteRig.setSite(remote.getSite());
                 
                 rigDao.persist(remoteRig);
+            }
+            else
+            {
+                /* Rig details may have changed since last used session. */
+                boolean requiresFlush = false;
+                if (remoteRig.getContactUrl() == null || !remoteRig.getContactUrl().equals(provSes.getContactURL()))
+                {
+                    remoteRig.setContactUrl(provSes.getContactURL());
+                    remoteRig.setLastUpdateTimestamp(new Date());
+                    requiresFlush = true;
+                }
+                
+                if (!remoteRig.getRigType().getId().equals(remoteType.getId()))
+                {
+                    remoteRig.setRigType(remoteType);
+                    requiresFlush = true;
+                }
+                      
+                if (requiresFlush) rigDao.flush();
             }
             
             ses.setRig(remoteRig);

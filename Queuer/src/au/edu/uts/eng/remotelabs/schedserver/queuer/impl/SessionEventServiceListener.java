@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2011, Michael Diponio
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,9 +32,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 6th April 2010
+ * @date 3rd September 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl;
+package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
 
 import java.util.List;
 
@@ -43,53 +43,56 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Listener for rig event listener services.
+ * Event listener for SessinEventListener services.
  */
-public class RigEventServiceListener implements ServiceListener
+public class SessionEventServiceListener implements ServiceListener
 {
-    /** List of rig event listeners. */
-    private List<RigEventListener> listenerList;
+    /** List of services. */
+    private final List<SessionEventListener> services;
     
-    /** Local rig provider bundle context. */
-    private BundleContext context;
+    /** Bundle context. */
+    private final BundleContext context;
+    
     
     /** Logger. */
-    private Logger logger;
-        
-    public RigEventServiceListener(List<RigEventListener> listeners, BundleContext context)
+    private final Logger logger;
+    
+    public SessionEventServiceListener(List<SessionEventListener> services, BundleContext context)
     {
-        this.listenerList = listeners;
-        this.context = context;
-        
         this.logger = LoggerActivator.getLogger();
+        this.logger.debug("Creating a session event listener for bundle '" + context.getBundle().getSymbolicName() +
+                "'.");
+        
+        this.context = context;
+        this.services = services;
     }
     
     @Override
     public void serviceChanged(ServiceEvent evt)
     {
         @SuppressWarnings("unchecked")
-        ServiceReference<RigEventListener> ref = (ServiceReference<RigEventListener>) evt.getServiceReference();
+        ServiceReference<SessionEventListener> ref = (ServiceReference<SessionEventListener>) evt.getServiceReference();
         switch (evt.getType())
         {
             case ServiceEvent.REGISTERED:
-                this.logger.debug("Added rig event listener from bundle " + ref.getBundle().getSymbolicName() + " to " +
-                		"the rig provider.");
-                synchronized (this.listenerList)
+                this.logger.debug("Registering a session event listener from bundle '" + 
+                        ref.getBundle().getSymbolicName() + "'.");
+                synchronized (this.services)
                 {
-                    this.listenerList.add(this.context.getService(ref));
+                    this.services.add(this.context.getService(ref));
                 }
                 break;
             case ServiceEvent.UNREGISTERING:
-                this.logger.debug("Removing rig event listener from bundle " + ref.getBundle().getSymbolicName() + 
-                        " from the rig provider.");
-                synchronized (this.listenerList)
+                this.logger.debug("Removing a session event listener from bundle '" + 
+                        ref.getBundle().getSymbolicName() + "'.");
+                synchronized (this.services)
                 {
-                    this.listenerList.remove(this.context.getService(ref));
+                    this.services.remove(this.context.getService(ref));
                 }
                 break;
         }

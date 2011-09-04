@@ -41,6 +41,7 @@ import org.hibernate.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 
 /**
@@ -52,7 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 public class QueueRun
 {
     /**
-     * Attempts to assign the rig with the specified identifer.
+     * Attempts to assign the rig with the specified identifier.
      * 
      * @param id rig identifier
      */
@@ -64,8 +65,8 @@ public class QueueRun
     }
     
     /**
-     * Attempts to assign the rig with the specified identifer.
-     * The provided database session is used instead of openning a new
+     * Attempts to assign the rig with the specified identifier.
+     * The provided database session is used instead of opening a new
      * session.
      * 
      * @param id rig identifier
@@ -74,6 +75,13 @@ public class QueueRun
     public static void attemptAssignment(long id, Session db)
     {
         Queue.getInstance().runRigAssignment(id, db);
+        
+        /* If the rig is assigned we need to broadcast free. */
+        Rig rig = new RigDao(db).get(id);
+        if (rig.getSession() != null)
+        {
+            QueueActivator.notifySessionEvent(SessionEvent.ASSIGNED, rig.getSession(), db);
+        }
     }
     
     /**
@@ -98,6 +106,6 @@ public class QueueRun
      */
     public static void attemptAssignment(Rig rig, Session db)
     {
-        Queue.getInstance().runRigAssignment(rig.getId(), db);
+        QueueRun.attemptAssignment(rig.getId(), db);
     }
 }

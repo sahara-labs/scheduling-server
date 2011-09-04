@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2011, Michael Diponio
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,45 +32,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 6th April 2010
+ * @date 2nd September 2011
  */
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener;
 
-import org.hibernate.Session;
-
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 
 /**
- * Rig event call listener which can be implemented and registered 
- * as a service to receive notification of rig state changes. The service 
- * must be registered under the qualified name of this interface. The following
- * events provide notification:
+ * Session event listener that can be implemented and registered to receive 
+ * notification of session change events. This listener provides notifications
+ * of the following events:
  * <ul>
- *  <li>Registered - The rig has been registered.</li>
- *  <li>Online - An off line rig has come online.</li>
- *  <li>Free - The rig has become free, so the previous session is finished.</li>
- *  <li>Off line - An online rig has gone off line.</li>
- *  <li>Removal - A registered rig is being removed.</li>
+ *  <li>Queued - Session queued.</li>
+ *  <li>Assigned - Session assigned to a rig.</li>
+ *  <li>Ready - Session ready for use (assignment complete).</li>
+ *  <li>Extended - Session time extended.</li>
+ *  <li>Grace - Session in grace period (marked for termination).</li>
+ *  <li>Finished - Session is finished.</li>
  * </ul>
+ * <strong>NOTE:</strong>Not all sessions events may come in sequence.
  */
-public interface RigEventListener
+public interface SessionEventListener
 {
-    enum RigStateChangeEvent
+    enum SessionEvent
     {
-        /** The rig being registered. */
-        REGISTERED, /** The rig has come online. */
-        ONLINE, /** The rig has become free. */
-        FREE, /** The rig has gone off line. */
-        OFFLINE, /** The rig is being removed. */
-        REMOVED
+        /** Session is being queued. */
+        QUEUED, /** Session is assigned to a rig. */
+        ASSIGNED, /** Session is ready for use (assignment complete). */
+        READY,  /** Session time has been extended. */
+        EXTENDED, /** Session is in grace period (marked for termination). */
+        GRACE, /** Session is finished. */
+        FINISHED
     }
     
     /**
-     * Receives the event caused by the rig state change.
+     * Receives the event caused by the session state change.
      * 
      * @param event type of event
-     * @param rig the rig which caused the state change
+     * @param the session that
      * @param db the database session the rig is attached to
      */
-    public void eventOccurred(RigStateChangeEvent event, Rig rig, Session db);
+    public void eventOccurred(SessionEvent event, Session session, org.hibernate.Session db);
 }
