@@ -40,11 +40,13 @@ import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSessionRequest;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
+import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
 /**
@@ -80,6 +82,9 @@ public class SessionServiceImpl implements SessionService
         ses.setRemovalTime(new Date());
         db.flush();
         db.getTransaction().commit();
+        
+        /* Fire session finished event. */
+        SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
         
         if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourcePermission().getType()))
         {
