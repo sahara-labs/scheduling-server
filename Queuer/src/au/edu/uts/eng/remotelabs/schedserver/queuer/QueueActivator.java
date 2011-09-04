@@ -47,7 +47,6 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -58,12 +57,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueListenerRun;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueStaleSessionTask;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.SessionEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl.QueuerServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
@@ -88,9 +87,6 @@ public class QueueActivator implements BundleActivator
     
     /** The list of session event listeners. */
     private static List<SessionEventListener> sessionListeners;
-    
-    /** Listener for session event listener services. */
-    private ServiceListener sessionServicelistener;
     
     /** Bookings service. */
     public static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
@@ -133,14 +129,14 @@ public class QueueActivator implements BundleActivator
         /* Register the rig event listener service. */
         this.rigListenerReg = context.registerService(RigEventListener.class, new QueueListenerRun(), null);
         
-        /* Set up the session event service listener and pseudo fire existing services. */
+        /* Set up the session event service listener to add and remove event listeners. */
         QueueActivator.sessionListeners = new ArrayList<SessionEventListener>();
-        this.sessionServicelistener = new SessionEventServiceListener(QueueActivator.sessionListeners, context);
-        context.addServiceListener(this.sessionServicelistener, 
+        SessionEventServiceListener sesServListener = new SessionEventServiceListener(QueueActivator.sessionListeners, context);
+        context.addServiceListener(sesServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
         for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))
         {
-            this.sessionServicelistener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+            sesServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
         
         /* Register the Queuer POJO service. */
@@ -160,7 +156,6 @@ public class QueueActivator implements BundleActivator
 	    this.logger.info("Shutting down the Queuer bundle...");
 	    this.soapReg.unregister();
 	    this.queuerReg.unregister();
-	    context.removeServiceListener(this.sessionServicelistener);
 	    QueueActivator.sessionListeners = null;
 	    QueueActivator.bookingTracker.close();
 	    QueueActivator.bookingTracker = null;
@@ -191,9 +186,9 @@ public class QueueActivator implements BundleActivator
 	{
 	    if (QueueActivator.sessionListeners == null) return;
 	    
-	    for (SessionEventListener s : QueueActivator.sessionListeners)
+	    for (SessionEventListener listener : QueueActivator.sessionListeners)
 	    {
-	        s.eventOccurred(event, session, db);
+	        listener.eventOccurred(event, session, db);
 	    }
 	}
 }
