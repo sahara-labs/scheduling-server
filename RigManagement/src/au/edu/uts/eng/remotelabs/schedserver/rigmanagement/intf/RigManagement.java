@@ -58,6 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
@@ -549,6 +550,7 @@ public class RigManagement implements RigManagementInterface
             ses.setRemovalTime(new Date());
             ses.setRemovalReason("User was kicked off by admin. Reason: " + param.getReason());
             dao.flush();
+            RigManagementActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
             
             if (this.notTest) new RigReleaser().release(ses, dao.getSession());
         }

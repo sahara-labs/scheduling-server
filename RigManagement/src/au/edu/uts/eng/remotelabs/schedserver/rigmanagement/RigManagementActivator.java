@@ -37,16 +37,25 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.rigmanagement;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.impl.RigMaintenanceNotifier;
@@ -60,6 +69,9 @@ public class RigManagementActivator implements BundleActivator
 {
     /** Tracker for the booking engine service. */
     private static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
+    
+    /** The list of session event listeners. */
+    private static List<SessionEventListener> sessionListeners;
     
     /** SOAP servlet service registration. */
     private ServiceRegistration<ServletContainerService> soapService;
@@ -80,6 +92,16 @@ public class RigManagementActivator implements BundleActivator
         bookingTracker = 
                 new ServiceTracker<BookingEngineService, BookingEngineService>(context, BookingEngineService.class, null);
         bookingTracker.open();
+        
+        /* Add service listener to add and remove registered session event listeners. */
+        sessionListeners = new ArrayList<SessionEventListener>();
+        SessionEventServiceListener sesServListener = new SessionEventServiceListener(sessionListeners, context);
+        context.addServiceListener(sesServListener, 
+                '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
+        for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))
+        {
+            sesServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+        }
         
         /* Register the maintenance notifier. */
         Dictionary<String, String> props = new Hashtable<String, String>();
@@ -114,5 +136,22 @@ public class RigManagementActivator implements BundleActivator
     public static BookingEngineService getBookingService()
     {
         return bookingTracker == null ? null : bookingTracker.getService();
+    }
+    
+    /**
+     * Notifies the session event listeners of an event.
+     * 
+     * @param event type of event
+     * @param session session change
+     * @param db database
+     */
+    public static void notifySessionEvent(SessionEvent event, Session session, org.hibernate.Session db)
+    {
+        if (sessionListeners == null) return;
+        
+        for (SessionEventListener listener : sessionListeners)
+        {
+            listener.eventOccurred(event, session, db);
+        }
     }
 }

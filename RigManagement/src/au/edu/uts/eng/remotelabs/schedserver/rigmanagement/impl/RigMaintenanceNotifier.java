@@ -49,6 +49,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
@@ -121,6 +122,7 @@ public class RigMaintenanceNotifier implements Runnable
                     ses.setActive(false);
                     ses.setRemovalTime(pe);
                     ses.setRemovalReason("Rig going into maintenance.");
+                    RigManagementActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
 
                     if (this.notTest) new RigReleaser().release(ses, db);
                 }
