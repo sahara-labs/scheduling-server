@@ -52,7 +52,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.MBooking.BType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
@@ -62,6 +62,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener.BookingsEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
@@ -856,18 +857,18 @@ public class DayBookings
      * @return ses database session
      */
     @SuppressWarnings("unchecked")
-    public void fullLoad(Session ses)
+    public void fullLoad(Session db)
     {
         if (this.hasFullLoad) return;
         
         int num = 0;
                 
         /* Load all the rigs that have bookings today. */
-        for (Rig rig : (List<Rig>)ses.createCriteria(Rig.class).list())
+        for (Rig rig : (List<Rig>)db.createCriteria(Rig.class).list())
         {
             if (this.rigBookings.containsKey(rig.getName())) continue;
             
-            if ((num = (Integer) ses.createCriteria(Bookings.class)
+            if ((num = (Integer) db.createCriteria(Bookings.class)
                 .add(Restrictions.eq("active", Boolean.TRUE))
                 .add(this.addDayRange())
                 .add(Restrictions.eq("resourceType", ResourcePermission.RIG_PERMISSION))
@@ -876,17 +877,17 @@ public class DayBookings
                 .uniqueResult()) == 0) continue;
             
             this.logger.debug("Rig " + rig.getName() + " has " + num + " bookings, so loading it up for full day load.");
-            this.getRigBookings(rig, ses);
+            this.getRigBookings(rig, db);
         }
         
         /* Load all the rig types that have bookings today. */
-        Criteria qu = ses.createCriteria(RigType.class);
+        Criteria qu = db.createCriteria(RigType.class);
         if (this.typeTargets.size() > 0) qu.add(Restrictions.not(Restrictions.in("name", this.typeTargets.keySet())));
         for (RigType type : (List<RigType>) qu.list())
         {
             if (this.typeTargets.containsKey(type.getName())) continue;
             
-            if ((num = (Integer) ses.createCriteria(Bookings.class)
+            if ((num = (Integer) db.createCriteria(Bookings.class)
                 .add(Restrictions.eq("active", Boolean.TRUE))
                 .add(this.addDayRange())
                 .add(Restrictions.eq("resourceType", ResourcePermission.TYPE_PERMISSION))
@@ -902,7 +903,7 @@ public class DayBookings
             {
                 this.logger.warn("Rig type " + type.getName() + " has " + num + " bookings but not rigs so they all" +
                 		" will be cancelled.");
-                for (Bookings bk : (List<Bookings>)ses.createCriteria(Bookings.class)
+                for (Bookings bk : (List<Bookings>)db.createCriteria(Bookings.class)
                         .add(Restrictions.eq("active", Boolean.TRUE))
                         .add(this.addDayRange())
                         .add(Restrictions.eq("resourceType", ResourcePermission.TYPE_PERMISSION))
@@ -913,26 +914,27 @@ public class DayBookings
                     bk.setActive(false);
                     bk.setCancelReason("Booked rig type has no rigs.");
                     
-                    new BookingNotification(bk).notifyCancel();
+                    BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, bk, db);
+                    
                 }
-                ses.beginTransaction();
-                ses.flush();
-                ses.getTransaction().commit();
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
                 continue;
             }
             
-            this.getRigBookings(rigs.iterator().next(), ses);
+            this.getRigBookings(rigs.iterator().next(), db);
         }
 
         /* Load all the request capabilities that have bookings today. */
-        qu = ses.createCriteria(RequestCapabilities.class);
+        qu = db.createCriteria(RequestCapabilities.class);
         if (this.capsTargets.size() > 0) qu.add(
                 Restrictions.not(Restrictions.in("capabilities", this.capsTargets.keySet())));
         for (RequestCapabilities caps : (List<RequestCapabilities>) qu.list())
         {
             if (this.capsTargets.containsKey(caps.getCapabilities())) continue;
             
-            if ((num = (Integer) ses.createCriteria(Bookings.class)
+            if ((num = (Integer) db.createCriteria(Bookings.class)
                     .add(Restrictions.eq("active", Boolean.TRUE))
                     .add(this.addDayRange())
                     .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
@@ -945,13 +947,13 @@ public class DayBookings
             
             List<RequestCapabilities> capsList = new ArrayList<RequestCapabilities>();
             capsList.add(caps);
-            this.loadRequestCapabilities(capsList, ses, true);
+            this.loadRequestCapabilities(capsList, db, true);
             
             if (!this.capsTargets.containsKey(caps.getCapabilities()))
             {
                 this.logger.warn("Request capabilities " + caps.getCapabilities() + " has " + num + " bookings but " +
                 		"not any matching rigs so they all will be cancelled.");
-                for (Bookings bk : (List<Bookings>)ses.createCriteria(Bookings.class)
+                for (Bookings bk : (List<Bookings>)db.createCriteria(Bookings.class)
                         .add(Restrictions.eq("active", Boolean.TRUE))
                         .add(this.addDayRange())
                         .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
@@ -962,11 +964,11 @@ public class DayBookings
                     bk.setActive(false);
                     bk.setCancelReason("Booked request capabilities has no rigs.");
                     
-                    new BookingNotification(bk).notifyCancel();
+                    BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, bk, db);
                 }
-                ses.beginTransaction();
-                ses.flush();
-                ses.getTransaction().commit();
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
             }
         }
     }
@@ -1202,9 +1204,9 @@ public class DayBookings
      * <ul>
      * 
      * @param rig rig that was registered
-     * @param ses database session
+     * @param db database session
      */    
-    public void rigRegistered(Rig rig, Session ses)
+    public void rigRegistered(Rig rig, Session db)
     {
         String rigName = rig.getName();
         String rigType = rig.getRigType().getName();
@@ -1245,16 +1247,18 @@ public class DayBookings
                             "previous assigned rig " + rigName + " has changed type.");
                         
                         rb.removeBooking(mb);
-                        Bookings b = (Bookings)ses.merge(mb.getBooking());
+                        Bookings b = (Bookings)db.merge(mb.getBooking());
                         b.setActive(false);
                         b.setCancelReason("Rig no longer in rig type.");
-                        new BookingNotification(b).notifyCancel();
+                        
+                        /** Provide notification. */
+                        BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, b, db);
                     }
                     if (typeb.size() > 0)
                     {
-                        ses.beginTransaction();
-                        ses.flush();
-                        ses.getTransaction().commit();
+                        db.beginTransaction();
+                        db.flush();
+                        db.getTransaction().commit();
                     }
                 }
                 else
@@ -1280,21 +1284,22 @@ public class DayBookings
                         
                         rb.removeBooking(mb);
                         
-                        Bookings b = (Bookings)ses.merge(mb.getBooking());
+                        Bookings b = (Bookings)db.merge(mb.getBooking());
                         mb.setBooking(b); 
-                        if (!this.createBooking(mb, ses))
+                        if (!this.createBooking(mb, db))
                         {
                             requiresFlush = true;
                             b.setActive(false);
                             b.setCancelReason("Type over booked because rig no longer in rig type.");
-                            new BookingNotification(b).notifyCancel();
+                            
+                            BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, b, db);
                         }
                     }
                     if (requiresFlush)
                     {
-                        ses.beginTransaction();
-                        ses.flush();
-                        ses.getTransaction().commit();
+                        db.beginTransaction();
+                        db.flush();
+                        db.getTransaction().commit();
                     }
                 }
                 
@@ -1310,7 +1315,7 @@ public class DayBookings
                 }
                 else
                 {
-                    this.loadRigType(rig, ses, new ArrayList<RequestCapabilities>());
+                    this.loadRigType(rig, db, new ArrayList<RequestCapabilities>());
                 }
             }
             
@@ -1348,17 +1353,18 @@ public class DayBookings
                             if (mb.getSession() != null) continue;
                             
                             rb.removeBooking(mb);
-                            Bookings b = (Bookings)ses.merge(mb.getBooking());
+                            Bookings b = (Bookings)db.merge(mb.getBooking());
                             b.setActive(false);
                             b.setCancelReason("Capabilities over booked because rig no longer matches capability.");
-                            new BookingNotification(b).notifyCancel();
+                            
+                            BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, b, db);
                         }
                         
                         if (capsb.size() > 0)
                         {
-                            ses.beginTransaction();
-                            ses.flush();
-                            ses.getTransaction().commit();
+                            db.beginTransaction();
+                            db.flush();
+                            db.getTransaction().commit();
                         }
                     }
                     else
@@ -1379,23 +1385,24 @@ public class DayBookings
                             if (mb.getSession() != null) continue;
                             
                             rb.removeBooking(mb);
-                            Bookings b = (Bookings)ses.merge(mb.getBooking());
+                            Bookings b = (Bookings)db.merge(mb.getBooking());
                             mb.setBooking(b);
                             
-                            if (!this.createBooking(mb, ses))
+                            if (!this.createBooking(mb, db))
                             {
                                 b.setActive(false);
                                 b.setCancelReason("Capabilities over booked because rig no longer matches capability.");
-                                new BookingNotification(b).notifyCancel();
                                 requiresFlush = true;
+                                
+                                BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, b, db);
                             }
                         }
                         
                         if (requiresFlush)
                         {
-                            ses.beginTransaction();
-                            ses.flush();
-                            ses.getTransaction().commit();
+                            db.beginTransaction();
+                            db.flush();
+                            db.getTransaction().commit();
                         }
                     }
                     
@@ -1421,7 +1428,7 @@ public class DayBookings
 
             if (rigCaps.size() > 0)
             {
-                this.loadRequestCapabilities(rigCaps, ses, true);
+                this.loadRequestCapabilities(rigCaps, db, true);
             }
         }
         else
@@ -1488,8 +1495,8 @@ public class DayBookings
                 if (hasMatch)
                 {
                     this.rigBookings.put(rigName, rb);
-                    this.loadRigType(rig, ses, rigCaps);
-                    this.loadRequestCapabilities(rigCaps, ses, true);
+                    this.loadRigType(rig, db, rigCaps);
+                    this.loadRequestCapabilities(rigCaps, db, true);
                 }
             }
         }
@@ -1504,9 +1511,9 @@ public class DayBookings
      * loaded and marked offline.
      *  
      * @param off offline period
-     * @param ses database session
+     * @param db database session
      */
-    public void putRigOffline(RigOfflineSchedule off, Session ses)
+    public void putRigOffline(RigOfflineSchedule off, Session db)
     {
         if (!(this.rigBookings.containsKey(off.getRig().getName())))
         {
@@ -1515,7 +1522,7 @@ public class DayBookings
             return;
         }
         
-        RigBookings rb = this.getRigBookings(off.getRig(), ses);
+        RigBookings rb = this.getRigBookings(off.getRig(), db);
         MBooking mb = new MBooking(off, this.day);
         if (mb.getEndSlot() < 0) return;
         
@@ -1542,25 +1549,26 @@ public class DayBookings
         {
             if (ex.getBooking() == null) continue;
             
-            if (!this.createBooking(ex, ses))
+            if (!this.createBooking(ex, db))
             {     
-                Bookings booking = (Bookings)ses.merge(ex.getBooking());
+                Bookings booking = (Bookings)db.merge(ex.getBooking());
                 this.logger.warn("Canceling booking (ID " + booking.getId() + ") for user " + booking.getUser().qName() +
                         " because the assigned rig " + off.getRig().getName() + " will be offline and there are no " +
                         		"other rigs which can take the booking.");
                 booking.setActive(false);
                 booking.setCancelReason("Rig will be offline for reservation.");
                 hasCanceled = true;
-                new BookingNotification(booking).notifyCancel();
+                
+                BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, booking, db);
             }
         }
         
         if (hasCanceled)
         {
             /* Commit the cancellations. */
-            ses.beginTransaction();
-            ses.flush();
-            ses.getTransaction().commit();
+            db.beginTransaction();
+            db.flush();
+            db.getTransaction().commit();
         }
     }
     
@@ -1589,16 +1597,16 @@ public class DayBookings
      * Loads the request capabilities.
      * 
      * @param capsList capabilities list
-     * @param ses database session
+     * @param db database session
      */
-    private void loadRequestCapabilities(List<RequestCapabilities> capsList, Session ses, boolean ignoreNoBookings)
+    private void loadRequestCapabilities(List<RequestCapabilities> capsList, Session db, boolean ignoreNoBookings)
     {
         while (capsList.size() > 0)
         {
             RequestCapabilities reqCaps = capsList.get(0);            
             this.logger.debug("Attempting to load bookings for request capabilities " + reqCaps.getCapabilities() + '.');
             
-            Criteria qu = ses.createCriteria(Bookings.class)
+            Criteria qu = db.createCriteria(Bookings.class)
                 .add(Restrictions.eq("resourceType", ResourcePermission.CAPS_PERMISSION))
                 .add(Restrictions.eq("requestCapabilities", reqCaps))
                 .add(Restrictions.eq("active", Boolean.TRUE))
@@ -1640,11 +1648,11 @@ public class DayBookings
                 if (!this.rigBookings.containsKey(r.getName()))
                 {
                     RigBookings b = new RigBookings(r, this.day);
-                    this.loadRig(b, r, ses);
+                    this.loadRig(b, r, db);
                     this.rigBookings.put(r.getName(), b);
                     /* By definition, since a rig wasn't loaded, it's type wasn't 
                      * loaded either. */
-                    this.loadRigType(r, ses, capsList);
+                    this.loadRigType(r, db, capsList);
                 }
             }
             
@@ -1722,11 +1730,11 @@ public class DayBookings
                             booking.getUserName() + "' starting at " + booking.getStartTime() + " is being cancelled.");
                     booking.setActive(false);
                     booking.setCancelReason("Request capabilities was overbooked.");
-                    ses.beginTransaction();
-                    ses.flush();
-                    ses.getTransaction().commit();
+                    db.beginTransaction();
+                    db.flush();
+                    db.getTransaction().commit();
          
-                    new BookingNotification(booking).notifyCancel();
+                    BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, booking, db);
                 }
             }
             
@@ -1739,12 +1747,12 @@ public class DayBookings
      * the rig type bookings to rigs.
      * 
      * @param rig rig in type
-     * @param ses database session
+     * @param db database session
      * @param capsToLoad list of request capabilities that may need to be loaded from
      *      the rigs in type
      */
     @SuppressWarnings("unchecked")
-    private void loadRigType(Rig rig, Session ses, List<RequestCapabilities> capsToLoad)
+    private void loadRigType(Rig rig, Session db, List<RequestCapabilities> capsToLoad)
     {   
         RigBookings first = this.rigBookings.get(rig.getName());
         RigBookings prev = first;
@@ -1769,7 +1777,7 @@ public class DayBookings
             if (r.equals(rig)) continue;
 
             RigBookings next = new RigBookings(r, this.day);
-            this.loadRig(next, r, ses);
+            this.loadRig(next, r, db);
             this.rigBookings.put(r.getName(), next);
             prev.setTypeLoopNext(next);
             prev = next;
@@ -1779,7 +1787,7 @@ public class DayBookings
         prev.setTypeLoopNext(first);
         
         /* Load up the type bookings. */
-        Criteria qu = ses.createCriteria(Bookings.class)
+        Criteria qu = db.createCriteria(Bookings.class)
             .add(Restrictions.eq("resourceType", ResourcePermission.TYPE_PERMISSION))
             .add(Restrictions.eq("rigType", rigType))
             .add(Restrictions.eq("active", Boolean.TRUE))
@@ -1850,11 +1858,11 @@ public class DayBookings
                     booking.getStartTime() + " is being cancelled.");
                 booking.setActive(false);
                 booking.setCancelReason("Rig type was overbooked.");
-                ses.beginTransaction();
-                ses.flush();
-                ses.getTransaction().commit();
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
    
-                new BookingNotification(booking).notifyCancel();
+                BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, booking, db);
             }
         }
                     
@@ -1867,13 +1875,13 @@ public class DayBookings
      * 
      * @param bookings rig bookings container
      * @param rig rig to load bookings from
-     * @param ses database session
+     * @param db database session
      */
     @SuppressWarnings("unchecked")
-    private void loadRig(RigBookings bookings, Rig rig, Session ses)
+    private void loadRig(RigBookings bookings, Rig rig, Session db)
     {
         /* Load the rig offline periods. */
-        Criteria qu = ses.createCriteria(RigOfflineSchedule.class)
+        Criteria qu = db.createCriteria(RigOfflineSchedule.class)
             .add(Restrictions.eq("active", Boolean.TRUE))
             .add(Restrictions.eq("rig", rig))
             .add(this.addDayRange());
@@ -1883,7 +1891,7 @@ public class DayBookings
         }
         
         /* Load the rigs bookings. */
-        qu = ses.createCriteria(Bookings.class)
+        qu = db.createCriteria(Bookings.class)
             .add(Restrictions.eq("resourceType", ResourcePermission.RIG_PERMISSION))
             .add(Restrictions.eq("rig", rig))
             .add(Restrictions.eq("active", Boolean.TRUE))
@@ -1900,15 +1908,13 @@ public class DayBookings
                         booking.getStartTime() + " is being cancelled.");
                 booking.setActive(false);
                 booking.setCancelReason("Rig will be offline or was overbooked.");
-                ses.beginTransaction();
-                ses.flush();
-                ses.getTransaction().commit();
+                db.beginTransaction();
+                db.flush();
+                db.getTransaction().commit();
 
-                new BookingNotification(booking).notifyCancel();
+                BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, booking, db);
             }
         }
-        
-        
     }
     
     /**

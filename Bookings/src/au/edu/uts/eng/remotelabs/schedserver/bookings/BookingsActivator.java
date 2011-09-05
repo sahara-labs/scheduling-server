@@ -61,7 +61,10 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.SlotBooki
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.impl.BookingsServiceImpl;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener.BookingsEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
@@ -107,6 +110,9 @@ public class BookingsActivator implements BundleActivator
     /** The list of session event listeners. */
     private static List<SessionEventListener> sessionListeners;
     
+    /** The list of bookings event listeners. */
+    private static List<BookingsEventListener> bookingsListeners;
+    
     /** Service tracker for the messenger service. */
     private static ServiceTracker<MessengerService, MessengerService> messengerService;
     
@@ -148,7 +154,7 @@ public class BookingsActivator implements BundleActivator
 		/* Add service listener to add and remove registered rig event listeners. */
 		BookingsActivator.rigListeners = new ArrayList<RigEventListener>();
 		EventServiceListener<RigEventListener> servListener = 
-		        new EventServiceListener<RigEventListener>(rigListeners, context);
+		        new EventServiceListener<RigEventListener>(BookingsActivator.rigListeners, context);
         context.addServiceListener(servListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         for (ServiceReference<RigEventListener> ref : context.getServiceReferences(RigEventListener.class, null))
         {
@@ -158,12 +164,23 @@ public class BookingsActivator implements BundleActivator
         /* Add service listener to add and remove registered session event listeners. */
         BookingsActivator.sessionListeners = new ArrayList<SessionEventListener>();
         EventServiceListener<SessionEventListener> sesServListener = 
-                new EventServiceListener<SessionEventListener>(sessionListeners, context);
+                new EventServiceListener<SessionEventListener>(BookingsActivator.sessionListeners, context);
         context.addServiceListener(sesServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
         for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))
         {
             sesServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+        }
+        
+        /* Add service listener to add and remove registered bookings event listeners. */
+        BookingsActivator.bookingsListeners = new ArrayList<BookingsEventListener>();
+        EventServiceListener<BookingsEventListener> bkServListener 
+                = new EventServiceListener<BookingsEventListener>(BookingsActivator.bookingsListeners, context);
+        context.addServiceListener(bkServListener, 
+                '(' + Constants.OBJECTCLASS + '=' + BookingsEventListener.class.getName() + ')');
+        for (ServiceReference<BookingsEventListener> ref : context.getServiceReferences(BookingsEventListener.class, null))
+        {
+            bkServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
 		
 		/* Register the booking engine service. */
@@ -221,31 +238,45 @@ public class BookingsActivator implements BundleActivator
      */
     public static RigEventListener[] getRigEventListeners()
     {
-        if (rigListeners == null)
+        if (BookingsActivator.rigListeners == null)
         {
             return new RigEventListener[0];
         }
         
-        synchronized (rigListeners)
-        {
-            return rigListeners.toArray(new RigEventListener[rigListeners.size()]);
-        }
+        return BookingsActivator.rigListeners.toArray(new RigEventListener[BookingsActivator.rigListeners.size()]);
     }
     
     /**
      * Notifies the session event listeners of an event.
      * 
      * @param event type of event
-     * @param session session change
-     * @param db database
+     * @param session session the event refers to
+     * @param db database session the session is attached to
      */
     public static void notifySessionEvent(SessionEvent event, Session session, org.hibernate.Session db)
     {
-        if (sessionListeners == null) return;
+        if (BookingsActivator.sessionListeners == null) return;
         
-        for (SessionEventListener listener : sessionListeners)
+        for (SessionEventListener listener : BookingsActivator.sessionListeners)
         {
             listener.eventOccurred(event, session, db);
+        }
+    }
+    
+    /**
+     * Notifies the booking event listeners of an event.
+     * 
+     * @param event type of event
+     * @param booking bookings that event refers to
+     * @param db database session the booking is attached to
+     */
+    public static void notifyBookingsEvent(BookingsEvent event, Bookings booking, org.hibernate.Session db)
+    {
+        if (BookingsActivator.bookingsListeners == null) return;
+        
+        for (BookingsEventListener listener : BookingsActivator.bookingsListeners)
+        {
+            listener.eventOccurred(event, booking, db);
         }
     }
     

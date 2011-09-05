@@ -47,7 +47,6 @@ import java.util.Map.Entry;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
-import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingMultiSiteCallbackHander;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
@@ -55,11 +54,11 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener.BookingsEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback.BookingCancellationAsyncRequest;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
 
 /**
@@ -139,7 +138,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                     synchronized (this.currentDay = this.engine.getDayBookings(nowDay))
                     {
                         this.currentDay.fullLoad(db);
-                    };
+                    }
                 }
 
                 /* Time must always go forwards... */
@@ -161,17 +160,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                         
                         this.currentDay.removeBooking(mb);
                         
-                        if (b.getResourcePermission().isRemote())
-                        {
-                            /* Booking for a consumer site so they need to be notified. */
-                            new BookingCancellationAsyncRequest()
-                                    .bookingCancelled(b, db, new BookingMultiSiteCallbackHander());
-                        }
-                        else
-                        {
-                            /* Local user, so notify them. */
-                            new BookingNotification(b).notifyCancel();
-                        }
+                        BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, b, db);
                     }
 
                     if (this.redeemingBookings.size() > 0)

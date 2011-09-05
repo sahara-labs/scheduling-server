@@ -46,10 +46,11 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
  */
 public interface BookingsEventListener
 {
-   enum BookingEvent
+   enum BookingsEvent
    {
-       /** Booking has been cancelled. */
-       CANCELLED
+       /** Booking has been cancelled by the system. */
+       SYSTEM_CANCELLED, /** Booking has been cancelled by the user. */
+       USER_CANCELLED
    }
    
    /**
@@ -59,5 +60,5 @@ public interface BookingsEventListener
     * @param booking booking that has been cancelled
     * @param db database session the booking is attached to
     */
-   public void eventOccurred(BookingEvent event, Bookings booking, Session db);
+   public void eventOccurred(BookingsEvent event, Bookings booking, Session db);
 }
