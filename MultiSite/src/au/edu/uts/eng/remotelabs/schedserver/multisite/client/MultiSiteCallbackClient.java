@@ -35,7 +35,9 @@
  * @date 28th August 2011
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback;
+package au.edu.uts.eng.remotelabs.schedserver.multisite.client;
+
+import java.rmi.RemoteException;
 
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.BookingCancelled;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.BookingCancelledResponse;
@@ -47,42 +49,28 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.Sessi
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionUpdateResponse;
 
 /**
- * Interface for the MultiSite callback service which notifies a consumer site
- * or events relevant to their site.
+ * MultiSite callback client interface.
  */
-public interface MultiSiteCallbackSOAP
+public interface MultiSiteCallbackClient
 {
+    public BookingCancelledResponse bookingCancelled(BookingCancelled request) throws RemoteException;
 
-    /**
-     * Notifies a consumer site a booking has been cancelled.
-     * 
-     * @param bookingCancelled request
-     * @return response
-     */
-    public BookingCancelledResponse bookingCancelled(BookingCancelled bookingCancelled);
+    public void startbookingCancelled(BookingCancelled request, final MultiSiteCallbackClientHandler callback)
+            throws RemoteException;
 
-    /**
-     * Notifies a consumer site a session is starting.
-     *  
-     * @param sessionStarted request
-     * @return response
-     */
-    public SessionStartedResponse sessionStarted(SessionStarted sessionStarted);
+    public SessionStartedResponse sessionStarted(SessionStarted response) throws RemoteException;
+
+    public void startSessionStarted(SessionStarted response, final MultiSiteCallbackClientHandler callback)
+            throws RemoteException;
 
 
-    /**
-     * Notifies a consumer site a session has finished.
-     * 
-     * @param sessionFinished request
-     * @return response
-     */
-    public SessionFinishedResponse sessionFinished(SessionFinished sessionFinished);
+    public SessionFinishedResponse sessionFinished(SessionFinished response) throws RemoteException;
 
-    /**
-     * Notifies a consumer site a session parameter has changed.
-     * 
-     * @param sessionUpdate request
-     * @return response
-     */
-    public SessionUpdateResponse sessionUpdate(SessionUpdate sessionUpdate);
+    public void startsessionFinished(SessionFinished response, final MultiSiteCallbackClientHandler callback)
+            throws RemoteException;
+
+    public SessionUpdateResponse sessionUpdate(SessionUpdate response) throws RemoteException;
+
+    public void startsessionUpdate(SessionUpdate response, final MultiSiteCallbackClientHandler callback)
+            throws RemoteException;
 }
