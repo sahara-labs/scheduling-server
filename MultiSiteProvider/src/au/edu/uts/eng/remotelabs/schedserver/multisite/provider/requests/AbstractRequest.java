@@ -45,7 +45,6 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.MultiSiteProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSite;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.MultiSiteStub;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.callback.MultiSiteCallbackStub;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.intf.types.SiteIDType;
 
 /**
@@ -100,20 +99,7 @@ public class AbstractRequest
         
         return new MultiSiteStub(this.site.getServiceAddress());
     }
-    
-    /**
-     * Gets the stub to make a MultiSite callback service SOAP requests.
-     * 
-     * @return SOAP Stub
-     * @throws AxisFault
-     */
-    protected MultiSiteCallbackStub getCallbackStub() throws AxisFault
-    {
-        // FIXME Configure service time outs
-        
-        return new MultiSiteCallbackStub(this.site.getServiceAddress() + "Callback");
-    }
-    
+ 
     /**
      * Adds the site ID of this site to the request.
      * 
