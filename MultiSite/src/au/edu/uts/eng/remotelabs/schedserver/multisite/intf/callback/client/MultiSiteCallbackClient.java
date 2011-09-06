@@ -35,7 +35,7 @@
  * @date 28th August 2011
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.multisite.client;
+package au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.client;
 
 import java.rmi.RemoteException;
 

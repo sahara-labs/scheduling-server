@@ -45,9 +45,12 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.impl.BookingsCancellationNotifier;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -58,9 +61,14 @@ import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
  */
 public class MultiSiteActivator implements BundleActivator 
 {
-    /** Servlet hosting service. */
+    /* --- Hosted services ---------------------------------------------------- */
+    /** SOAP service hosting. */
     private ServiceRegistration<ServletContainerService> soapService;
     
+    /** Bookings event listener. */
+    private ServiceRegistration<BookingsEventListener> bookingsListenerService;
+
+    /* --- Tracked services that are being used. ------------------------------ */
     /** Queuer service tracker. */
     private static ServiceTracker<QueuerService, QueuerService> queuerService;
     
@@ -103,6 +111,9 @@ public class MultiSiteActivator implements BundleActivator
 		MultiSiteActivator.bookingsService = new
 		        ServiceTracker<BookingsService, BookingsService>(bundleContext, BookingsService.class, null);
 		MultiSiteActivator.bookingsService.open();
+		
+		this.bookingsListenerService = bundleContext.registerService(BookingsEventListener.class, 
+		        new BookingsCancellationNotifier(), null);
 
 		ServletContainerService serv = new ServletContainerService();
 		serv.addServlet(new ServletContainer(new AxisServlet(), true));
@@ -115,6 +126,7 @@ public class MultiSiteActivator implements BundleActivator
 		this.logger.info("Multisie bundle shutting down.");
 		
 		this.soapService.unregister();
+		this.bookingsListenerService.unregister();
 		
 		MultiSiteActivator.bookingsService.close();
 		MultiSiteActivator.bookingsService = null;
@@ -178,5 +190,15 @@ public class MultiSiteActivator implements BundleActivator
         
         Config config = MultiSiteActivator.configService.getService();
         return config == null ? defValue : config.getProperty(property, defValue);
+    }
+    
+    /**
+     * Queues a cancel booking notification to be sent later.
+     * 
+     * @param booking booking to notify
+     */
+    public static void queueNotification(Bookings booking)
+    {
+        // TODO 
     }
 }
