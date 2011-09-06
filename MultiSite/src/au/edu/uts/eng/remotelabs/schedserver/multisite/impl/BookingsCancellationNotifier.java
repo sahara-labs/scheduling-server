@@ -120,6 +120,7 @@ public class BookingsCancellationNotifier extends AbstractCallbackRequest implem
         cancel.setBooking(bookingType);
         
         PermissionIDType perm = new PermissionIDType();
+        this.addSiteID(perm);
         perm.setPermissionID(booking.getResourcePermission().getRemotePermission().getGuid());
         bookingType.setPermission(perm);
         

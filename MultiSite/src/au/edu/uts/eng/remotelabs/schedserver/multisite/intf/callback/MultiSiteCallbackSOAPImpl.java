@@ -178,6 +178,8 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
 
                service.sendTemplatedMessage(user, "BOOKING_CANCELLATION", macros);
            }
+           
+           respType.setWasSuccessful(true);
         }
         finally
         {

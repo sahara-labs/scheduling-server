@@ -51,6 +51,8 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SiteIDType;
  */
 public class AbstractCallbackRequest
 {
+    /** Callback service suffix. */
+    public static final String MS_CALLBACK_ENDPOINT_SUFFIX = "Callback";
     /** Dummy GUID. */
     public static final String DEFAULT_SITE_ID = "00000000-0000-0000-0000-000000000000";
     
@@ -83,7 +85,7 @@ public class AbstractCallbackRequest
      */
     protected MultiSiteCallbackClientStub getStub(RemoteSite site) throws AxisFault
     {
-        return new MultiSiteCallbackClientStub(site.getServiceAddress());
+        return new MultiSiteCallbackClientStub(site.getServiceAddress() + MS_CALLBACK_ENDPOINT_SUFFIX);
     }
  
     /**
