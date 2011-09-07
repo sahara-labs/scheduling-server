@@ -126,7 +126,7 @@ public class BookingsCancellationNotifier extends AbstractCallbackRequest implem
         
         try
         {
-            this.getStub(site).startbookingCancelled(request, new BookingsCancellationNotifierCallback(booking));
+            this.getStub(site).startBookingCancelled(request, new BookingsCancellationCallback(booking));
         }
         catch (AxisFault e)
         {

@@ -50,7 +50,7 @@ public abstract class MultiSiteCallbackClientHandler
      * @param successful the consumer success acknowledgment
      * @param reason error reason or null if none provided
      */
-    public void receiveResultBookingCancelled(final boolean successful, final String reason)
+    public void receiveResponseBookingCancelled(final boolean successful, final String reason)
     {
         /* Should be overridden. */
     }
@@ -95,7 +95,7 @@ public abstract class MultiSiteCallbackClientHandler
      * @param successful the consumer success acknowledgment
      * @param reason error reason or null if none provided
      */
-    public void receiveResultSessionFinished(final boolean successful, final String reason)
+    public void receiveResponseSessionFinished(final boolean successful, final String reason)
     {
         /* Should be overridden. */
     }
@@ -117,7 +117,7 @@ public abstract class MultiSiteCallbackClientHandler
      * @param successful the consumer success acknowledgment
      * @param reason error reason or null if none provided
      */
-    public void receiveResultSessionUpdate(final boolean successful, final String reason)
+    public void receiveResponseSessionUpdate(final boolean successful, final String reason)
     {
         /* Should be overridden. */
     }
@@ -128,7 +128,7 @@ public abstract class MultiSiteCallbackClientHandler
      * 
      * @param e error exception
      */
-    public void receiveErrorsessionUpdate(final Exception e)
+    public void receiveErrorSessionUpdate(final Exception e)
     {
         /* Should be overridden. */
     }

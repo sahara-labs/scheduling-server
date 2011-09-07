@@ -272,7 +272,7 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
     }
 
     @Override
-    public void startbookingCancelled(final BookingCancelled request, final MultiSiteCallbackClientHandler callback)
+    public void startBookingCancelled(final BookingCancelled request, final MultiSiteCallbackClientHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[0].getName());
@@ -307,7 +307,7 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
                             BookingCancelledResponse.class, MultiSiteCallbackClientStub.this.getEnvelopeNamespaces(resultEnv));
                     
                     OperationResponseType response = ((BookingCancelledResponse) object).getBookingCancelledResponse();
-                    callback.receiveResultBookingCancelled(response.getWasSuccessful(), response.getReason());
+                    callback.receiveResponseBookingCancelled(response.getWasSuccessful(), response.getReason());
                 }
                 catch (final AxisFault e)
                 {
@@ -780,7 +780,7 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
     }
 
     @Override
-    public void startsessionFinished(final SessionFinished request, final MultiSiteCallbackClientHandler callback)
+    public void startSessionFinished(final SessionFinished request, final MultiSiteCallbackClientHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[2].getName());
@@ -813,7 +813,7 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
                     final SessionFinishedResponse response = (SessionFinishedResponse)MultiSiteCallbackClientStub.this.fromOM(
                             resultEnv.getBody().getFirstElement(), SessionFinishedResponse.class, 
                             MultiSiteCallbackClientStub.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultSessionFinished(response.getSessionFinishedResponse().getWasSuccessful(),
+                    callback.receiveResponseSessionFinished(response.getSessionFinishedResponse().getWasSuccessful(),
                             response.getSessionFinishedResponse().getReason());
 
                 }
@@ -1033,7 +1033,7 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
     }
 
     @Override
-    public void startsessionUpdate(final SessionUpdate response, final MultiSiteCallbackClientHandler callback)
+    public void startSessionUpdate(final SessionUpdate response, final MultiSiteCallbackClientHandler callback)
             throws RemoteException
     {
         final OperationClient _operationClient = this._serviceClient.createClient(this._operations[3].getName());
@@ -1067,12 +1067,12 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
                     final SessionUpdateResponse response = (SessionUpdateResponse)MultiSiteCallbackClientStub.this.fromOM(
                             resultEnv.getBody().getFirstElement(), SessionUpdateResponse.class, 
                             MultiSiteCallbackClientStub.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultSessionUpdate(response.getSessionUpdateResponse().getWasSuccessful(),
+                    callback.receiveResponseSessionUpdate(response.getSessionUpdateResponse().getWasSuccessful(),
                             response.getSessionUpdateResponse().getReason());
                 }
                 catch (final AxisFault e)
                 {
-                    callback.receiveErrorsessionUpdate(e);
+                    callback.receiveErrorSessionUpdate(e);
                 }
             }
 
@@ -1104,50 +1104,50 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
                                         new Class[] { messageClass });
                                 m.invoke(ex, new Object[] { messageObject });
 
-                                callback.receiveErrorsessionUpdate(new RemoteException(ex.getMessage(), ex));
+                                callback.receiveErrorSessionUpdate(new RemoteException(ex.getMessage(), ex));
                             }
                             catch (final ClassCastException e)
                             {
-                                callback.receiveErrorsessionUpdate(f);
+                                callback.receiveErrorSessionUpdate(f);
                             }
                             catch (final ClassNotFoundException e)
                             {
-                                callback.receiveErrorsessionUpdate(f);
+                                callback.receiveErrorSessionUpdate(f);
                             }
                             catch (final NoSuchMethodException e)
                             {
-                                callback.receiveErrorsessionUpdate(f);
+                                callback.receiveErrorSessionUpdate(f);
                             }
                             catch (final InvocationTargetException e)
                             {
-                                callback.receiveErrorsessionUpdate(f);
+                                callback.receiveErrorSessionUpdate(f);
                             }
                             catch (final IllegalAccessException e)
                             {
-                                callback.receiveErrorsessionUpdate(f);
+                                callback.receiveErrorSessionUpdate(f);
                             }
                             catch (final InstantiationException e)
                             {
-                                callback.receiveErrorsessionUpdate(f);
+                                callback.receiveErrorSessionUpdate(f);
                             }
                             catch (final AxisFault e)
                             {
-                                callback.receiveErrorsessionUpdate(f);
+                                callback.receiveErrorSessionUpdate(f);
                             }
                         }
                         else
                         {
-                            callback.receiveErrorsessionUpdate(f);
+                            callback.receiveErrorSessionUpdate(f);
                         }
                     }
                     else
                     {
-                        callback.receiveErrorsessionUpdate(f);
+                        callback.receiveErrorSessionUpdate(f);
                     }
                 }
                 else
                 {
-                    callback.receiveErrorsessionUpdate(error);
+                    callback.receiveErrorSessionUpdate(error);
                 }
             }
 
@@ -1167,7 +1167,7 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
                 }
                 catch (final AxisFault axisFault)
                 {
-                    callback.receiveErrorsessionUpdate(axisFault);
+                    callback.receiveErrorSessionUpdate(axisFault);
                 }
             }
         });

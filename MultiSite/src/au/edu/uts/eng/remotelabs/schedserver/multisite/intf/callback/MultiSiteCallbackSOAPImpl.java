@@ -410,7 +410,7 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             Session ses = (Session) db.createCriteria(Session.class)
                     .add(Restrictions.eq("active", Boolean.TRUE))
                     .createCriteria("user")
-                        .add(Restrictions.eq("namespace", site.getUserNamespace()))
+                        .add(Restrictions.eq("namespace", this.getLocalNamespace()))
                         .add(Restrictions.eq("name", userId))
                     .uniqueResult();
             if (ses == null)
@@ -464,7 +464,7 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             Session ses = (Session) db.createCriteria(Session.class)
                     .add(Restrictions.eq("active", Boolean.TRUE))
                     .createCriteria("user")
-                        .add(Restrictions.eq("namespace", site.getUserNamespace()))
+                        .add(Restrictions.eq("namespace", this.getLocalNamespace()))
                         .add(Restrictions.eq("name", userId))
                     .uniqueResult();
             if (ses == null)
@@ -506,14 +506,22 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
      */
     private User getUser(String username, org.hibernate.Session db)
     {
+        return new UserDao(db).findByName(this.getLocalNamespace(), username);
+    }
+    
+    /**
+     * Returns the user namespace or this site, or null if not found.
+     * 
+     * @return user namespace
+     */
+    private String getLocalNamespace()
+    {
         String ns = MultiSiteActivator.getConfigValue("Site_Namespace", null);
         if (ns == null)
         {
             this.logger.error("Unable to find local user because the local site namespace is not configured.");
-            return null;
         }
-        
-        return new UserDao(db).findByName(ns, username);
+        return ns;
     }
     
     /**

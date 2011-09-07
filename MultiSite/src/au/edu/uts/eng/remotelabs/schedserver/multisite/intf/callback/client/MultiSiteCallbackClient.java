@@ -55,7 +55,7 @@ public interface MultiSiteCallbackClient
 {
     public BookingCancelledResponse bookingCancelled(BookingCancelled request) throws RemoteException;
 
-    public void startbookingCancelled(BookingCancelled request, final MultiSiteCallbackClientHandler callback)
+    public void startBookingCancelled(BookingCancelled request, final MultiSiteCallbackClientHandler callback)
             throws RemoteException;
 
     public SessionStartedResponse sessionStarted(SessionStarted response) throws RemoteException;
@@ -66,11 +66,11 @@ public interface MultiSiteCallbackClient
 
     public SessionFinishedResponse sessionFinished(SessionFinished response) throws RemoteException;
 
-    public void startsessionFinished(SessionFinished response, final MultiSiteCallbackClientHandler callback)
+    public void startSessionFinished(SessionFinished response, final MultiSiteCallbackClientHandler callback)
             throws RemoteException;
 
     public SessionUpdateResponse sessionUpdate(SessionUpdate response) throws RemoteException;
 
-    public void startsessionUpdate(SessionUpdate response, final MultiSiteCallbackClientHandler callback)
+    public void startSessionUpdate(SessionUpdate response, final MultiSiteCallbackClientHandler callback)
             throws RemoteException;
 }

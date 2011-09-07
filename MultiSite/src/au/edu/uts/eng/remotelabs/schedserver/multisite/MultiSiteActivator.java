@@ -47,17 +47,19 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.impl.BookingsCancellationNotifier;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.impl.SessionEventNotifier;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
 /**
- * Activator for the Multisite project.
+ * Activator for the MultiSite project.
  */
 public class MultiSiteActivator implements BundleActivator 
 {
@@ -67,6 +69,9 @@ public class MultiSiteActivator implements BundleActivator
     
     /** Bookings event listener. */
     private ServiceRegistration<BookingsEventListener> bookingsListenerService;
+    
+    /** Session event listener. */
+    private ServiceRegistration<SessionEventListener> sessionListenerService;
 
     /* --- Tracked services that are being used. ------------------------------ */
     /** Queuer service tracker. */
@@ -114,6 +119,9 @@ public class MultiSiteActivator implements BundleActivator
 		
 		this.bookingsListenerService = bundleContext.registerService(BookingsEventListener.class, 
 		        new BookingsCancellationNotifier(), null);
+		
+		this.sessionListenerService = bundleContext.registerService(SessionEventListener.class, 
+		        new SessionEventNotifier(), null);
 
 		ServletContainerService serv = new ServletContainerService();
 		serv.addServlet(new ServletContainer(new AxisServlet(), true));
@@ -127,6 +135,7 @@ public class MultiSiteActivator implements BundleActivator
 		
 		this.soapService.unregister();
 		this.bookingsListenerService.unregister();
+		this.sessionListenerService.unregister();
 		
 		MultiSiteActivator.bookingsService.close();
 		MultiSiteActivator.bookingsService = null;

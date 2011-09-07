@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2011, Michael Diponio
+ * Copyright (c) 2011, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,52 +32,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 6th September 2011
+ * @date 30th January 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
-import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
-import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.client.MultiSiteCallbackClientHandler;
 
 /**
- * Handles communication error by queuing for later transmission. 
+ * 
  */
-public class BookingsCancellationNotifierCallback extends MultiSiteCallbackClientHandler
+public class SessionUpdateCallback extends MultiSiteCallbackClientHandler
 {
-    /** The cancelled booking. */
-    private Bookings booking;
-    
-    /** Logger. */
-    private final Logger logger = LoggerActivator.getLogger();
-    
-    public BookingsCancellationNotifierCallback(Bookings booking)
-    {
-        this.booking = booking;
-    }
-    
-    @Override
-    public void receiveResultBookingCancelled(final boolean successful, final String reason)
-    {
-        if (successful)
-        {
-            this.logger.debug("Successfully notified consumer site of booking cancellation.");
-        }
-        else
-        {
-            this.logger.warn("Consumer received booking cancellatio notification but did not successfully " +
-            		"acknowledge it. Provided reason: " + reason);
-        }
-    }
 
-    @Override
-    public void receiveErrorBookingCancelled(final Exception e)
+    public SessionUpdateCallback(Session session)
     {
-        this.logger.warn("Failed sending booking cancellation notification for booking '" + this.booking.getId() + 
-                    "'. Will queue booking for later sending. Exception " + e.getClass().getSimpleName() + ": " +
-                    e.getMessage());
-        MultiSiteActivator.queueNotification(this.booking);
+        
+    }
+    
+    @Override
+    public void receiveResponseSessionUpdate(boolean successful, String reason)
+    {
+        System.out.println("Update: " + successful + ", reason: " + reason);
+    }
+    
+    @Override
+    public void receiveErrorSessionUpdate(Exception e)
+    {
+        e.printStackTrace();
     }
 }

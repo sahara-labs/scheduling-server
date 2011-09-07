@@ -843,7 +843,6 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
         res.setType(session.getResourceType());
         res.setName(session.getRequestedResourceName());
 
-
         sesType.setResource(res);
 
         Rig rig = session.getRig();
@@ -851,9 +850,12 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
         sesType.setRigName(rig.getName());
         sesType.setContactURL(rig.getContactUrl());
 
-        // FIXME  Add session timing details & warning details
-        sesType.setTime(100);
-        sesType.setTimeLeft(200);
-        sesType.setExtensions(2);
+        int time = (int)(System.currentTimeMillis() - session.getAssignmentTime().getTime()) / 1000;
+        sesType.setTime(time);
+        /* Time left is allowed duration plus extension time minus elapsed
+         * time. */
+        sesType.setTimeLeft(session.getDuration() + ((session.getResourcePermission().getAllowedExtensions() - 
+                session.getExtensions()) * session.getResourcePermission().getExtensionDuration()) - time);
+        sesType.setExtensions(session.getExtensions());
     }
 }
