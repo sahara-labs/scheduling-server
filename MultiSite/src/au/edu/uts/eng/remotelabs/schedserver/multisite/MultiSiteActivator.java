@@ -70,9 +70,9 @@ public class MultiSiteActivator implements BundleActivator
     /** Bookings event listener. */
     private ServiceRegistration<BookingsEventListener> bookingsListenerService;
     
-    /** Session event listener. */
+    /** Session event listener service. */
     private ServiceRegistration<SessionEventListener> sessionListenerService;
-
+    
     /* --- Tracked services that are being used. ------------------------------ */
     /** Queuer service tracker. */
     private static ServiceTracker<QueuerService, QueuerService> queuerService;

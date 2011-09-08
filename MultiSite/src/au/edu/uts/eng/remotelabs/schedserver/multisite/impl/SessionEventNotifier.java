@@ -37,6 +37,9 @@
 package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.axis2.AxisFault;
 
@@ -58,6 +61,10 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.UserIDType;
  */
 public class SessionEventNotifier extends AbstractCallbackRequest implements SessionEventListener
 {
+    /** The list of expected user requested finishing sessions. No notifications
+     *  will be for these sessions. */
+    private static final List<Session> expectedFinishing = Collections.synchronizedList(new ArrayList<Session>());
+    
     @Override
     public void eventOccurred(SessionEvent event, Session session, org.hibernate.Session db)
     {
@@ -98,7 +105,12 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
             /* We need to always specify session termination because the 
              * consumer needs to terminate the users session. */
             case FINISHED:
-                this.notifySessionFinished(session, db);
+                if (SessionEventNotifier.expectedFinishing.contains(session))
+                {
+                    this.logger.debug("Not going session finished notification because the session is expected to " +
+                    		"be finished.");
+                }
+                else this.notifySessionFinished(session, db);
                 break;
         }
     }
@@ -217,5 +229,26 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
             this.logger.warn("Unable to provide consumer notification of session termination of '" + 
                     session.getId() + "'. Exception " + e.getClass().getSimpleName() + ": " + e.getMessage());
         }
+    }
+    
+    /**
+     * Add an expected finishing session. This stops notifications being sent to 
+     * consumer site if a finish session event is received for the session.
+     * 
+     * @param session expected session
+     */
+    public static void expectFinishingSession(Session session)
+    {
+        SessionEventNotifier.expectedFinishing.add(session);
+    }
+    
+    /**
+     * Clears a session from being expected.
+     * 
+     * @param session expected session to clear
+     */
+    public static void clearFinishingSession(Session session)
+    {
+        SessionEventNotifier.expectedFinishing.remove(session);
     }
 }

@@ -63,6 +63,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.impl.SessionEventNotifier;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AddToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AddToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.AvailabilityResponseType;
@@ -709,6 +710,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
                 return response;
             }
             
+            SessionEventNotifier.expectFinishingSession(ses);
             if (ses.getAssignmentTime() == null)
             {
                 QueuerService service = MultiSiteActivator.getQueuerService();
@@ -716,10 +718,8 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
                 {
                     this.logger.error("Unable to finish session because the Queuer service was not loaded.");
                     opResp.setReason("Queuer service not loaded.");
-                    return response;
                 }
-                
-                opResp.setWasSuccessful(service.removeFromQueue(ses, "Consumer request", db));
+                else opResp.setWasSuccessful(service.removeFromQueue(ses, "Consumer request", db));
             }
             else
             {
@@ -728,11 +728,10 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
                 {
                     this.logger.error("Unable to finish session because the Session service was not loaded.");
                     opResp.setReason("Session service not loaded.");
-                    return response;
                 }
-                
-                opResp.setWasSuccessful(service.finishSession(ses, "Consumer request", db));
+                else opResp.setWasSuccessful(service.finishSession(ses, "Consumer request", db));
             }
+            SessionEventNotifier.clearFinishingSession(ses);
         }
         finally
         {
