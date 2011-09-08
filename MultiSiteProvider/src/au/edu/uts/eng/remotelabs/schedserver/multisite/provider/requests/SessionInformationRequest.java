@@ -141,9 +141,9 @@ public class SessionInformationRequest extends AbstractRequest
         return this.response.getContactURL();
     }
     
-    public int getTime()
+    public int getDuration()
     {
-        return this.response.getTime();
+        return this.response.getDuration();
     }
     
     public int getTimeLeft()

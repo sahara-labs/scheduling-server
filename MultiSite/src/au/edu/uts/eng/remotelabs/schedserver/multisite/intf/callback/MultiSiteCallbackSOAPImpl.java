@@ -540,7 +540,7 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
         // FIXME warning message
         ses.setInGrace(provSes.getInGrace());
         ses.setExtensions((short) provSes.getExtensions());
-        ses.setDuration(provSes.getTime() + provSes.getTimeLeft());
+        ses.setDuration(provSes.getDuration());
         
         db.beginTransaction();
         if (ses.getId() == null) db.persist(ses);

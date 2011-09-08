@@ -5,7 +5,7 @@
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="MultiSiteCallback"
 	targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/">
 	<wsdl:types>
-
+        <!-- Common MultiSite schema. -->
 		<schema xmlns="http://www.w3.org/2001/XMLSchema"
 			xmlns:mut="http://remotelabs.eng.uts.edu.au/schedserver/multisite"
 			xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
@@ -113,9 +113,9 @@
 					<element minOccurs="0" name="rigType" type="string" />
 					<element minOccurs="0" name="rigName" type="string" />
 					<element minOccurs="0" name="contactURL" type="string" />
-					<element name="time" type="int" />
-					<element name="timeLeft" type="int" />
-					<element name="extensions" type="int" />
+					<element name="duration" type="int"/>
+                    <element name="extensions" type="int" />
+                    <element name="timeLeft" type="int"/>
 					<element name="inGrace" type="boolean" />
 					<element minOccurs="0" name="warningMessage" type="string" />
 				</sequence>

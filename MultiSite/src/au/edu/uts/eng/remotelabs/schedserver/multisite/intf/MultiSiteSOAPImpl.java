@@ -448,7 +448,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             {
                 this.logger.debug("Session information for user '" + userId + "' returning dummy information because " +
                 		"the user does not have an active session.");
-                sesType.setTime(-1);
+                sesType.setDuration(-1);
                 sesType.setTimeLeft(-1);
                 sesType.setExtensions(-1);
             }
@@ -850,12 +850,12 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
         sesType.setRigName(rig.getName());
         sesType.setContactURL(rig.getContactUrl());
 
-        int time = (int)(System.currentTimeMillis() - session.getAssignmentTime().getTime()) / 1000;
-        sesType.setTime(time);
+        sesType.setDuration(session.getDuration());
         /* Time left is allowed duration plus extension time minus elapsed
          * time. */
         sesType.setTimeLeft(session.getDuration() + ((session.getResourcePermission().getAllowedExtensions() - 
-                session.getExtensions()) * session.getResourcePermission().getExtensionDuration()) - time);
+                session.getExtensions()) * session.getResourcePermission().getExtensionDuration()) - 
+                (int)(System.currentTimeMillis() - session.getAssignmentTime().getTime()) / 1000);
         sesType.setExtensions(session.getExtensions());
     }
 }

@@ -120,19 +120,22 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
         SessionUpdate request = new SessionUpdate();
         request.setSessionUpdate(this.getUserSession(session));
         
+        SessionUpdateCallback cb = new SessionUpdateCallback(session);
         try
         {
-            this.getStub(site).startSessionUpdate(request, new SessionUpdateCallback(session));
+            this.getStub(site).startSessionUpdate(request, cb);
         }
         catch (AxisFault e)
         {
             this.logger.warn("Unable to provide consumer notification of session termination of '" + 
                     session.getId() + "'. SOAP fault: " + e.getMessage());
+            cb.terminateSession(db);
         }
         catch (RemoteException e)
         {
             this.logger.warn("Unable to provide consumer notification of session termination of '" + 
                     session.getId() + "'. Exception " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            cb.terminateSession(db);
         }
     }
     
@@ -168,12 +171,12 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
         sesType.setRigName(rig.getName());
         sesType.setContactURL(rig.getContactUrl());
 
-        int time = (int)(System.currentTimeMillis() - session.getAssignmentTime().getTime()) / 1000;
-        sesType.setTime(time);
+        sesType.setDuration(session.getDuration());
         /* Time left is allowed duration plus extension time minus elapsed
          * time. */
         sesType.setTimeLeft(session.getDuration() + ((session.getResourcePermission().getAllowedExtensions() - 
-                session.getExtensions()) * session.getResourcePermission().getExtensionDuration()) - time);
+                session.getExtensions()) * session.getResourcePermission().getExtensionDuration()) - 
+                (int)(System.currentTimeMillis() - session.getAssignmentTime().getTime()) / 1000);
         sesType.setExtensions(session.getExtensions());
         
         userSession.setSession(sesType);

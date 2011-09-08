@@ -84,11 +84,9 @@ public class SessionType implements ADBBean
     protected String contactURL;
     protected boolean contactURLTracker = false;
 
-    protected int time;
-
-    protected int timeLeft;
-
+    protected int duration;
     protected int extensions;
+    protected int timeLeft;
 
     protected boolean inGrace;
     
@@ -196,14 +194,14 @@ public class SessionType implements ADBBean
             }
         }
         
-        elementList.add(new QName("", "time"));
-        elementList.add(ConverterUtil.convertToString(this.time));
+        elementList.add(new QName("", "duration"));
+        elementList.add(ConverterUtil.convertToString(this.duration));
+        
+        elementList.add(new QName("", "extensions"));
+        elementList.add(ConverterUtil.convertToString(this.extensions));
 
         elementList.add(new QName("", "timeLeft"));
         elementList.add(ConverterUtil.convertToString(this.timeLeft));
-
-        elementList.add(new QName("", "extensions"));
-        elementList.add(ConverterUtil.convertToString(this.extensions));
         
         elementList.add(new QName("", "inGrace"));
         elementList.add(ConverterUtil.convertToString(this.inGrace));
@@ -239,9 +237,9 @@ public class SessionType implements ADBBean
         return this.rigName;
     }
 
-    public int getTime()
+    public int getDuration()
     {
-        return this.time;
+        return this.duration;
     }
 
     public int getTimeLeft()
@@ -386,17 +384,29 @@ public class SessionType implements ADBBean
         }
         
         namespace = "";
-        this.writeStartElement(null, namespace, "time", xmlWriter);
-        if (this.time == Integer.MIN_VALUE)
+        this.writeStartElement(null, namespace, "duration", xmlWriter);
+        if (this.duration == Integer.MIN_VALUE)
         {
-            throw new ADBException("time cannot be null!!");
+            throw new ADBException("duration cannot be null!!");
         }
         else
         {
-            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.time));
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.duration));
         }
         xmlWriter.writeEndElement();
-
+        
+                namespace = "";
+        this.writeStartElement(null, namespace, "extensions", xmlWriter);
+        if (this.extensions == Integer.MIN_VALUE)
+        {
+            throw new ADBException("extensions cannot be null!!");
+        }
+        else
+        {
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.extensions));
+        }
+        xmlWriter.writeEndElement();
+        
         namespace = "";
         this.writeStartElement(null, namespace, "timeLeft", xmlWriter);
         if (this.timeLeft == Integer.MIN_VALUE)
@@ -409,18 +419,6 @@ public class SessionType implements ADBBean
         }
         xmlWriter.writeEndElement();
 
-        namespace = "";
-        this.writeStartElement(null, namespace, "extensions", xmlWriter);
-        if (this.extensions == Integer.MIN_VALUE)
-        {
-            throw new ADBException("extensions cannot be null!!");
-        }
-        else
-        {
-            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.extensions));
-        }
-        xmlWriter.writeEndElement();
-        
         namespace = "";
         this.writeStartElement(null, namespace, "inGrace", xmlWriter);
         xmlWriter.writeCharacters(ConverterUtil.convertToString(this.inGrace));
@@ -488,9 +486,9 @@ public class SessionType implements ADBBean
         this.rigType = param;
     }
 
-    public void setTime(final int param)
+    public void setDuration(final int param)
     {
-        this.time = param;
+        this.duration = param;
     }
 
     public void setTimeLeft(final int param)
@@ -654,17 +652,32 @@ public class SessionType implements ADBBean
                 {
                     reader.next();
                 }
-                if (reader.isStartElement() && new QName("", "time").equals(reader.getName()))
+                if (reader.isStartElement() && new QName("", "duration").equals(reader.getName()))
                 {
                     final String content = reader.getElementText();
-                    object.setTime(ConverterUtil.convertToInt(content));
+                    object.setDuration(ConverterUtil.convertToInt(content));
                     reader.next();
                 }
                 else
                 {
                     throw new ADBException("Unexpected subelement " + reader.getName());
                 }
-
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "extensions").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setExtensions(ConverterUtil.convertToInt(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getName());
+                }
+                
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();
@@ -681,21 +694,6 @@ public class SessionType implements ADBBean
                     throw new ADBException("Unexpected subelement " + reader.getName());
                 }
 
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "extensions").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setExtensions(ConverterUtil.convertToInt(content));
-                    reader.next();
-                }
-                else
-                {
-                    throw new ADBException("Unexpected subelement " + reader.getName());
-                }
-                
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {
                     reader.next();

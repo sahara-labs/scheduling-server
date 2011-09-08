@@ -746,7 +746,7 @@ public class QueueEntry
             ses.setRig(remoteRig);
             
             ses.setExtensions((short)provSes.getExtensions());
-            ses.setDuration(provSes.getTimeLeft() + provSes.getTime());
+            ses.setDuration(provSes.getDuration());
         }
         else
         {

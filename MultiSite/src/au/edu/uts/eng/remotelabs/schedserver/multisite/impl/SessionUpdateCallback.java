@@ -36,29 +36,86 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.client.MultiSiteCallbackClientHandler;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
 /**
  * 
  */
 public class SessionUpdateCallback extends MultiSiteCallbackClientHandler
 {
+    /** Session that is being updated. */
+    private final Session session;
+    
+    /** Logger. */
+    private final Logger logger;
 
     public SessionUpdateCallback(Session session)
     {
-        
+        this.logger = LoggerActivator.getLogger();
+        this.session = session;
     }
     
     @Override
     public void receiveResponseSessionUpdate(boolean successful, String reason)
     {
-        System.out.println("Update: " + successful + ", reason: " + reason);
+        if (successful)
+        {
+            this.logger.debug("Consumer site successful acknowledged session update for session '" + 
+                    this.session.getId() + "'.");
+        }
+        else
+        {
+            this.logger.warn("Consumer site did not successfully acknowledge session update for session '" + 
+                    this.session.getId() + "' with reason: " + reason + ". Session will be terminated.");
+            this.terminateSession();
+        }
     }
     
     @Override
     public void receiveErrorSessionUpdate(Exception e)
     {
-        e.printStackTrace();
+        this.logger.warn("Unable to provide consumer notification of session termination of '" + 
+                    this.session.getId() + "'. Exception " + e.getClass().getSimpleName() + ": " + e.getMessage());
+        this.terminateSession();
+    }
+    
+    /** 
+     * Terminate the session.
+     */
+    private void terminateSession()
+    {
+        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            this.terminateSession(db);
+        }
+        finally 
+        {
+            db.close();
+        }
+    }
+    
+    /**
+     * Terminates the database session.
+     * 
+     * @param db database session
+     */
+    public void terminateSession(org.hibernate.Session db)
+    {
+        SessionService sesServ = MultiSiteActivator.getSessionService();
+        if (sesServ == null)
+        {
+            this.logger.error("Unable to terminate session because the 'Session' service was not found.");
+        }
+        else
+        {
+            sesServ.finishSession((Session)db.merge(this.session), "Unable to update consumer.", db);
+        }
     }
 }
