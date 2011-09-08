@@ -319,7 +319,11 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             User user = this.getUser(username, remotePerm.getSite(), dao.getSession());
             this.ensureAssociation(user, remotePerm.getPermission().getUserClass(), dao.getSession());
             
-            // TODO Batch support
+            /* If the user is directly assigned to a rig we don't want them to
+             * receive a notification of a session starting because the 
+             * response parameter will specify it. */
+            SessionEventNotifier.expectUserStarting(user);
+            
             QueueSession ses = queuer.addToQueue(user, remotePerm.getPermission(), null, dao.getSession());
             if (ses.wasSuccessful())
             {
@@ -330,6 +334,8 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             {
                 opResp.setReason(ses.getErrorMessage());
             }
+            
+            SessionEventNotifier.clearExpectUserStarting(user);
         }
         finally
         {
@@ -731,7 +737,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
                 }
                 else opResp.setWasSuccessful(service.finishSession(ses, "Consumer request", db));
             }
-            SessionEventNotifier.clearFinishingSession(ses);
+            SessionEventNotifier.clearExpectFinishingSession(ses);
         }
         finally
         {

@@ -208,6 +208,6 @@ public class MultiSiteActivator implements BundleActivator
      */
     public static void queueNotification(Bookings booking)
     {
-        // TODO 
+        // TODO Implement queued notifications of booking cancellation. 
     }
 }

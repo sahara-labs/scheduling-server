@@ -46,8 +46,10 @@ import org.apache.axis2.AxisFault;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionFinished;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionStarted;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.SessionUpdate;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.types.UserSessionType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.PermissionIDType;
@@ -61,6 +63,10 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.UserIDType;
  */
 public class SessionEventNotifier extends AbstractCallbackRequest implements SessionEventListener
 {
+    /** The list of expected users who have sessions starting so they will not 
+     *  be doubly notified. */
+    private static final List<User> expectedUserStarting = Collections.synchronizedList(new ArrayList<User>()); 
+    
     /** The list of expected user requested finishing sessions. No notifications
      *  will be for these sessions. */
     private static final List<Session> expectedFinishing = Collections.synchronizedList(new ArrayList<Session>());
@@ -88,6 +94,12 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
             /* We only need to tell the consumer for every case, except 
              * if they have queued the rig and have been directly assigned. */
             case ASSIGNED:
+                if (SessionEventNotifier.expectedUserStarting.contains(session.getUser()))
+                {
+                    this.logger.debug("Not going to send session started notification because the session is " +
+                    		"expected to be starting.");
+                }
+                else this.notifySessionStarted(session, db);
                 break;
                 
             /* We need to always tell the consumer about a session being ready
@@ -107,11 +119,47 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
             case FINISHED:
                 if (SessionEventNotifier.expectedFinishing.contains(session))
                 {
-                    this.logger.debug("Not going session finished notification because the session is expected to " +
-                    		"be finished.");
+                    this.logger.debug("Not going to send session finished notification because the session is " +
+                    		"expected to be finished.");
                 }
                 else this.notifySessionFinished(session, db);
                 break;
+        }
+    }
+    
+    /**
+     * Notify a consumer site of a started session.
+     * 
+     * @param session started session 
+     * @param db database session
+     */
+    private void notifySessionStarted(Session session, org.hibernate.Session db)
+    {
+        RemoteSite site = session.getResourcePermission().getRemotePermission().getSite();
+        if (!this.checkPreconditions(site, db)) return;
+        
+        this.logger.debug("Notifying consumer site '" + site.getName() + "' of session starting for user '" + 
+                session.getUser().qName() + "'.");
+        
+        SessionStarted request = new SessionStarted();
+        request.setSessionStarted(this.getUserSession(session));
+        
+        SessionCallback cb = new SessionCallback(session);
+        try
+        {
+            this.getStub(site).startSessionStarted(request, cb);
+        }
+        catch (AxisFault e)
+        {
+            this.logger.warn("Unable to provide consumer notification of session termination of '" + 
+                    session.getId() + "'. SOAP fault: " + e.getMessage());
+            cb.terminateSession(db);
+        }
+        catch (RemoteException e)
+        {
+            this.logger.warn("Unable to provide consumer notification of session termination of '" + 
+                    session.getId() + "'. Exception " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            cb.terminateSession(db);
         }
     }
     
@@ -132,7 +180,7 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
         SessionUpdate request = new SessionUpdate();
         request.setSessionUpdate(this.getUserSession(session));
         
-        SessionUpdateCallback cb = new SessionUpdateCallback(session);
+        SessionCallback cb = new SessionCallback(session);
         try
         {
             this.getStub(site).startSessionUpdate(request, cb);
@@ -232,8 +280,30 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
     }
     
     /**
-     * Add an expected finishing session. This stops notifications being sent to 
-     * consumer site if a finish session event is received for the session.
+     * Adds an user to be expected to have a starting session. This stops
+     * notifications being sent to the consumer site if a start session
+     * event is received for the user. 
+     * 
+     * @param user user who is expected to have a session
+     */
+    public static void expectUserStarting(User user)
+    {
+        SessionEventNotifier.expectedUserStarting.add(user);
+    }
+    
+    /**
+     * Clears a user from being expected to having a starting session.
+     * 
+     * @param user user who is expected to have a starting session
+     */
+    public static void clearExpectUserStarting(User user)
+    {
+        SessionEventNotifier.expectedFinishing.remove(user);
+    }
+    
+    /**
+     * Adds an expected finishing session. This stops notifications being sent to 
+     * the consumer site if a finish session event is received for the session.
      * 
      * @param session expected session
      */
@@ -247,7 +317,7 @@ public class SessionEventNotifier extends AbstractCallbackRequest implements Ses
      * 
      * @param session expected session to clear
      */
-    public static void clearFinishingSession(Session session)
+    public static void clearExpectFinishingSession(Session session)
     {
         SessionEventNotifier.expectedFinishing.remove(session);
     }

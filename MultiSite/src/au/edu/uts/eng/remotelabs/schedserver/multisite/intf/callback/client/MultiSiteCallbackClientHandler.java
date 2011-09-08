@@ -73,7 +73,7 @@ public abstract class MultiSiteCallbackClientHandler
      * @param successful the consumer success acknowledgment
      * @param reason error reason or null if none provided
      */
-    public void receiveResultSessionStarted(final boolean successful, final String error)
+    public void receiveResponseSessionStarted(final boolean successful, final String error)
     {
         /* Should be overridden. */
     }

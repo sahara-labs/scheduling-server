@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2011, University of Technology, Sydney
+ * Copyright (c) 2011, Michael Diponio
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2011
+ * @dateK 8th September 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 
@@ -45,9 +45,10 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.client.Mult
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
 /**
- * 
+ * Session callback where session are terminated if there is a an error 
+ * notifying the consumer site.
  */
-public class SessionUpdateCallback extends MultiSiteCallbackClientHandler
+public class SessionCallback extends MultiSiteCallbackClientHandler
 {
     /** Session that is being updated. */
     private final Session session;
@@ -55,10 +56,34 @@ public class SessionUpdateCallback extends MultiSiteCallbackClientHandler
     /** Logger. */
     private final Logger logger;
 
-    public SessionUpdateCallback(Session session)
+    public SessionCallback(Session session)
     {
         this.logger = LoggerActivator.getLogger();
         this.session = session;
+    }
+    
+    @Override
+    public void receiveResponseSessionStarted(boolean successful, String reason)
+    {
+        if (successful)
+        {
+            this.logger.debug("Consumer site successful acknowledged started session '" + 
+                    this.session.getId() + "'.");
+        }
+        else
+        {
+            this.logger.warn("Consumer site did not successfully acknowledge session '" + 
+                    this.session.getId() + "' with reason: " + reason + ". Session will be terminated.");
+            this.terminateSession();
+        }
+    }
+    
+    @Override
+    public void receiveErrorSessionStarted(Exception e)
+    {
+        this.logger.warn("Unable to provide consumer notification of started session '" + 
+                    this.session.getId() + "'. Exception " + e.getClass().getSimpleName() + ": " + e.getMessage());
+        this.terminateSession();
     }
     
     @Override
@@ -80,7 +105,7 @@ public class SessionUpdateCallback extends MultiSiteCallbackClientHandler
     @Override
     public void receiveErrorSessionUpdate(Exception e)
     {
-        this.logger.warn("Unable to provide consumer notification of session termination of '" + 
+        this.logger.warn("Unable to provide consumer notification of session update of '" + 
                     this.session.getId() + "'. Exception " + e.getClass().getSimpleName() + ": " + e.getMessage());
         this.terminateSession();
     }

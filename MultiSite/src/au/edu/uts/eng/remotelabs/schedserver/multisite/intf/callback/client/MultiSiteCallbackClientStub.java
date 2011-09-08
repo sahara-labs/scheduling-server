@@ -558,7 +558,7 @@ public class MultiSiteCallbackClientStub extends Stub implements MultiSiteCallba
                     final SessionStartedResponse response= (SessionStartedResponse)MultiSiteCallbackClientStub.this.fromOM(
                             resultEnv.getBody().getFirstElement(), SessionStartedResponse.class, 
                             MultiSiteCallbackClientStub.this.getEnvelopeNamespaces(resultEnv));
-                    callback.receiveResultSessionStarted(response.getSessionStartedResponse().getWasSuccessful(),
+                    callback.receiveResponseSessionStarted(response.getSessionStartedResponse().getWasSuccessful(),
                             response.getSessionStartedResponse().getReason());
 
                 }
