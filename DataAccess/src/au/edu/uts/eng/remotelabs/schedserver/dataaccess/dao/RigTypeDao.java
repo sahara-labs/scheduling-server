@@ -131,8 +131,7 @@ public class RigTypeDao extends GenericDao<RigType>
      */
     public RigType loadOrCreate(final String name, boolean managed, String meta, RemoteSite site)
     {
-        RigType rigType = meta == null ? this.findByName(name) : this.findMetaType(name, meta);
-        
+        RigType rigType = this.findByName(name);
         if (rigType == null)
         {
             rigType = new RigType();

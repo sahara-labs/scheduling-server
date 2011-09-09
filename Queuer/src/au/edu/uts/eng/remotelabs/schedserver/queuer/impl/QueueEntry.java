@@ -73,14 +73,14 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
  * <ol>
  *  <li><tt>isInQueue</tt> - Checks whether the user is already in the queue
  *  or if they have an in progress rig session. If the response is 
- *  <code>false</code> queue entry can procede.</li>
+ *  <code>false</code> queue entry can proceed.</li>
  *  <li><tt>hasPermission</tt> - Checks whether the user (set up in the call
  *  to <tt>isInQueue</tt>) has access to the requested permission OR resource,
  *  depending on which overloaded method is called. If the response is 
- *  <code>true</code> queue entry can procede.</li>
+ *  <code>true</code> queue entry can proceed.</li>
  *  <li><tt>canUserQueue</tt> - Checks whether can queue. The ability can 
  *  queue is based on rig viability and rig use.If the response is 
- *  <code>true</code> queue entry can procede.</li>
+ *  <code>true</code> queue entry can proceed.</li>
  *  <li><tt>addToQueue</tt> - Actually add the user to the queue for the 
  *  requested resource (set up in the call to one of <tt>hasPermission</tt>
  *  overloaded methods). If the response is <code>true</code> the user
@@ -640,8 +640,8 @@ public class QueueEntry
      */
     private boolean handleConsumerQueue(Session ses)
     {
-        RemotePermission remote = this.resourcePerm.getRemotePermission();
-        if (remote == null)
+        RemotePermission remotePerm = this.resourcePerm.getRemotePermission();
+        if (remotePerm == null)
         {
             this.logger.warn("Cannot queue for a consumer permission (id=" + this.resourcePerm.getId() + 
                     ") because there is no remote permission.");
@@ -649,10 +649,10 @@ public class QueueEntry
             return false;
         }
         
-        String remoteSite = remote.getSite().getName();
+        String remoteSite = remotePerm.getSite().getName();
         
         QueueRequest providerCall = new QueueRequest();
-        if (!providerCall.addToQueue(remote, this.user, this.db))
+        if (!providerCall.addToQueue(remotePerm, this.user, this.db))
         {
             this.logger.warn("Remote queue failed with reason '" + providerCall.getFailureReason() + "'.");
             this.errorMessage = "COMMUNICATION ERROR: '" + remoteSite + "' failed (" + providerCall.getFailureReason() + ")";
@@ -670,6 +670,7 @@ public class QueueEntry
             return false;
         }
         
+        ses.setRequestedResourceId(-1L);
         if (providerCall.isInQueue())
         {
             this.logger.debug("Provider queuing succeeded, user '" + this.user.getName() + "' now in queue state.");
@@ -691,7 +692,6 @@ public class QueueEntry
             }
             
             ses.setAssignmentTime(new Date());
-            ses.setRequestedResourceId(-1L);
             ses.setRequestedResourceName(provSes.getResourceName());
              
             /* Session state conditions. */
@@ -699,18 +699,19 @@ public class QueueEntry
             ses.setInGrace(provSes.isInGrace());
 
             /* Remote rig type may not exist either, if not will need to be added. */
+            String siteNs = remotePerm.getSite().getUserNamespace();
             RigType remoteType = new RigTypeDao(this.db).
-                    loadOrCreate(remoteSite + ':' + provSes.getRigType(), false, "provider=" + remoteSite, remote.getSite());
+                    loadOrCreate(siteNs + ':' + provSes.getRigType(), false, "provider=" + remoteSite, remotePerm.getSite());
             
             RigDao rigDao = new RigDao(this.db);
-            Rig remoteRig = rigDao.findMetaRig(remoteSite + ':' + provSes.getRigName(), "provider=" + remoteSite);
+            Rig remoteRig = rigDao.findByName(siteNs + ':' + provSes.getRigName());
             if (remoteRig == null)
             {
                 /* Provider rig has not previously been used at site so it 
                  * must be created. */
                 remoteRig = new Rig();
                 /* Rig name format is <Provider>:<Specificed rig name>. */
-                remoteRig.setName(remoteSite + ':' + provSes.getRigName());
+                remoteRig.setName(siteNs + ':' + provSes.getRigName());
                 /* Meta information about source. */
                 remoteRig.setMeta("provider=" + remoteSite);
                 remoteRig.setActive(false);  // The rig cannot take local sessions so cannot be online
@@ -719,7 +720,7 @@ public class QueueEntry
                 remoteRig.setContactUrl(provSes.getContactURL());
                 remoteRig.setLastUpdateTimestamp(new Date());
                 remoteRig.setRigType(remoteType);
-                remoteRig.setSite(remote.getSite());
+                remoteRig.setSite(remotePerm.getSite());
                 
                 rigDao.persist(remoteRig);
             }

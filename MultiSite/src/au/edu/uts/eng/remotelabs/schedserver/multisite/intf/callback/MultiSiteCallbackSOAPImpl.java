@@ -291,18 +291,14 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
                 ses.setResourcePermission(remotePerm.getPermission());
                 ses.setRequestedResourceId(-1L);
                 
+                ses.setResourceType(remotePerm.getPermission().getType());
                 ResourceType res = provSes.getResource();
                 if (res == null)
                 {
                     this.logger.error("Provider site did not provide resource information when starting a session.");
-                    ses.setResourceType(remotePerm.getPermission().getType());
                     ses.setRequestedResourceName("NoT_PROvIDED_BY_CONSUMER");
                 }
-                else
-                {
-                    ses.setResourceType(res.getType());
-                    ses.setRequestedResourceName(res.getName());
-                }
+                else  ses.setRequestedResourceName(res.getName());
                 
                 ses.setUser(user);
                 ses.setUserNamespace(user.getNamespace());
@@ -310,19 +306,19 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             }
             
             /* Remote rig type may not exist either, if not will need to be added. */
+            String siteNs = remotePerm.getSite().getUserNamespace();
             RigType remoteType = new RigTypeDao(db).
-                    loadOrCreate(request.getSiteID() + ':' + provSes.getRigType(), false, "provider=" + remoteSite,
-                    remotePerm.getSite());
+                    loadOrCreate(siteNs + ':' + provSes.getRigType(), false, "provider=" + remoteSite, remotePerm.getSite());
             
             RigDao rigDao = new RigDao(db);
-            Rig remoteRig = rigDao.findMetaRig(remoteSite + ':' + provSes.getRigName(), "provider=" + remoteSite);
+            Rig remoteRig = rigDao.findByName(siteNs + ':' + provSes.getRigName());
             if (remoteRig == null)
             {
                 /* Provider rig has not previously been used at site so it 
                  * must be created. */
                 remoteRig = new Rig();
                 /* Rig name format is <Provider>:<Specificed rig name>. */
-                remoteRig.setName(remoteSite + ':' + provSes.getRigName());
+                remoteRig.setName(siteNs + ':' + provSes.getRigName());
                 /* Meta information about source. */
                 remoteRig.setMeta("provider=" + remoteSite);
                 remoteRig.setActive(false);  // The rig cannot take local sessions so cannot be online
@@ -363,7 +359,7 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             /* mark the booking as redeemed, if this was caused by a booking. */
             if (booking != null)
             {
-                booking.setActive(true);
+                booking.setActive(false);
                 booking.setSession(ses);
                 
                 db.beginTransaction();
@@ -421,7 +417,7 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             }
             else
             {
-                this.logger.info("Updating session for user '" + userId + "' because of notification from " +
+                this.logger.debug("Updating session for user '" + userId + "' because of notification from " +
                 		"provider site '" + site.getName() + "'.");
 
                 this.updateSessionDetails(ses, request.getSession(), db);
