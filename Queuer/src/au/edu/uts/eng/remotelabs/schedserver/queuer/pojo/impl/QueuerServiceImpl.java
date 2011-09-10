@@ -50,7 +50,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSessionRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.QueuePositionRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest.QueueTarget;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
@@ -220,13 +222,36 @@ public class QueuerServiceImpl implements QueuerService
     @Override
     public int getQueuePosition(Session ses, org.hibernate.Session db)
     {
-        return Queue.getInstance().getEntryPosition(ses, db);
+        if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourcePermission().getType()))
+        {
+            /* Consumer queuing so we need to request this information from the provider. */
+            QueuePositionRequest request = new QueuePositionRequest();
+            if (!request.getQueuePosition(ses.getUser(), 
+                    ses.getResourcePermission().getRemotePermission().getSite(), db) || request.isFailed())
+            {
+                this.logger.warn("Unable to determine queue position from provider for session '" + ses.getId() +  
+                        "'. Provided reason: " + request.getFailureReason());                
+                return -1;
+            }
+            else
+            {
+                return request.getPosition();
+            }
+        }
+        else return Queue.getInstance().getEntryPosition(ses, db);
     }
 
     @Override
     public boolean removeFromQueue(Session ses, String reason, org.hibernate.Session db)
     {
-        Queue.getInstance().removeEntry(ses, db);
+        if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourcePermission().getType()))
+        {
+            /* Consumer queuing so we need to notify the provider to remove
+             * the user from the queue. */
+            new FinishSessionRequest().
+                    finishSession(ses.getUser(), ses.getResourcePermission().getRemotePermission().getSite(), db); 
+        }
+        else Queue.getInstance().removeEntry(ses, db);
         
         db.beginTransaction();
         ses.setActive(false);

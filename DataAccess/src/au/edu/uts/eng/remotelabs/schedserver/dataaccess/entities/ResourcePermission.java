@@ -87,7 +87,7 @@ public class ResourcePermission implements java.io.Serializable
     private UserClass userClass;
     
     /** Whether the resource permission is remote. */
-    private boolean isRemote;
+    private boolean remote;
     
     /** Rig this resource permission refers to if it is a permission granting 
      *  access to a specific rig. */
@@ -177,12 +177,12 @@ public class ResourcePermission implements java.io.Serializable
     @Column(name = "is_remote", nullable = false)
     public boolean isRemote()
     {
-        return this.isRemote;
+        return this.remote;
     }
 
-    public void setRemote(boolean isRemote)
+    public void setRemote(boolean remote)
     {
-        this.isRemote = isRemote;
+        this.remote = remote;
     }
     
     @Column(name = "type", nullable = false, length = 10)

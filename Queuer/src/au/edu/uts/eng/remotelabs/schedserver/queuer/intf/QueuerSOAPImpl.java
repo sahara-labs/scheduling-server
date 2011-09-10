@@ -60,7 +60,6 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest.QueueTarget;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
@@ -317,7 +316,7 @@ public class QueuerSOAPImpl implements QueuerSOAP
                 {
                     /* User is currently in queue. */
                     queue.setInQueue(true);
-                    queue.setPosition(Queue.getInstance().getEntryPosition(ses, dao.getSession()));
+                    queue.setPosition(new QueuerServiceImpl().getQueuePosition(ses, dao.getSession()));
                     queue.setTime(Math.round((System.currentTimeMillis() - ses.getRequestTime().getTime()) / 1000));
                     
                     /* Add requested resource. */
@@ -327,7 +326,12 @@ public class QueuerSOAPImpl implements QueuerSOAP
                     res.setResourceID(ses.getRequestedResourceId().intValue());
                     res.setResourceName(ses.getRequestedResourceName());
                 
-                    queue.setQueue(this.getQueueForPermission(ses.getResourcePermission(), dao.getSession()));
+                    /* Disabled for MultiSite because the this will require 
+                     * another call to the provider. */
+                    if (!ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourceType()))
+                    {
+                        queue.setQueue(this.getQueueForPermission(ses.getResourcePermission(), dao.getSession()));
+                    }
                 }
                 else
                 {

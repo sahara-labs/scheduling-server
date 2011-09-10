@@ -387,7 +387,7 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             else
             {
                 /* User in session, may be in queue or assigned to rig. */
-                if (ses.getAssignmentTime() == null)
+                if (ses.getAssignmentTime() != null)
                 {
                     queue.setInSession(true);
                 }
