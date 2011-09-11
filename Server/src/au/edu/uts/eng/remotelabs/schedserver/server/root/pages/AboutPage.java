@@ -50,6 +50,8 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
+
 /**
  * About page.
  */

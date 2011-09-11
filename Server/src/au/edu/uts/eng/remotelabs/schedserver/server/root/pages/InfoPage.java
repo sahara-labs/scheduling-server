@@ -58,6 +58,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
+
 /**
  * Runtime information page.
  */

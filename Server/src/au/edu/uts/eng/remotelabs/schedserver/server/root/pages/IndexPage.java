@@ -47,6 +47,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
+
 /**
  * The default page.
  */
@@ -57,7 +59,6 @@ public class IndexPage extends AbstractPage
     static
     {
         IndexPage.links.put("Diagnostics", "/info");
-//        IndexPage.links.put("Internals", "/internals"); // TODO Internals page
         IndexPage.links.put("Documentation", "/doc");
         IndexPage.links.put("About", "/about");
     }
@@ -171,5 +172,43 @@ public class IndexPage extends AbstractPage
     protected String getPageType()
     {
         return "Main";
+    }
+    
+    /**
+     * Adds a link to the dash board.
+     * 
+     * @param name page name
+     * @param link page link
+     * @param icon page icon
+     * @param toolTip page tool tip
+     */
+    public static void addPageLink(String name, String link, String icon, String toolTip)
+    {
+        IndexPage.links.remove("Diagnostics");
+        IndexPage.links.remove("Documentation");
+        IndexPage.links.remove("About");
+        
+        IndexPage.links.put(name, "/" + link);
+        IndexPage.icons.put(name, icon);
+        IndexPage.toolTips.put(name, toolTip);
+        
+        IndexPage.links.put("Diagnostics", "/info");
+        IndexPage.links.put("Documentation", "/doc");
+        IndexPage.links.put("About", "/about");
+    }
+    
+    /**
+     * Removes a link from the dash board.
+     * 
+     * @param name page name
+     * @param link page link
+     * @param icon page icon
+     * @param toolTip page tool tip
+     */
+    public static void removePageLink(String name)
+    {
+        IndexPage.links.remove(name);
+        IndexPage.icons.remove(name);
+        IndexPage.toolTips.remove(name);
     }
 }

@@ -37,8 +37,6 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.server;
 
-import java.util.Collection;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -49,6 +47,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.impl.PageHostingServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.server.impl.ServerImpl;
 import au.edu.uts.eng.remotelabs.schedserver.server.impl.ServerServiceListener;
 
@@ -78,20 +77,26 @@ public class ServerActivator implements BundleActivator
         this.server = new ServerImpl(context);
         this.server.init();
         
-        /* Register a service listener for servlet services. */
-        this.logger.debug("Adding a service listener for the object class " + ServletContainerService.class.getName() + '.');
-        final ServerServiceListener listener = new ServerServiceListener(this.server);
-        context.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + ServletContainerService.class.getName() + ')');
-        
-        /* Fire pseudo-events for already registered servers. */
-        final Collection<ServiceReference<ServletContainerService>> refs = 
-                context.getServiceReferences(ServletContainerService.class, null);
-        
-        for (ServiceReference<ServletContainerService> ref : refs)
+        /* Register a service listener for Servlet services. */
+        final ServerServiceListener servListener = new ServerServiceListener(this.server);
+        context.addServiceListener(servListener, 
+                '(' + Constants.OBJECTCLASS + '=' + ServletContainerService.class.getName() + ')');
+        for (ServiceReference<ServletContainerService> ref :  
+                context.getServiceReferences(ServletContainerService.class, null))
         {
             this.logger.debug("Firing registered event for servlet service from bundle " + 
                     ref.getBundle().getSymbolicName() + '.');
-            listener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+            servListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+        }
+        
+        final PageHostingServiceListener pageListener = new PageHostingServiceListener(context);
+        context.addServiceListener(pageListener,
+                '(' + Constants.OBJECTCLASS + '=' + HostedPage.class.getName() + ')');
+        for (ServiceReference<HostedPage> ref : context.getServiceReferences(HostedPage.class, null))
+        {
+            this.logger.debug("Firing registered event for hosted page from bundle " + 
+                    ref.getBundle().getSymbolicName() + '.');
+            pageListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
         
         /* Start the server. */

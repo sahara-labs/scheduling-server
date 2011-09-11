@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.impl.PageHostingServiceListener;
 
 /**
  * Downloads resources from the META-INF folder.
@@ -91,10 +92,19 @@ public class PageResource
             
             if (is == null)
             {
-                this.logger.warn("Web resource '" + path + "' not found.");
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                resp.getWriter().println("Not found.");
-                return;
+                for (ClassLoader cl : PageHostingServiceListener.getClassLoaders())
+                {
+                    is = cl.getResourceAsStream(path);
+                    if (is != null) break;
+                }
+                
+                if (is == null)
+                {
+                    this.logger.warn("Web resource '" + path + "' not found.");
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    resp.getWriter().println("Not found.");
+                    return;
+                }
             }
             
             /* Set the header at the time of start the rig client (the files are 

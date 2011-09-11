@@ -51,9 +51,10 @@ import javax.servlet.http.HttpSession;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
+import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.AboutPage;
-import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.AbstractPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.DocPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.ErrorPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.FrameworkPage;
@@ -78,10 +79,29 @@ public class RootServlet extends HttpServlet
     private static final long serialVersionUID = -454911787592576294L;
     
     /** Resource URL bases. */
-    private final List<String> resources;
+    private static final List<String> resources;
+    static 
+    {
+        resources = new ArrayList<String>();
+        resources.add("css");
+        resources.add("js");
+        resources.add("img");
+        resources.add("pdf");
+    }
     
     /** Page URL bases. */
-    private final Map<String, Class<? extends AbstractPage>> pages;
+    private static final Map<String, Class<? extends AbstractPage>> pages;
+    static
+    {
+        pages = new HashMap<String, Class<? extends AbstractPage>>();
+        pages.put("doc", DocPage.class);
+        pages.put("info", InfoPage.class);
+        pages.put("about", AboutPage.class);
+        pages.put("internals", FrameworkPage.class);
+    }
+    
+    /** The list of external pages. */
+    private static final Map<String, HostedPage> externalPages = new HashMap<String, HostedPage>();
     
     /** Logger. */
     private Logger logger;
@@ -89,20 +109,6 @@ public class RootServlet extends HttpServlet
     public RootServlet()
     {
         this.logger = LoggerActivator.getLogger();
-        
-        /* Resources list. */
-        this.resources = new ArrayList<String>();
-        this.resources.add("css");
-        this.resources.add("js");
-        this.resources.add("img");
-        this.resources.add("pdf");
-        
-        /* Pages list. */
-        this.pages = new HashMap<String, Class<? extends AbstractPage>>();
-        this.pages.put("doc", DocPage.class);
-        this.pages.put("info", InfoPage.class);
-        this.pages.put("about", AboutPage.class);
-        this.pages.put("internals", FrameworkPage.class);
     }
     
     @Override
@@ -146,7 +152,7 @@ public class RootServlet extends HttpServlet
                 resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 resp.setHeader("Location", "/");
             }
-            else if (this.resources.contains(requestBase))
+            else if (RootServlet.resources.contains(requestBase))
             {
                 /* Downloadable resource, so provide the requested resource. */
                 new PageResource().download(req, resp);
@@ -162,10 +168,15 @@ public class RootServlet extends HttpServlet
                  * page. */
                 new IndexPage().service(req, resp);
             }
-            else if (this.pages.containsKey(requestBase))
+            else if (RootServlet.pages.containsKey(requestBase))
             {
                 /* Load the page. */
-                this.pages.get(requestBase).newInstance().service(req, resp);
+                RootServlet.pages.get(requestBase).newInstance().service(req, resp);
+            }
+            else if (RootServlet.externalPages.containsKey(requestBase))
+            {
+                /* Load the page (in the requesting bundles context. */
+                RootServlet.externalPages.get(requestBase).getPage().service(req, resp);
             }
             else
             {
@@ -185,7 +196,7 @@ public class RootServlet extends HttpServlet
         }
         catch (InstantiationException ex)
         {
-            this.logger.warn("Cannot instantiate vlass '" + this.pages.get(parts[1]) + ".");
+            this.logger.warn("Cannot instantiate vlass '" + RootServlet.pages.get(parts[1]) + ".");
             try
             {
                 new ErrorPage(ex).service(req, resp);
@@ -194,7 +205,7 @@ public class RootServlet extends HttpServlet
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.warn("Illegal access to class '" + this.pages.get(parts[1]) + "'.");
+            this.logger.warn("Illegal access to class '" + RootServlet.pages.get(parts[1]) + "'.");
             try
             {
                 new ErrorPage(ex).service(req, resp);
@@ -226,5 +237,15 @@ public class RootServlet extends HttpServlet
         }
 
         return false;
+    }
+    
+    public static void addPage(HostedPage page)
+    {
+        RootServlet.externalPages.put(page.getLink(), page);
+    }
+    
+    public static void removePage(HostedPage page)
+    {
+        RootServlet.externalPages.remove(page.getLink());
     }
 }
