@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="MultiSiteFederation" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/" xmlns:p="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mutfd="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+  <wsdl:types>
+    <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+            xmlns:mut="http://remotelabs.eng.uts.edu.au/schedserver/multisite"
+            xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+            elementFormDefault="unqualified"
+            targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite">
+            <csd:import namespace="http://remotelabs.eng.uts.edu.au/schedserver/multisite" src="../MultiSite.xsd" />
+    </xsd:schema>
+    <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/scheduling/MultiSiteFederation/">
+    </xsd:schema>
+      
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+        	<xsd:element name="siteReconnect">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="in" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="NewOperationResponse">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="out" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="siteStatus">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="in" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="siteStatusResponse1">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="out" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="siteShutdown">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="in" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="siteShutdownResponse1">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="out" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element></xsd:schema>
+    </wsdl:types>
+  <wsdl:message name="NewOperationRequest">
+    <wsdl:part element="mutfd:NewOperation" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="NewOperationResponse">
+    <wsdl:part element="mutfd:NewOperationResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="siteReconnectRequest1">
+  	<wsdl:part name="parameters" element="mutfd:siteReconnect"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="siteReconnectResponse1">
+  	<wsdl:part name="parameters" element="mutfd:NewOperationResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="siteStatusRequest1">
+  	<wsdl:part name="parameters" element="mutfd:siteStatus"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="siteStatusResponse1">
+  	<wsdl:part name="parameters" element="mutfd:siteStatusResponse1"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="siteShutdownRequest1">
+  	<wsdl:part name="parameters" element="mutfd:siteShutdown"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="siteShutdownResponse1">
+  	<wsdl:part name="parameters" element="mutfd:siteShutdownResponse1"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="MultiSiteFederation">
+        <wsdl:operation name="siteReconnect">
+        	<wsdl:input message="mutfd:siteReconnectRequest1"></wsdl:input>
+        	<wsdl:output message="mutfd:siteReconnectResponse1"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="siteStatus">
+        	<wsdl:input message="mutfd:siteStatusRequest1"></wsdl:input>
+        	<wsdl:output message="mutfd:siteStatusResponse1"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="siteShutdown">
+        	<wsdl:input message="mutfd:siteShutdownRequest1"></wsdl:input>
+        	<wsdl:output message="mutfd:siteShutdownResponse1"></wsdl:output>
+        </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MultiSiteFederationSOAP" type="mutfd:MultiSiteFederation">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="siteReconnect">
+    	<soap:operation
+    		soapAction="http://remotelabs.eng.uts.edu.au/scheduling/MultiSiteFederation/NewOperation" />
+    	<wsdl:input>
+    		<soap:body use="literal" />
+    	</wsdl:input>
+    	<wsdl:output>
+    		<soap:body use="literal" />
+    	</wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MultiSiteFederation">
+    <wsdl:port binding="mutfd:MultiSiteFederationSOAP" name="MultiSiteFederationSOAP">
+      <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-MultiSite/services/MultiSiteFederation"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

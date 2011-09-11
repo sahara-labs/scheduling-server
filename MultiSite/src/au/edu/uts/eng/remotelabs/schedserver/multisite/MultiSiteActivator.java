@@ -52,8 +52,10 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.impl.BookingsCancellationNotifier;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.impl.FederationPage;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.impl.SessionEventNotifier;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
+import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
@@ -65,13 +67,16 @@ public class MultiSiteActivator implements BundleActivator
 {
     /* --- Hosted services ---------------------------------------------------- */
     /** SOAP service hosting. */
-    private ServiceRegistration<ServletContainerService> soapService;
+    private ServiceRegistration<ServletContainerService> soapRegistration;
     
     /** Bookings event listener. */
-    private ServiceRegistration<BookingsEventListener> bookingsListenerService;
+    private ServiceRegistration<BookingsEventListener> bookingsListenerRegistration;
     
     /** Session event listener service. */
-    private ServiceRegistration<SessionEventListener> sessionListenerService;
+    private ServiceRegistration<SessionEventListener> sessionListenerRegistration;
+    
+    /** Federation web interface page. */
+    private ServiceRegistration<HostedPage> pageRegistration;
     
     /* --- Tracked services that are being used. ------------------------------ */
     /** Queuer service tracker. */
@@ -117,15 +122,18 @@ public class MultiSiteActivator implements BundleActivator
 		        ServiceTracker<BookingsService, BookingsService>(bundleContext, BookingsService.class, null);
 		MultiSiteActivator.bookingsService.open();
 		
-		this.bookingsListenerService = bundleContext.registerService(BookingsEventListener.class, 
+		this.bookingsListenerRegistration = bundleContext.registerService(BookingsEventListener.class, 
 		        new BookingsCancellationNotifier(), null);
 		
-		this.sessionListenerService = bundleContext.registerService(SessionEventListener.class, 
+		this.sessionListenerRegistration = bundleContext.registerService(SessionEventListener.class, 
 		        new SessionEventNotifier(), null);
+		
+		this.pageRegistration = bundleContext.registerService(HostedPage.class, new HostedPage("Federation", 
+		        FederationPage.class, "fed", "Details about the federation.", true, true), null);
 
 		ServletContainerService serv = new ServletContainerService();
 		serv.addServlet(new ServletContainer(new AxisServlet(), true));
-		this.soapService = bundleContext.registerService(ServletContainerService.class, serv, null);
+		this.soapRegistration = bundleContext.registerService(ServletContainerService.class, serv, null);
 	}
 
     @Override
@@ -133,9 +141,10 @@ public class MultiSiteActivator implements BundleActivator
 	{
 		this.logger.info("Multisie bundle shutting down.");
 		
-		this.soapService.unregister();
-		this.bookingsListenerService.unregister();
-		this.sessionListenerService.unregister();
+		this.soapRegistration.unregister();
+		this.bookingsListenerRegistration.unregister();
+		this.sessionListenerRegistration.unregister();
+		this.pageRegistration.unregister();
 		
 		MultiSiteActivator.bookingsService.close();
 		MultiSiteActivator.bookingsService = null;
