@@ -229,7 +229,8 @@ public class AboutPage extends AbstractPage
         this.println("</div>");
         
         this.println("<div id='slcopyright'>");
-        this.println("   Copyright &copy; 2009 - 2011, University of Technology, Sydney");
+        this.println("   Copyright &copy; 2009 - 2011, University of Technology, Sydney<br />");
+        this.println("   Copyright &copy; 2011 - Michael Diponio");
         this.println("</div>");
     }
     

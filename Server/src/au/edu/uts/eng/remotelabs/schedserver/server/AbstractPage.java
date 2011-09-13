@@ -57,7 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * Interface for the a embedded server page.
+ * Class that is extended for each of the embedded server pages.
  */
 public abstract class AbstractPage
 {
@@ -116,7 +116,7 @@ public abstract class AbstractPage
      * @param req request
      */
     protected void preService(HttpServletRequest req)
-    { /* To be optionally overridden with behaviour. */ }
+    { /* To be optionally overridden with behavior. */ }
     
     /**
      * Services the request.
@@ -147,15 +147,22 @@ public abstract class AbstractPage
             this.addPageHeading();
         }
         
-        this.contents(req, resp);
-
-        if (this.framing)
+        try
         {
-            this.println("</div>");
-            this.addFooter();
-            this.println("</div>");
-            this.println("</body>");
-            this.println("</html>");
+            this.contents(req, resp);
+            
+            if (this.framing)
+            {
+                this.println("</div>");
+                this.addFooter();
+                this.println("</div>");
+                this.println("</body>");
+                this.println("</html>");
+            }
+        }
+        finally
+        {
+            this.postService(resp);
         }
         
         resp.getWriter().print(this.buf);
@@ -169,6 +176,14 @@ public abstract class AbstractPage
      * @throws IOException 
      */
     public abstract void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    
+    /**
+     * Method that is called after service.
+     * 
+     * @param resp servlet response
+     */
+    protected void postService(HttpServletResponse resp)
+    { /* To be optionally overwritten with behavior. */ }
     
     /**
      * Adds a line to the output buffer.
