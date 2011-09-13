@@ -54,7 +54,6 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.AboutPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.AbstractPage;
-import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.DocPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.ErrorPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.FrameworkPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.root.pages.IndexPage;
@@ -99,7 +98,7 @@ public class RootServlet extends HttpServlet
         
         /* Pages list. */
         this.pages = new HashMap<String, Class<? extends AbstractPage>>();
-        this.pages.put("doc", DocPage.class);
+//        this.pages.put("doc", DocPage.class);
         this.pages.put("info", InfoPage.class);
         this.pages.put("about", AboutPage.class);
         this.pages.put("internals", FrameworkPage.class);

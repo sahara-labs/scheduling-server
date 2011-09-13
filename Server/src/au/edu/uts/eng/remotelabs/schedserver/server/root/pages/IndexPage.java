@@ -58,7 +58,7 @@ public class IndexPage extends AbstractPage
     {
         IndexPage.links.put("Diagnostics", "/info");
 //        IndexPage.links.put("Internals", "/internals"); // TODO Internals page
-        IndexPage.links.put("Documentation", "/doc");
+//        IndexPage.links.put("Documentation", "/doc");
         IndexPage.links.put("About", "/about");
     }
     
@@ -66,7 +66,7 @@ public class IndexPage extends AbstractPage
     private static final Map<String, String> icons = Collections.synchronizedMap(new HashMap<String, String>());
     static
     {
-        IndexPage.icons.put("Documentation", "doc");
+//        IndexPage.icons.put("Documentation", "doc");
         IndexPage.icons.put("Internals", "framework");
         IndexPage.icons.put("About", "about");
         IndexPage.icons.put("Diagnostics", "runtime");        
@@ -78,7 +78,7 @@ public class IndexPage extends AbstractPage
     {
         IndexPage.toolTips.put("About", "About Scheduling Server.");
         IndexPage.toolTips.put("Internals", "Information about the internals of the Scheduling Server.");
-        IndexPage.toolTips.put("Documentation", "Documentation about the Scheduling Server.");
+//        IndexPage.toolTips.put("Documentation", "Documentation about the Scheduling Server.");
         IndexPage.toolTips.put("Diagnostics", "Runtime information.");
     }
 
