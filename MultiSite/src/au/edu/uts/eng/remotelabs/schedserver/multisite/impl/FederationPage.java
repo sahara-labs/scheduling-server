@@ -37,10 +37,15 @@
 package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
 
 /**
@@ -48,10 +53,57 @@ import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
  */
 public class FederationPage extends AbstractPage
 {
+    /** Database session. */
+    private Session db;
+    
+    public FederationPage()
+    {
+        this.headCss.add("/css/federation.css");
+        this.headCss.add("/js/federation.js");
+    }
+    
+    @Override
+    public void preService(HttpServletRequest req)
+    {
+        this.db = DataAccessActivator.getNewSession();
+    }
+    
+    @SuppressWarnings("unchecked")
     @Override
     public void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
-        this.println("Federation page");
+        /* Add the list of existing sites. */
+        this.println("<div id='fed' class='ui-corner-all'>");
+        this.println("  <div id='fedtitle'>");
+        this.println("     <span class='ui-icon ui-icon-transferthick-e-w' style='float:left;margin-right:10px'></span>");
+        this.println("     Federation Sites");
+        this.println("  </div>");
+        this.println("  <div id='fedlist'>");
+        this.println("      <ul>");
+        
+        for (RemoteSite site : ((List<RemoteSite>)this.db.createCriteria(RemoteSite.class).list()))
+        {
+            this.println("<li>");
+            this.println("  <div class='fedsitetitle " + (site.isOnline() ? "siteonline" : "siteoffline") + "'>");
+            this.println("      <span class='ui-icon ui-icon-circle-arrow-e'></span>");
+            this.println(this.stringTransform(site.getName()));
+            this.println("  </div>");
+            this.println("  <div class='fedsite'>");
+            this.println(site.getServiceAddress());
+            this.println("   </div>");
+            this.println("</li>");
+        }
+        
+        this.println("      </ul>");
+        this.println("  </div>");
+        this.println("</div>");
+        
+    }
+    
+    @Override
+    public void postService(HttpServletResponse resp)
+    {
+        this.db.close();
     }
 
     @Override
@@ -59,5 +111,4 @@ public class FederationPage extends AbstractPage
     {
         return "Federation";
     }
-
 }
