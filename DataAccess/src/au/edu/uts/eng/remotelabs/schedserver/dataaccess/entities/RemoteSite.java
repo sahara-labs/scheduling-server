@@ -84,6 +84,15 @@ public class RemoteSite implements Serializable
     /** The time the site sent a status update. */
     private Date lastPush;
     
+    /** Whether a site can view this sites free ranges. */
+    private boolean viewer;
+    
+    /** Whether a site can request permissions for this site. */
+    private boolean requestor;
+    
+    /** Whether this site can authorize permissions for this site. */
+    private boolean authorizer;
+    
     /** The rig types that are from this site. */
     private Set<RigType> rigTypes = new HashSet<RigType>(0);
     
@@ -182,7 +191,39 @@ public class RemoteSite implements Serializable
     {
         this.lastPush = lastPush;
     }
-    
+    @Column(name = "is_viewer")
+    public boolean isViewer()
+    {
+        return this.viewer;
+    }
+
+    public void setViewer(boolean viewer)
+    {
+        this.viewer = viewer;
+    }
+
+    @Column(name = "is_requestor")
+    public boolean isRequestor()
+    {
+        return this.requestor;
+    }
+
+    public void setRequestor(boolean requestor)
+    {
+        this.requestor = requestor;
+    }
+
+    @Column(name = "is_authorizer")
+    public boolean isAuthorizer()
+    {
+        return this.authorizer;
+    }
+
+    public void setAuthorizer(boolean authorizer)
+    {
+        this.authorizer = authorizer;
+    }
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "site")
     public Set<RigType> getRigTypes()
     {
