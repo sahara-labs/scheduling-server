@@ -420,7 +420,7 @@ public abstract class AbstractPage
     {
         this.println("<div id='footer' class='ui-corner-top'>");
         this.println("<a class='plaina' href='http://sourceforge.net/projects/labshare-sahara/' target='_blank'>" +
-        		"Powered by the open source <strong>SAHARA Labs r3.1</strong> system.</a>");
+        		"Powered by the open source <strong>SAHARA Labs r4.0.capstone</strong> system.</a>");
         this.println("</div>");
     }
     
@@ -536,13 +536,13 @@ public abstract class AbstractPage
     public static void addNavLink(String name, String link)
     {
         AbstractPage.navLinks.remove("Diagnostics");
-        AbstractPage.navLinks.remove("Documentation");
+//        AbstractPage.navLinks.remove("Documentation");
         AbstractPage.navLinks.remove("About");
         
         AbstractPage.navLinks.put(name, link);
         
         navLinks.put("Diagnostics", "/info");
-        navLinks.put("Documentation", "/doc");
+//        navLinks.put("Documentation", "/doc");
         navLinks.put("About", "/about");
     }
     

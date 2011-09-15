@@ -59,7 +59,7 @@ public class IndexPage extends AbstractPage
     static
     {
         IndexPage.links.put("Diagnostics", "/info");
-        IndexPage.links.put("Documentation", "/doc");
+//        IndexPage.links.put("Documentation", "/doc");
         IndexPage.links.put("About", "/about");
     }
     
@@ -165,7 +165,7 @@ public class IndexPage extends AbstractPage
     @Override
     protected String getPageHeader()
     {
-        return "Welcome to SAHARA Labs r3.1";
+        return "Welcome to SAHARA Labs r4.0.capstone";
     }
     
     @Override
@@ -185,7 +185,7 @@ public class IndexPage extends AbstractPage
     public static void addPageLink(String name, String link, String icon, String toolTip)
     {
         IndexPage.links.remove("Diagnostics");
-        IndexPage.links.remove("Documentation");
+//        IndexPage.links.remove("Documentation");
         IndexPage.links.remove("About");
         
         IndexPage.links.put(name, "/" + link);
@@ -193,7 +193,7 @@ public class IndexPage extends AbstractPage
         IndexPage.toolTips.put(name, toolTip);
         
         IndexPage.links.put("Diagnostics", "/info");
-        IndexPage.links.put("Documentation", "/doc");
+//        IndexPage.links.put("Documentation", "/doc");
         IndexPage.links.put("About", "/about");
     }
     
