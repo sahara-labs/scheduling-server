@@ -54,6 +54,20 @@
         				<xsd:element name="out" type="xsd:string"></xsd:element>
         			</xsd:sequence>
         		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="initiateSite">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="in" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="initiateSiteResponse1">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="out" type="xsd:string"></xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
         	</xsd:element></xsd:schema>
     </wsdl:types>
   <wsdl:message name="NewOperationRequest">
@@ -80,6 +94,12 @@
   <wsdl:message name="siteShutdownResponse1">
   	<wsdl:part name="parameters" element="mutfd:siteShutdownResponse1"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="initiateSiteRequest1">
+  	<wsdl:part name="parameters" element="mutfd:initiateSite"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="initiateSiteResponse1">
+  	<wsdl:part name="parameters" element="mutfd:initiateSiteResponse1"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="MultiSiteFederation">
         <wsdl:operation name="siteReconnect">
         	<wsdl:input message="mutfd:siteReconnectRequest1"></wsdl:input>
@@ -92,6 +112,10 @@
         <wsdl:operation name="siteShutdown">
         	<wsdl:input message="mutfd:siteShutdownRequest1"></wsdl:input>
         	<wsdl:output message="mutfd:siteShutdownResponse1"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="initiateSite">
+        	<wsdl:input message="mutfd:initiateSiteRequest1"></wsdl:input>
+        	<wsdl:output message="mutfd:initiateSiteResponse1"></wsdl:output>
         </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="MultiSiteFederationSOAP" type="mutfd:MultiSiteFederation">

@@ -32,11 +32,48 @@
  * @author Michael Diponio (mdiponio)
  * @date 12th September 2011
  */
+ 
+/* ----------------------------------------------------------------------------
+ * -- Tabs bar                                                               --
+ * ---------------------------------------------------------------------------- */
 
-#fed {
-    margin-left: -105px;
-    border: 1px solid #B5B5B5;
-    box-shadow: 0 0 4px #B5B5B5; 
+#lefttabbar {
+	margin-left: -105px;
+}
+
+#federationpage .selectedtab {
+	width: 130px;
+}
+#federationpage .notselectedtab {
+	width: 110px;
+}
+
+#federationpage .linkbutcontlabel {
+	text-align: right;
+	padding-right: 10px;
+}
+
+#tabcontents {
+	width: 730px;
+	border-left: 3px solid #B5B5B5;
+	margin-left: 6px;
+}
+
+#lefttabbar {
+	border-right: 3px solid #B5B5B5;
+}
+
+/* ----------------------------------------------------------------------------
+ * -- Sites list                                                             --
+ * ---------------------------------------------------------------------------- */
+#fedsites {
+   border: 1px solid #B5B5B5;
+   border-radius: 0 4px 0 0;
+   box-shadow: 0 0 4px #B5B5B5;
+   -webkit-border-radius: 0 4px 0 0;
+   -webkit-box-shadow: 0 0 4px #B5B5B5;
+   -moz-border-radius: 0 4px 0 0;
+   -moz-box-shadow: 0 0 4px #B5B5B5;
 }
 
 #fedtitle {
@@ -45,34 +82,122 @@
 	background-color: #EFEFEF;
 }
 
-#fed ul li {
+#fedsites ul li {
     list-style: none;
     border-bottom: 1px solid #B5B5B5;
 }
 
-#fed .fedsitetitle {
+#fedsites .fedsitetitle {
 	color: #606060;
 	padding: 8px;
 }
 
-#fed .fedsitetitle:hover {
+#fedsites .fedsitetitle:hover {
 	color: #000000;
 	box-shadow: 0 0 4px #AAAAAA;
 }
 
-#fed .siteonline {
+#fedsites .siteonline {
 	background-color: #C6FFC5;
 }
 
-#fed .siteoffline {
+#fedsites .siteoffline {
 	background-color: #FCC1C1;
 }
 
-#fed .fedsitetitle span {
+#fedsites .sitedisplayed {
+	border: 1px solid #B5B5B5;
+	box-shadow: 0 2px 6px #B5B5B5;
+}
+
+#fedsites .fedsitetitle span {
 	float: left;
 	margin: 0 5px 0 15px;
 }
 
-#fed .fedsite {
+#fedsites .fedsite {
 	display: none;
+}
+
+#fedsites .sitedetails {
+	float: left;
+	width: 430px;
+}
+
+#fedsites .siterole {
+	border-left: 1px solid #B5B5B5;
+    box-shadow: 0 0 2px #B5B5B5;
+    -webkit-box-shadow: 0 0 2px #B5B5B5;
+    -moz-box-shadow: 0 0 2px #B5B5B5;
+    float: left;
+    height: 180px;
+    overflow-y: hidden;
+    padding: 5px;
+    width: 129px;
+}
+
+#fedsites .siterolelabel {
+	background-color: #EFEFEF;
+    border: 1px solid #B5B5B5;
+    border-radius: 0 0 4px 4px;
+    -moz-border-radius: 0 0 4px 4px;
+    -webkit-border-radius: 0 0 4px 4px;
+    box-shadow: 0 0 3px #B5B5B5;
+    -webkit-box-shadow: 0 0 3px #B5B5B5;
+    -moz-box-shadow: 0 0 3px #B5B5B5;
+    padding: 5px;
+    color: #606060;
+}
+
+#fedsites .siterole table {
+	width: 100%;
+}
+
+#fedsites .siterole button {
+	float: right;
+	width: 60px;
+	margin-left: 15px;
+}
+
+.fedbutton {
+	display: block;
+	border-radius: 4px 4px 4px 4px;
+	border: 1px solid #B5B5B5;
+	background-color: #EFEFEF;
+	text-align: center;
+	font-size: 0.9em;
+	color: #606060;
+	box-shadow: 0 0 4px #B5B5B5;
+	-webkit-box-shadow: 0 0 4px #B5B5B5;
+	-moz-box-shadow: 0 0 4px #B5B5B5;
+	cursor: pointer;
+}
+
+.fedbutton:hover {
+	color: #606060;
+	box-shadow: 0 0 4px #606060;
+	-webkit-box-shadow: 0 0 4px #606060;
+	-moz-box-shadow: 0 0 4px #606060;
+}
+
+#fedsites .siterole a {
+	margin: 25px auto 0;
+	width: 75px;
+	height: 75px;
+}
+
+#addsite {
+	display: block;    
+	position: absolute;
+	margin: -35px 0 0 7px;
+	padding: 5px;
+}
+
+#addsite span {
+	float: left;
+	margin-right: 5px;
+}
+
+#fedsites .siteclear {
+	clear: both;
 }
