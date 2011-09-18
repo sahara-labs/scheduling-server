@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServletResponse;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.impl.PageHostingServiceListener;
 
 /**
  * Class that is extended for each of the embedded server pages.
@@ -466,6 +467,16 @@ public abstract class AbstractPage
         try
         {
             InputStream is = AbstractPage.class.getResourceAsStream("/META-INF/web/doc/" + page + ".html");
+            if (is == null)
+            {
+                /* Attempt to load the help file from a page hosting bundle. */
+                for (ClassLoader cl : PageHostingServiceListener.getClassLoaders())
+                {
+                    is = cl.getResourceAsStream("/META-INF/web/doc/" + page + ".html");
+                    if (is != null) break;
+                }
+            }
+            
             if (is == null)
             {
                 this.logger.error("Failed to load help document file '/META-INF/web/doc/" + page + ".html' for page '" +
