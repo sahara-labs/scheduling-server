@@ -36,7 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
 
@@ -53,5 +56,18 @@ public class RequestablePermissionPeriodDao extends GenericDao<RequestablePermis
     public RequestablePermissionPeriodDao(Session db)
     {
         super(db, RequestablePermissionPeriod.class);
+    }
+    
+    /**
+     * Gets the list of active requestable periods.
+     * 
+     * @return list of requestable periods
+     */
+    @SuppressWarnings("unchecked")
+    public List<RequestablePermissionPeriod> getActivePeriods()
+    {
+        return this.session.createCriteria(RequestablePermissionPeriod.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .list();
     }
 }
