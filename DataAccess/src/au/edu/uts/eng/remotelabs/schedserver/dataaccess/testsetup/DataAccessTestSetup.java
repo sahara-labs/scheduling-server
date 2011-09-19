@@ -51,6 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermissio
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
@@ -120,6 +121,7 @@ public class DataAccessTestSetup
             cfg.addAnnotatedClass(RemoteSite.class);
             cfg.addAnnotatedClass(RequestCapabilities.class);
             cfg.addAnnotatedClass(ResourcePermission.class);
+            cfg.addAnnotatedClass(RequestablePermissionPeriod.class);
             cfg.addAnnotatedClass(Rig.class);
             cfg.addAnnotatedClass(RigCapabilities.class);
             cfg.addAnnotatedClass(RigOfflineSchedule.class);

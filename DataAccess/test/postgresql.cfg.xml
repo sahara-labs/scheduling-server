@@ -12,10 +12,12 @@
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config" />
-		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities" />				<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities" />				
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities" />
