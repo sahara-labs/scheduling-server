@@ -133,6 +133,7 @@ function saveConsumerAuth(id, guid)
 			"viewer": ($("#" + id + "viewer:checked").length == 1 ? "true" : "false"),
 			"requestor": ($("#" + id + "requestor:checked").length == 1 ? "true" : "false"),
 			"authorizor": ($("#"+ id + "authorizor:checked").length == 1 ? "true" : "false"),
+			"redirectee": ($("#"+ id + "redirectee:checked").length == 1 ? "true" : "false")
 		},
 		function(response) { /* Nothing for now. */ }
 	);
@@ -143,4 +144,153 @@ function loadProviderResources(guid)
 	alert("Provider resources: " + guid);
 }
 
+/* ----------------------------------------------------------------------------
+ * -- Time Period Tab.                                                       --
+ * ---------------------------------------------------------------------------- */
 
+function addPeriod()
+{
+	$("body").append(
+			"<div id='addperioddiag' title='Add Time Period'>" +
+			
+			/* Time period time selectiors. */
+			"<div class='timeselectors'>" +
+				"<div class='timeline'>" +
+					"<div class='timelinelabel'>Start:</div>" +
+					"<div class='jqTransformInputWrapper' style='width:150px'>" +
+						"<div class='jqTransformInputInner'>" +
+							"<div><input id='startdate' class='validate[required] jqtransformdone jqTranformInput offlinecreatedate' type='text' /></div>" +
+						"</div>" +	
+					"</div>" +
+					"<a id='startcalopen' class='fedbutton calopen ui-corner-all'>" +
+						"<img src='/img/daypicker.png' alt='Open' />" +
+					"</a>" +
+				"</div>" + 
+				"<div class='timeline'>" +
+					"<div class='timelinelabel'>End:</div>" +
+					"<div class='jqTransformInputWrapper' style='width:150px'>" +
+						"<div class='jqTransformInputInner'>" +
+							"<div><input id='enddate' class='validate[required] jqtransformdone jqTranformInput offlinecreatedate' type='text' /></div>" +
+						"</div>" +	
+					"</div>" +
+					"<a id='endcalopen' class='fedbutton calopen ui-corner-all'>" +
+						"<img src='/img/daypicker.png' alt='Open' />" +
+					"</a>" +
+				"</div>" + 
+				"<div style='clear:both'> </div>" +
+			"</div>" +
+			
+			/* Resource selector buttons. */
+			"<div class='resourceselectors'>" +
+				"<a id='rigresource' class='resourceselector fedbutton'>Specific Rigs</a>" +
+				"<a id='rigtyperesource' class='resourceselector fedbutton'>Rig Types</a>" +
+				"<a id='capsresource' class='resourceselector fedbutton'>Capabilities</a>" +
+			"</div>" +
+			
+			"<div id='resourcelist'> <div>" +
+			
+			"</div>");
+	
+	$(".offlinecreatedate").datetimepicker({
+		dateFormat: "dd/mm/yy",
+		showOn: "focus"
+	});
+	
+	$("#startcalopen").click(function() {
+		$("#startdate").datetimepicker("show");
+	});
+	
+	$("#endcalopen").click(function() {
+		$("#enddate").datetimepicker("show");
+	});
+	
+	$("#addperioddiag .resourceselector").click(function() {
+		$.post(
+			"/federation/resources",
+			{ type: $(this).attr('id').substring(0, $(this).attr('id').indexOf("resource")) },
+			function(response) {
+				$("#addperioddiag .selectedselector").removeClass("selectedselector");
+				$("#" + response.type + "resource").addClass("selectedselector");
+				
+				var html = "<div id='resourcelistinner'>", i, name;
+				for (i in response.list)
+				{
+					name = response.list[i];
+					html += 
+						"<div class='resourceitem'>" +
+							"<span>" + name.split("_").join(" ") + "</span>" +
+							"<input type='checkbox' name='" + name + "' />" +
+						"</div>";
+				}
+				
+				html += "</div><div style='clear:both'></div>";
+				
+				$("#resourcelist").empty().append(html);
+				
+				$("#addperioddiag").dialog({
+					buttons: {
+						'Add': function() {
+//							
+//							
+//							$.post(
+//								"/federation/addperiod",
+//								{
+//									"start": $("#startdate").val();
+//									"end": $("#enddate").val();
+//								},
+//								function() { loadFederationTab("times") }
+//							);
+						},
+						'Cancel': function() {
+							$(this).dialog("close");
+						}
+					}
+				});
+			}
+		);
+	});
+	
+	$("#createofflineform").validationEngine();
+
+	$("#addperioddiag").dialog({
+		autoOpen: true,
+		modal: true,
+		resizable: false,
+		width: 500,
+		close: function() {
+			$(this).remove();
+		}
+	});
+}
+
+function deletePeriod(id)
+{
+	$("body").append("<div id='deletediag' title='Cancel Time Period'>Are you sure sure you want to cancel the consumer " +
+			"requestable time period?</div>");
+	
+	$("#deletediag").dialog({
+		autoOpen: true,
+		modal: true,
+		resizable: false,
+		width: 400,
+		buttons: {
+			Delete: function() {
+				$.post(
+					"/federation/deleteperiod",
+					{ pid: id },
+					function(response) {
+						$("#deletediag").dialog("close");
+						loadFederationTab("times");
+					}
+				);
+			},
+			Cancel: function() {
+				$(this).dialog("close");
+			}
+		},
+		close: function() {
+			$(this).remove();
+		}
+	});
+	
+}

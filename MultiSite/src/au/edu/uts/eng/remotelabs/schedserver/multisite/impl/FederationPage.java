@@ -36,6 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.CAPS_PERMISSION;
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.RIG_PERMISSION;
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.TYPE_PERMISSION;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -47,10 +51,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestablePermissionPeriodDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
 
 /**
@@ -64,6 +73,9 @@ public class FederationPage extends AbstractPage
     
     /** Database session. */
     private Session db;
+    
+    /** The actions that need to be handled. */
+    private final Map<String, Method> postActions;
     
     /** This pages tabs. */
     private final Map<String, Method> tabs;
@@ -79,12 +91,22 @@ public class FederationPage extends AbstractPage
     
     public FederationPage()
     {
+        this.postActions = new HashMap<String, Method>(3);
+        
         this.tabs = new LinkedHashMap<String, Method>(3);
         this.tabNames = new HashMap<String, String>(this.tabs.size());
         this.tabToolTips = new HashMap<String, String>(this.tabs.size());
         
         try
         {
+            /* Post actions that can be invoked through HTTP POST requests. */
+            this.postActions.put("saveauth",
+                    FederationPage.class.getDeclaredMethod("handleSaveAuth", HttpServletRequest.class));
+            this.postActions.put("deleteperiod", 
+                    FederationPage.class.getDeclaredMethod("handleDeletePeriod", HttpServletRequest.class));
+            this.postActions.put("resources", 
+                    FederationPage.class.getDeclaredMethod("resourcesList", HttpServletRequest.class));
+            
             /* Tab to show list of sites. */
             this.tabs.put(SITES_TAB, FederationPage.class.getDeclaredMethod("sitesTab"));
             this.tabNames.put(SITES_TAB, "Sites");
@@ -96,7 +118,7 @@ public class FederationPage extends AbstractPage
             this.tabs.put(MULTISITE_TIMES_TAB, FederationPage.class.getDeclaredMethod("multisiteTimesTab"));
             this.tabNames.put(MULTISITE_TIMES_TAB, "Allowed Times");
             this.tabToolTips.put(MULTISITE_TIMES_TAB, "Allows date ranges to set for federation use of this providers " +
-        		"resources. Other site will then be able to view these free times and reques their use.");
+        		"resources. Other sites will then be able to view these free times and request their use.");
             
             this.tabs.put(REQUESTS_TAB, FederationPage.class.getDeclaredMethod("requestsTab"));
             this.tabNames.put(REQUESTS_TAB, "Requests");
@@ -110,6 +132,7 @@ public class FederationPage extends AbstractPage
         }
         
         this.headCss.add("/css/federation.css");
+        this.headJs.add("/js/jquery-ui-timepicker-addon.js");
         this.headJs.add("/js/federation.js");
     }
     
@@ -121,53 +144,38 @@ public class FederationPage extends AbstractPage
         this.action = req.getRequestURI().substring(req.getRequestURI().lastIndexOf('/') + 1);
         if (this.action.contains("?")) this.action = this.action.substring(0, this.action.indexOf('&'));
         
-        this.framing = !this.tabs.containsKey(this.action);
+        this.framing = !(this.tabs.containsKey(this.action) || this.postActions.containsKey(this.action));
     }
     
     
     @Override
     public void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
-        if ("saveauth".equals(this.action) && "POST".equals(req.getMethod()))
+        try 
         {
-            RemoteSite site = new RemoteSiteDao(this.db).findSite(req.getParameter("guid"));
-            if (site == null)
+            System.out.println(this.action); // FIXME Remove
+            if ("POST".equals(req.getMethod()) && this.postActions.containsKey(this.action))
             {
-                this.logger.warn("Unable to change site authorisation for '" + req.getParameter("guid") + "' " +
-                		"because the site was not found.");
-                this.println("FAILED");
+                resp.setContentType("application/json");
+                this.postActions.get(this.action).invoke(this, req);
             }
-            else
-            {
-                this.logger.info("Changing site authorisation for '" + site.getName() + "' to requestor: " +
-                        req.getParameter("requestor") + ", viewer: " + req.getParameter("viewer") + ", authorizor: " +
-                        req.getParameter("authorizor") + ".");
-                
-                site.setViewer("true".equalsIgnoreCase(req.getParameter("viewer")));
-                site.setAuthorizer("true".equals(req.getParameter("authorizor")));
-                site.setRequestor("true".equals(req.getParameter("requestor")));
-                
-                this.db.beginTransaction();
-                this.db.flush();
-                this.db.getTransaction().commit();
-                
-                this.println("SUCCESS");
-            }
-        }
-        else if (this.tabNames.containsKey(this.action))
-        {
-            try
+            else if (this.tabNames.containsKey(this.action))
             {
                 this.tabs.get(this.action).invoke(this);
+
             }
-            catch (Exception e)
-            {
-                this.logger.error("Failed setting up federation page tabs. Exception: " + e.getClass().getSimpleName() +
-                    ". This is a bug so please report it.");
-            }
+            else this.indexPage();
         }
-        else this.indexPage();
+        catch (Exception e)
+        {
+            this.logger.error("Failed setting up federation page tabs. Exception: " + e.getClass().getSimpleName() +
+                    ". This is a bug so please report it.");
+        }
     }
+
+    /* ========================================================================
+     * == Page display.                                                      ==
+     * ======================================================================== */
     
     /**
      * Index page to display the tab page.
@@ -219,7 +227,7 @@ public class FederationPage extends AbstractPage
     protected void sitesTab()
     {
         /* Add sites button. */
-        this.println("<a id='addsite' class='fedbutton' onclick='addSite();'><span class='ui-icon ui-icon-circle-plus'></span>" +
+        this.println("<a id='addsite' class='fedbutton fedtopbutton' onclick='addSite();'><span class='ui-icon ui-icon-circle-plus'></span>" +
         		"Add Site</a>");
         
         /* Existing sites. */
@@ -266,6 +274,15 @@ public class FederationPage extends AbstractPage
             this.println("</table>");
             this.println("</div>");
             
+            /* Provider request. */
+            this.println("<div class='siterole'>");
+            this.println("  <div class='siterolelabel'>As Provider:</div>");
+            this.println("  <a class='fedbutton' onclick='loadProviderResources(\"" + site.getGuid() + "\")'>");
+            this.println("      <img src='/img/request.png' alt='request' />");
+            this.println("      Request Resources");
+            this.println("  </a>");
+            this.println("</div>");
+            
             /* Consumer authorisation. */
             String id = site.getName().toLowerCase().replaceAll("\\s", "");
             this.println("<div class='siterole'>");
@@ -277,18 +294,11 @@ public class FederationPage extends AbstractPage
                     (site.isRequestor() ? "checked='checked'" : "") + " /></td></tr>");
             this.println("      <tr><td>Authorizor:</td><td><input type='checkbox' id='" + id + "authorizor' " +
             		(site.isAuthorizer() ? "checked='checked'" : "") + " /></td></tr>");
+            this.println("      <tr><td>Redirectee:</td><td><input type='checkbox' id='" + id + "redirectee' " +
+                    (site.isRedirectee() ? "checked='checked'" : "") + " /></td></tr>");
             this.println("  </table>");
             this.println("  <button type='button' onclick='saveConsumerAuth(\"" + id + "\", \"" + site.getGuid() + 
                     "\")'>Save</button>");
-            this.println("</div>");
-            
-            /* Provider request. */
-            this.println("<div class='siterole'>");
-            this.println("  <div class='siterolelabel'>As Provider:</div>");
-            this.println("  <a class='fedbutton' onclick='loadProviderResources(\"" + site.getGuid() + "\")'>");
-            this.println("      <img src='/img/request.png' alt='request' />");
-            this.println("      Request Resources");
-            this.println("  </a>");
             this.println("</div>");
             
             this.println("<div class='siteclear'></div>");
@@ -307,7 +317,104 @@ public class FederationPage extends AbstractPage
      */
     protected void multisiteTimesTab()
     {
-        this.println("Free times");
+        /* Add period button. */
+        this.println("<a id='addperiod' class='fedbutton fedtopbutton' onclick='addPeriod();'>" +
+        		"<span class='ui-icon ui-icon-circle-plus'></span>Add Period</a>");
+        
+        /* Existing sites. */
+        this.println("<div id='fedperiods' class='ui-corner-all'>");
+        this.println("  <div id='fedtitle'>");
+        this.println("     <span class='ui-icon ui-icon-transferthick-e-w' style='float:left;margin-right:10px'></span>");
+        this.println("     Allowed Time Periods");
+        this.println("  </div>");
+        this.println("  <div id='fedlist'>");
+        
+        List<RequestablePermissionPeriod> periods = new RequestablePermissionPeriodDao(this.db).getActivePeriods();
+        if (periods.isEmpty())
+        {
+            this.println("<div class='ui-state ui-state-error ui-corner-all'>" +
+            		"<span class='ui-icon ui-icon-alert'></span>No allowed time periods.</div>");
+        }
+        else
+        {
+            this.println("<ul id='timeperiodlist'>");
+            
+            String currentType = null;
+            long currentId = 0;
+            for (RequestablePermissionPeriod per : periods)
+            {
+                if (currentType == null || !currentType.equals(per.getType()) ||
+                        TYPE_PERMISSION.equals(per.getType()) && currentId != per.getRigType().getId() ||
+                        RIG_PERMISSION.equals(per.getType()) && currentId != per.getRig().getId() ||
+                        CAPS_PERMISSION.equals(per.getType()) && currentId != per.getRequestCapabilities().getId())
+                {
+                    if (currentType != null)
+                    {
+                        /* Close off previous the resource section. */
+                        this.println("</ul></li>");
+                    }
+                    
+                    /* Start a new resource section. */
+                    currentType = per.getType();
+                    
+
+                    this.println("<li>");
+                    if (TYPE_PERMISSION.equals(per.getType()))
+                    {
+                        currentId = per.getRigType().getId();
+                        this.println("<div class='resourceperiodheader'>Rig Type: " + 
+                                this.stringTransform(per.getRigType().getName()) + "</div>");
+                    }
+                    else if (RIG_PERMISSION.equals(per.getType()))
+                    {
+                        currentId = per.getRig().getId();
+                        this.println("<div class='resourceperiodheader'>Rig: " + 
+                                this.stringTransform(per.getRig().getName()) + "</div>");
+                    }
+                    else if (CAPS_PERMISSION.equals(per.getType()))
+                    {
+                        currentId = per.getRequestCapabilities().getId();
+                        this.println("<div class='resourceperiodheader'>Request Capabilities: " + 
+                                per.getRequestCapabilities().getCapabilities() + "</div>");
+                    }
+                    else
+                    {
+                        this.logger.error("Unknown permission type '" + per.getType() + "' for request permission period '" +
+                                per.getId() + "'.");
+                    }
+                    
+                    this.println("<ul class='resourceperiodlist'>");
+                }
+                
+                this.println("<li id='timeperiod" + per.getId() + "'>");
+                
+                /* Dates for periods. */
+                this.println("<div class='timeperiod'>");
+                this.println("<span>" + per.getStart() + "</span><span class='ui-icon ui-icon-arrowthick-1-e'></span>" + 
+                        "<span>" + per.getEnd() + "</span>");
+                this.println("</div>");
+                
+                /* Delete button. */
+                this.println("<a class='timeperioddelete fedbutton' onclick='deletePeriod(" + per.getId() + ")'>" +
+                        "<span class='ui-icon ui-icon-circle-close'></span></a>");
+                
+                this.println("  <div class='timeperiodclear'></div>");
+                this.println("</li>");
+            }
+            
+            if (currentType != null)
+            {
+                /* There was at least one resource section we are closing off
+                 * the last resource section. */
+                this.println("</ul></li>");
+            }
+            this.println("</ul>");
+        }
+        
+        this.println("  </div>");
+        this.println("</div>");
+        
+        
     }
     
     /**
@@ -315,7 +422,128 @@ public class FederationPage extends AbstractPage
      */
     protected void requestsTab()
     {
+        // TODO Requests tab
         this.println("Requests tab");
+    }
+    
+    /* ========================================================================
+     * == Page AJAX behaviour.                                               ==
+     * ======================================================================== */
+    
+    /**
+     * Handles saving site authorisation.
+     * 
+     * @param req HTTP request
+     */
+    protected void handleSaveAuth(HttpServletRequest req)
+    {
+        RemoteSite site = new RemoteSiteDao(this.db).findSite(req.getParameter("guid"));
+        if (site == null)
+        {
+            this.logger.warn("Unable to change site authorisation for '" + req.getParameter("guid") + "' " +
+            		"because the site was not found.");
+            this.println("{\"success\":false}");
+        }
+        else
+        {
+            this.logger.info("Changing site authorisation for '" + site.getName() + "' to requestor: " +
+                    req.getParameter("requestor") + ", viewer: " + req.getParameter("viewer") + ", authorizor: " +
+                    req.getParameter("authorizor") + ", redirectee: " + req.getParameter("redirectee") + ".");
+            
+            site.setViewer("true".equalsIgnoreCase(req.getParameter("viewer")));
+            site.setAuthorizer("true".equals(req.getParameter("authorizor")));
+            site.setRequestor("true".equals(req.getParameter("requestor")));
+            site.setRedirectee("true".equals(req.getParameter("redirectee")));
+            
+            this.db.beginTransaction();
+            this.db.flush();
+            this.db.getTransaction().commit();
+            
+            this.println("{\"success\":true}");
+        }
+    }
+    
+    /**
+     * Delete the request period.
+     * 
+     * @param req HTTP request
+     */
+    protected void handleDeletePeriod(HttpServletRequest req)
+    {
+        RequestablePermissionPeriodDao dao = new RequestablePermissionPeriodDao(this.db);
+        
+        if (req.getParameter("pid") == null)
+        {
+            this.logger.warn("Unable to delete requestable permission period because the ID parameter (pid) was not " +
+                    "provided.");
+            this.println("{\"success\":false}");
+            return;
+        }
+        
+        try
+        {
+            RequestablePermissionPeriod period = dao.get(Long.parseLong(req.getParameter("pid")));
+            period.setActive(false);
+            dao.flush();
+            
+            this.logger.info("Request permission period '" + period.getId() + "' has been cancelled.");
+            this.println("{\"success\":true}");
+        }
+        catch (NumberFormatException e)
+        {
+            this.logger.warn("Unable to delete requestable permission period because the ID parameter ('" + 
+                    req.getParameter("pid") + "') was not a valid ID value.");
+            this.println("{\"success\":false}");
+        }
+    }
+    
+    /**
+     * Gets the list of resources of the specified type.
+     * 
+     * @param req HTTP request 
+     */
+    @SuppressWarnings("unchecked")
+    protected void resourcesList(HttpServletRequest req)
+    {
+        String type = req.getParameter("type");
+        this.buf.append("{\"type\":\"" + type + "\",\"list\":[");
+        
+        boolean pullBack = false;
+        if ("rigtype".equals(type))
+        {
+            for (RigType rigType : (List<RigType>)this.db.createCriteria(RigType.class)
+                    .add(Restrictions.eq("managed", Boolean.TRUE))
+                    .add(Restrictions.isNull("site"))
+                    .list())
+            {
+                this.buf.append('"' + rigType.getName() + "\",");
+                pullBack = true;
+            }
+        }
+        else if ("rig".equals(type))
+        {
+            for (Rig rig : (List<Rig>)this.db.createCriteria(Rig.class)
+                    .add(Restrictions.eq("managed", Boolean.TRUE))
+                    .add(Restrictions.isNull("site"))
+                    .list())
+            {
+                this.buf.append('"' + rig.getName() + "\",");
+                pullBack = true;
+            }
+        }
+        else if ("caps".equals(type))
+        {
+            // TODO Implement caps
+        }
+        else
+        {
+            this.logger.warn("Cannot provide resoruce list because the type parameter '" + null + "' is not one of " +
+            		"'rigtype', 'rig' or 'caps'.");
+        }
+        
+        if (pullBack) this.buf.deleteCharAt(this.buf.length() - 1);
+        this.println("]}");
+        
     }
     
     @Override

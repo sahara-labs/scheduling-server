@@ -60,13 +60,13 @@
 }
 
 #lefttabbar {
-	border-right: 3px solid #B5B5B5;
+	border-right: 3px solid #A0A0A0;
 }
 
 /* ----------------------------------------------------------------------------
  * -- Sites list                                                             --
  * ---------------------------------------------------------------------------- */
-#fedsites {
+#fedsites, #fedperiods {
    border: 1px solid #B5B5B5;
    border-radius: 0 4px 0 0;
    box-shadow: 0 0 4px #B5B5B5;
@@ -129,7 +129,7 @@
     box-shadow: 0 0 2px #B5B5B5;
     -webkit-box-shadow: 0 0 2px #B5B5B5;
     -moz-box-shadow: 0 0 2px #B5B5B5;
-    float: left;
+    float: right;
     height: 180px;
     overflow-y: hidden;
     padding: 5px;
@@ -186,14 +186,14 @@
 	height: 75px;
 }
 
-#addsite {
+#tabcontents .fedtopbutton {
 	display: block;    
 	position: absolute;
-	margin: -35px 0 0 7px;
+	margin: -35px 0 0 0px;
 	padding: 5px;
 }
 
-#addsite span {
+#tabcontents .fedtopbutton span, #fedperiods .ui-state span {
 	float: left;
 	margin-right: 5px;
 }
@@ -201,3 +201,143 @@
 #fedsites .siteclear {
 	clear: both;
 }
+
+/* ----------------------------------------------------------------------------
+ * -- Periods Tab.                                                          --
+ * ---------------------------------------------------------------------------- */
+ 
+#fedperiods .ui-state {
+	width: 200px;
+	margin: 10px auto;
+	padding: 5px;
+}
+
+#timeperiodlist {
+	list-style: none;
+}
+
+#timeperiodlist .resourceperiodheader {
+	padding: 5px 10px;
+	border: 1px solid #A0A0A0;
+	background-color: #A0A0A0;
+	color: #EFEFEF;
+	font-weight: bold;
+	box-shadow: 0 1px 3px #A0A0A0;
+}
+
+#timeperiodlist .resourceperiodlist {
+	list-style: none;
+}
+
+#timeperiodlist .resourceperiodlist li {
+	height: 30px;
+	border-bottom: 1px dashed #E0E0E0;
+}
+
+#timeperiodlist .resourceperiodlist li:hover {
+	box-shadow: 0 0 4px #A0A0A0;
+}
+
+#timeperiodlist .timeperiod {
+	padding: 5px;
+	margin-left: 15px;
+}
+
+#timeperiodlist .timeperiod span {
+	margin: 0 4px;
+	float: left;
+}
+
+#timeperiodlist .timeperioddelete {
+	display: block;
+	float: right;
+	height:20px;
+	width: 20px;
+	margin: -5px 5px 0 0;
+}
+
+#timeperiodlist .timeperioddelete span {
+	margin: 2px auto;
+}
+
+#timeperiodlist .timeperiodclear {
+	clear: both;
+}
+
+#addperioddiag .timeselectors {
+	margin: -5px auto 0;
+	width: 450px;
+}
+
+#addperioddiag .timeline .fedbutton {
+	float: left;
+	width: 34px;
+	height: 34px;
+	margin: -5px 0 0 10px;
+	padding: 4px;
+}
+
+.timeline {
+    float: left;
+    padding: 10px;
+}
+
+.timefield {
+    float: left;
+}
+
+.timelinelabel {
+    margin: 5px 0 0;
+}
+
+.ui-datepicker {
+	box-shadow: 0 0 10px #B5B5B5;
+}
+
+#addperioddiag .resourceselectors {
+	width: 315px;
+	margin: 10px auto;
+}
+
+#addperioddiag .resourceselector {
+	float: left;
+	width: 100px;
+	height: 20px;
+	padding: 5px 0;
+}
+
+#addperioddiag .selectedselector {
+	background-color: #FCFAF2;
+	border: 1px solid #FCEFA1;
+}
+
+#rigresource {
+	border-radius: 4px 0 0 4px;
+}
+
+#rigtyperesource {
+	border-radius: 0;
+}
+
+#capsresource {
+	border-radius: 0 4px 4px 0;
+}
+
+#resourcelist {
+	clear: both;
+	margin: 10px 5px;
+}
+
+#resourcelist .resourceitem {
+	float:left;
+	padding: 5px;
+	margin: 10px 0 0 -1px;
+}
+
+#resourcelist .resourceitem span {
+	display: block;
+	float: left;
+	margin: 3px 4px;
+}
+
+
