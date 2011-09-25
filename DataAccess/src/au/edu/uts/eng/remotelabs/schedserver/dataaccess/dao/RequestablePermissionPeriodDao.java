@@ -36,9 +36,11 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
@@ -68,6 +70,12 @@ public class RequestablePermissionPeriodDao extends GenericDao<RequestablePermis
     {
         return this.session.createCriteria(RequestablePermissionPeriod.class)
                 .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.gt("end", new Date()))
+                .addOrder(Order.desc("type"))
+                .addOrder(Order.desc("rigType"))
+                .addOrder(Order.desc("rig"))
+                .addOrder(Order.desc("requestCapabilities"))
+                .addOrder(Order.asc("start"))
                 .list();
     }
 }

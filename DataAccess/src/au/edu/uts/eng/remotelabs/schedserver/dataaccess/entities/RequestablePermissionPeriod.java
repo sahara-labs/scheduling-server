@@ -96,7 +96,7 @@ public class RequestablePermissionPeriod implements Serializable
         this.id = id;
     }
     
-    @Column(name = "active")
+    @Column(name = "active", nullable = false)
     public boolean isActive()
     {
         return this.active;
@@ -107,7 +107,7 @@ public class RequestablePermissionPeriod implements Serializable
         this.active = active;
     }
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     public String getType()
     {
         return this.type;
@@ -154,7 +154,7 @@ public class RequestablePermissionPeriod implements Serializable
         this.requestCapabilities = caps;
     }
 
-    @Column(name = "start")
+    @Column(name = "start", nullable = false)
     public Date getStart()
     {
         return this.start;
@@ -165,7 +165,7 @@ public class RequestablePermissionPeriod implements Serializable
         this.start = start;
     }
     
-    @Column(name = "end")
+    @Column(name = "end", nullable = false)
     public Date getEnd()
     {
         return this.end;

@@ -93,6 +93,9 @@ public class RemoteSite implements Serializable
     /** Whether this site can authorize permissions for this site. */
     private boolean authorizer;
     
+    /** Whether this site is a redirectee of permission requests. */
+    private boolean redirectee;
+    
     /** The rig types that are from this site. */
     private Set<RigType> rigTypes = new HashSet<RigType>(0);
     
@@ -191,7 +194,7 @@ public class RemoteSite implements Serializable
     {
         this.lastPush = lastPush;
     }
-    @Column(name = "is_viewer")
+    @Column(name = "is_viewer", nullable = false)
     public boolean isViewer()
     {
         return this.viewer;
@@ -202,7 +205,7 @@ public class RemoteSite implements Serializable
         this.viewer = viewer;
     }
 
-    @Column(name = "is_requestor")
+    @Column(name = "is_requestor", nullable = false)
     public boolean isRequestor()
     {
         return this.requestor;
@@ -213,7 +216,7 @@ public class RemoteSite implements Serializable
         this.requestor = requestor;
     }
 
-    @Column(name = "is_authorizer")
+    @Column(name = "is_authorizer", nullable = false)
     public boolean isAuthorizer()
     {
         return this.authorizer;
@@ -222,6 +225,17 @@ public class RemoteSite implements Serializable
     public void setAuthorizer(boolean authorizer)
     {
         this.authorizer = authorizer;
+    }
+    
+    @Column(name = "is_redirectee", nullable = false)
+    public boolean isRedirectee()
+    {
+        return this.redirectee;
+    }
+    
+    public void setRedirectee(boolean redirectee)
+    {
+        this.redirectee = redirectee;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "site")
