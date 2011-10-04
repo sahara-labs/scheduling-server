@@ -151,7 +151,8 @@ function loadProviderResources(guid)
 function addPeriod()
 {
 	$("body").append(
-			"<div id='addperioddiag' title='Add Time Period'>" +
+			"<div id='addperioddiag' title='Add Time Period' style='display:none'>" +
+			"<form id='timeselectorsform'>" +
 			
 			/* Time period time selectiors. */
 			"<div class='timeselectors'>" +
@@ -189,6 +190,7 @@ function addPeriod()
 			
 			"<div id='resourcelist'> <div>" +
 			
+			"</form>" +
 			"</div>");
 	
 	$(".offlinecreatedate").datetimepicker({
@@ -203,6 +205,8 @@ function addPeriod()
 	$("#endcalopen").click(function() {
 		$("#enddate").datetimepicker("show");
 	});
+	
+	$("#timeselectorsform").validationEngine();
 	
 	$("#addperioddiag .resourceselector").click(function() {
 		$.post(
@@ -230,18 +234,40 @@ function addPeriod()
 				$("#addperioddiag").dialog({
 					buttons: {
 						'Add': function() {
-//							
-//							
-//							$.post(
-//								"/federation/addperiod",
-//								{
-//									"start": $("#startdate").val();
-//									"end": $("#enddate").val();
-//								},
-//								function() { loadFederationTab("times") }
-//							);
+							if (!$("#timeselectorsform").validationEngine('validate')) return;
+							
+							var i, resources = "", checked = $("#resourcelist input:checked");
+							for (i = 0; i < checked.length; i++)
+							{
+								resources += (i > 0 ? "," : "") + $(checked[i]).attr('name');
+							}
+							
+							if (resources == "") 
+							{
+								$("#resourcelist").validationEngine('showPrompt', '* No resources selected', 
+										'red', 'topLeft', true);
+								return;
+							}
+							
+							var $typeSel = $("#timeselectorsform .selectedselector");
+
+							$.post(
+								"/federation/addperiod",
+								{
+									"start": $("#startdate").val(),
+									"end": $("#enddate").val(),
+									"resources": resources,
+									"type": $typeSel.attr('id').substring(0, $typeSel.attr('id').indexOf("resource"))
+								},
+								function() { 
+									$(".formError").remove();
+									$("#addperioddiag").dialog("close");
+									loadFederationTab("times");
+								}
+							);
 						},
 						'Cancel': function() {
+							$(".formError").remove();
 							$(this).dialog("close");
 						}
 					}

@@ -42,6 +42,8 @@ import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Resource
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,8 +58,11 @@ import org.hibernate.criterion.Restrictions;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestablePermissionPeriodDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
@@ -102,6 +107,8 @@ public class FederationPage extends AbstractPage
             /* Post actions that can be invoked through HTTP POST requests. */
             this.postActions.put("saveauth",
                     FederationPage.class.getDeclaredMethod("handleSaveAuth", HttpServletRequest.class));
+            this.postActions.put("addperiod", 
+                    FederationPage.class.getDeclaredMethod("handleAddPeriod", HttpServletRequest.class));
             this.postActions.put("deleteperiod", 
                     FederationPage.class.getDeclaredMethod("handleDeletePeriod", HttpServletRequest.class));
             this.postActions.put("resources", 
@@ -464,6 +471,100 @@ public class FederationPage extends AbstractPage
     }
     
     /**
+     * Add a request period.
+     * 
+     * @param req HTTP request
+     */
+    protected void handleAddPeriod(HttpServletRequest req)
+    {
+        RequestablePermissionPeriodDao dao = new RequestablePermissionPeriodDao(this.db);
+        
+        Date start = this.decodeDate(req.getParameter("start"));
+        Date end = this.decodeDate(req.getParameter("end"));
+        if (start == null || end == null)
+        {
+            this.logger.warn("Cannot add period because resource date were not provided successfully.");
+            this.echoSuccessJson(false, "Period dates not provided.");
+            return;
+        }
+        else if (start.after(end))
+        {
+            this.logger.warn("Cannot add multisite requestable period because the start is after the beginning.");
+            this.echoSuccessJson(false, "Start after end.");
+            return;
+        }
+        
+        if (req.getParameter("resources") == null)
+        {
+            this.logger.warn("Cannot add period because resource list not provided.");
+            this.echoSuccessJson(false, "Resource list not provided");
+            return;
+        }
+        String resources[] = req.getParameter("resources").split(",");
+        
+        String type = req.getParameter("type");   
+        if ("rig".equals(type))
+        {
+            RigDao rigDao = new RigDao(this.db)	;
+            Rig rig = null;
+            for (String res : resources)
+            {
+                if ((rig = rigDao.findByName(res)) == null)
+                {
+                    this.logger.warn("Cannot add multisite requestable period because rig '" + res + 
+                            "' not found.");
+                    continue;
+                }
+                
+                RequestablePermissionPeriod period = new RequestablePermissionPeriod();
+                period.setActive(true);
+                period.setStart(start);
+                period.setEnd(end);
+                period.setType(ResourcePermission.RIG_PERMISSION);
+                period.setRig(rig);
+                dao.persist(period);
+            }
+        }
+        else if ("rigtype".equals(type))
+        {
+            RigTypeDao rigTypeDao = new RigTypeDao(this.db);
+            RigType rigType = null;
+            
+            for (String res : resources)
+            {
+                if ((rigType = rigTypeDao.findByName(res)) == null)
+                {
+                    this.logger.warn("Cannot add multisite request period because rig type '" + res + 
+                            "' was not found.");
+                    continue;
+                }
+                
+                RequestablePermissionPeriod period = new RequestablePermissionPeriod();
+                period.setActive(true);
+                period.setStart(start);
+                period.setEnd(end);
+                period.setType(ResourcePermission.TYPE_PERMISSION);
+                period.setRigType(rigType);
+                dao.persist(period);
+            }
+        }
+        else if ("caps".equals(type))
+        {   
+            // TODO Implement caps
+            this.echoSuccessJson(false, "Not yet implemented");
+            return;
+        }
+        else
+        {
+            this.logger.warn("Cannot add period because unknown resource type '" + type + "'.");
+            this.echoSuccessJson(false, "Unknown resource type");
+            return;
+        }
+        
+        this.echoSuccessJson(true, null);
+    }
+    
+    /**
      * Delete the request period.
      * 
      * @param req HTTP request
@@ -476,7 +577,7 @@ public class FederationPage extends AbstractPage
         {
             this.logger.warn("Unable to delete requestable permission period because the ID parameter (pid) was not " +
                     "provided.");
-            this.println("{\"success\":false}");
+            this.echoSuccessJson(false, "Param not supplied");
             return;
         }
         
@@ -487,13 +588,13 @@ public class FederationPage extends AbstractPage
             dao.flush();
             
             this.logger.info("Request permission period '" + period.getId() + "' has been cancelled.");
-            this.println("{\"success\":true}");
+            this.echoSuccessJson(true, null);
         }
         catch (NumberFormatException e)
         {
             this.logger.warn("Unable to delete requestable permission period because the ID parameter ('" + 
                     req.getParameter("pid") + "') was not a valid ID value.");
-            this.println("{\"success\":false}");
+            this.echoSuccessJson(false, "Incorrect format");
         }
     }
     
@@ -544,6 +645,49 @@ public class FederationPage extends AbstractPage
         if (pullBack) this.buf.deleteCharAt(this.buf.length() - 1);
         this.println("]}");
         
+    }
+    
+    /**
+     * Returns a success JSON.
+     * 
+     * @param success success flag
+     * @param reason error reason
+     */
+    private void echoSuccessJson(boolean success, String reason)
+    {
+        this.println("{\"success\":" + success + (reason == null ? "" : ",\"reason\":\"" + reason + "\"") + "}");
+    }
+    
+    /**
+     * Decodes a date in the format:<br />
+     * <br />
+     *  &nbsp;&nbsp;&nbsp;&lt;day&gt;/&lt;month&gt;/&lt;year&gt; &lt;hour&gt;:&lt;minute&gt;
+     *  <br />
+     * If the supplied date string is not in the correct format, <tt>null</tt>
+     * is returned.
+     *   
+     * @param dateStr date string
+     * @return calendar or null if incorrect format.
+     */
+    private Date decodeDate(String dateStr)
+    {   
+        try
+        {
+            String[] date = dateStr.substring(0, dateStr.indexOf(' ')).split("/");
+            if (date.length != 3) return null;
+            
+            String[] time = dateStr.substring(dateStr.indexOf(' ') + 1).split(":");
+            if (time.length != 2) return null;
+            
+            Calendar cal = Calendar.getInstance();
+            cal.set(Integer.parseInt(date[2]), Integer.parseInt(date[1]) - 1, Integer.parseInt(date[0]),
+                    Integer.parseInt(time[0]), Integer.parseInt(time[1]));
+            return cal.getTime();
+        }
+        catch (NumberFormatException ex)
+        {
+            return null;
+        }
     }
     
     @Override
