@@ -74,7 +74,8 @@ public class FederationPage extends AbstractPage
 {
     public static final String SITES_TAB = "sites";
     public static final String MULTISITE_TIMES_TAB = "times";
-    public static final String REQUESTS_TAB = "requests";
+    public static final String CONSUMER_TAB = "consumer";
+    public static final String PROVIDER_TAB = "provider";
     
     /** Database session. */
     private Session db;
@@ -105,8 +106,12 @@ public class FederationPage extends AbstractPage
         try
         {
             /* Post actions that can be invoked through HTTP POST requests. */
+            this.postActions.put("addSite",
+                    FederationPage.class.getDeclaredMethod("handleAddSite", HttpServletRequest.class));
             this.postActions.put("saveauth",
                     FederationPage.class.getDeclaredMethod("handleSaveAuth", HttpServletRequest.class));
+            this.postActions.put("requestResources", 
+                    FederationPage.class.getDeclaredMethod("handleRequestResources", HttpServletRequest.class));
             this.postActions.put("addperiod", 
                     FederationPage.class.getDeclaredMethod("handleAddPeriod", HttpServletRequest.class));
             this.postActions.put("deleteperiod", 
@@ -127,10 +132,16 @@ public class FederationPage extends AbstractPage
             this.tabToolTips.put(MULTISITE_TIMES_TAB, "Allows date ranges to set for federation use of this providers " +
         		"resources. Other sites will then be able to view these free times and request their use.");
             
-            this.tabs.put(REQUESTS_TAB, FederationPage.class.getDeclaredMethod("requestsTab"));
-            this.tabNames.put(REQUESTS_TAB, "Requests");
-            this.tabToolTips.put(REQUESTS_TAB, "Shows the list of requests other sites have made for use of this sites " +
+            /* Tab to show consumer requested times. */
+            this.tabs.put(CONSUMER_TAB, FederationPage.class.getDeclaredMethod("consumersTab"));
+            this.tabNames.put(CONSUMER_TAB, "Consumer<br />Requests");
+            this.tabToolTips.put(CONSUMER_TAB, "Shows the list of requests other sites have made for use of this sites " +
         		"resources. The requests may be accepted or denied.");
+            
+            /* Tab to show provider requested times. */
+            this.tabs.put(PROVIDER_TAB, FederationPage.class.getDeclaredMethod("providersTab"));
+            this.tabNames.put(PROVIDER_TAB, "Provider<br />Requests");
+            this.tabToolTips.put(PROVIDER_TAB, "Shows the list of requests to other sites to use their resources.");
         }
         catch (Exception e)
         {
@@ -425,17 +436,44 @@ public class FederationPage extends AbstractPage
     }
     
     /**
-     * Requests for permissions.
+     * Requests for permissions from consumers.
      */
-    protected void requestsTab()
+    protected void consumersTab()
     {
         // TODO Requests tab
-        this.println("Requests tab");
+        this.println("Consumer Requests tab");
+    }
+    
+    /**
+     * Requests for permissions to providers.
+     */
+    protected void providersTab()
+    {
+        // TODO Providers tab
+        this.println("Provider request tab");
     }
     
     /* ========================================================================
      * == Page AJAX behaviour.                                               ==
      * ======================================================================== */
+    
+    /**
+     * Handles adding a remote site.
+     * 
+     * @param req HTTP request
+     */
+    protected void handleAddSite(HttpServletRequest req)
+    {
+        System.out.println("Need to implement adding site handlng...");
+        // TODO need to implement adding a site
+        if (req.getParameter("address") == null)
+        {
+            this.echoSuccessJson(false, "Address not provided.");
+            return;
+        }
+        
+       this.echoSuccessJson(false, "Unable to contact site.");
+    }
     
     /**
      * Handles saving site authorisation.
@@ -468,6 +506,35 @@ public class FederationPage extends AbstractPage
             
             this.println("{\"success\":true}");
         }
+    }
+    
+    /**
+     * Handle requesting resources from a provider site.
+     * 
+     * @param req HTTP servlet request
+     */
+    protected void handleRequestResources(HttpServletRequest req)
+    {
+        String guid = req.getParameter("guid");
+        if (guid == null)
+        {
+            this.echoSuccessJson(false, "GUID not provided.");
+            this.logger.warn("Unable to request provider resources because no site GUID was provided.");
+            return;
+        }
+        
+        RemoteSite site = new RemoteSiteDao(this.db).findSite(guid);
+        if (site == null)
+        {
+            this.echoSuccessJson(false, "Remote site not found.");
+            this.logger.warn("Unable to request provider resources because the site with GUID '" + guid + 
+                    "' was not found.");
+            return;
+        }
+        
+        
+        // TODO Handle request resources
+        this.echoSuccessJson(false, "Unable to communicate with site");
     }
     
     /**

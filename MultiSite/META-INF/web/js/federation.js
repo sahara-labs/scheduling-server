@@ -121,7 +121,80 @@ $(document).ready(function() {
 
 function addSite()
 {
-	alert("Add site");
+	$("body").append(
+			"<div id='addsitediag' title='Add Site' style='display:none'>" +
+			"<form id='addsiteform'>" +
+			"	<label for='siteaddress'>Site Address:</label>" +
+			"   <input id='siteaddress' class='validate[required,custom[url]]' type='text' />" +
+			"<form>" +
+			"<div>"
+	);
+	
+	$("#addsiteform").validationEngine();
+	$("#addsiteform").jqTransform();
+	$("#addsiteform .jqTransformInputWrapper").css("width", 280)
+			.children("input").css("width", 270);
+	
+	$("#addsitediag").dialog({
+		autoOpen: true,
+		modal: true,
+		width: 400,
+		resizable: false,
+		buttons: {
+			"Add": function() {
+				if (!$("#addsiteform").validationEngine("validate")) return;
+				
+				/* Dialog tear down. */
+				$(this).parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").hide();
+				$(this).empty()
+				       .append(
+					"<div class='requestloading'>" +
+					"	<img src='/img/msspinner.gif' alt='loading' />" +
+					"   Requesting..." +
+					"</div>"
+				);
+				
+				$.post(
+					"/federation/addSite",
+					{ address: $("#siteaddress").val() },
+					function(response)
+					{
+						if (typeof response != "object") window.location.refresh();
+						
+						var $dialog = $("#addsitediag");
+						if (response.success)
+						{
+							$dialog.dialog("close");
+							loadFederationTab("sites");
+						}
+						else
+						{
+							$dialog.dialog("option", "buttons", {
+								"Close": function() {
+									$(".formError").remove();
+									$(this).dialog("close");
+								}
+							})	
+							$dialog.parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").show();
+							$dialog.empty().append(
+								"<div class='ui-state ui-state-error ui-corner-all errormessage'>" +
+								"	<span class='ui-icon ui-icon-alert'></span>" +
+									response.reason +
+								"</div>"
+							);
+						}
+					}
+				);
+			},
+			"Close": function() {
+				$(".formError").remove();
+				$(this).dialog("close");
+			}
+		},
+		close: function() {
+			$(this).remove();
+		}
+	})
 }
 
 function saveConsumerAuth(id, guid)
@@ -141,7 +214,54 @@ function saveConsumerAuth(id, guid)
 
 function loadProviderResources(guid)
 {
-	alert("Provider resources: " + guid);
+	$("body").append(
+			"<div id='providerresdiag' title='Provider Resources' style='display:none'>" +
+			"	<div class='requestloading'>" +
+			"		<img src='/img/msspinner.gif' alt='loading' />" +
+			"   	Requesting..." +
+			"	</div>" +
+			"<div>"
+	);
+	
+	$("#providerresdiag").dialog({
+		autoOpen: true,
+		modal: true,
+		width: 400,
+		resizable: false,
+		buttons: {
+			"Close": function() {
+				$(".formError").remove();
+				$(this).dialog("close");
+			}
+		},
+		close: function() {
+			$(this).remove();
+		}
+	}).parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").hide();
+	
+	$.post(
+		"/federation/requestResources",
+		{ guid: guid },
+		function(response) {
+			if (typeof response != "object") window.location.reload();
+			
+			var $dialog = $("#providerresdiag");
+			if (response.success)
+			{
+				// TODO Sites list 
+			}
+			else
+			{
+				$dialog.parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").show();
+				$dialog.empty().append(
+					"<div class='ui-state ui-state-error ui-corner-all errormessage'>" +
+					"	<span class='ui-icon ui-icon-alert'></span>" +
+						response.reason +
+					"</div>"
+				);
+			}
+		}
+	);
 }
 
 /* ----------------------------------------------------------------------------
