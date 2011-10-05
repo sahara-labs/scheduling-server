@@ -36,6 +36,8 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -57,9 +59,6 @@ public class RemotePermission
     /** Record primary key. */
     private Long id;
     
-    /** Whether this permission is still enabled. */
-    private boolean active;
-    
     /** Mapping key that is shared between provider and consumer. */
     private String guid;
     
@@ -68,6 +67,18 @@ public class RemotePermission
     
     /** The remote site that is the provider of the permission. */
     private RemoteSite site;
+    
+    /** Whether this permission has been accepted by the provider. */
+    private boolean inRequest;
+    
+    /** Whether this permission is enabled. */
+    private boolean active;
+    
+    /** Whether this permission is has been rejected by the remote site. */
+    private boolean rejected;
+    
+    /** When the permission was requested. */
+    private Date requestTime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -80,17 +91,6 @@ public class RemotePermission
     public void setId(Long id)
     {
         this.id = id;
-    }
-
-    @Column(name = "active", nullable = false)
-    public boolean isActive()
-    {
-        return this.active;
-    }
-
-    public void setActive(boolean active)
-    {
-        this.active = active;
     }
 
     @Column(name = "guid", nullable = false, unique = true, length = 255)
@@ -127,5 +127,50 @@ public class RemotePermission
     public void setSite(RemoteSite site)
     {
         this.site = site;
+    }
+    
+    
+    @Column(name = "in_request", nullable = false)
+    public boolean isInRequest()
+    {
+        return this.inRequest;
+    }
+
+    public void setInRequest(boolean inRequest)
+    {
+        this.inRequest = inRequest;
+    }
+    
+    @Column(name = "active", nullable = false)
+    public boolean isActive()
+    {
+        return this.active;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
+    }
+
+    @Column(name = "rejected", nullable = false)
+    public boolean isRejected()
+    {
+        return this.rejected;
+    }
+
+    public void setRejected(boolean rejected)
+    {
+        this.rejected = rejected;
+    }
+
+    @Column(name = "request_time", nullable = false)
+    public Date getRequestTime()
+    {
+        return this.requestTime;
+    }
+
+    public void setRequestTime(Date requestTime)
+    {
+        this.requestTime = requestTime;
     }
 }
