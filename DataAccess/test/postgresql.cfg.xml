@@ -15,6 +15,7 @@
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities" />				
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermissionLog" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod" />

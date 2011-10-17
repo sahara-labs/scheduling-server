@@ -163,7 +163,7 @@ public class ResourcePermission implements java.io.Serializable
     }   
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_class_id", nullable = false)
+    @JoinColumn(name = "user_class_id", nullable = true)
     public UserClass getUserClass()
     {
         return this.userClass;

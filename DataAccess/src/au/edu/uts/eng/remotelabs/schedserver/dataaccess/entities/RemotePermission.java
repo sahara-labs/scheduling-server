@@ -37,6 +37,8 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,6 +48,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -69,7 +72,7 @@ public class RemotePermission
     private RemoteSite site;
     
     /** Whether this permission has been accepted by the provider. */
-    private boolean inRequest;
+    private boolean pending;
     
     /** Whether this permission is enabled. */
     private boolean active;
@@ -79,6 +82,9 @@ public class RemotePermission
     
     /** When the permission was requested. */
     private Date requestTime;
+    
+    /** Remote permission negotiation logs. */
+    private Set<RemotePermissionLog> logs = new HashSet<RemotePermissionLog>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -130,15 +136,15 @@ public class RemotePermission
     }
     
     
-    @Column(name = "in_request", nullable = false)
-    public boolean isInRequest()
+    @Column(name = "pending", nullable = false)
+    public boolean isPending()
     {
-        return this.inRequest;
+        return this.pending;
     }
 
-    public void setInRequest(boolean inRequest)
+    public void setPending(boolean pending)
     {
-        this.inRequest = inRequest;
+        this.pending = pending;
     }
     
     @Column(name = "active", nullable = false)
@@ -172,5 +178,16 @@ public class RemotePermission
     public void setRequestTime(Date requestTime)
     {
         this.requestTime = requestTime;
+    }
+    
+    @OneToMany(mappedBy = "remotePermission", fetch = FetchType.LAZY)
+    public Set<RemotePermissionLog> getLogs()
+    {
+        return this.logs;
+    }
+    
+    public void setLogs(Set<RemotePermissionLog> logs)
+    {
+        this.logs = logs;
     }
 }

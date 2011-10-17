@@ -104,7 +104,7 @@ public class RemoteSite implements Serializable
     
     /** The remote permissions that relate to this site. */
     private Set<RemotePermission> remotePermissions = new HashSet<RemotePermission>(0);
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
