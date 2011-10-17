@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -60,6 +61,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestablePermissionPeriodDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
@@ -440,8 +442,46 @@ public class FederationPage extends AbstractPage
      */
     protected void consumersTab()
     {
-        // TODO Requests tab
-        this.println("Consumer Requests tab");
+        /* Get the list of pending consumer requests. */
+        @SuppressWarnings("unchecked")
+        List<RemotePermission> perms = this.db.createCriteria(RemotePermission.class)
+                .add(Restrictions.disjunction()
+                    .add(Restrictions.eq("pending", Boolean.TRUE))
+                    .add(Restrictions.eq("active", Boolean.TRUE)))
+                    .add(Restrictions.eq("rejected", Boolean.TRUE))
+                .addOrder(Order.asc("site"))
+                .addOrder(Order.asc("requestTime"))
+                .createCriteria("permission")
+                    .add(Restrictions.eq("type", ResourcePermission.CONSUMER_PERMISSION))
+                    .add(Restrictions.gt("expiryTime", new Date()))
+                .list();
+             
+        /* Existing sites. */
+        this.println("<div id='requests' class='ui-corner-all'>");
+        this.println("  <div id='fedtitle'>");
+        this.println("     <span class='ui-icon ui-icon-transferthick-e-w' style='float:left;margin-right:10px'></span>");
+        this.println("     Consumer requests");
+        this.println("  </div>");
+        
+        if (perms.size() > 0)
+        {
+            RemoteSite site = null;
+            
+            for (RemotePermission remotePerm : perms)
+            {
+                
+            }
+        }
+        else
+        {
+            this.println("<div class='norequests ui-state ui-state-error ui-corner-all'>");
+            this.println("   <span class='ui-icon ui-icon-alert'></span>");
+            this.println("   No outstanding consumer requests.");
+            this.println("</div>");
+        }
+        
+        this.println("</div>");
+        
     }
     
     /**
