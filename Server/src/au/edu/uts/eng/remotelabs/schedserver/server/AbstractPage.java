@@ -35,7 +35,7 @@
  * @date 19th August 2011
  */
 
-package au.edu.uts.eng.remotelabs.schedserver.server.root.pages;
+package au.edu.uts.eng.remotelabs.schedserver.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,10 +55,10 @@ import javax.servlet.http.HttpServletResponse;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.server.ServerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.impl.PageHostingServiceListener;
 
 /**
- * Interface for the a embedded server page.
+ * Class that is extended for each of the embedded server pages.
  */
 public abstract class AbstractPage
 {
@@ -69,36 +69,16 @@ public abstract class AbstractPage
     private PrintWriter out;
     
     /** The list of CSS files to include. */
-    private static final List<String> headCss = Collections.synchronizedList(new ArrayList<String>());
-    static 
-    {
-        headCss.add("/css/schedulingserver.css");
-        headCss.add("/css/smoothness/jquery-ui.custom.css");
-        headCss.add("/css/jqtransform.css");
-        headCss.add("/css/validationEngine.jquery.css");
-    }
+    protected final List<String> headCss = Collections.synchronizedList(new ArrayList<String>());
     
     /** The list of Javascript files to include. */
-    private static final List<String> headJs = Collections.synchronizedList(new ArrayList<String>());
-    static 
-    {
-        headJs.add("/js/jquery.js");
-        headJs.add("/js/jquery-ui.js");
-        headJs.add("/js/jquery.jqtransform.js");
-        headJs.add("/js/jquery.validationEngine-en.js");
-        headJs.add("/js/jquery.validationEngine.js");
-        headJs.add("/js/schedulingserver.js");
-    }
+    protected final List<String> headJs = Collections.synchronizedList(new ArrayList<String>());
     
     /** The list of navigation links to add. */
     private static final Map<String, String> navLinks = Collections.synchronizedMap(new LinkedHashMap<String, String>());
     static 
     {
-        navLinks.put("Main", "/");
-        navLinks.put("Diagnostics", "/info");
-//        navLinks.put("Internals", "/internals"); // TODO
-//        navLinks.put("Documentation", "/doc");
-        navLinks.put("About", "/about");
+        AbstractPage.addNavLink("Main", "/");
     }
     
     /** Whether there is page framing with default contents. */
@@ -117,6 +97,18 @@ public abstract class AbstractPage
         
         this.buf = new StringBuilder();
         this.framing = true;
+        
+        this.headCss.add("/css/schedulingserver.css");
+        this.headCss.add("/css/smoothness/jquery-ui.custom.css");
+        this.headCss.add("/css/jqtransform.css");
+        this.headCss.add("/css/validationEngine.jquery.css");
+        
+        this.headJs.add("/js/jquery.js");
+        this.headJs.add("/js/jquery-ui.js");
+        this.headJs.add("/js/jquery.jqtransform.js");
+        this.headJs.add("/js/jquery.validationEngine-en.js");
+        this.headJs.add("/js/jquery.validationEngine.js");
+        this.headJs.add("/js/schedulingserver.js");
     }
     
     /**
@@ -125,7 +117,7 @@ public abstract class AbstractPage
      * @param req request
      */
     protected void preService(HttpServletRequest req)
-    { /* To be optionally overridden with behaviour. */ }
+    { /* To be optionally overridden with behavior. */ }
     
     /**
      * Services the request.
@@ -134,7 +126,7 @@ public abstract class AbstractPage
      * @param resp response
      * @throws IOException 
      */
-    public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException
+    public final void service(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         this.out = resp.getWriter();
         
@@ -156,15 +148,22 @@ public abstract class AbstractPage
             this.addPageHeading();
         }
         
-        this.contents(req, resp);
-
-        if (this.framing)
+        try
         {
-            this.println("</div>");
-            this.addFooter();
-            this.println("</div>");
-            this.println("</body>");
-            this.println("</html>");
+            this.contents(req, resp);
+            
+            if (this.framing)
+            {
+                this.println("</div>");
+                this.addFooter();
+                this.println("</div>");
+                this.println("</body>");
+                this.println("</html>");
+            }
+        }
+        finally
+        {
+            this.postService(resp);
         }
         
         resp.getWriter().print(this.buf);
@@ -180,11 +179,19 @@ public abstract class AbstractPage
     public abstract void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException;
     
     /**
+     * Method that is called after service.
+     * 
+     * @param resp servlet response
+     */
+    protected void postService(HttpServletResponse resp)
+    { /* To be optionally overwritten with behavior. */ }
+    
+    /**
      * Adds a line to the output buffer.
      * 
      * @param line output line
      */
-    public void println(String line)
+    public final void println(String line)
     {
         this.buf.append(line);
         this.buf.append('\n');
@@ -193,7 +200,7 @@ public abstract class AbstractPage
     /**
      * Flushes the output buffer.
      */
-    public void flushOut()
+    public final void flushOut()
     {
         this.out.print(this.buf);
         this.buf = new StringBuilder();
@@ -205,7 +212,7 @@ public abstract class AbstractPage
      * @param str string to transform
      * @return transformed string
      */
-    public String stringTransform(String str)
+    public final String stringTransform(String str)
     {
         if (str == null) return str;
         StringBuilder b = new StringBuilder();
@@ -226,7 +233,7 @@ public abstract class AbstractPage
      * @param resp response
      * @param loc location
      */
-    protected void redirect(HttpServletResponse resp, String loc)
+    protected final void redirect(HttpServletResponse resp, String loc)
     {
         resp.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
         resp.setHeader("Location", loc);
@@ -240,12 +247,12 @@ public abstract class AbstractPage
         this.println("<head>");
         this.println("  <title>Scheduling Server - " + this.getPageTitle() + "</title>");
         
-        for (String css : headCss)
+        for (String css : this.headCss)
         {
             this.println("  <link href='" + css + "' media='screen' rel='stylesheet' type='text/css' />");
         }
         
-        for (String js : headJs)
+        for (String js : this.headJs)
         {
             this.println("  <script type='text/javascript' src='" + js + "'> </script>");
         }
@@ -414,7 +421,7 @@ public abstract class AbstractPage
     {
         this.println("<div id='footer' class='ui-corner-top'>");
         this.println("<a class='plaina' href='http://sourceforge.net/projects/labshare-sahara/' target='_blank'>" +
-        		"Powered by the open source <strong>SAHARA Labs r3.1</strong> system.</a>");
+        		"Powered by the open source <strong>SAHARA Labs r4.0.capstone</strong> system.</a>");
         this.println("</div>");
     }
     
@@ -460,6 +467,16 @@ public abstract class AbstractPage
         try
         {
             InputStream is = AbstractPage.class.getResourceAsStream("/META-INF/web/doc/" + page + ".html");
+            if (is == null)
+            {
+                /* Attempt to load the help file from a page hosting bundle. */
+                for (ClassLoader cl : PageHostingServiceListener.getClassLoaders())
+                {
+                    is = cl.getResourceAsStream("/META-INF/web/doc/" + page + ".html");
+                    if (is != null) break;
+                }
+            }
+            
             if (is == null)
             {
                 this.logger.error("Failed to load help document file '/META-INF/web/doc/" + page + ".html' for page '" +
@@ -519,5 +536,34 @@ public abstract class AbstractPage
         this.println("<script type='text/javascript'>");
         this.println("$(document).ready(function() { $('#" + id + "').button(); } );");
         this.println("</script>");
+    }
+    
+    /**
+     * Adds a navigation link.
+     * 
+     * @param name name of link
+     * @param link actual link.
+     */
+    public static void addNavLink(String name, String link)
+    {
+        AbstractPage.navLinks.remove("Diagnostics");
+//        AbstractPage.navLinks.remove("Documentation");
+        AbstractPage.navLinks.remove("About");
+        
+        AbstractPage.navLinks.put(name, link);
+        
+        navLinks.put("Diagnostics", "/info");
+//        navLinks.put("Documentation", "/doc");
+        navLinks.put("About", "/about");
+    }
+    
+    /**
+     * Removes a navigation link. 
+     * 
+     * @param name name of link to remove
+     */
+    public static void removeNavLink(String name)
+    {
+        AbstractPage.navLinks.remove(name);
     }
 }

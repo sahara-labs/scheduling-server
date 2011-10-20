@@ -41,6 +41,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
+
 /**
  * Framework information page.
  */
