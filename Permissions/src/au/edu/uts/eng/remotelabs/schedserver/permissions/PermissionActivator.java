@@ -37,13 +37,18 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.permissions;
 
+import java.util.Properties;
+
 import org.apache.axis2.transport.http.AxisServlet;
+import org.apache.velocity.app.Velocity;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.PermissionsPage;
+import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -56,6 +61,9 @@ public class PermissionActivator implements BundleActivator
 {
     /** Service registration for the Permission SOAP interface. */
     private ServiceRegistration<ServletContainerService> soapRegistration;
+    
+    /** Hosted page registrations. */
+    private ServiceRegistration<HostedPage> pageRegistration;
     
     /** Logger. */
     private Logger logger;
@@ -71,13 +79,24 @@ public class PermissionActivator implements BundleActivator
 	    ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
 	    this.soapRegistration = context.registerService(ServletContainerService.class, soapService, null);
+	    
+	    /* Setup the permissions web interface. */
+	    Properties velProps = new Properties();
+	    velProps.setProperty("resource.loader", "class");
+	    velProps.setProperty("class.resource.loader.description", "Velocity Classpath Resource Loader");
+	    velProps.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+	    Velocity.init(velProps);
+
+	    this.pageRegistration = context.registerService(HostedPage.class, PermissionsPage.getHostedPage(), null);
 	}
 
     @Override
 	public void stop(BundleContext context) throws Exception 
 	{
         this.logger.info("Stopping the " + context.getBundle().getSymbolicName() + " bundle...");
+        
 	    this.soapRegistration.unregister();
+	    this.pageRegistration.unregister();
 	}
 
 }

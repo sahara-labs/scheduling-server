@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/velocity-1.7-dep.jar" sourcepath="/home/mdiponio/test/velocity-1.7/src/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/axiom-api-1.2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axiom-dom-1.2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/axiom-impl-1.2.8.jar"/>

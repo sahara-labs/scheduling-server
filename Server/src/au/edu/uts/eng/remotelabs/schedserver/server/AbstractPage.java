@@ -66,7 +66,7 @@ public abstract class AbstractPage
     protected StringBuilder buf;
     
     /** Servlet writer. */
-    private PrintWriter out;
+    protected PrintWriter out;
     
     /** The list of CSS files to include. */
     protected final List<String> headCss = Collections.synchronizedList(new ArrayList<String>());
