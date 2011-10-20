@@ -223,9 +223,9 @@ public class AboutPage extends AbstractPage
     protected void adTab()
     {
         this.println("<div id='slbanner'>");
-        this.println("    <span>Scheduling Server r4.0.capstone</span><br />");
+        this.println("    <span>Scheduling Server r3.2</span><br />");
         this.println("    <img src='/img/logo_large.png' alt='SAHARA Labs' />");
-        this.println("    Part of the SAHARA Labs r4.0.capstone suite that schedules and assigns local laboratory rigs.");
+        this.println("    Part of the SAHARA Labs r3.2 suite that schedules and assigns local laboratory rigs.");
         this.println("</div>");
         
         this.println("<div id='slcopyright'>");
