@@ -32,38 +32,69 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 20th October 2011
+ * @date 1st February 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
-import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
-import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.context.Context;
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
 
 /**
- * The permissions page.
+ * Base classes for permission pages which uses Apache Velocity to render 
+ * the views.
  */
-public class PermissionsPage extends AbstractPermissionsPage
-{
+public abstract class AbstractPermissionsPage extends AbstractPage
+{  
+    /** Page context which contains any dynamic variables. */
+    protected final Context context = new VelocityContext();
+    
+    /** Database session. */
+    protected final Session db;
+    
+    public AbstractPermissionsPage()
+    {
+        this.db = DataAccessActivator.getNewSession();
+        
+        /* Add page resources. */
+        this.headCss.add("/css/permissions.css");
+        this.headJs.add("/js/permissions.js");
+    }
     
     @Override
-    public void setupView(HttpServletRequest req)
+    public void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
-        // TODO Auto-generated method stub
+        if ("POST".equals(req.getMethod()))
+        {
+            // TODO Post handling.
+        }
+        else
+        {
+            /* If it is a GET request, we are going to provide the view. */
+            this.flushOut();
+            
+            Template template = Velocity.getTemplate("/META-INF/templates/" + this.getClass().getSimpleName() + ".vm");
+            template.merge(this.context, this.out);
+        }
         
     }
     
-
-
+    public abstract void setupView(HttpServletRequest req);
+    
     @Override
-    protected String getPageType()
+    public void postService(HttpServletResponse resp)
     {
-        return "Permissions";
+        this.db.close();
     }
-
-    public static HostedPage getHostedPage()
-    {
-        return new HostedPage("Permissions", PermissionsPage.class, "perm", 
-                "Allows permissions to be created, read, updated and deleted.", true, true);
-    }
+    
 }

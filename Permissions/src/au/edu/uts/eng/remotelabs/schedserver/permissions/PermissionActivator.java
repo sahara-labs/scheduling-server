@@ -37,6 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.permissions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
@@ -47,7 +49,9 @@ import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.GroupsPage;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.PermissionsPage;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.UsersPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -63,7 +67,7 @@ public class PermissionActivator implements BundleActivator
     private ServiceRegistration<ServletContainerService> soapRegistration;
     
     /** Hosted page registrations. */
-    private ServiceRegistration<HostedPage> pageRegistration;
+    private List<ServiceRegistration<HostedPage>> pageRegistrations;
     
     /** Logger. */
     private Logger logger;
@@ -87,7 +91,10 @@ public class PermissionActivator implements BundleActivator
 	    velProps.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 	    Velocity.init(velProps);
 
-	    this.pageRegistration = context.registerService(HostedPage.class, PermissionsPage.getHostedPage(), null);
+	    this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(3);
+	    this.pageRegistrations.add(context.registerService(HostedPage.class, UsersPage.getHostedPage(), null));
+	    this.pageRegistrations.add(context.registerService(HostedPage.class, GroupsPage.getHostedPage(), null));
+	    this.pageRegistrations.add(context.registerService(HostedPage.class, PermissionsPage.getHostedPage(), null));
 	}
 
     @Override
@@ -96,7 +103,9 @@ public class PermissionActivator implements BundleActivator
         this.logger.info("Stopping the " + context.getBundle().getSymbolicName() + " bundle...");
         
 	    this.soapRegistration.unregister();
-	    this.pageRegistration.unregister();
+	    
+	    for (ServiceRegistration<HostedPage> pageReg : this.pageRegistrations) pageReg.unregister();
+	    this.pageRegistrations.clear();
 	}
 
 }

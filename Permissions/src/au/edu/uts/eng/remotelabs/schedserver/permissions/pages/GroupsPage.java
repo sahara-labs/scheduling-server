@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 20th October 2011
+ * @date 21st October 2011
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
@@ -41,29 +41,29 @@ import javax.servlet.http.HttpServletRequest;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
 /**
- * The permissions page.
+ * Group administration page.
  */
-public class PermissionsPage extends AbstractPermissionsPage
+public class GroupsPage extends AbstractPermissionsPage
 {
-    
     @Override
     public void setupView(HttpServletRequest req)
     {
         // TODO Auto-generated method stub
         
     }
-    
 
 
     @Override
     protected String getPageType()
     {
-        return "Permissions";
+        return "Groups";
     }
 
     public static HostedPage getHostedPage()
     {
-        return new HostedPage("Permissions", PermissionsPage.class, "perm", 
-                "Allows permissions to be created, read, updated and deleted.", true, true);
+        return new HostedPage("Groups", GroupsPage.class, "perm-groups", 
+                "Allows groups to be created, read, updated and deleted.", true, true);
     }
+
+
 }
