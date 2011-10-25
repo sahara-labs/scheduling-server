@@ -22,6 +22,5 @@ au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback
 
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.multisite, *
 
-Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
-lib/=lib/;-donotcopy=.svn
+Include-Resource: lib/=lib/;-donotcopy=.svn
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}
