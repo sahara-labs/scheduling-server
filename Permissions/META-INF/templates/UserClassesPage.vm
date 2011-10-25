@@ -1,15 +1,87 @@
-## Groups page. 
+## User classes page. 
 
-$test
+#macro( removeUnderscores $arg )
+	$arg.replaceAll("_", " ")
+#end
 
-<div id="groups" class="permissionpage">
-	<div class="permissionpagetitle">
-        Groups:
+#macro( removeSpaces $arg )
+	$arg.replaceAll(" ", "")
+#end
+
+## Add class button
+<div id="perm-buttonbar">
+	<ul>
+		<li><a id="perm-createclass">
+				<img src="/img/perm-add.png" alt="Add" />
+				<br />
+				Add Class
+		</a></li>
+	</ul>
+</div>
+
+<div id="userclasses" class="perm-page">
+	<div class="perm-pagetitle">
+		<span class="ui-icon ui-icon-person"></span>
+		<span id="secondclassicon" class="ui-icon ui-icon-person"></span>
+        User Classes:
 	</div>
-	<ul id="grouplist">
-        #foreach($uc in $userClasses)
-        <li>
-            <a>$uc.getName()</a>
+	<ul id="userclasslist" class="perm-list">
+        #foreach( $uc in $userClasses )
+			#set( $id = $uc.getName() )
+        <li id="$id" class="perm-userclass">
+            <a class="perm-userclasstitle #if( $uc.isActive() ) activeclass #else inactiveclass #end">
+				<span class="ui-icon ui-icon-circle-arrow-e"></span>
+				#removeUnderscores( $uc.getName().replaceAll(" ", "") )
+			</a>
+			<div class="perm-userclassdetails">
+				<div class="perm-userclassfields">
+    				<div>
+    					<label for="$id-isActive">Active:</label>
+    					<input type="checkbox" id="$id-isActive" #if( $uc.isActive() ) checked="checked" #end disabled="disabled" />
+    				</div>
+    				<div>
+    					<label for="$id-isQueuable">Allow Queuing:</label>
+    					<input type="checkbox" id="$id-isQueueable" #if( $uc.isQueuable() ) checked="checked" #end disabled="disabled" />
+    				</div>
+    				<div>
+    					<label for="$id-isBookable">Allow Reservations:</label>
+    					<input type="checkbox" id="$id-isBookable" #if( $uc.isBookable() ) checked="checked" #end disabled="disabled" />
+    				</div>
+    					
+    				#if( $uc.isQueuable() )
+    					<div>
+    						<label for="$id-priority">Priority:</label>
+    						<input type="text" id="$id-getPriority" value="$uc.getPriority()" disabled="disabled" />
+    					</div>
+    				#end
+    					
+    				#if( $uc.isBookable() )
+    					<div>
+    						<label for="$id-priority">Time Horizon:</label>
+    						<input type="text" id="$id-getTimeHorizon" value="$uc.getTimeHorizon()" disabled="disabled" />
+    					</div>
+    				#end
+				</div>
+				<div class="perm-userclassoperations">
+					<ul>
+                		<li><a id="perm-createclass">
+                				<img src="/img/perm-edit.png" alt="Add" />
+                				<br />
+                				Edit
+                		</a></li>
+						<li><a id="perm-createclass">
+                				<img src="/img/perm-add.png" alt="Add" />
+                				<br />
+                				Delete
+                		</a></li>
+                	</ul>
+				</div>
+				<div class="perm-userclasspermissions">
+					#foreach ( $rp in $uc.getResourcePermissions() )
+					$rp.getId()
+					#end
+				</div>
+			</div>
         </li>
         #end
     </ul>

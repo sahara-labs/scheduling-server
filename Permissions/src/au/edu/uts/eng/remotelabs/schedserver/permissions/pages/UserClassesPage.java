@@ -54,8 +54,7 @@ public class UserClassesPage extends AbstractPermissionsPage
     {
         /* The view consists of all the existing groups. */
         List<UserClass> userClasses = this.db.createCriteria(UserClass.class).list();
-        
-        this.context.put("test", "Test value");
+       
         this.context.put("userClasses", userClasses);
     }
 
@@ -71,6 +70,4 @@ public class UserClassesPage extends AbstractPermissionsPage
         return new HostedPage("User Classes", UserClassesPage.class, "perm-groups", 
                 "Allows user classes (groupings of users) to be created, read, updated and deleted.", true, true);
     }
-
-
 }
