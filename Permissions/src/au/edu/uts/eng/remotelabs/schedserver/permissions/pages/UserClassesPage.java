@@ -36,33 +36,40 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
 /**
- * Group administration page.
+ * User classes administration page.
  */
-public class GroupsPage extends AbstractPermissionsPage
+public class UserClassesPage extends AbstractPermissionsPage
 {
+    @SuppressWarnings("unchecked")
     @Override
     public void setupView(HttpServletRequest req)
     {
-        // TODO Auto-generated method stub
+        /* The view consists of all the existing groups. */
+        List<UserClass> userClasses = this.db.createCriteria(UserClass.class).list();
         
+        this.context.put("test", "Test value");
+        this.context.put("userClasses", userClasses);
     }
 
 
     @Override
     protected String getPageType()
     {
-        return "Groups";
+        return "User Classes";
     }
 
     public static HostedPage getHostedPage()
     {
-        return new HostedPage("Groups", GroupsPage.class, "perm-groups", 
-                "Allows groups to be created, read, updated and deleted.", true, true);
+        return new HostedPage("User Classes", UserClassesPage.class, "perm-groups", 
+                "Allows user classes (groupings of users) to be created, read, updated and deleted.", true, true);
     }
 
 

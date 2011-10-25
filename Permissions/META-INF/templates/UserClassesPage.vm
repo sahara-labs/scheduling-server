@@ -1,0 +1,16 @@
+## Groups page. 
+
+$test
+
+<div id="groups" class="permissionpage">
+	<div class="permissionpagetitle">
+        Groups:
+	</div>
+	<ul id="grouplist">
+        #foreach($uc in $userClasses)
+        <li>
+            <a>$uc.getName()</a>
+        </li>
+        #end
+    </ul>
+</div>

@@ -81,6 +81,8 @@ public abstract class AbstractPermissionsPage extends AbstractPage
         else
         {
             /* If it is a GET request, we are going to provide the view. */
+            this.setupView(req);
+            
             this.flushOut();
             
             Template template = Velocity.getTemplate("/META-INF/templates/" + this.getClass().getSimpleName() + ".vm");
