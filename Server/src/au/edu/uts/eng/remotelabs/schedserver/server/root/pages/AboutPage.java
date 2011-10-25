@@ -230,7 +230,7 @@ public class AboutPage extends AbstractPage
         
         this.println("<div id='slcopyright'>");
         this.println("   Copyright &copy; 2009 - 2011, University of Technology, Sydney<br />");
-        this.println("   Copyright &copy; 2011 - Michael Diponio (capstone project developed portions)");
+        this.println("   Copyright &copy; 2011 - Michael Diponio (capstone portions)");
         this.println("</div>");
     }
     
