@@ -5,19 +5,32 @@ Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActiv
 Bundle-Vendor: Michael Diponio
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
-Import-Package: org.w3c.dom, \
-javax.xml, javax.xml.*, javax.xml.datatype, \
-javax.xml.namespace, javax.xml.xpath, !javax.portlet, \
-org.apache.log4j, \
-!org.jdom.*, !nu.xom, \
-!com.sun.*, !org.apache.*, !org.dom4j.*, !org.relaxng.*, \
-!au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup, \
-!au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
-!org.junit, !junit.*, \
-*
+Import-Package: org.w3c.dom,\
+	javax.xml,\
+	javax.xml.*,\
+	javax.xml.datatype,\
+	javax.xml.namespace,\
+	javax.xml.xpath,\
+	!javax.portlet,\
+	org.apache.log4j,\
+	!org.jdom.*,\
+	!nu.xom,\
+	!com.sun.*,\
+	!org.apache.*,\
+	!org.dom4j.*,\
+	!org.relaxng.*,\
+	!javax.jws.*,\
+	!javax.ws.*,\
+	!au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup,\
+	!au.edu.uts.eng.remotelabs.schedserver.logger.impl,\
+	!org.junit,\
+	!junit.*,\
+	*
 
 Private-Package: !au.edu.uts.eng.remotelabs.schedserver.multisite, *
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite
+
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
-lib/=lib/;-donotcopy=.svn
+    META-INF/web=META-INF/web;-donotcopy=.svn, \
+    lib/=lib/;-donotcopy=.svn

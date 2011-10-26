@@ -16,9 +16,10 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.session.intf, \
-au.edu.uts.eng.remotelabs.schedserver.session.intf.types, \
-au.edu.uts.eng.remotelabs.schedserver.session.impl
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.session.intf,\
+	au.edu.uts.eng.remotelabs.schedserver.session.intf.types,\
+	au.edu.uts.eng.remotelabs.schedserver.session.impl,\
+	au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl
 
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.session, \
 au.edu.uts.eng.remotelabs.schedserver.session.pojo

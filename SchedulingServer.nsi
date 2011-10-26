@@ -55,7 +55,7 @@ Name "SAHARA Labs :: Scheduling Server"
 !define REGKEY "SOFTWARE\Sahara Scheduling Server"
 
 ; SAHARA Labs Scheduling Server Version
-!define Version "3.1-0"
+!define Version "4.0-capstone"
 
 !define JREVersion "1.6"
 
