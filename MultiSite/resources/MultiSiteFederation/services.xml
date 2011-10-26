@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serviceGroup>
+    <service name="MultiSiteFederation">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.MultiSiteFederationMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.MultiSiteFederationSOAPImpl</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="siteShutdown" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/siteShutdown</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/siteShutdownResponse</outputActionMapping>
+        </operation>
+        <operation name="siteReconnect" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/scheduling/MultiSiteFederation/NewOperation</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/siteReconnectResponse</outputActionMapping>
+        </operation>
+        <operation name="requestResource" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/requestResource</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/requestResourceResponse</outputActionMapping>
+        </operation>
+        <operation name="notifyCancel" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/notifyCancel</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/notifyCancelResponse</outputActionMapping>
+        </operation>
+        <operation name="notifyAccept" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/notifyAccept</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/notifyAcceptResponse</outputActionMapping>
+        </operation>
+        <operation name="notifyModify" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/notifyModify</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/notifyModifyResponse</outputActionMapping>
+        </operation>
+        <operation name="initiateSite" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/initiateSite</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/initiateSiteResponse</outputActionMapping>
+        </operation>
+        <operation name="getRequests" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/getRequests</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/getRequestsResponse</outputActionMapping>
+        </operation>
+        <operation name="siteStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/siteStatus</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/siteStatusResponse</outputActionMapping>
+        </operation>
+        <operation name="discoverResources" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/discoverResources</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/MultiSiteFederation/discoverResourcesResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>
