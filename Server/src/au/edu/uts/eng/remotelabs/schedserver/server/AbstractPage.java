@@ -66,7 +66,7 @@ public abstract class AbstractPage
     protected StringBuilder buf;
     
     /** Servlet writer. */
-    private PrintWriter out;
+    protected PrintWriter out;
     
     /** The list of CSS files to include. */
     protected final List<String> headCss = Collections.synchronizedList(new ArrayList<String>());
@@ -421,7 +421,7 @@ public abstract class AbstractPage
     {
         this.println("<div id='footer' class='ui-corner-top'>");
         this.println("<a class='plaina' href='http://sourceforge.net/projects/labshare-sahara/' target='_blank'>" +
-        		"Powered by the open source <strong>SAHARA Labs r4.0.capstone</strong> system.</a>");
+        		"Powered by the open source <strong>SAHARA Labs r3.2</strong> system.</a>");
         this.println("</div>");
     }
     
