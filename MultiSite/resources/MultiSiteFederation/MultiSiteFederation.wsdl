@@ -235,7 +235,7 @@
 			<xsd:element name="initiateSite" type="mutfd:SiteType">
 			</xsd:element>
 			<xsd:element name="initiateSiteResponse"
-				type="mutfd:SiteType">
+				type="mutfd:InitiateSiteResponseType">
 			</xsd:element>
 			<xsd:element name="discoverResources"
 				type="mut:SiteIDType">
@@ -388,6 +388,18 @@
 						type="mutfd:ResourceRequestType" maxOccurs="unbounded" minOccurs="0">
 					</xsd:element>
 				</xsd:sequence>
+			</xsd:complexType>
+		
+			<xsd:complexType name="InitiateSiteResponseType">
+				<xsd:complexContent>
+					<xsd:extension base="mut:OperationResponseType">
+						<xsd:sequence>
+							<xsd:element name="site"
+								type="mut:SiteIDType">
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:extension>
+				</xsd:complexContent>
 			</xsd:complexType>
 		</xsd:schema>
 	</wsdl:types>

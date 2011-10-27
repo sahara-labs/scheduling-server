@@ -35,7 +35,6 @@
  * @date 26th October 2011
  */
 
-
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation;
 
 import java.util.HashMap;

@@ -63,6 +63,13 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.Sit
  */
 public interface MultiSiteFederationSOAP
 {
+    /**
+     * Initiates a peer connection between two sites such that they can 
+     * subsequently share resources.
+     * 
+     * @param initiateSite request
+     * @return response
+     */
     public InitiateSiteResponse initiateSite(InitiateSite initiateSite);
 
     public SiteShutdownResponse siteShutdown(SiteShutdown siteShutdown);
