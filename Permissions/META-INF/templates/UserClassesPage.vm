@@ -34,7 +34,7 @@
 				#removeUnderscores( $uc.getName().replaceAll(" ", "") )
 			</a>
 			<div class="perm-userclassdetails">
-				<div class="perm-userclassfields">
+				<div class="perm-userclassfields perm-userclasspanel">
     				<div>
     					<label for="$id-isActive">Active:</label>
     					<input type="checkbox" id="$id-isActive" #if( $uc.isActive() ) checked="checked" #end disabled="disabled" />
@@ -62,27 +62,63 @@
     					</div>
     				#end
 				</div>
-				<div class="perm-userclassoperations">
+				<div class="perm-userclassoperations perm-userclasspanel">
 					<ul>
-                		<li><a id="perm-createclass">
-                				<img src="/img/perm-edit.png" alt="Add" />
+                		<li><a class="perm-createclass">
+                				<img src="/img/perm-edit.png" alt="Edit" />
                 				<br />
                 				Edit
                 		</a></li>
-						<li><a id="perm-createclass">
-                				<img src="/img/perm-add.png" alt="Add" />
+						<li><a class="perm-createclass">
+                				<img src="/img/perm-delete.png" alt="Delete" />
                 				<br />
                 				Delete
                 		</a></li>
                 	</ul>
 				</div>
-				<div class="perm-userclasspermissions">
-					#foreach ( $rp in $uc.getResourcePermissions() )
-					$rp.getId()
+				<div class="perm-userclasspermissions perm-userclasspanel">
+					#if ( $uc.getResourcePermissions() && $uc.getResourcePermissions().size() > 0 )
+    					 Number: $uc.getResourcePermissions.size()
+					#else
+						<div class="ui-state ui-state-highlight ui-corner-all">
+							<span class="ui-icon ui-icon-info"></span>
+							No permissions.
+						</div>
 					#end
 				</div>
+				<div class="perm-userclasspermissionsoperations perm-userclasspanel">
+					
+				</div>
+				<div style="clear:both"></div>
 			</div>
         </li>
         #end
     </ul>
 </div>
+	
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".perm-userclasstitle").click(function() {
+		var $details = $(this).next();
+		var isClosed = $details.css("display") == "none";
+		
+		$(".perm-userclass .open")
+			.slideUp()
+			.removeClass("open")
+			.prev().children("span")
+				.removeClass("ui-icon-circle-arrow-s")
+				.addClass("ui-icon-circle-arrow-e");
+		
+		if (isClosed)
+		{
+			$(this).children("span")
+				.removeClass("ui-icon-circle-arrow-e")
+				.addClass("ui-icon-circle-arrow-s");
+				
+			$details
+				.addClass("open")
+				.slideDown();
+		}
+	});
+});
+</script>

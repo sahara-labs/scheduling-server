@@ -9,7 +9,7 @@ Import-Package: org.w3c.dom, \
 javax.xml, javax.xml.*, javax.xml.datatype, \
 javax.xml.namespace, javax.xml.xpath, !javax.portlet, \
 org.apache.log4j, \
-!org.jdom.*, !nu.xom, \
+!com.werken.xpath, !org.jdom.*, !nu.xom, \
 !com.sun.*, !org.apache.*, !org.dom4j.*, !org.relaxng.*, \
 !au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup, \
 !au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
@@ -18,9 +18,12 @@ org.apache.log4j, \
 
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.permissions.intf, \
 au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types, \
-au.edu.uts.eng.remotelabs.schedserver.permissions.impl
+au.edu.uts.eng.remotelabs.schedserver.permissions.impl, \
+au.edu.uts.eng.remotelabs.schedserver.permissions.pages
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.permissions
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
+META-INF/web=META-INF/web;-donotcopy=.svn, \
+META-INF/templates=META-INF/templates;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}

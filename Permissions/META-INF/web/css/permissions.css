@@ -123,3 +123,22 @@
 	background-color: #FCC1C1;
 }
 
+.perm-userclassdetails {
+	display: none;
+}
+
+.perm-userclass .open {
+	color: #000;
+	box-shadow: 0 0 4px #AAAAAA;
+	-moz-box-shadow: 0 0 4px #AAAAAA;
+	-webkit-box-shadow: 0 0 4px #AAAAAA;
+}
+
+.perm-userclasspanel {
+	float: left;
+	padding: 5px;
+}
+
+.perm-list .ui-state {
+	padding: 5px;
+}
