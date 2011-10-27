@@ -395,7 +395,7 @@
 					<xsd:extension base="mut:OperationResponseType">
 						<xsd:sequence>
 							<xsd:element name="site"
-								type="mut:SiteIDType">
+								type="mutfd:SiteType" maxOccurs="1" minOccurs="0">
 							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>

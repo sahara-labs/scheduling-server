@@ -37,18 +37,18 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation;
 
-import org.hibernate.Session;
-
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.DiscoverResources;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.DiscoverResourcesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.GetRequests;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.GetRequestsResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.InitiateSite;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.InitiateSiteResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.InitiateSiteResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.NotifyAccept;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.NotifyAcceptResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.NotifyCancel;
@@ -63,7 +63,6 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.Sit
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteShutdownResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteStatusResponse;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SiteIDType;
 
 /**
  * MultiSite federation service implementation.
@@ -90,13 +89,42 @@ public class MultiSiteFederationSOAPImpl implements MultiSiteFederationSOAP
         
         /* Setup response parameters. */
         InitiateSiteResponse response = new InitiateSiteResponse();
-        
-
+        InitiateSiteResponseType responseType = new InitiateSiteResponseType();
+        responseType.setWasSuccessful(false);
+        response.setInitiateSiteResponse(responseType);
         
         RemoteSiteDao dao = new RemoteSiteDao();
         try
         {
-            
+            /* We can only initiate a site if the site doesn't exist or the 
+             * site exists but is offline. */
+            RemoteSite site = dao.findSite(siteId);
+            if (site == null)
+            {
+                /* Site doesn't exist so we can safely add it as initiation. */
+                site = new RemoteSite();
+                site.setName(name);
+                site.setUserNamespace(namespace);
+                site.setGuid(siteId);
+                site.setServiceAddress(address);
+                
+                site.setRequestor("true".equals(MultiSiteActivator.getConfigValue("Default_Allow_Requestors", "false")));
+                site.setAuthorizer(false); // The authorizer delegation is higher, so it must be explicit.
+                site.setRedirectee(false); // No unexpected redirections.
+            }
+            else if (site.isOnline())
+            {
+                /* Site exists and is online, this is an error. Either the site
+                 * is sending spurious initiations or there a unlikely GUID
+                 * collision has occurred. */
+                responseType.setReason("Site already connected");
+                return response;
+            }
+            else
+            {
+                /* Site is currently offline so we can initiate it. The permission
+                 * set is left unchanged. */
+            }
         }
         finally
         {

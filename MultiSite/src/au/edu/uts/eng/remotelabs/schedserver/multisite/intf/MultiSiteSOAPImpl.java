@@ -797,6 +797,9 @@ public class MultiSiteSOAPImpl implements MultiSiteSOAP
             assoc.setUser(user);
             assoc.setUserClass(userClass);
             dao.persist(assoc);
+            
+            db.refresh(userClass);
+            db.refresh(user);
         }
     }
     

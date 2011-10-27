@@ -59,14 +59,14 @@ public class InitiateSiteResponse implements ADBBean
     public static final QName MY_QNAME = new QName("http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/",
             "initiateSiteResponse", "ns2");
 
-    protected SiteType initiateSiteResponse;
+    protected InitiateSiteResponseType initiateSiteResponse;
 
-    public SiteType getInitiateSiteResponse()
+    public InitiateSiteResponseType getInitiateSiteResponse()
     {
         return this.initiateSiteResponse;
     }
 
-    public void setInitiateSiteResponse(final SiteType param)
+    public void setInitiateSiteResponse(final InitiateSiteResponseType param)
     {
         this.initiateSiteResponse = param;
     }
@@ -122,7 +122,7 @@ public class InitiateSiteResponse implements ADBBean
                                 && new QName("http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteFederation/",
                                         "initiateSiteResponse").equals(reader.getName()))
                         {
-                            object.setInitiateSiteResponse(SiteType.Factory.parse(reader));
+                            object.setInitiateSiteResponse(InitiateSiteResponseType.Factory.parse(reader));
                         }
                         else
                         {
