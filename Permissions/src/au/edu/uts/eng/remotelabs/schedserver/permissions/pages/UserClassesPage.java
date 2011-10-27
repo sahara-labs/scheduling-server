@@ -40,6 +40,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.criterion.Order;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
@@ -53,7 +55,15 @@ public class UserClassesPage extends AbstractPermissionsPage
     public void setupView(HttpServletRequest req)
     {
         /* The view consists of all the existing groups. */
-        List<UserClass> userClasses = this.db.createCriteria(UserClass.class).list();
+        List<UserClass> userClasses = this.db.createCriteria(UserClass.class)
+                .addOrder(Order.desc("active"))
+                .addOrder(Order.asc("name"))
+                .list();
+        
+        for (UserClass uc : userClasses)
+        {
+            System.out.println(uc.getName() + ": " + uc.getResourcePermissions().size());
+        }
        
         this.context.put("userClasses", userClasses);
     }
