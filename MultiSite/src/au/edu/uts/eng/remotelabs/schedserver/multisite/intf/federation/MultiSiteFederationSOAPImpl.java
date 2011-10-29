@@ -37,11 +37,14 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation;
 
+import static au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator.getConfigValue;
+
+import java.util.Date;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.DiscoverResources;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.DiscoverResourcesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.GetRequests;
@@ -63,6 +66,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.Sit
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteShutdownResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteStatusResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteType;
 
 /**
  * MultiSite federation service implementation.
@@ -93,30 +97,52 @@ public class MultiSiteFederationSOAPImpl implements MultiSiteFederationSOAP
         responseType.setWasSuccessful(false);
         response.setInitiateSiteResponse(responseType);
         
+        SiteType siteType = new SiteType();
+        if (getConfigValue("Site_Name", null) == null || getConfigValue("Site_Namespace", null) == null ||
+                getConfigValue("Site_ID", null) == null || getConfigValue("Multisite_Address", null) == null)
+        {
+            this.logger.warn("Unable to initiate the remote site '" + name + "' with this site because this site " +
+            		"is not correctly configured. Ensure the properites 'Site_Name', 'Site_Namespace', 'Site_ID' " +
+            		"and 'MultiSite_Address' is correctly configured.");
+            responseType.setReason("Site incorrectly configured.");
+        }
+        
+        siteType.setName(getConfigValue("Site_Name", null));
+        siteType.setNamespace(getConfigValue("Site_Namespace", null));
+        siteType.setAddress(getConfigValue("Site_Address", null) + "/SchedulingServer-Multisite/services/MultiSite");
+        siteType.setSiteID(getConfigValue("Site_ID", null));
+        responseType.setSite(siteType);
+        
         RemoteSiteDao dao = new RemoteSiteDao();
         try
         {
+            boolean requiresPersist = false;
+            
             /* We can only initiate a site if the site doesn't exist or the 
              * site exists but is offline. */
             RemoteSite site = dao.findSite(siteId);
             if (site == null)
             {
                 /* Site doesn't exist so we can safely add it as initiation. */
-                site = new RemoteSite();
-                site.setName(name);
-                site.setUserNamespace(namespace);
-                site.setGuid(siteId);
-                site.setServiceAddress(address);
+                this.logger.info("Adding a new remote site with name '" + name + "'.");
                 
-                site.setRequestor("true".equals(MultiSiteActivator.getConfigValue("Default_Allow_Requestors", "false")));
+                site = new RemoteSite();
+                site.setGuid(siteId);
+                
+                site.setViewer("true".equals(getConfigValue("Default_Allow_Viewers", "false")));
+                site.setRequestor("true".equals(getConfigValue("Default_Allow_Requestors", "false")));
                 site.setAuthorizer(false); // The authorizer delegation is higher, so it must be explicit.
                 site.setRedirectee(false); // No unexpected redirections.
+                
+                requiresPersist = true;
             }
             else if (site.isOnline())
             {
                 /* Site exists and is online, this is an error. Either the site
                  * is sending spurious initiations or there a unlikely GUID
                  * collision has occurred. */
+                this.logger.warn("Unable to add site '" + site.getName() + "' as the site already exists and is " +
+                		"online.");
                 responseType.setReason("Site already connected");
                 return response;
             }
@@ -124,7 +150,19 @@ public class MultiSiteFederationSOAPImpl implements MultiSiteFederationSOAP
             {
                 /* Site is currently offline so we can initiate it. The permission
                  * set is left unchanged. */
+                this.logger.info("Offline site '" + name + "' is being put back online from a site initiation.");
             }
+            
+            site.setOnline(true);
+            site.setName(name);
+            site.setUserNamespace(namespace);
+            site.setServiceAddress(address);
+            site.setLastPush(new Date());
+            
+            if (requiresPersist) dao.persist(site);
+            else dao.flush();
+            
+            responseType.setWasSuccessful(true);
         }
         finally
         {
