@@ -39,10 +39,17 @@ package au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation;
 
 import static au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator.getConfigValue;
 
+import java.util.Calendar;
 import java.util.Date;
 
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RemoteSiteDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestablePermissionPeriodDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.DiscoverResources;
@@ -60,6 +67,8 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.Not
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.NotifyModifyResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.RequestResource;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.RequestResourceResponse;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.RequestableResourceListType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.RequestableResourceType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteReconnect;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteReconnectResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteShutdown;
@@ -67,6 +76,7 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.Sit
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteStatus;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteStatusResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.ResourceType;
 
 /**
  * MultiSite federation service implementation.
@@ -171,6 +181,73 @@ public class MultiSiteFederationSOAPImpl implements MultiSiteFederationSOAP
                 
         return response;
     }
+    
+    @Override
+    public DiscoverResourcesResponse discoverResources(final DiscoverResources discoverResources)
+    {
+        String siteId = discoverResources.getDiscoverResources().getSiteID();
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#discoverResources with params: site ID=" +
+                siteId);
+        
+        DiscoverResourcesResponse response = new DiscoverResourcesResponse();
+        RequestableResourceListType reqList = new RequestableResourceListType();
+        response.setDiscoverResourcesResponse(reqList);
+        
+        Session db = DataAccessActivator.getNewSession();
+        try
+        {
+            RemoteSite site = new RemoteSiteDao(db).findSite(siteId);
+            if (site == null)
+            {
+                this.logger.warn("Unable to provide discoverable resources because the site with identifier '" +
+                        siteId + "' was not found.");
+            }
+            else if (!site.isViewer())
+            {
+                this.logger.debug("Unable to provide discoverable resources to site '" + site.getName() + "' " +
+                		"because they do not have the view permission.");
+            }
+            else
+            {
+                for (RequestablePermissionPeriod period : new RequestablePermissionPeriodDao(db).getActivePeriods())
+                {
+                    RequestableResourceType req = new RequestableResourceType();
+                    
+                    Calendar start = Calendar.getInstance();
+                    start.setTime(period.getStart());
+                    req.setStart(start);
+                    
+                    Calendar end = Calendar.getInstance();
+                    end.setTime(period.getEnd());
+                    req.setEnd(end);
+                    
+                    ResourceType res = new ResourceType();
+                    res.setType(period.getType());
+                    if (ResourcePermission.RIG_PERMISSION.equals(period.getType()))
+                    {
+                        res.setName(period.getRig().getName());
+                    }
+                    else if (ResourcePermission.TYPE_PERMISSION.equals(period.getType()))
+                    {
+                        res.setName(period.getRigType().getName());
+                    }
+                    else if (ResourcePermission.CAPS_PERMISSION.equals(period.getType()))
+                    {
+                        res.setName(period.getRequestCapabilities().getCapabilities());
+                    }
+                    req.setResource(res);
+                    
+                    reqList.addResources(req);
+                }
+            }
+        }
+        finally 
+        {
+            db.close();
+        }
+        
+        return response;
+    }
 
     @Override
     public SiteShutdownResponse siteShutdown(final SiteShutdown siteShutdown0)
@@ -234,14 +311,6 @@ public class MultiSiteFederationSOAPImpl implements MultiSiteFederationSOAP
         //TODO : fill this with the necessary business logic
         throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
                 + "#siteStatus");
-    }
-
-    @Override
-    public DiscoverResourcesResponse discoverResources(final DiscoverResources discoverResources18)
-    {
-        //TODO : fill this with the necessary business logic
-        throw new java.lang.UnsupportedOperationException("Please implement " + this.getClass().getName()
-                + "#discoverResources");
     }
 
 }

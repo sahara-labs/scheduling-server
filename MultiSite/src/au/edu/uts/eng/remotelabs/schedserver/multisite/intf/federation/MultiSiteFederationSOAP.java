@@ -92,6 +92,12 @@ public interface MultiSiteFederationSOAP
 
     public SiteStatusResponse siteStatus(SiteStatus siteStatus);
 
-  
+    /**
+     * Provides discovery of the resources list that site is providing for 
+     * Multisite use.
+     * 
+     * @param discoverResources request
+     * @return response
+     */
     public DiscoverResourcesResponse discoverResources(DiscoverResources discoverResources);
 }

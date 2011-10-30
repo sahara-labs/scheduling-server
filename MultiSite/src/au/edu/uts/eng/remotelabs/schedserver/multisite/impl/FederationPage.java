@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.CAPS_PERMISSION;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.RIG_PERMISSION;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.TYPE_PERMISSION;
+import static au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator.FEDERATION_SERVICE_SUF;
 import static au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator.getConfigValue;
 
 import java.io.IOException;
@@ -71,9 +72,13 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.client.MultiSiteFederationClientStub;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.DiscoverResources;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.DiscoverResourcesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.InitiateSite;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.InitiateSiteResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.RequestableResourceType;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.types.SiteIDType;
 import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
 
 /**
@@ -653,12 +658,59 @@ public class FederationPage extends AbstractPage
             this.echoSuccessJson(false, "Remote site not found.");
             this.logger.warn("Unable to request provider resources because the site with GUID '" + guid + 
                     "' was not found.");
-            return;
+        } 
+        else if (!site.isOnline() || site.getServiceAddress() == null)
+        {
+            this.echoSuccessJson(false, "Remote site is offline.");
+            this.logger.warn("Unable to request provider resources because the site '" + site.getName() + 
+                    "' is not online.");
         }
-        
-        
-        // TODO Handle request resources
-        this.echoSuccessJson(false, "Unable to communicate with site");
+        else
+        {
+            DiscoverResources request = new DiscoverResources();
+            SiteIDType sId = new SiteIDType();
+            sId.setSiteID(getConfigValue("Site_ID", null));
+            request.setDiscoverResources(sId);
+            
+            try
+            {
+                System.out.println(site.getServiceAddress() + FEDERATION_SERVICE_SUF);
+                DiscoverResourcesResponse response = new MultiSiteFederationClientStub
+                        (site.getServiceAddress() + FEDERATION_SERVICE_SUF).discoverResources(request);
+                
+                RequestableResourceType resList[] = response.getDiscoverResourcesResponse().getResources();
+                if (resList == null)
+                {
+                    this.echoSuccessJson(true, "No requestable resources.");
+                }
+                else
+                {
+                    this.println("{\"success\":true,\"periods\":[");
+                    for (int i = 0; i < resList.length; i++)
+                    {
+                        this.println("{");
+                        this.println("\"type\":\"" + resList[i].getResource().getType() + "\",");
+                        this.println("\"name\":\"" + resList[i].getResource().getName() + "\",");
+                        this.println("\"start\":\"" + resList[i].getStart().getTime() + "\",");
+                        this.println("\"end\":\"" + resList[i].getEnd().getTime() + "\"");
+                        this.println(i == resList.length - 1 ? "}" : "},");
+                    }
+                    this.println("]}");
+                }
+            }
+            catch (AxisFault e)
+            {
+                this.echoSuccessJson(false, "SOAP fault: " + e.getMessage());
+                this.logger.warn("Unable to request provider resources because of a SOAP fault. Error: " + 
+                        e.getMessage());
+            }
+            catch (RemoteException e)
+            {
+                this.echoSuccessJson(false, "Remote exception: " + e.getMessage());
+                this.logger.warn("Unable to request provider resources because of a remote exception. Error: " +
+                		e.getMessage());
+            }
+        }
     }
     
     /**

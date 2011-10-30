@@ -224,6 +224,42 @@
 	margin-right: 10px;
 }
 
+#providerresourcelist ul {
+	list-style: none;
+}
+
+#providerresourcelist ul.reqpermtypelist li {
+	display: inline;
+}
+
+#providerresourcelist .fedbutton {
+	float: left;
+	margin: 5px;
+	padding: 5px;
+}
+
+#providerresourcelist .fedbutton span {
+	float: left;
+	margin-right: 5px;
+}
+
+#providerresourcelist div {
+	clear: both;
+	padding: 5px;
+	width: 100%;
+	font-weight: bold;
+}
+
+#permback {
+	width: 75px;
+	padding: 3px;
+}
+
+#permback span {
+	float: left;
+	margin: 0 5px;
+}
+
 /* ----------------------------------------------------------------------------
  * -- Periods Tab.                                                          --
  * ---------------------------------------------------------------------------- */

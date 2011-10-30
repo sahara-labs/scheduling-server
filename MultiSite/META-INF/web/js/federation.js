@@ -248,23 +248,114 @@ function loadProviderResources(guid)
 		function(response) {
 			if (typeof response != "object") window.location.reload();
 			
-			var $dialog = $("#providerresdiag");
-			if (response.success)
+			var $dialog = $("#providerresdiag"), html;
+			$dialog.parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").show();
+			
+			if (response.success && response.periods)
 			{
-				// TODO Sites list 
+				/* Successly communicated and there is list of resources. */
+				html = 
+					"<div id='providerresourcelist'>" +
+						"<ul>"   
+					
+				var i, pid, period, type = null;
+				for (i in response.periods)
+				{
+					pid = "perm" + i;
+					period = response.periods[i];
+					permList[pid] = period;
+				
+					if (type != period.type)
+					{
+						if (type != null) html += "</ul></li>";
+						type = period.type;
+						
+						html += 
+							"<li>" +
+								"<div>";
+						
+						if      (type == "TYPE") html += "Rig Types:";
+						else if (type == "RIG")  html += "Rigs:";
+						else if (type == "CAPS") html += "Request Capabilities:";
+								
+						html += "</div>" +
+								"<ul class='reqpermtypelist'>";
+					}
+					
+					html += 
+						"<li><a id='" + pid + "' class='fedbutton'>" +
+							"<span class='ui-icon ui-icon-circle-triangle-e'></span>" +
+							period.name.split("_").join(" ") +
+						"</a></li>";
+					
+					
+				}
+				
+				html +=		"</ul></li>" +
+						"</ul>" +
+						"<div style='clear:both'></div>" +
+					"</div>";
+			}
+			else if (response.success)
+			{
+				/* Succeeded talking to provider but they have no requestable
+				 * resources. */
+				html =
+					"<div class='ui-state ui-state-highlight ui-corner-all errormessage'>" +
+					"	<span class='ui-icon ui-icon-info'></span>" +
+					"   The provider has no resources that may be requested or does not allow " +
+					"   this site to view them." +
+					"</div>";
 			}
 			else
 			{
-				$dialog.parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").show();
-				$dialog.empty().append(
+				/* Some failure. */
+				html =
 					"<div class='ui-state ui-state-error ui-corner-all errormessage'>" +
 					"	<span class='ui-icon ui-icon-alert'></span>" +
 						response.reason +
-					"</div>"
-				);
+					"</div>";
 			}
+			
+			$dialog.empty().append(html);
+			$("#providerresourcelist .fedbutton").click(requestProvider);
 		}
 	);
+}
+
+var permList = new Object();
+function requestProvider()
+{
+	var perm = permList[$(this).attr("id")];
+	$("#providerresdiag").parent().children(".ui-dialog-buttonpane").hide();
+		
+	var html = 
+		"<div>" +
+			"<div id='permback' class='fedbutton'>" +
+				"<span class='ui-icon ui-icon-circle-triangle-w'></span>Back" +
+			"</div>" +
+			"<form id='permform'>" +
+				"<div>" +
+					"<label for='permname'>Name:</label>" +
+					"<input type='text' id='permname' />" +
+				"</div>" +
+				"<div>" +
+					"<label for='permresource'>Resource:</label>" +
+					"<input type='text' id='permresource' disabled='disabled' value='" + perm.name + "' />" +
+				"</div>" +
+				"<div>" +
+					"<label for='permname'>Type:</label>" +
+					"<input type='text' id='permtype' disabled='disabled' value='" + perm.type + "' />" +
+				"</div>" +
+			"</form>" +
+		"</div>";
+	
+	$("#providerresourcelist").hide().after(html);
+	
+	$("#permback").click(function() {
+		$("#providerresourcelist").show().next().remove();
+		$("#providerresdiag").parent().children(".ui-dialog-buttonpane").show();
+	});
 }
 
 /* ----------------------------------------------------------------------------

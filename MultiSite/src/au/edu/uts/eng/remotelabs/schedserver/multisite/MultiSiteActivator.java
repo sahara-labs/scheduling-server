@@ -65,6 +65,9 @@ import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
  */
 public class MultiSiteActivator implements BundleActivator 
 {
+    /** Federation service suffix. */
+    public static final String FEDERATION_SERVICE_SUF = "Federation";
+    
     /* --- Hosted services ---------------------------------------------------- */
     /** SOAP service hosting. */
     private ServiceRegistration<ServletContainerService> soapRegistration;
