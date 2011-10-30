@@ -39,9 +39,11 @@ package au.edu.uts.eng.remotelabs.schedserver.multisite.impl;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.CAPS_PERMISSION;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.RIG_PERMISSION;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.TYPE_PERMISSION;
+import static au.edu.uts.eng.remotelabs.schedserver.multisite.MultiSiteActivator.getConfigValue;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,6 +54,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.axis2.AxisFault;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -67,6 +70,10 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePerm
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.client.MultiSiteFederationClientStub;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.InitiateSite;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.InitiateSiteResponseType;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.intf.federation.types.SiteType;
 import au.edu.uts.eng.remotelabs.schedserver.server.AbstractPage;
 
 /**
@@ -465,12 +472,7 @@ public class FederationPage extends AbstractPage
         
         if (perms.size() > 0)
         {
-            RemoteSite site = null;
-            
-            for (RemotePermission remotePerm : perms)
-            {
-                
-            }
+           // TODO Consumer request list
         }
         else
         {
@@ -504,15 +506,97 @@ public class FederationPage extends AbstractPage
      */
     protected void handleAddSite(HttpServletRequest req)
     {
-        System.out.println("Need to implement adding site handlng...");
-        // TODO need to implement adding a site
-        if (req.getParameter("address") == null)
+        String address = req.getParameter("address");
+        if (address == null)
         {
+            this.logger.warn("Unable to initiate a site because an address was provided.");
             this.echoSuccessJson(false, "Address not provided.");
             return;
         }
         
-       this.echoSuccessJson(false, "Unable to contact site.");
+        if (getConfigValue("Site_Name", null) == null || getConfigValue("Site_Namespace", null) == null ||
+                getConfigValue("Site_ID", null) == null || getConfigValue("Multisite_Address", null) == null)
+        {
+            this.logger.warn("Unable to initiate the remote sites because this site is not correctly configured. " +
+            		"Ensure the properites 'Site_Name', 'Site_Namespace', 'Site_ID' and 'MultiSite_Address' is " +
+            		"correctly configured.");
+            this.echoSuccessJson(false, "Site incorrectly configured.");
+            return;
+        }
+        
+        /* Set up request. */
+        InitiateSite request = new InitiateSite();
+        SiteType thisSite = new SiteType();
+        thisSite.setName(getConfigValue("Site_Name", null));
+        thisSite.setNamespace(getConfigValue("Site_Namespace", null));
+        thisSite.setSiteID(getConfigValue("Site_ID", null));
+        thisSite.setAddress(getConfigValue("Multisite_Address", null));
+        request.setInitiateSite(thisSite);
+        
+        try
+        {
+            this.logger.info("Going to attempt to initiate site with address '" + address + "'.");
+            MultiSiteFederationClientStub client = new MultiSiteFederationClientStub(address);
+            InitiateSiteResponseType response = client.initiateSite(request).getInitiateSiteResponse();
+            
+            if (response.getWasSuccessful())
+            {
+                SiteType newSite = response.getSite();
+                if (newSite == null)
+                {
+                    this.logger.warn("Failed initiating site with address '" + address + "' because site did not " +
+                            "provide its details.");
+                    this.echoSuccessJson(false, "Site did not provide details.");
+                    return;
+                }
+                
+                RemoteSiteDao dao = new RemoteSiteDao(this.db);
+                RemoteSite site = dao.findSite(newSite.getSiteID());
+                if (site != null)
+                {
+                    this.logger.warn("Failed initiating site with name '" + site.getName() + "' because site " +
+                            "already exists.");
+                    this.echoSuccessJson(false, "Site already exists.");
+                }
+                else
+                {
+                    /* All is good, we can add the site. */
+                    site = new RemoteSite();
+                    site.setOnline(true);
+                    site.setName(newSite.getName());
+                    site.setGuid(newSite.getSiteID());
+                    site.setUserNamespace(newSite.getNamespace());
+                    site.setServiceAddress(newSite.getAddress());
+                    site.setLastPush(new Date());
+                    
+                    site.setViewer("true".equals(getConfigValue("Default_Allow_Viewers", "false")));
+                    site.setRequestor("true".equals(getConfigValue("Default_Allow_Requestors", "false")));
+                    site.setAuthorizer(false); // The authorizer delegation is higher, so it must be explicit.
+                    site.setRedirectee(false); // No unexpected redirections.
+                    
+                    dao.persist(site);
+                    this.echoSuccessJson(true, "Added site '" + this.stringTransform(site.getName()) + "'.");
+                }
+            }
+            else
+            {
+                this.logger.warn("Failed initiating site with address '" + address + "' because site did not initiate " +
+                		"this site with reason:" + response.getReason());
+                this.echoSuccessJson(false, "Site reason: " + response.getReason());
+            }
+        }
+        catch (AxisFault e)
+        {
+            this.logger.warn("Failed initiating site with address '" + address + "' because site a SOAP fault " +
+                		"communicating with the site. Error: " + e.getMessage());
+            this.echoSuccessJson(false, "SOAP fault: " + e.getMessage());
+        }
+        catch (RemoteException e)
+        {
+            this.logger.warn("Failed initiating site with address '" + address + "' because a remote exception " +
+                    "occurred. Error;" + e.getMessage());
+                this.echoSuccessJson(false, "Remote exception: " + e.getMessage());
+        }
     }
     
     /**

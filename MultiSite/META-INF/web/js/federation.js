@@ -125,15 +125,16 @@ function addSite()
 			"<div id='addsitediag' title='Add Site' style='display:none'>" +
 			"<form id='addsiteform'>" +
 			"	<label for='siteaddress'>Site Address:</label>" +
-			"   <input id='siteaddress' class='validate[required,custom[url]]' type='text' />" +
+			"   <input id='siteaddress' class='validate[required]' type='text' />" +
 			"<form>" +
 			"<div>"
 	);
 	
 	$("#addsiteform").validationEngine();
 	$("#addsiteform").jqTransform();
-	$("#addsiteform .jqTransformInputWrapper").css("width", 280)
-			.children("input").css("width", 270);
+	$("#addsiteform .jqTransformInputWrapper")
+			.css("width", 280);
+	$("#siteaddress").css("width", 270);
 	
 	$("#addsitediag").dialog({
 		autoOpen: true,
@@ -144,6 +145,8 @@ function addSite()
 			"Add": function() {
 				if (!$("#addsiteform").validationEngine("validate")) return;
 				
+				var addr = $("#siteaddress").val();
+				
 				/* Dialog tear down. */
 				$(this).parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").hide();
 				$(this).empty()
@@ -153,10 +156,10 @@ function addSite()
 					"   Requesting..." +
 					"</div>"
 				);
-				
+
 				$.post(
 					"/federation/addSite",
-					{ address: $("#siteaddress").val() },
+					{ "address": addr },
 					function(response)
 					{
 						if (typeof response != "object") window.location.refresh();
