@@ -34,60 +34,66 @@
 				#removeUnderscores( $uc.getName().replaceAll(" ", "") )
 			</a>
 			<div class="perm-userclassdetails">
-				<div class="perm-userclassfields perm-userclasspanel">
-    				<div>
-    					<label for="$id-isActive">Active:</label>
-    					<input type="checkbox" id="$id-isActive" #if( $uc.isActive() ) checked="checked" #end disabled="disabled" />
-    				</div>
-    				<div>
-    					<label for="$id-isQueuable">Allow Queuing:</label>
-    					<input type="checkbox" id="$id-isQueueable" #if( $uc.isQueuable() ) checked="checked" #end disabled="disabled" />
-    				</div>
-    				<div>
-    					<label for="$id-isBookable">Allow Reservations:</label>
-    					<input type="checkbox" id="$id-isBookable" #if( $uc.isBookable() ) checked="checked" #end disabled="disabled" />
-    				</div>
-    					
-    				#if( $uc.isQueuable() )
-    					<div>
-    						<label for="$id-priority">Priority:</label>
-    						<input type="text" id="$id-getPriority" value="$uc.getPriority()" disabled="disabled" />
-    					</div>
-    				#end
-    					
-    				#if( $uc.isBookable() )
-    					<div>
-    						<label for="$id-priority">Time Horizon:</label>
-    						<input type="text" id="$id-getTimeHorizon" value="$uc.getTimeHorizon()" disabled="disabled" />
-    					</div>
-    				#end
-				</div>
-				<div class="perm-userclassoperations perm-userclasspanel">
-					<ul>
-                		<li><a class="perm-createclass">
-                				<img src="/img/perm-edit.png" alt="Edit" />
-                				<br />
-                				Edit
-                		</a></li>
-						<li><a class="perm-createclass">
-                				<img src="/img/perm-delete.png" alt="Delete" />
-                				<br />
-                				Delete
-                		</a></li>
-                	</ul>
-				</div>
-				<div class="perm-userclasspermissions perm-userclasspanel">
-					#if ( $uc.getResourcePermissions() && $uc.getResourcePermissions().size() > 0 )
-    					 Number: $uc.getResourcePermissions.size()
-					#else
-						<div class="ui-state ui-state-highlight ui-corner-all">
-							<span class="ui-icon ui-icon-info"></span>
-							No permissions.
-						</div>
-					#end
-				</div>
-				<div class="perm-userclasspermissionsoperations perm-userclasspanel">
+				
+				## User class section.
+				<div class="perm-userclasssection">
+					<div class="perm-sectiontitle">User Class Details</div>
 					
+    				<div class="perm-userclassfields perm-userclasspanel">
+        				<div>
+        					<label for="${id}-isActive">Active:</label>
+        					<input type="checkbox" id="${id}-isActive" #if( $uc.isActive() ) checked="checked" #end disabled="disabled" />
+        				</div>
+        				<div>
+        					<label for="${id}-isQueuable">Queuing:</label>
+        					<input type="checkbox" id="${id}-isQueuable" #if( $uc.isQueuable() ) checked="checked" #end disabled="disabled" />
+        				</div>
+        				<div>
+        					<label for="${id}-isBookable">Reservations:</label>
+        					<input type="checkbox" id="${id}-isBookable" #if( $uc.isBookable() ) checked="checked" #end disabled="disabled" />
+        				</div>
+						
+						<div>
+							<label for="${id}-getPriority">Priority:</label>
+							<input type="text" id="${id}-getPriority" value="$uc.getPriority()" disabled="disabled" />
+						</div>
+						<div>
+							<label for="${id}-getTimeHorizon">Time Horizon:</label>
+							<input type="text" id="${id}-getTimeHorizon" value="$uc.getTimeHorizon()" disabled="disabled" />
+						</div>
+    				</div>
+    				<div class="perm-userclassoperations perm-userclasspanel">
+    					<ul>
+                    		<li><a class="perm-createclass perm-button">
+                    				<img src="/img/perm-edit.png" alt="Edit" /><br />
+                    				Edit
+                    		</a></li>
+    						<li><a class="perm-createclass perm-button">
+                    				<img src="/img/perm-delete.png" alt="Delete" /><br />
+                    				Delete
+                    		</a></li>
+                    	</ul>
+    				</div>
+				</div>
+				
+				<div class="perm-respermsection">
+					<div class="perm-sectiontitle">User Class Permissions</div>
+    				<div class="perm-userclasspermissions perm-userclasspanel">
+    					#if ( $uc.getResourcePermissions() && $uc.getResourcePermissions().size() > 0 )
+        					 Number: $uc.getResourcePermissions.size()
+    					#else
+    						<div class="ui-state ui-state-highlight ui-corner-all">
+    							<span class="ui-icon ui-icon-info"></span>
+    							No permissions.
+    						</div>
+    					#end
+    				</div>
+    				<div class="perm-userclasspermissionsoperations perm-userclasspanel">
+    					<a class="perm-addresperm perm-button">
+							<img src="/img/perm-add.png" alt="Add" /><br />
+							Add
+						</a>
+    				</div>
 				</div>
 				<div style="clear:both"></div>
 			</div>

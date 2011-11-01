@@ -35,6 +35,11 @@
  
 #content {
 	position: relative;
+	margin-top: 11px;
+}
+
+#content .contentheader {
+	display: none;
 }
  
 #perm-buttonbar {
@@ -49,10 +54,13 @@
 }
 
 #perm-buttonbar a {
-	display: block;
 	width: 65px;
 	height: 60px;
-	margin: 5px;
+}
+
+#perm-buttonbar a, .perm-button {
+	display: block;
+	margin-left: 5px;
 	padding: 10px 5px 0;
 	border: 1px solid #B5B5B5;
 	border-radius: 4px;
@@ -63,9 +71,10 @@
 	box-shadow: 0 0 4px #B5B5B5;
 	-moz-box-shadow: 0 0 4px #B5B5B5;
 	-webkit-box-shadow: 0 0 4px #B5B5B5;
+	cursor: pointer;
 }
 
-#perm-buttonbar a:hover {
+#perm-buttonbar a:hover, .perm-button:hover {
 	color: #000000;
 	box-shadow: 0 0 4px #606060;
 	-moz-box-shadow: 0 0 4px #606060;
@@ -79,6 +88,7 @@
 	box-shadow: 0 0 2px #B5B5B5;
 	-moz-box-shadow: 0 0 2px #B5B5B5;
 	-webkit-box-shadow: 0 0 2px #B5B5B5;
+	margin-left: -7px;
 }
 
 .perm-pagetitle {
@@ -141,4 +151,58 @@
 
 .perm-list .ui-state {
 	padding: 5px;
+}
+
+.perm-userclassfields div {
+	padding: 5px;
+}
+
+.perm-userclassfields label {
+	display: block;
+	float: left;
+	width: 120px;
+}
+
+.perm-userclassfields input {
+	width: 75px;
+}
+
+.perm-userclassdetails .perm-button {
+	width: 40px;
+	height: 50px;
+	padding: 5px 5px 0 5px;
+	margin:  8px 0 15px;
+}
+
+.perm-userclassoperations {
+	margin-left: 55px;
+}
+
+.perm-userclassoperations ul {
+	list-style: none;
+}
+
+.perm-userclasssection, .perm-respermsection {
+	float: left;
+	width: 370px;
+}
+
+.perm-userclasssection {
+	border-right: 1px solid #B5B5B5;
+}
+
+.perm-respermsection {
+	border-left: 1px solid #B5B5B5;
+	margin-left: -1px;
+}
+
+.perm-sectiontitle {
+	width: 200px;
+	padding: 3px;
+	margin: 10px auto;
+	border: 1px solid #B5B5B5;
+	background-color: #EFEFEF;
+	border-radius: 0 0 4px 4px;
+	text-align: center;
+	color: #606060;
 }

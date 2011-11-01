@@ -60,11 +60,7 @@ public class UserClassesPage extends AbstractPermissionsPage
                 .addOrder(Order.asc("name"))
                 .list();
         
-        for (UserClass uc : userClasses)
-        {
-            System.out.println(uc.getName() + ": " + uc.getResourcePermissions().size());
-        }
-       
+        
         this.context.put("userClasses", userClasses);
     }
 
