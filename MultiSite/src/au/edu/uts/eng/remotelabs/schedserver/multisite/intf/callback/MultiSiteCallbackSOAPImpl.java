@@ -239,10 +239,23 @@ public class MultiSiteCallbackSOAPImpl implements MultiSiteCallbackSOAP
             
             if ((ses = new SessionDao(db).findActiveSession(user)) != null && ses.getAssignmentTime() != null)
             {
-                /* User already has a session. */
-                this.logger.info("Unable to start session for user '" + user.qName() + "' because they are " +
-                            "already in session.");
-                respType.setReason("User already in session");
+                /* DODGY HACK... For some reason a second message is sent. This 
+                 * accounts for that but isn't correct. */
+                if (remotePerm.getPermission().getId().equals(ses.getResourcePermission().getId()) &&
+                        (System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000 < 30) 
+                {
+                    this.logger.error("HACK TRIGGERED:Secondary session started message received for session '" + 
+                            ses.getId() + "' from '" + remotePerm.getSite().getName() + "'.");
+                    respType.setWasSuccessful(true);
+                }
+                else
+                {
+                    /* User already has a session. */
+                    this.logger.info("Unable to start session for user '" + user.qName() + "' because they are " +
+                                "already in session.");
+                    respType.setReason("User already in session");
+                }
+                
                 return response;
             }
             else if (ses != null)
