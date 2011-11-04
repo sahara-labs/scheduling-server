@@ -40,8 +40,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.hibernate.criterion.Order;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
@@ -62,6 +65,54 @@ public class UserClassesPage extends AbstractPermissionsPage
         
         
         this.context.put("userClasses", userClasses);
+    }
+    
+    
+    /**
+     * Adds a new user class. 
+     * 
+     * @param req request
+     * @return response JSON object
+     */
+    public JSONObject addClass(HttpServletRequest req) throws JSONException
+    {
+        JSONObject response = new JSONObject();
+        response.put("wasSuccessful", false);
+        
+        String name = req.getParameter("name");
+        if (name == null)
+        {
+            this.logger.warn("Unable to add new user class because the class name was not specified.");
+            response.put("reason", "Name was not specified.");
+            return response;
+        }
+        
+        /* User class names must be unique. */
+        UserClassDao dao = new UserClassDao(this.db);
+        if (dao.findByName(name) != null)
+        {
+            this.logger.warn("Unable to add new user class because the class '" + name + "' already exists.");
+            response.put("reason", "User class with name already exists.");
+            return response;
+        }
+        
+        UserClass uc = new UserClass();
+        uc.setName(name);
+        uc.setActive(Boolean.parseBoolean(req.getParameter("active")));
+        uc.setBookable(Boolean.parseBoolean(req.getParameter("bookable")));
+        uc.setQueuable(Boolean.parseBoolean(req.getParameter("queue")));
+        uc.setPriority(Short.parseShort(req.getParameter("priority")));      
+        uc.setTimeHorizon(Integer.parseInt(req.getParameter("horizon")));
+        
+        /* We are hard coding some parameters, because the features aren't
+         * used much and they complicate the interface. */
+        uc.setKickable(false);
+        uc.setUsersLockable(false);
+        
+        dao.persist(uc);
+        
+        response.put("wasSuccessful", true);
+        return response;
     }
 
 

@@ -34,3 +34,109 @@
  */
  
 
+function createClass()
+{
+	$("body").append(
+		"<div id='perm-createclassdialog' title='Add a new class'><form>" +
+			"<div>" +
+				"<label for='newClassName'>Name:</label>" +
+				"<input type='text' id='newClassName' class='validate[required]' />" +
+			"</div>" +
+			"<div>" +
+				"<label for='newClassActive'>Active:</label>" +
+				"<input type='checkbox' id='newClassActive' />" +
+			"</div>" +
+			"<div>" +
+				"<label for='newClassQueuable'>Queuing:</label>" +
+				"<input type='checkbox' id='newClassQueuable' />" +
+			"</div>" +
+			"<div>" +
+				"<label for='newClassBookable'>Reservations:</label>" +
+				"<input type='checkbox' id='newClassBookable' />" +
+			"</div>" +
+			"<div>" +
+				"<label for='newClassPriority'>Priority:</label>" +
+				"<input type='text' id='newClassPriority' value='1' class='validate[required,custom[integer],min[1]],max[255]' />" +
+			"</div>" +
+			"<div>" +
+				"<label for='newClassTimeHorizon'>Time Horizon:</label>" +
+				"<input type='text' id='newClassTimeHorizon' value='0' class='validate[required,custom[integer],min[0]]' />" +
+			"</div>" +
+		"</form></div>"
+	);
+	
+	$("#perm-createclassdialog").dialog({
+		resizable: false,
+		modal: true,
+		closeOnEscape: false,
+		buttons: {
+			'Create': saveCreateClass,
+			'Cancel': function() {
+				$(this).dialog('close');
+			}
+		},
+		close: function() {
+			$(this).dialog('destroy');
+			$(".formError").remove();
+			$(this).remove();
+			
+		},
+		width: 400
+	})
+	.children("form").validationEngine();
+	
+	
+}
+
+function saveCreateClass() 
+{
+	if ($("#perm-createclassdialog form").validationEngine("validate"))
+	{
+		/* Tear down dialog. */
+		$(this).parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").hide();
+		
+		$(this).children("form").hide();
+		$(this)
+			.append(
+				"<div class='perm-formspinner'>" +
+					"<img src='/img/spinner.gif' alt='Loading...' />" +
+					"<br /><br />" +
+					"Adding..." +
+				"</div>"
+		);
+		
+		/* Save form. */
+		$.post(
+			"/userclasses/addClass",
+			{
+				name: $("#newClassName").val(),
+				active: $("#newClassActive:checked").length == 1,
+				queue: $("#newClassQueuable:checked").length == 1,
+				bookable: $("#newClassBookable:checked").length == 1,
+				priority: $("#newClassPriority").val(),
+				horizon: $("#newClassTimeHorizon").val()
+			},
+			function(response) {
+				if (typeof response != "object" || response.wasSuccessful)
+				{
+					window.location.reload();
+				}
+				else
+				{
+					/* Some error occurred. */
+					$diag = $("#perm-createclassdialog");
+					$diag.parent().children(".ui-dialog-titlebar, .ui-dialog-buttonpane").show();
+					
+					$diag.children(".perm-formspinner").remove();
+					$diag.children("form").show()
+						.prepend(
+							"<div class='ui-state ui-state-error ui-corner-all'>" +
+								"<span class='perm-uiicon ui-icon ui-icon-alert'></span>" +
+								response.reason +
+							"</div>"
+						);
+				}
+			}
+		);
+	}
+}

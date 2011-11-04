@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +60,9 @@ public abstract class AbstractPermissionsPage extends AbstractPage
     /** Page context which contains any dynamic variables. */
     protected final Context context = new VelocityContext();
     
+    /** Post methods. */
+    private Method postMethod;
+    
     /** Database session. */
     protected final Session db;
     
@@ -72,11 +76,42 @@ public abstract class AbstractPermissionsPage extends AbstractPage
     }
     
     @Override
-    public void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException
+    public void preService(HttpServletRequest req)
     {
+        String requestSuf = req.getRequestURI().substring(req.getRequestURI().lastIndexOf('/'));
+        if (requestSuf.length() > 1) requestSuf = requestSuf.substring(1); // Remove last '/'
+  
         if ("POST".equals(req.getMethod()))
         {
-            // TODO Post handling.
+            try
+            {
+                this.postMethod = this.getClass().getMethod(requestSuf, HttpServletRequest.class);
+                this.framing = false;
+            }
+            catch (Exception e)
+            {
+                /* This is a valid case, it just means the request is not handled
+                 * specially. Rather it is a page load. */
+            }
+        }
+    }
+    
+    @Override
+    public void contents(HttpServletRequest req, HttpServletResponse resp) throws IOException
+    {
+        if (this.postMethod != null)
+        {
+            try
+            {
+                resp.setContentType("application/json");
+                this.out.print(this.postMethod.invoke(this, req));
+            }
+            catch (Exception e)
+            {
+                this.logger.error("BUG: Exception invoking post method " + this.postMethod.getName() + ", message: " + 
+                        e.getMessage());
+                        
+            }
         }
         else
         {

@@ -104,6 +104,7 @@
 	
 <script type="text/javascript">
 $(document).ready(function() {
+	/* Event handler for the accordian. */
 	$(".perm-userclasstitle").click(function() {
 		var $details = $(this).next();
 		var isClosed = $details.css("display") == "none";
@@ -126,5 +127,8 @@ $(document).ready(function() {
 				.slideDown();
 		}
 	});
+	
+	/* Event handlers for the permission buttons. */
+	$("#perm-createclass").click(createClass);
 });
 </script>
