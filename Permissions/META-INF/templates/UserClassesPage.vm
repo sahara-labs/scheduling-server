@@ -42,33 +42,36 @@
     				<div class="perm-userclassfields perm-userclasspanel">
         				<div>
         					<label for="${id}-isActive">Active:</label>
-        					<input type="checkbox" id="${id}-isActive" #if( $uc.isActive() ) checked="checked" #end disabled="disabled" />
+        					<input type="checkbox" id="${id}-isActive"  class="isActive"
+								#if( $uc.isActive() ) checked="checked" #end disabled="disabled" />
         				</div>
         				<div>
         					<label for="${id}-isQueuable">Queuing:</label>
-        					<input type="checkbox" id="${id}-isQueuable" #if( $uc.isQueuable() ) checked="checked" #end disabled="disabled" />
+        					<input type="checkbox" id="${id}-isQueuable" class="isQueuable"
+								#if( $uc.isQueuable() ) checked="checked" #end disabled="disabled" />
         				</div>
         				<div>
         					<label for="${id}-isBookable">Reservations:</label>
-        					<input type="checkbox" id="${id}-isBookable" #if( $uc.isBookable() ) checked="checked" #end disabled="disabled" />
+        					<input type="checkbox" id="${id}-isBookable" class="isBookable"
+								#if( $uc.isBookable() ) checked="checked" #end disabled="disabled" />
         				</div>
 						
 						<div>
 							<label for="${id}-getPriority">Priority:</label>
-							<input type="text" id="${id}-getPriority" value="$uc.getPriority()" disabled="disabled" />
+							<input type="text" id="${id}-getPriority" class="getPriority" value="$uc.getPriority()" disabled="disabled" />
 						</div>
 						<div>
 							<label for="${id}-getTimeHorizon">Time Horizon:</label>
-							<input type="text" id="${id}-getTimeHorizon" value="$uc.getTimeHorizon()" disabled="disabled" />
+							<input type="text" id="${id}-getTimeHorizon" class="getTimeHorizon" value="$uc.getTimeHorizon()" disabled="disabled" />
 						</div>
     				</div>
     				<div class="perm-userclassoperations perm-userclasspanel">
     					<ul>
-                    		<li><a class="perm-createclass perm-button">
+                    		<li><a class="perm-editclass perm-button">
                     				<img src="/img/perm-edit.png" alt="Edit" /><br />
                     				Edit
                     		</a></li>
-    						<li><a class="perm-createclass perm-button">
+    						<li><a class="perm-deleteclass perm-button">
                     				<img src="/img/perm-delete.png" alt="Delete" /><br />
                     				Delete
                     		</a></li>
@@ -130,5 +133,7 @@ $(document).ready(function() {
 	
 	/* Event handlers for the permission buttons. */
 	$("#perm-createclass").click(createClass);
+	$("#userclasslist .perm-editclass").click(editClass);
+	$("#userclasslist .perm-deleteclass").click(deleteClass);
 });
 </script>

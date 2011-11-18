@@ -224,3 +224,16 @@
 .perm-formspinner {
 	text-align: center;
 }
+
+#perm-deletedialog {
+	padding: 10px;
+}
+
+#perm-deletedialog .ui-priority-secondary {
+	margin: 10px;
+}
+
+#perm-deletedialog span {
+	float: left;
+	margin-right: 5px;
+}

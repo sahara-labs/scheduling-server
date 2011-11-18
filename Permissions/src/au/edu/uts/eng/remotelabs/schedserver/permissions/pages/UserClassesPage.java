@@ -43,8 +43,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
@@ -80,6 +84,10 @@ public class UserClassesPage extends AbstractPermissionsPage
         response.put("wasSuccessful", false);
         
         String name = req.getParameter("name");
+        /* Replace all spaces with underscores. */
+        name = name.replace(' ', '_');
+        
+        
         if (name == null)
         {
             this.logger.warn("Unable to add new user class because the class name was not specified.");
@@ -110,6 +118,107 @@ public class UserClassesPage extends AbstractPermissionsPage
         uc.setUsersLockable(false);
         
         dao.persist(uc);
+        
+        response.put("wasSuccessful", true);
+        return response;
+    }
+    
+    /**
+     * Updates an existing class.
+     * 
+     * @param request 
+     * @return response
+     * @throws JSONException
+     */
+    public JSONObject updateClass(HttpServletRequest req) throws JSONException
+    {
+        JSONObject response = new JSONObject();
+        response.put("wasSuccessful", false);
+        
+        String name = req.getParameter("name");
+        if (name == null)
+        {
+            this.logger.warn("Unable to update user class because the class name was not specified.");
+            response.put("reason", "Name was not specified.");
+            return response;
+        }
+        
+        UserClassDao dao = new UserClassDao(this.db);
+        UserClass uc = dao.findByName(name);
+        if (uc == null)
+        {
+            this.logger.warn("Unable to update user class because the class '" + name + "' was not found.");
+            response.put("reason", "User class was not found.");
+            return response;
+        }
+
+        uc.setActive(Boolean.parseBoolean(req.getParameter("active")));
+        uc.setBookable(Boolean.parseBoolean(req.getParameter("bookable")));
+        uc.setQueuable(Boolean.parseBoolean(req.getParameter("queue")));
+        uc.setPriority(Short.parseShort(req.getParameter("priority")));      
+        uc.setTimeHorizon(Integer.parseInt(req.getParameter("horizon")));
+        
+        dao.flush();
+        
+        response.put("wasSuccessful", true);
+        return response;
+    }
+    
+    public JSONObject deleteClass(HttpServletRequest req) throws JSONException
+    {
+        JSONObject response = new JSONObject();
+        response.put("wasSuccessful", false);
+        
+        String name = req.getParameter("name");
+        if (name == null)
+        {
+            this.logger.warn("Unable to delete user class because the class name was not specified.");
+            response.put("reason", "Name was not specified.");
+            return response;
+        }
+        
+        UserClassDao dao = new UserClassDao(this.db);
+        UserClass uc = dao.findByName(name);
+        if (uc == null)
+        {
+            this.logger.warn("Unable to delete user class because the class '" + name + "' was not found.");
+            response.put("reason", "User class was not found.");
+            return response;
+        }
+        
+        
+        this.logger.debug("Attempting to delete user class '" + uc.getName() + "'.");
+        
+        int num = (Integer) this.db.createCriteria(Session.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .createCriteria("resourcePermission")
+                    .add(Restrictions.eq("userClass", uc))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult();
+        if (num > 0)
+        {
+            this.logger.warn("Unable to delete user class '" + uc.getName() + "' because a session from this classes " +
+            		"permission is active.");
+            response.put("reason", "A session from this class is in progress.");
+            return response;
+        }
+        
+        num = (Integer) this.db.createCriteria(Bookings.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .createCriteria("resourcePermission")
+                    .add(Restrictions.eq("userClass", uc))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult();
+        if (num > 0)
+        {
+            this.logger.warn("Unable to delete user class '" + uc.getName() + "' because a booking from this classes " +
+                    "permission is active.");
+            response.put("reason", "User class has active reservations.");
+            return response;
+        }
+        
+        dao.delete(uc);
+        this.logger.info("Deleted user class '" + uc.getName() + "'.");
         
         response.put("wasSuccessful", true);
         return response;

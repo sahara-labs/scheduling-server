@@ -84,8 +84,6 @@ function createClass()
 		width: 400
 	})
 	.children("form").validationEngine();
-	
-	
 }
 
 function saveCreateClass() 
@@ -137,6 +135,158 @@ function saveCreateClass()
 						);
 				}
 			}
+		);
+	}
+}
+
+var userClassMode = [];
+function editClass() 
+{
+	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+	
+	if (!userClassMode[id])
+	{
+		userClassMode[id] = true;
+	
+		$li.find("input").removeAttr("disabled");
+		$li.find(".perm-editclass").empty().append(
+			"<img alt='Save' src='/img/perm-save.png' />" +
+			"<br />" +
+			"Save"
+		);
+		
+		$li.find(".perm-deleteclass").empty().append(
+				"<img alt='Cancel' src='/img/perm-cancel.png' />" +
+				"<br />" +
+				"Cancel"
+		);
+	}
+	else
+	{
+		$.post(
+				"/userclasses/updateClass",
+				{
+					name: id,
+					active: $li.find(".isActive:checked").length == 1,
+					queue: $li.find(".isQueuable:checked").length == 1,
+					bookable: $li.find(".isBookable:checked").length == 1,
+					priority: $li.find(".getPriority").val(),
+					horizon: $li.find(".getTimeHorizon").val()
+				},
+				function(response) {
+					if (typeof response != "object") 
+					{
+						window.location.reload();
+					}
+					else
+					{
+						userClassMode[id] = false;
+						$li.find("input").attr("disabled", "disabled");
+						$li.find(".perm-editclass").empty().append(
+							"<img alt='Edit' src='/img/perm-edit.png' />" +
+							"<br />" +
+							"Edit"
+						);
+						
+						$li.find(".perm-deleteclass").empty().append(
+								"<img alt='Delete' src='/img/perm-delete.png' />" +
+								"<br />" +
+								"Delete"
+						);
+						
+						if ($li.find(".isActive:checked").length == 1)
+						{
+							$li.children("a").removeClass("inactiveclass").addClass("activeclass");
+						}
+						else
+						{
+							$li.children("a").removeClass("activeclass").addClass("inactiveclass");
+						}
+					}
+				}
+			);
+	}
+}	
+
+function deleteClass()
+{
+	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+	
+	if (!userClassMode[id])
+	{
+		$("body").append(
+				"<div id='perm-deletedialog' title='Delete user class'>" +
+					"<div class='ui-priority-primary'>" +
+						"Are you sure you want to delete the class '" + id.split("_").join(" ") + "'?" +
+					"</div>" +
+					"<div class='ui-priority-secondary'>" +
+						"<span class='ui-icon ui-icon-alert'></span>" +
+						"This will delete the user class as well as all the permissions in the user class and " +
+						"associations with users." +
+					"</div>" +
+				"</div>"
+			);
+			
+			$("#perm-deletedialog").dialog({
+				resizable: false,
+				modal: true,
+				closeOnEscape: false,
+				buttons: {
+					'Delete': function() {
+						$.post(
+							"/userclasses/deleteClass",
+							{ name: id },
+							function (resp) {
+								if (typeof resp != "object")
+								{
+									window.location.reload();
+								}
+								else
+								{
+									if (resp.wasSuccessful)
+									{
+										$li.remove();
+										$("#perm-deletedialog").dialog("close");
+									}
+									else
+									{
+										$("#perm-deletedialog").prepend(
+											"<div class='ui-state-error ui-corner-all' style='padding:5px;margin-bottom:10px'>" +
+												"<span class='ui-icon ui-icon-alert'></span> Unable to delete class: " +
+												resp.reason + 
+											"</div>"
+										);
+									}
+								}
+							}
+						);	
+					},
+					'Cancel': function() {
+						$(this).dialog('close');
+					}
+				},
+				close: function() {
+					$(this).dialog('destroy');
+					$(this).remove();
+					
+				},
+				width: 400
+			});
+	}
+	else
+	{
+		userClassMode[id] = false;
+		$li.find("input").attr("disabled", "disabled");
+		$li.find(".perm-editclass").empty().append(
+			"<img alt='Edit' src='/img/perm-edit.png' />" +
+			"<br />" +
+			"Edit"
+		);
+		
+		$li.find(".perm-deleteclass").empty().append(
+				"<img alt='Delete' src='/img/perm-delete.png' />" +
+				"<br />" +
+				"Delete"
 		);
 	}
 }
