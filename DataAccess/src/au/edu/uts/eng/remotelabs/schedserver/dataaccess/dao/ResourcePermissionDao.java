@@ -37,8 +37,12 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 
 /**
  * Data access object for the {@link ResourcePermission} entity.
@@ -53,5 +57,74 @@ public class ResourcePermissionDao extends GenericDao<ResourcePermission>
     public ResourcePermissionDao(Session ses)
     {
         super(ses, ResourcePermission.class);
+    }
+    
+    @Override
+    public void delete(ResourcePermission perm)
+    {
+        /* We need to delete any user locks of this permission. */
+        int num = (Integer) this.session.createCriteria(UserLock.class)
+                .add(Restrictions.eq("resourcePermission", perm))
+                .setProjection(Projections.count("id"))
+                .uniqueResult();
+        if (num > 0)
+        {
+            /* Delete all user locks. */
+            this.logger.debug("To delete resource permission '" + perm.getId() + "', " + num + " user locks have to" +
+                    " removed.");
+            this.session.beginTransaction();
+            int numDeleted = this.session.createQuery("delete UserLock ul where ula.resourcePermission = :perm")
+                    .setEntity("perm", perm)
+                    .executeUpdate();
+            
+            this.logger.debug("Deleted " + numDeleted + " user locks when deleting resource permission '" + 
+                    perm.getId() + "'.");
+            this.session.getTransaction().commit();
+        }
+        
+        /* Null out the sessions which use this resource permission. */
+        num = (Integer) this.session.createCriteria(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class)
+                .add(Restrictions.eq("resourcePermission", perm))
+                .setProjection(Projections.count("id"))
+                .uniqueResult();
+        if (num > 0)
+        {
+            this.logger.debug("To delete resource permission '" + perm.getId() + "', " + num + " sessions need the " +
+            		"resource permission nulled.");
+            this.session.beginTransaction();
+            int numDeleted = this.session.createQuery("update Session ses set ses.resourcePermission = :null " +
+            		        "where ula.resourcePermission = :perm")
+            		.setEntity("null", null)
+                    .setEntity("perm", perm)
+                    .executeUpdate();
+            
+            this.logger.debug("Updated " + numDeleted + " session records when deleting resource permission '" + 
+                    perm.getId() + "'.");
+            this.session.getTransaction().commit();
+        }
+        
+        /* Null out the bookings which use this resource permission. */
+        num = (Integer) this.session.createCriteria(Bookings.class)
+                .add(Restrictions.eq("resourcePermission", perm))
+                .setProjection(Projections.count("id"))
+                .uniqueResult();
+        if (num > 0)
+        {
+            this.logger.debug("To delete resource permission '" + perm.getId() + "', " + num + " bookings need the " +
+            		"resource permission nulled.");
+            this.session.beginTransaction();
+            int numDeleted = this.session.createQuery("update Bookigngs bk set bk.resourcePermission = :null " +
+                            "where bk.resourcePermission = :perm")
+                    .setEntity("null", null)
+                    .setEntity("perm", perm)
+                    .executeUpdate();
+            
+            this.logger.debug("Updated " + numDeleted + " bookings records when deleting resource permission '" + 
+                    perm.getId() + "'.");
+            this.session.getTransaction().commit();
+        }
+        
+        /* Finally delete the permission. */
+        super.delete(perm);
     }
 }

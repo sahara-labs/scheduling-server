@@ -40,6 +40,7 @@ import java.io.Serializable;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermission;
@@ -85,33 +86,49 @@ public class UserClassDao extends GenericDao<UserClass>
     @Override
     public void delete(UserClass uc)
     {
-        this.session.beginTransaction();
         
         /* Delete all the user associations. */
-        for (UserAssociation assoc : uc.getUserAssociations())
+        int num = (Integer) this.session.createCriteria(UserAssociation.class)
+                .add(Restrictions.eq("userClass", uc))
+                .setProjection(Projections.count("user"))
+                .uniqueResult();
+        if (num > 0)
         {
-            this.session.delete(assoc);
-        }
-        
-        /* Delete all academic permissions. */
-        for (AcademicPermission perm : uc.getAcademicPermissions())
-        {
-            this.session.delete(perm);
+            /* Delete all user associations. */
+            this.logger.debug("To delete user class '" + uc.getName() + "', " + num + " user associations have to" +
+            		" removed.");
+            this.session.beginTransaction();
+            int numDeleted = this.session.createQuery("delete UserAssociation ua where ua.userClass = :userclass")
+                    .setEntity("userclass", uc)
+                    .executeUpdate();
+            
+            this.logger.info("Deleted " + numDeleted + " user associations when deleting user class '" + 
+                    uc.getName() + "'.");
+            this.session.getTransaction().commit();
         }
         
         /* Delete all associated resource permissions. */
-        for (ResourcePermission perm : uc.getResourcePermissions())
+        if (uc.getResourcePermissions().size() > 0)
         {
-            /* Null out any sessions which have this resource permission. */
-            for (au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses : 
-                    perm.getSessionsForResourcePermission())
+            ResourcePermissionDao resPermDao = new ResourcePermissionDao(this.session);
+            for (ResourcePermission perm : uc.getResourcePermissions())
             {
-                ses.setResourcePermission(null);
+                resPermDao.delete(perm);
             }
-            this.session.delete(perm);
         }
         
-        this.session.getTransaction().commit();
+        /* Delete all the academic permissions. */
+        if (uc.getAcademicPermissions().size() > 0)
+        {
+            this.session.beginTransaction();
+            for (AcademicPermission ap : uc.getAcademicPermissions())
+            {
+                this.logger.debug("Deleting academic permissions for '" + ap.getUser().qName() + "' during delete of " +
+                		"user class '" + uc.getName() + "'.");
+                this.session.delete(ap);
+            }
+            this.session.getTransaction().commit();
+        }
         
         super.delete(uc);
     }
