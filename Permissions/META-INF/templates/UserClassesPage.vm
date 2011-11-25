@@ -25,6 +25,8 @@
 		<span id="secondclassicon" class="ui-icon ui-icon-person"></span>
         User Classes:
 	</div>
+	
+	#if ( $userClasses.size() > 0 )
 	<ul id="userclasslist" class="perm-list">
         #foreach( $uc in $userClasses )
 			#set( $id = $uc.getName() )
@@ -103,6 +105,11 @@
         </li>
         #end
     </ul>
+	#else
+		<div class="ui-corner-all ui-state ui-state-error">
+			No user classes.
+		</div>
+	#end 
 </div>
 	
 <script type="text/javascript">
