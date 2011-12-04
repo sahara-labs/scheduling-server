@@ -32,7 +32,6 @@
  * @author Michael Diponio (mdiponio)
  * @date 21st October 2011
  */
- 
 
 function createClass()
 {
@@ -290,3 +289,25 @@ function deleteClass()
 		);
 	}
 }
+
+function loadPermission() 
+{
+	var pid = $(this).attr('id').substr("perm-".length);
+	
+	$("body").append(
+		"<div id='perm-permissiondialog' title='Permission: " + pid + "'>" +
+		
+		"</div>"
+	);
+	
+	$("#perm-permissiondialog").dialog({
+		modal: true,
+		width: 400,
+		resizable: false
+	});
+}
+
+function drawPermissionDialog(id)
+{
+}
+

@@ -185,7 +185,7 @@
 }
 
 .perm-userclassoperations {
-	margin-left: 55px;
+	margin-left: 10px;
 }
 
 .perm-userclassoperations ul {
@@ -194,7 +194,7 @@
 
 .perm-userclasssection, .perm-respermsection {
 	float: left;
-	width: 370px;
+	width: 305px;
 }
 
 .perm-userclasssection {
@@ -236,4 +236,38 @@
 #perm-deletedialog span {
 	float: left;
 	margin-right: 5px;
+}
+
+#perm-noclasses {
+	width: 200px;
+	padding: 5px;
+	margin: 10px auto;
+}
+
+#perm-noclasses span {
+	float: left;
+	margin-right: 10px;
+}
+
+.perm-permissionlist {
+	width: 225px;
+	list-style: none;
+}
+
+.perm-permissionlist li {
+	overflow: hidden;
+	margin: 3px;
+	padding: 3px;
+	border: 1px solid #B5B5B5;
+	cursor: pointer;
+	background-color: #EFEFEF;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.perm-permissionlist li:hover {
+	box-shadow: 0 0 3px #B5B5B5;
+	-moz-box-shadow: 0 0 3px #B5B5B5;
+	-webkit-box-shadow: 0 0 3px #B5B5B5;
 }

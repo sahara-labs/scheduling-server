@@ -85,7 +85,24 @@
 					<div class="perm-sectiontitle">User Class Permissions</div>
     				<div class="perm-userclasspermissions perm-userclasspanel">
     					#if ( $uc.getResourcePermissions() && $uc.getResourcePermissions().size() > 0 )
-        					 Number: $uc.getResourcePermissions.size()
+                            <ul class='perm-permissionlist'>
+        					#foreach ( $rp in $uc.getResourcePermissions() )
+                                <li id="perm-${rp.getId()}">
+                                    #if ( $rp.getDisplayName() )
+                                        $rp.getDisplayName()
+                                    #else
+                                        $rp.getType():
+                                        #if ( $rp.getType().equals("TYPE") && $rp.getRigType() )
+                                            $rp.getRigType().getName().replaceAll('_', ' ')
+                                        #elseif ( $rp.getType().equals("RIG") && $rp.getRig() )
+                                            $rp.getRig().getName().replaceAll('_', ' ')
+                                        #elseif ( $rp.getType().equals("CAPABILITY") && $rp.getRequestCapabilities() )
+                                            $rp.getRequestCapabilities().getCapabilities()
+                                        #end
+                                    #end
+                                </li>
+                            #end
+                            </ul>
     					#else
     						<div class="ui-state ui-state-highlight ui-corner-all">
     							<span class="ui-icon ui-icon-info"></span>
@@ -106,8 +123,9 @@
         #end
     </ul>
 	#else
-		<div class="ui-corner-all ui-state ui-state-error">
-			No user classes.
+		<div id="perm-noclasses" class="ui-corner-all ui-state ui-state-highlight">
+			<span class="ui-icon ui-icon-info"></span>
+            No user classes.
 		</div>
 	#end 
 </div>
@@ -142,5 +160,7 @@ $(document).ready(function() {
 	$("#perm-createclass").click(createClass);
 	$("#userclasslist .perm-editclass").click(editClass);
 	$("#userclasslist .perm-deleteclass").click(deleteClass);
+    
+    $(".perm-permissionlist li").click(loadPermission);
 });
 </script>
