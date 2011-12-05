@@ -104,7 +104,7 @@ function saveCreateClass()
 		
 		/* Save form. */
 		$.post(
-			"/userclasses/addClass",
+			"/permissions/addClass",
 			{
 				name: $("#newClassName").val(),
 				active: $("#newClassActive:checked").length == 1,
@@ -163,7 +163,7 @@ function editClass()
 	else
 	{
 		$.post(
-				"/userclasses/updateClass",
+				"/permissions/updateClass",
 				{
 					name: id,
 					active: $li.find(".isActive:checked").length == 1,
@@ -233,7 +233,7 @@ function deleteClass()
 				buttons: {
 					'Delete': function() {
 						$.post(
-							"/userclasses/deleteClass",
+							"/permissions/deleteClass",
 							{ name: id },
 							function (resp) {
 								if (typeof resp != "object")
@@ -290,24 +290,203 @@ function deleteClass()
 	}
 }
 
+function addPermission() 
+{
+	drawPermissionDialog("Add Permission", $(this).parents("li").attr("id"));
+}
+
 function loadPermission() 
 {
 	var pid = $(this).attr('id').substr("perm-".length);
 	
-	$("body").append(
-		"<div id='perm-permissiondialog' title='Permission: " + pid + "'>" +
-		
-		"</div>"
-	);
+	drawPermissionDialog("Permission: " + pid, $(this).parents("li").attr("id"));
 	
-	$("#perm-permissiondialog").dialog({
+	$("#permissiondialog form").append(
+		"<input type='hidden' id='permissionId' value='" + pid + "' />"
+	);
+}
+
+function drawPermissionDialog(title, userClass)
+{
+	var html =
+		"<div id='permissiondialog' title='"+ title+ "'>" +
+			"<form>" +
+							
+				"<div id='permissiondialog-left' class='perm-col'>" + 
+
+					"<div class='perm-header-break'><h3>Presentation</h3></div>" + 
+					"<div>" +
+						"<label for='permissionDisplayName'>Display name:</label>" +
+						"<input type='text' id='permissionDisplayName' />" +
+					"</div>" +
+				
+					/* Timeperiod. */
+					"<div class='perm-header-break'><h3>Time Period</h3></div>" + 
+					"<div class='timeline'>" +
+						"<label for='permissionStartTime'>Start:</label>" +
+						"<input type='text' id='permissionStartTime' class='periodcal validate[required]' />" +
+						"<a id='startcalopen' class='perm-button calopen ui-corner-all'>" +
+							"<img src='/img/daypicker.png' alt='Open' />" +
+						"</a>" +
+					"</div>" + 
+					"<div class='timeline'>" +
+						"<label for='permissionExpiryTime'>Expiry:</label>" +
+						"<input type='text' id='permissionExpiryTime' class='periodcal validate[required]' />" +
+						"<a id='expirycalopen' class='perm-button calopen ui-corner-all'>" +
+							"<img src='/img/daypicker.png' alt='Open' />" +
+						"</a>" +
+					"</div>" + 
+					
+					/* Resource. */
+					"<div class='perm-header-break'><h3>Resources</h3></div>" +
+					"<div>" + 
+						"<label for='permissionType'>Resource type:</label>" +
+						"<select id='permissionType' class=;'validate[required]'>" +
+							"<option value=''>&nbsp;</option>" +
+							"<option value='Rig Type'>Rig Type</option>" +
+							"<option value='Rig'>Rig</option>" +
+							"<option value='Capabilities'>Capabilities</option>" +
+						"</select>" +
+					"</div>" +
+					"<div>" + 
+						"<label for='permissionResource'>Resource:</label>" +
+						"<select id='permissionResource' class=;'validate[required]'>" +
+							"<option value=''>&nbsp;</option>" +
+						"</select>" +
+					"</div>" +
+					
+				"</div>" +
+				"<div id='permissiondialog-right' class='perm-col'>" + 
+				
+					/* Reservation. */
+					"<div class='perm-header-break'><h3>Reservations</h3></div>" + 
+					"<div>" +
+						"<label for='permissionMaximumBookings'>Maximum concurrent reservations:</label>" +
+						"<input type='text' id='permissionMaximumBookings' value='3' class='validate[required,custom[integer],min[0]]' />" +
+					"</div>" +
+				
+					/* Session timing. */
+					"<div class='perm-header-break'><h3>Session Timings</h3></div>" + 
+					"<div>" +
+						"<label for='permissionSessionDuration'>Session duration:</label>" +
+						"<input type='text' id='permissionSessionDuration' value='1800' class='validate[required,custom[integer],min[0]]' />" +
+					"</div>" +
+					"<div>" +
+						"<label for='permissionAllowedExtensions'>Allowed extensions:</label>" +
+						"<input type='text' id='permissionAllowedExtensions' value='2' class='validate[required,custom[integer],min[0]]' />" +
+					"</div>" +
+					"<div>" +
+						"<label for='permissionExtensionDuration'>Extension duration:</label>" +
+						"<input type='text' id='permissionExtensionDuration' value='900' class='validate[required,custom[integer],min[0]]' />" +
+					"</div>" +
+					
+					
+					/* Timeouts. */
+					"<div class='perm-header-break'><h3>Timeouts</h3></div>" + 
+					"<div>" +
+						"<label for='permissionQueueActivityTimeout'>Queue timeout:</label>" +
+						"<input type='text' id='permissionQueueActivityTimeout' value='180' class='validate[required,custom[integer],min[0]]' />" +
+					"</div>" +
+					"<div>" +
+						"<label for='permissionUseActivityDetection'>Use no activity timeout:</label>" +
+						"<input type='checkbox' id='permissionUseActivityDetection' checked='checked' />" +
+					"</div>" +
+					"<div>" +
+						"<label for='permissionSessionDetectionTimeout'>No Activity timeout:</label>" +
+						"<input type='text' id='permissionSessionDetectionTimeout' value='600' class='validate[required,custom[integer],min[0]]' />" +
+					"</div>" +
+					
+				"</div>" +
+				"<div style='clear:both'></div>" +
+				
+				"<input type='hidden' id='permissionClass' value='" + userClass + "' />" +
+				
+			"</form>" + 
+		"</div>";
+	
+	$("body").append(html);
+
+	$("#permissiondialog").dialog({
 		modal: true,
-		width: 400,
-		resizable: false
+		width: 715,
+		resizable: false,
+		buttons: {
+			'Save': savePermission,
+			'Close': function() { $(this).dialog("close"); }
+		},
+		close: function() {
+			$(this).children("form").validationEngine("hideAll");
+			$(this).dialog("destroy").remove();
+		}
+		
+	})
+	.children("form").validationEngine();
+	
+	$(".periodcal").datetimepicker({
+		dateFormat: "dd/mm/yy",
+		showOn: "focus"
+	});
+	
+	$("#startcalopen, #expirycalopen").click(function() {
+		$(this).datetimepicker("show");
+	});	
+	
+	$("#permissionType").change(function(val) {
+		loadResources($(this).val());
 	});
 }
 
-function drawPermissionDialog(id)
-{
+function savePermission() {
+	
+	if (!$("#permissiondialog form").validationEngine("validate"))
+	{
+		/* Failed validation. */
+		return;
+	}
+	
+	var params = { };
+	$('#permissiondialog input:not([type="checkbox"]), #permissiondialog select').each(function(i, e) {
+		params[$(e).attr("id").substr(10)] = $(e).val();
+	});
+	params['UseActivityDectection'] = $("#permissionUseActivityDetection:checked").length === 1;
+	
+	if ($("#permissionId").length == 0)
+	{
+		/* Adding new permission. */
+		target = "addPermission";
+	}
+	else
+	{
+		/* Saving existing permission. */
+		target = "savePermission";
+	}
+	
+	$.post(
+		"/permissions/" + target,
+		params,
+		function(resp) {
+			alert(resp);
+		}
+	);
 }
 
+function loadResources(type)
+{
+	var mtype = type.split(' ').join('').toUpperCase();
+	
+	$.post(
+		"/permissions/loadResources",
+		{ "type": mtype },
+		function (ret) {
+			var html = ""; 
+			
+			for (i in ret)
+			{
+				html += "<option value='" + ret[i] + "'>" + ret[i] + "</option>";
+			}
+			
+			$("#permissionResource").empty().append(html)
+				.prev().empty().append(type + ":");
+		}
+	);
+}

@@ -58,12 +58,12 @@ public class PermissionsPage extends AbstractPermissionsPage
     @Override
     protected String getPageType()
     {
-        return "Permissions";
+        return "Keys";
     }
 
     public static HostedPage getHostedPage()
     {
-        return new HostedPage("Permissions", PermissionsPage.class, "perm", 
+        return new HostedPage("Keys", PermissionsPage.class, "perm", 
                 "Allows permissions to be created, read, updated and deleted.", true, true);
     }
 }

@@ -82,7 +82,7 @@
 				</div>
 				
 				<div class="perm-respermsection">
-					<div class="perm-sectiontitle">User Class Permissions</div>
+					<div class="perm-sectiontitle">Permissions</div>
     				<div class="perm-userclasspermissions perm-userclasspanel">
     					#if ( $uc.getResourcePermissions() && $uc.getResourcePermissions().size() > 0 )
                             <ul class='perm-permissionlist'>
@@ -160,7 +160,7 @@ $(document).ready(function() {
 	$("#perm-createclass").click(createClass);
 	$("#userclasslist .perm-editclass").click(editClass);
 	$("#userclasslist .perm-deleteclass").click(deleteClass);
-    
-    $(".perm-permissionlist li").click(loadPermission);
+	$("#userclasslist .perm-addresperm").click(addPermission);
+    $("#userclasslist .perm-permissionlist li").click(loadPermission);
 });
 </script>

@@ -40,14 +40,21 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
@@ -57,6 +64,13 @@ import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
  */
 public class UserClassesPage extends AbstractPermissionsPage
 {
+    public UserClassesPage()
+    {
+        super();
+        
+        this.headJs.add("/js/jquery-ui-timepicker-addon.js");
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public void setupView(HttpServletRequest req)
@@ -223,17 +237,63 @@ public class UserClassesPage extends AbstractPermissionsPage
         response.put("wasSuccessful", true);
         return response;
     }
+    
+    public JSONArray loadResources(HttpServletRequest request)
+    {
+        JSONArray list = new JSONArray();
+        
+        if ("RIG".equals(request.getParameter("type")))
+        {
+            for (Rig rig : new RigDao(this.db).list())
+            {
+                list.put(rig.getName());
+            }
+        }
+        else if ("RIGTYPE".equals(request.getParameter("type")))
+        {
+            for (RigType rigType : new RigTypeDao(this.db).list())
+            {
+                list.put(rigType.getName());
+            }
+        }
+        else if ("CAPABILITY".equals(request.getParameter("type")))
+        {
+            for (RequestCapabilities caps : new RequestCapabilitiesDao(this.db).list())
+            {
+                list.put(caps.getCapabilities());
+            }
+        }
+        
+        return list;
+    }
+    
+    public JSONObject addPermission(HttpServletRequest request)
+    {
+        JSONObject obj = new JSONObject();
+        
+        // TODO save permission
+        
+        return obj;
+    }
 
+    public JSONObject getPermission(HttpServletRequest request)
+    {
+        JSONObject obj = new JSONObject();
+        
+        // TODO Get permission
+        
+        return obj;
+    }
 
     @Override
     protected String getPageType()
     {
-        return "User Classes";
+        return "Permissions";
     }
 
     public static HostedPage getHostedPage()
     {
-        return new HostedPage("User Classes", UserClassesPage.class, "perm-groups", 
+        return new HostedPage("Permissions", UserClassesPage.class, "perm-groups", 
                 "Allows user classes (groupings of users) to be created, read, updated and deleted.", true, true);
     }
 }
