@@ -81,12 +81,13 @@
     				</div>
 				</div>
 				
+                ## Resource permission section
 				<div class="perm-respermsection">
 					<div class="perm-sectiontitle">Permissions</div>
     				<div class="perm-userclasspermissions perm-userclasspanel">
-    					#if ( $uc.getResourcePermissions() && $uc.getResourcePermissions().size() > 0 )
+    					#if ( $resourcePermissions.get($uc.getId()).size() > 0 )
                             <ul class='perm-permissionlist'>
-        					#foreach ( $rp in $uc.getResourcePermissions() )
+        					#foreach ( $rp in $resourcePermissions.get($uc.getId()) )
                                 <li id="perm-${rp.getId()}">
                                     #if ( $rp.getDisplayName() )
                                         $rp.getDisplayName()
@@ -117,6 +118,26 @@
 						</a>
     				</div>
 				</div>
+                
+                ## Users section
+                <div class="perm-userssection">
+					<div class="perm-sectiontitle">Users</div>
+    				<div class="perm-userclasspanel">
+                        <a class="perm-adduser perm-button">
+							<img src="/img/perm-add.png" alt="Add" /><br />
+							Add
+						</a>
+                        <a class="perm-deleteuser perm-button">
+							<img src="/img/perm-delete.png" alt="Add" /><br />
+							Delete
+						</a>
+                        <a class="perm-deleteallusers perm-button">
+							<img src="/img/perm-add.png" alt="Add" /><br />
+							Delete All
+						</a>
+                    </div>
+                </div>
+                
 				<div style="clear:both"></div>
 			</div>
         </li>

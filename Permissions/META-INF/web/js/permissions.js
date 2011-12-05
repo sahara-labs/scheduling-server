@@ -304,6 +304,40 @@ function loadPermission()
 	$("#permissiondialog form").append(
 		"<input type='hidden' id='permissionId' value='" + pid + "' />"
 	);
+	
+	$.post(
+		"/permissions/getPermission",
+		{ id: pid },
+		function (resp) {
+			var i;
+			
+			loadResources(resp.Type, resp.Resource);
+			for (i in resp)
+			{
+				if (i == "UseActivityDectection")
+				{
+					if (resp[i])
+					{
+						$("#permissionUseActivityDetection").attr("checked", "checked");
+					}
+					else
+					{
+						$("#permissionUseActivityDetection").removeAttr("checked");
+					}
+				}
+				else if (i == "Resource")
+				{
+					/* Do nothing. */
+				}
+				else
+				{
+					$("#permission" + i).val(resp[i]);
+				}
+			}
+		}
+	);
+	
+	
 }
 
 function drawPermissionDialog(title, userClass)
@@ -465,12 +499,40 @@ function savePermission() {
 		"/permissions/" + target,
 		params,
 		function(resp) {
-			alert(resp);
+			if (typeof resp != "object")
+			{
+				window.location.reload();
+				return;
+			}
+			
+			if (resp.success)
+			{
+				var clazz = $("#permissionClass").val(),
+						permList = $("#" + clazz + " .perm-permissionlist"), html = "",
+						name = $("#permissionDisplayName").val();
+				
+				if (permList.length == 0)
+				{
+					/* Add permission list. */
+					$("#" + clazz + " .perm-userclasspermissions").empty().append(
+						"<ul class='perm-permissionlist'></ul>"
+					);
+					
+					permList = $("#" + clazz + " .perm-permissionlist");
+				}
+			
+				permList.append(
+						"<li id='perm-" + resp.id + "'>" + (name == "" ? $("#permissionType").val() + ": " +
+						$("#permissionResource").val().split(" ").join(" ") : name) + "</li>");
+				$("#perm-" + resp.id).click(loadPermission);
+			}
+			
+			$("#permissiondialog").dialog("close");
 		}
 	);
 }
 
-function loadResources(type)
+function loadResources(type, valset)
 {
 	var mtype = type.split(' ').join('').toUpperCase();
 	
@@ -487,6 +549,11 @@ function loadResources(type)
 			
 			$("#permissionResource").empty().append(html)
 				.prev().empty().append(type + ":");
+			
+			if (valset)
+			{
+				$("#permissionResource").val(valset);
+			}
 		}
 	);
 }

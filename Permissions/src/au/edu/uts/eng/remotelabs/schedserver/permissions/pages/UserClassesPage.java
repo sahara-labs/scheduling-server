@@ -36,7 +36,12 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,11 +53,13 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -82,7 +89,23 @@ public class UserClassesPage extends AbstractPermissionsPage
                 .list();
         
         
+        Map<Long, List<ResourcePermission>> resourcePermissions = 
+                new HashMap<Long, List<ResourcePermission>>(userClasses.size());
+        for (UserClass uc : userClasses)
+        {
+            resourcePermissions.put(uc.getId(), this.db.createCriteria(ResourcePermission.class)
+                    .add(Restrictions.eq("userClass", uc))
+                    .addOrder(Order.asc("displayName"))
+                    .addOrder(Order.desc("type"))
+                    .addOrder(Order.desc("rigType"))
+                    .addOrder(Order.desc("rig"))
+                    .addOrder(Order.desc("requestCapabilities"))
+                    .addOrder(Order.asc("startTime"))
+                    .list());
+        }
+        
         this.context.put("userClasses", userClasses);
+        this.context.put("resourcePermissions", resourcePermissions);
     }
     
     
@@ -267,20 +290,141 @@ public class UserClassesPage extends AbstractPermissionsPage
         return list;
     }
     
-    public JSONObject addPermission(HttpServletRequest request)
+    public JSONObject addPermission(HttpServletRequest request) throws JSONException, ParseException
     {
         JSONObject obj = new JSONObject();
+        obj.put("success", false);
+
+        UserClass uClass = new UserClassDao(this.db).findByName(request.getParameter("Class"));
+        if (uClass == null)
+        {
+            this.logger.warn("Unable to create resource permission because the user class with name '" + 
+                    request.getParameter("Class") + "' was not found.");
+            return obj;
+        }
         
-        // TODO save permission
+        ResourcePermission perm = new ResourcePermission();
+        perm.setUserClass(uClass);
         
+        perm.setSessionActivityTimeout(Integer.parseInt(request.getParameter("SessionDetectionTimeout")));
+        perm.setSessionDuration(Integer.parseInt(request.getParameter("SessionDuration")));
+        perm.setMaximumBookings(Integer.parseInt(request.getParameter("MaximumBookings")));
+        perm.setExtensionDuration(Integer.parseInt(request.getParameter("ExtensionDuration")));
+        perm.setAllowedExtensions((short)Integer.parseInt(request.getParameter("AllowedExtensions")));
+        perm.setQueueActivityTimeout(Integer.parseInt(request.getParameter("QueueActivityTimeout")));
+        perm.setActivityDetected("true".equals(request.getParameter("UseActivityDectection")));
+        
+        if (!"".equals(request.getParameter("DisplayName")))
+        {
+            perm.setDisplayName(request.getParameter("DisplayName"));
+        }
+        
+        if ("Rig".equals(request.getParameter("Type")))
+        {
+            perm.setType(ResourcePermission.RIG_PERMISSION);
+            
+            Rig rig = new RigDao(this.db).findByName(request.getParameter("Resource"));
+            if (rig == null)
+            {
+                this.logger.warn("Unable to create a rig resource permission because the rig with name '" +
+                        request.getParameter("Resource") + "' was not found.");
+                return obj;
+            }
+            perm.setRig(rig);
+        }
+        else if ("Rig Type".equals(request.getParameter("Type")))
+        {
+            perm.setType(ResourcePermission.TYPE_PERMISSION);
+            
+            RigType rigType = new RigTypeDao(this.db).findByName(request.getParameter("Resource"));
+            if (rigType == null)
+            {
+                this.logger.warn("Unable to create a rig type resource permission because the rig type with name '" +
+                        request.getParameter("Resource") + "' was not found.");
+                return obj;
+            }
+            perm.setRigType(rigType);
+        }
+        else if ("Capability".equals(request.getParameter("Type")))
+        {
+            perm.setType(ResourcePermission.CAPS_PERMISSION);
+            
+            RequestCapabilities caps = new RequestCapabilitiesDao(this.db).findCapabilites(request.getParameter("Resource"));
+            if (caps == null)
+            {
+                this.logger.warn("Unable to create a request capabilities resource permission because the " +
+                		"capabilities '" + request.getParameter("Resource") + "' was not found.");
+                return obj;
+            }
+            perm.setRequestCapabilities(caps);
+        }
+        else
+        {
+            this.logger.warn("Unable to create a resource permission because the permission type of '" + 
+                    request.getParameter("Type") + "' is not one of 'RIG', 'RIGTYPE' or 'CAPABILITY'.");
+            return obj;
+        }
+        
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        perm.setStartTime(formatter.parse(request.getParameter("StartTime")));
+        perm.setExpiryTime(formatter.parse(request.getParameter("ExpiryTime")));
+        
+        if (perm.getExpiryTime().before(perm.getStartTime()))
+        {
+            this.logger.warn("Unable to create a resource permission because the start time is after the " +
+            		"expiry time.");
+            return obj;
+        }
+        
+        this.db.beginTransaction();
+        this.db.persist(perm);
+        this.db.getTransaction().commit();
+        
+        this.logger.info("Adding new resource permission (id=" + perm.getId() + ") for user class '" + 
+                uClass.getName() + "'.");
+        
+        obj.put("success", true);
+        obj.put("id", perm.getId());
         return obj;
     }
 
-    public JSONObject getPermission(HttpServletRequest request)
+    public JSONObject getPermission(HttpServletRequest request) throws JSONException
     {
         JSONObject obj = new JSONObject();
         
-        // TODO Get permission
+        ResourcePermission perm = new ResourcePermissionDao(this.db).get(Long.parseLong(request.getParameter("id")));
+        if (perm != null)
+        {
+            obj.put("DisplayName", perm.getDisplayName());
+            
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            obj.put("StartTime", formatter.format(perm.getStartTime()));
+            obj.put("ExpiryTime", formatter.format(perm.getExpiryTime()));
+            
+            obj.put("MaximumBookings", perm.getMaximumBookings());
+            obj.put("SessionDuration", perm.getSessionDuration());
+            obj.put("AllowedExtensions", perm.getAllowedExtensions());
+            obj.put("ExtensionDuration", perm.getExtensionDuration());
+            obj.put("SessionDetectionTimeout", perm.getSessionActivityTimeout());
+            obj.put("QueueActivityTimeout", perm.getQueueActivityTimeout());
+            obj.put("UseActivityDectection", perm.isActivityDetected());
+        
+            if (ResourcePermission.RIG_PERMISSION.equals(perm.getType()))
+            {
+                obj.put("Type", "Rig");
+                obj.put("Resource", perm.getRig().getName());
+            }
+            else if (ResourcePermission.TYPE_PERMISSION.equals(perm.getType()))
+            {
+                obj.put("Type", "Rig Type");
+                obj.put("Resource", perm.getRigType().getName());
+            }
+            else if (ResourcePermission.CAPS_PERMISSION.equals(perm.getType()))
+            {
+                obj.put("Type", "Capabilities");
+                obj.put("Resource", perm.getRequestCapabilities().getCapabilities());
+            }
+        }
         
         return obj;
     }
