@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -131,6 +132,17 @@ public class GenericDao<T>
         T t = (T) this.session.get(this.clazz, id);
         this.commit();
         return t;
+    }
+    
+    /**
+     * Returns a list of all the entities stored in this entity type.
+     * 
+     * @return list of entities
+     */
+    @SuppressWarnings("unchecked")
+    public List<T> list()
+    {
+        return this.session.createCriteria(this.clazz).list();
     }
     
     /**
