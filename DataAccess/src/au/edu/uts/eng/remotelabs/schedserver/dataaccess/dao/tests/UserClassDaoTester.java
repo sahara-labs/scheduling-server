@@ -206,4 +206,56 @@ public class UserClassDaoTester extends TestCase
         ses.delete(ty);
         ses.getTransaction().commit();
     }
+    
+    public void testDeleteUserAssociations()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        
+        User us = new User("user", "userns", "ADMIN");
+        ses.save(us);
+        User us2 = new User("user2", "userns", "ADMIN");
+        ses.save(us2);
+        User us3 = new User("user3", "userns", "ADMIN");
+        ses.save(us3);
+        
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short) 10);
+        uc.setActive(true);
+        uc.setKickable(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(true);
+        ses.save(uc);
+        
+        UserAssociationId id = new UserAssociationId(us.getId(), uc.getId());
+        UserAssociation assoc = new UserAssociation(id, uc, us);
+        ses.save(assoc);
+        
+        UserAssociationId id2 = new UserAssociationId(us2.getId(), uc.getId());
+        UserAssociation assoc2 = new UserAssociation(id2, uc, us2);
+        ses.save(assoc2);
+        
+        UserAssociationId id3 = new UserAssociationId(us3.getId(), uc.getId());
+        UserAssociation assoc3 = new UserAssociation(id3, uc, us3);
+        ses.save(assoc3);
+        
+        ses.getTransaction().commit();
+        
+        this.dao.getSession().refresh(uc);
+        assertEquals(uc.getUserAssociations().size(), 3);
+        
+        this.dao.deleteUserAssociations(uc);
+        
+        this.dao.getSession().refresh(uc);
+        assertEquals(uc.getUserAssociations().size(), 0);
+        
+        ses.beginTransaction();
+        ses.delete(us);
+        ses.delete(us2);
+        ses.delete(us3);
+        ses.delete(uc);
+        ses.getTransaction().commit();
+    }
 }

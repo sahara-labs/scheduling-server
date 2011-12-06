@@ -88,24 +88,7 @@ public class UserClassDao extends GenericDao<UserClass>
     {
         
         /* Delete all the user associations. */
-        int num = (Integer) this.session.createCriteria(UserAssociation.class)
-                .add(Restrictions.eq("userClass", uc))
-                .setProjection(Projections.count("user"))
-                .uniqueResult();
-        if (num > 0)
-        {
-            /* Delete all user associations. */
-            this.logger.debug("To delete user class '" + uc.getName() + "', " + num + " user associations have to" +
-            		" removed.");
-            this.session.beginTransaction();
-            int numDeleted = this.session.createQuery("delete UserAssociation ua where ua.userClass = :userclass")
-                    .setEntity("userclass", uc)
-                    .executeUpdate();
-            
-            this.logger.info("Deleted " + numDeleted + " user associations when deleting user class '" + 
-                    uc.getName() + "'.");
-            this.session.getTransaction().commit();
-        }
+        this.deleteUserAssociations(uc);
         
         /* Delete all associated resource permissions. */
         if (uc.getResourcePermissions().size() > 0)
@@ -131,5 +114,32 @@ public class UserClassDao extends GenericDao<UserClass>
         }
         
         super.delete(uc);
+    }
+
+    /**
+     * Deletes all the user associations that contain the specified user class.
+     * 
+     * @param uc user class whose associations to delete
+     */
+    public void deleteUserAssociations(UserClass uc)
+    {
+        int num = (Integer) this.session.createCriteria(UserAssociation.class)
+                .add(Restrictions.eq("userClass", uc))
+                .setProjection(Projections.count("user"))
+                .uniqueResult();
+        if (num > 0)
+        {
+            /* Delete all user associations. */
+            this.logger.debug("To delete user class '" + uc.getName() + "', " + num + " user associations have to" +
+            		" removed.");
+            this.session.beginTransaction();
+            int numDeleted = this.session.createQuery("delete UserAssociation ua where ua.userClass = :userclass")
+                    .setEntity("userclass", uc)
+                    .executeUpdate();
+            
+            this.logger.info("Deleted " + numDeleted + " user associations when deleting user class '" + 
+                    uc.getName() + "'.");
+            this.session.getTransaction().commit();
+        }
     }
 }
