@@ -124,15 +124,19 @@
 					<div class="perm-sectiontitle">Users</div>
     				<div class="perm-userclasspanel">
                         <a class="perm-adduser perm-button">
-							<img src="/img/perm-add.png" alt="Add" /><br />
+							<img src="/img/perm-adduser.png" alt="Add" /><br />
 							Add
 						</a>
+						<a class="perm-listusers perm-button">
+							<img src="/img/perm-listusers.png" alt="List" /><br />
+							List
+						</a>
                         <a class="perm-deleteuser perm-button">
-							<img src="/img/perm-delete.png" alt="Add" /><br />
+							<img src="/img/perm-deleteuser.png" alt="Del" /><br />
 							Delete
 						</a>
                         <a class="perm-deleteallusers perm-button">
-							<img src="/img/perm-add.png" alt="Add" /><br />
+							<img src="/img/perm-delete.png" alt="Del" /><br />
 							Delete All
 						</a>
                     </div>

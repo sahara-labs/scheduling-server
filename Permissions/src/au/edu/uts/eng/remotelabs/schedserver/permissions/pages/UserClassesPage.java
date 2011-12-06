@@ -201,6 +201,13 @@ public class UserClassesPage extends AbstractPermissionsPage
         return response;
     }
     
+    /**
+     * Deletes a user class.
+     * 
+     * @param req request
+     * @return response
+     * @throws JSONException
+     */
     public JSONObject deleteClass(HttpServletRequest req) throws JSONException
     {
         JSONObject response = new JSONObject();
@@ -261,6 +268,12 @@ public class UserClassesPage extends AbstractPermissionsPage
         return response;
     }
     
+    /**
+     * Loads a list of resources for a specified resource type.
+     * 
+     * @param request
+     * @return response
+     */
     public JSONArray loadResources(HttpServletRequest request)
     {
         JSONArray list = new JSONArray();
@@ -290,6 +303,14 @@ public class UserClassesPage extends AbstractPermissionsPage
         return list;
     }
     
+    /**
+     * Adds a new permission.
+     * 
+     * @param request
+     * @return response
+     * @throws JSONException
+     * @throws ParseException
+     */
     public JSONObject addPermission(HttpServletRequest request) throws JSONException, ParseException
     {
         JSONObject obj = new JSONObject();
@@ -387,7 +408,164 @@ public class UserClassesPage extends AbstractPermissionsPage
         obj.put("id", perm.getId());
         return obj;
     }
+    
+    /**
+     * Updates an existing permission.
+     * 
+     * @param request
+     * @return response
+     * @throws JSONException
+     * @throws ParseException
+     */
+    public JSONObject savePermission(HttpServletRequest request) throws JSONException, ParseException
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+         
+        ResourcePermission perm = new ResourcePermissionDao(this.db).get(Long.parseLong(request.getParameter("Id")));
+        if (perm == null)
+        {
+            this.logger.warn("Unable to update a resource permission because the permission with identifier '" +
+                    request.getParameter("Id") + "' was not found.");
+            return obj;
+        }
+        
+        perm.setSessionActivityTimeout(Integer.parseInt(request.getParameter("SessionDetectionTimeout")));
+        perm.setSessionDuration(Integer.parseInt(request.getParameter("SessionDuration")));
+        perm.setMaximumBookings(Integer.parseInt(request.getParameter("MaximumBookings")));
+        perm.setExtensionDuration(Integer.parseInt(request.getParameter("ExtensionDuration")));
+        perm.setAllowedExtensions((short)Integer.parseInt(request.getParameter("AllowedExtensions")));
+        perm.setQueueActivityTimeout(Integer.parseInt(request.getParameter("QueueActivityTimeout")));
+        perm.setActivityDetected("true".equals(request.getParameter("UseActivityDectection")));
+        
+        if ("".equals(request.getParameter("DisplayName")))
+        {
+            perm.setDisplayName(null);
+        }
+        else
+        {
+            perm.setDisplayName(request.getParameter("DisplayName"));
+        }
+        
+        if ("Rig".equals(request.getParameter("Type")))
+        {
+            perm.setType(ResourcePermission.RIG_PERMISSION);
+            
+            Rig rig = new RigDao(this.db).findByName(request.getParameter("Resource"));
+            if (rig == null)
+            {
+                this.logger.warn("Unable to update a rig resource permission because the rig with name '" +
+                        request.getParameter("Resource") + "' was not found.");
+                return obj;
+            }
+            perm.setRig(rig);
+        }
+        else if ("Rig Type".equals(request.getParameter("Type")))
+        {
+            perm.setType(ResourcePermission.TYPE_PERMISSION);
+            
+            RigType rigType = new RigTypeDao(this.db).findByName(request.getParameter("Resource"));
+            if (rigType == null)
+            {
+                this.logger.warn("Unable to update a rig type resource permission because the rig type with name '" +
+                        request.getParameter("Resource") + "' was not found.");
+                return obj;
+            }
+            perm.setRigType(rigType);
+        }
+        else if ("Capability".equals(request.getParameter("Type")))
+        {
+            perm.setType(ResourcePermission.CAPS_PERMISSION);
+            
+            RequestCapabilities caps = new RequestCapabilitiesDao(this.db).findCapabilites(request.getParameter("Resource"));
+            if (caps == null)
+            {
+                this.logger.warn("Unable to update a request capabilities resource permission because the " +
+                        "capabilities '" + request.getParameter("Resource") + "' was not found.");
+                return obj;
+            }
+            perm.setRequestCapabilities(caps);
+        }
+        else
+        {
+            this.logger.warn("Unable to update a resource permission because the permission type of '" + 
+                    request.getParameter("Type") + "' is not one of 'RIG', 'RIGTYPE' or 'CAPABILITY'.");
+            return obj;
+        }
+        
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        perm.setStartTime(formatter.parse(request.getParameter("StartTime")));
+        perm.setExpiryTime(formatter.parse(request.getParameter("ExpiryTime")));
+        
+        if (perm.getExpiryTime().before(perm.getStartTime()))
+        {
+            this.logger.warn("Unable to update a resource permission because the start time is after the " +
+                    "expiry time.");
+            return obj;
+        }
+        
+        this.db.beginTransaction();
+        this.db.flush();
+        this.db.getTransaction().commit();
+        
+        this.logger.info("Updaing resource permission (id=" + perm.getId() + ")."); 
+        
+        obj.put("success", true);
+        obj.put("id", perm.getId());
+        return obj;
+    }
+    
+    /**
+     * Deletes a permission.
+     * 
+     * @param request
+     * @return response
+     * @throws JSONException
+     */
+    public JSONObject deletePermission(HttpServletRequest request) throws JSONException
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+        ResourcePermissionDao dao = new ResourcePermissionDao(this.db);
+        
+        ResourcePermission perm = dao.get(Long.parseLong(request.getParameter("pid")));
+        if (perm == null)
+        {
+            this.logger.warn("Unable to delete resource permission with identifier '" + request.getParameter("pid") + 
+                    "' because the permission was not found.");
+            obj.put("reason", "Permission not found");
+            return obj;
+        }
+        
+        int num = (Integer) this.db.createCriteria(Session.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.eq("resourcePermission", perm))
+                .setProjection(Projections.rowCount())
+                .uniqueResult();
+        if (num > 0)
+        {
+            this.logger.warn("Unable to delete resource permission '" + perm.getId() + "' because a session from this " +
+                    "permission is active.");
+            obj.put("reason", "A session from this class is in progress.");
+            return obj;
+        }
+        
+        dao.delete(perm);
+        this.logger.info("Resource permission '" + perm.getId() + "' has been deleted.");
+        
+        obj.put("success", true);
+        return obj;
+    }
 
+    /**
+     * Gets a permissions details.
+     * 
+     * @param request
+     * @return response
+     * @throws JSONException
+     */
     public JSONObject getPermission(HttpServletRequest request) throws JSONException
     {
         JSONObject obj = new JSONObject();

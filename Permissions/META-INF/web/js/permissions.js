@@ -299,7 +299,7 @@ function loadPermission()
 {
 	var pid = $(this).attr('id').substr("perm-".length);
 	
-	drawPermissionDialog("Permission: " + pid, $(this).parents("li").attr("id"));
+	drawPermissionDialog("Edit Permission: " + pid, $(this).parents("li").attr("id"));
 	
 	$("#permissiondialog form").append(
 		"<input type='hidden' id='permissionId' value='" + pid + "' />"
@@ -337,7 +337,11 @@ function loadPermission()
 		}
 	);
 	
-	
+	$("#permissiondialog").dialog("option", "buttons", {
+		'Save': savePermission,
+		'Delete': deletePermission,
+		'Close': function() { $(this).dialog("close"); }
+	});
 }
 
 function drawPermissionDialog(title, userClass)
@@ -478,7 +482,8 @@ function savePermission() {
 		return;
 	}
 	
-	var params = { };
+	var params = { }, isUpdate = false;
+	
 	$('#permissiondialog input:not([type="checkbox"]), #permissiondialog select').each(function(i, e) {
 		params[$(e).attr("id").substr(10)] = $(e).val();
 	});
@@ -493,6 +498,7 @@ function savePermission() {
 	{
 		/* Saving existing permission. */
 		target = "savePermission";
+		isUpdate = true;
 	}
 	
 	$.post(
@@ -505,11 +511,18 @@ function savePermission() {
 				return;
 			}
 			
-			if (resp.success)
+			var name = $("#permissionDisplayName").val();
+			if (resp.success && isUpdate)
+			{
+				$("#perm-" + $("#permissionId").val()).empty().append(
+						 (name == "" ? $("#permissionType").val() + ": " +
+									$("#permissionResource").val().split(" ").join(" ") : name)
+				);
+			}
+			else if (resp.success)
 			{
 				var clazz = $("#permissionClass").val(),
-						permList = $("#" + clazz + " .perm-permissionlist"), html = "",
-						name = $("#permissionDisplayName").val();
+						permList = $("#" + clazz + " .perm-permissionlist"), html = "";
 				
 				if (permList.length == 0)
 				{
@@ -530,6 +543,56 @@ function savePermission() {
 			$("#permissiondialog").dialog("close");
 		}
 	);
+}
+
+function deletePermission()
+{
+	$("#permissiondialog").prepend(
+		"<div id='permissionoverlay'></div>" +
+		"<div id='permissionconfirm'>" +
+			"Are you sure you want to delete this permission?" +
+			"<div>" +
+				"<button id='permissionconfirmcancel'>Cancel</button>" +
+				"<button id='permissionconfirmdelete'>Delete</button>" +
+			"</div>" +
+		"</div>"
+	);
+	
+	$("#permissionconfirmdelete, #permissionconfirmcancel").button();
+	
+	$("#permissionconfirmcancel").click(function() {
+		$("#permissionoverlay, #permissionconfirm").remove();
+	});
+	
+	$("#permissionconfirmdelete").click(function() {
+		$.post(
+			"/permissions/deletePermission",
+			{ "pid": $("#permissionId").val() },
+			function(resp) {
+				if (resp.success)
+				{
+					var $li = $("#perm-" + $("#permissionId").val()), $ul = $li.parent();
+					$li.remove();
+					
+					if ($ul.children().length == 0)
+					{
+						var $dv = $ul.parent();
+						$ul.remove();
+						
+						$dv.append(
+							'<div class="ui-state ui-state-highlight ui-corner-all">' +
+    							'<span class="ui-icon ui-icon-info"></span>' +
+    							'No permissions.' +
+    						'</div>'
+						);
+					}
+					
+					$("#permissiondialog").dialog("close");
+				}
+				
+			}
+		);
+	});
 }
 
 function loadResources(type, valset)
