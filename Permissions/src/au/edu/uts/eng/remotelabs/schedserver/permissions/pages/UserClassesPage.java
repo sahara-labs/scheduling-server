@@ -63,6 +63,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
@@ -629,16 +630,16 @@ public class UserClassesPage extends AbstractPermissionsPage
      * @throws JSONException
      */
     @SuppressWarnings("unchecked")
-    public JSONArray getUsersList(HttpServletRequest request) throws JSONException
+    public JSONObject getUsersList(HttpServletRequest request) throws JSONException
     {
-        JSONArray arr = new JSONArray();
+        JSONObject obj = new JSONObject();
         
         UserClass uc = new UserClassDao(this.db).findByName(request.getParameter("name"));
         if (uc == null)
         {
             this.logger.warn("Unable to provide users list for user class because the class with name '" + 
                     request.getParameter("name") + "' was not found.");
-            return arr;
+            return obj;
         }
         
         for (UserAssociation ua : (List<UserAssociation>)this.db.createCriteria(UserAssociation.class)
@@ -646,10 +647,19 @@ public class UserClassesPage extends AbstractPermissionsPage
                 .addOrder(Order.asc("user"))
                 .list())
         {
-            arr.put(ua.getUser().getName());
+            User u = ua.getUser();
+            
+            if (u.getFirstName() == null || u.getLastName() == null)
+            {
+                obj.put(u.getName(), u.getName());
+            }
+            else
+            {
+                obj.put(u.getName(), u.getLastName() + ", " + u.getFirstName());
+            }
         }
         
-        return arr;
+        return obj;
     }
     
     /**

@@ -671,9 +671,14 @@ function addUserToClass()
 }
 
 var usersList = [];
+var oldSearch = "";
 function deleteUserInClass()
 {
 	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+	
+	/* Clear any old invocations. */
+	usersList = [];
+	oldSearch = "";
 
 	$("body").append(
 			"<div id='perm-deleteusersdialog' title='Remove from Group: " + id.split("_").join(" ") + "'>" +
@@ -715,19 +720,23 @@ function deleteUserInClass()
 				return;
 			}
 			
+			resp.sort();
 			usersList = resp;
 			
-			var i = -1, html = "", len = Math.ceil(resp.length / 4);
+			var i = -1, c = 0, html = "", len = Math.ceil(resp.length / 4), nid;
 			for (i in resp)
 			{
-				if (i > 0 && i % len == 0) html += "</ul></div>";
-				if (i % len == 0) html += "<div class='perm-userscol'><ul>";
+				if (c > 0 && c % len == 0) html += "</ul></div>";
+				if (c % len == 0) html += "<div class='perm-userscol'><ul>";
 				
+				nid = "user-" + i.split(" ").join("").split(",").join("").split(".").join("");
 				html +=
 					"<li>" +
-						"<input type='checkbox' id='user-" + resp[i] + "' />" +
-						"<label for='user-" + resp[i] + "'>" + resp[i] + "</label>" + 
+						"<input type='checkbox' id='" + nid + "' />" +
+						"<label for='" + nid + "'>" + resp[i] + "</label>" + 
 					"</li>";
+				
+				c++;
 			}
 			if (i != -1) html += "</ul></div>";
 			
@@ -736,8 +745,32 @@ function deleteUserInClass()
 	);
 	
 	$("#perm-usersearchinput").keyup(function() {
-		alert($(this).val());
-	})
+		var i, search = $(this).val(), nid;
+		
+		/* This accounts for key presses that do not add to the search. */
+		if (search.length == oldSearch.length) return;
+		
+		oldSearch = search;
+		
+		if (search.length == 0)
+		{
+			$("#perm-deleteusersdialog li").css("display", "block");
+			return;
+		}
+		
+		for (i in usersList)
+		{
+			nid = "#user-" + i.split(" ").join("").split(",").join("").split(".").join("");
+			if (usersList[i].indexOf(search) == -1)
+			{
+				$(nid).parent().css("display", "none");
+			}
+			else
+			{
+				$(nid).parent().css("display", "block");
+			}
+		}
+	});
 }
 
 function deleteAllUsersInClass()
