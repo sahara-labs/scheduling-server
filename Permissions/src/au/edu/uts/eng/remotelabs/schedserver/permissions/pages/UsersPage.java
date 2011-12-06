@@ -48,7 +48,7 @@ public class UsersPage extends AbstractPermissionsPage
     @Override
     public void setupView(HttpServletRequest req)
     {
-        // TODO Auto-generated method stub
+        // TODO Implement user management page.
         
     }
 
@@ -61,6 +61,6 @@ public class UsersPage extends AbstractPermissionsPage
     public static HostedPage getHostedPage()
     {
         return new HostedPage("Users", UsersPage.class, "perm-users", 
-                "Allows users to be created, read, updated and deleted.", true, true);
+                "Allows users to be created, read, updated and deleted.", false, false);
     }
 }

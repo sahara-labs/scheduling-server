@@ -51,6 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.PermissionsPage;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.UserClassesPage;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.UsersPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -91,7 +92,7 @@ public class PermissionActivator implements BundleActivator
 	    Velocity.init(velProps);
 
 	    this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(3);
-//	    this.pageRegistrations.add(context.registerService(HostedPage.class, UsersPage.getHostedPage(), null));
+	    this.pageRegistrations.add(context.registerService(HostedPage.class, UsersPage.getHostedPage(), null));
 	    this.pageRegistrations.add(context.registerService(HostedPage.class, UserClassesPage.getHostedPage(), null));
 	    this.pageRegistrations.add(context.registerService(HostedPage.class, PermissionsPage.getHostedPage(), null));
 	}

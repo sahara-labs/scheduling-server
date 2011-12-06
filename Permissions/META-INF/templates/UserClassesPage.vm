@@ -127,17 +127,13 @@
 							<img src="/img/perm-adduser.png" alt="Add" /><br />
 							Add
 						</a>
-						<a class="perm-listusers perm-button">
-							<img src="/img/perm-listusers.png" alt="List" /><br />
-							List
-						</a>
                         <a class="perm-deleteuser perm-button">
 							<img src="/img/perm-deleteuser.png" alt="Del" /><br />
-							Delete
+							Remove
 						</a>
                         <a class="perm-deleteallusers perm-button">
 							<img src="/img/perm-delete.png" alt="Del" /><br />
-							Delete All
+							Remove All
 						</a>
                     </div>
                 </div>
@@ -187,5 +183,8 @@ $(document).ready(function() {
 	$("#userclasslist .perm-deleteclass").click(deleteClass);
 	$("#userclasslist .perm-addresperm").click(addPermission);
     $("#userclasslist .perm-permissionlist li").click(loadPermission);
+	$("#userclasslist .perm-adduser").click(addUserToClass);
+	$("#userclasslist .perm-deleteuser").click(deleteUserInClass);
+	$("#userclasslist .perm-deleteallusers").click(deleteAllUsersInClass);
 });
 </script>

@@ -247,13 +247,15 @@
 }
 
 .perm-userssection .perm-button {
+	width: 43px;
 	float: left;
-	margin: 5px;
+	margin: 8px 3px;
 }
 
 .perm-userssection .perm-deleteallusers {
 	float: right;
 	height: 64px;
+	margin-right: 6px;
 }
 
 .perm-userssection .perm-sectiontitle {
@@ -293,11 +295,11 @@
 	padding: 10px;
 }
 
-#perm-deletedialog .ui-priority-secondary {
+#perm-deletedialog .ui-priority-secondary, #perm-removeallusersdialog .ui-priority-secondary {
 	margin: 10px;
 }
 
-#perm-deletedialog span {
+#perm-deletedialog span, #perm-removeallusersdialog span {
 	float: left;
 	margin-right: 5px;
 }
@@ -370,19 +372,71 @@
 	top: 100px;
 	left: 200px;
 	width: 300px;
-	height: 100px;
+	height: 130px;
 	background-color: #FFF;
 	border: 1px solid #B5B5B5;
 	z-index: 2001;
 	font-weight: bold;
 }
 
-#permissionconfirm div {
+#permissionconfirm .permissionconfirmbuttons {
 	position: absolute;
 	bottom: 5px;
 	right: 5px;
 }
 
+#permissionconfirm .ui-state-error {
+	margin: 5px;
+	font-weight: normal;
+	padding: 3px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+#permissionconfirm .ui-state-error span {
+	float: left;
+	margin-right: 5px;
+}
+
 #permissionconfirm button {
 	margin-left: 5px;
+}
+
+#perm-usersearch {
+	margin: 10px 0;
+}
+
+#perm-userslist {
+	height: 350px;
+	overflow-y: scroll;
+}
+
+#perm-userslist .perm-userscol {
+	clear: right;
+	float: left;
+	width: 120px;
+	margin: 0 8px;
+	overflow: hidden;
+}
+
+#perm-userslist li {
+	overflow: hidden;
+	padding: 3px;
+	margin: 3px;
+	border-bottom: 1px solid #B5B5B5;
+}
+
+#perm-userslist input {
+	margin-right: 5px;
+}
+
+#perm-userslist label {
+	display: inline-block;
+	width: 85px;
+	overflow: hidden;
+}
+
+#perm-userslist ul {
+	list-style: none;
 }

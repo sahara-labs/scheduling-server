@@ -63,6 +63,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
@@ -552,6 +553,19 @@ public class UserClassesPage extends AbstractPermissionsPage
             return obj;
         }
         
+        num = (Integer) this.db.createCriteria(Bookings.class)
+                .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.eq("resourcePermission", perm))
+                .setProjection(Projections.rowCount())
+                .uniqueResult();
+        if (num > 0)
+        {
+            this.logger.warn("Unable to delete permission '" + perm.getId() + "' because a booking from this " +
+                    "permission is active.");
+            obj .put("reason", "Permission has active reservations.");
+            return obj;
+        }
+        
         dao.delete(perm);
         this.logger.info("Resource permission '" + perm.getId() + "' has been deleted.");
         
@@ -606,6 +620,66 @@ public class UserClassesPage extends AbstractPermissionsPage
         
         return obj;
     }
+    
+    /**
+     * Returns a list of the names of all the users in the specified class.
+     * 
+     * @param request
+     * @return response
+     * @throws JSONException
+     */
+    @SuppressWarnings("unchecked")
+    public JSONArray getUsersList(HttpServletRequest request) throws JSONException
+    {
+        JSONArray arr = new JSONArray();
+        
+        UserClass uc = new UserClassDao(this.db).findByName(request.getParameter("name"));
+        if (uc == null)
+        {
+            this.logger.warn("Unable to provide users list for user class because the class with name '" + 
+                    request.getParameter("name") + "' was not found.");
+            return arr;
+        }
+        
+        for (UserAssociation ua : (List<UserAssociation>)this.db.createCriteria(UserAssociation.class)
+                .add(Restrictions.eq("userClass", uc))
+                .addOrder(Order.asc("user"))
+                .list())
+        {
+            arr.put(ua.getUser().getName());
+        }
+        
+        return arr;
+    }
+    
+    /**
+     * Deletes all user associations in the specified class.
+     * 
+     * @param request 
+     * @return response
+     * @throws JSONException
+     */
+    public JSONObject deleteAllUsersInClass(HttpServletRequest request) throws JSONException
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+        UserClassDao dao = new UserClassDao(this.db);
+        
+        UserClass uc = dao.findByName(request.getParameter("name"));
+        if (uc == null)
+        {
+            this.logger.warn("Unable to delete all user associations in user class with name '" + 
+                    request.getParameter("name") + "' because the class was not found.");
+            return obj;
+        }
+        
+        dao.deleteUserAssociations(uc);
+        this.logger.info("User associations for class '" + uc.getName() + "' have been deleted.");
+        
+        obj.put("success", true);
+        return obj;
+    }
 
     @Override
     protected String getPageType()
@@ -616,6 +690,7 @@ public class UserClassesPage extends AbstractPermissionsPage
     public static HostedPage getHostedPage()
     {
         return new HostedPage("Permissions", UserClassesPage.class, "perm-groups", 
-                "Allows user classes (groupings of users) to be created, read, updated and deleted.", true, true);
+                "Allows user classes (groupings of users) and their permissions to be created, read, updated " +
+                "and deleted.", true, true);
     }
 }

@@ -550,8 +550,8 @@ function deletePermission()
 	$("#permissiondialog").prepend(
 		"<div id='permissionoverlay'></div>" +
 		"<div id='permissionconfirm'>" +
-			"Are you sure you want to delete this permission?" +
-			"<div>" +
+			"<div>Are you sure you want to delete this permission?</div>" +
+			"<div class='permissionconfirmbuttons'>" +
 				"<button id='permissionconfirmcancel'>Cancel</button>" +
 				"<button id='permissionconfirmdelete'>Delete</button>" +
 			"</div>" +
@@ -589,7 +589,15 @@ function deletePermission()
 					
 					$("#permissiondialog").dialog("close");
 				}
-				
+				else
+				{
+					$("#permissionconfirm").prepend(
+						"<div class='ui-state ui-state-error'>" +
+							"<span class='ui-icon ui-icon-alert'></span>" + 
+							"Failed to delete permission: " + resp.reason +
+						"</div>"
+					);
+				}
 			}
 		);
 	});
@@ -619,4 +627,165 @@ function loadResources(type, valset)
 			}
 		}
 	);
+}
+
+function addUserToClass()
+{
+	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+
+	$("body").append(
+			"<div id='perm-adduserdialog' title='Add User to Group: " + id.split("_").join(" ") + "'>" +
+				"<div class='perm-autocomplete'>" +
+					"<label for='perm-acinput'>User: </label>" +
+					"<input id='perm-acinput' type='text' />" +
+				"</div>" + 
+			"</div>"
+	);
+
+	$("#perm-adduserdialog").dialog({
+		resizable: false,
+		modal: true,
+		closeOnEscape: false,
+		width: 500,
+		buttons: {
+			'Add': function() {
+				
+			},
+			'Cancel': function() { $(this).dialog("close") }
+		},
+		close: function() {
+			$(this).dialog('destroy');
+			$(this).remove();
+		},
+	});
+	
+	$("#perm-acinput").keyup(function () {
+		$.post(function() {
+			"/users/autoComplete",
+			{ val: $(this).val() },
+			function(resp) {
+				
+			}
+		})
+	});
+}
+
+var usersList = [];
+function deleteUserInClass()
+{
+	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+
+	$("body").append(
+			"<div id='perm-deleteusersdialog' title='Remove from Group: " + id.split("_").join(" ") + "'>" +
+				"<div id='perm-usersearch'>" +
+					"<label for='perm-usersearchinput'>Search: </label>" +
+					"<input id='perm-usersearchinput' />" +
+				"</div>" +
+				"<div id='perm-userslist'> </div>" +
+				"<div style='clear:both'> </div>" +
+			"</div>"
+	);
+
+	$("#perm-deleteusersdialog").dialog({
+		resizable: false,
+		modal: true,
+		closeOnEscape: false,
+		width: 600,
+		buttons: {
+			'Remove': function() {
+				
+			},
+			'Cancel': function() {
+				$(this).dialog("close");
+			}
+		},
+		close: function() {
+			$(this).dialog('destroy');
+			$(this).remove();
+		},
+	});
+	
+	$.post(
+		"/permissions/getUsersList",
+		{ name: id },
+		function (resp) {
+			if (typeof resp != "object")
+			{
+				window.location.reload();
+				return;
+			}
+			
+			usersList = resp;
+			
+			var i = -1, html = "", len = Math.ceil(resp.length / 4);
+			for (i in resp)
+			{
+				if (i > 0 && i % len == 0) html += "</ul></div>";
+				if (i % len == 0) html += "<div class='perm-userscol'><ul>";
+				
+				html +=
+					"<li>" +
+						"<input type='checkbox' id='user-" + resp[i] + "' />" +
+						"<label for='user-" + resp[i] + "'>" + resp[i] + "</label>" + 
+					"</li>";
+			}
+			if (i != -1) html += "</ul></div>";
+			
+			$("#perm-userslist").append(html);
+		}
+	);
+	
+	$("#perm-usersearchinput").keyup(function() {
+		alert($(this).val());
+	})
+}
+
+function deleteAllUsersInClass()
+{
+	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+
+	$("body").append(
+			"<div id='perm-removeallusersdialog' title='Remove all user associations'>" +
+				"<div class='ui-priority-primary'>" +
+					"Are you sure you want to delete all the user associations in the class " +
+					"'" + id.split("_").join(" ") + "'?" +
+				"</div>" +
+				"<div class='ui-priority-secondary'>" +
+					"<span class='ui-icon ui-icon-alert'></span>" +
+					"Only the assoications with the users will be deleted. The associated users will not be deleted " +
+					"by this operation." +				
+				"</div>" +
+			"</div>"
+	);
+
+	$("#perm-removeallusersdialog").dialog({
+		resizable: false,
+		modal: true,
+		closeOnEscape: false,
+		width: 400,
+		buttons: {
+			'Remove': function() {
+				$.post(
+						"/permissions/deleteAllUsersInClass",
+						{ name: id },
+						function (resp) {
+							if (typeof resp != "object")
+							{
+								window.location.reload();
+							}
+							
+							$("#perm-removeallusersdialog").dialog("close");
+						}
+				);	
+			},
+			'Cancel': function() {
+				$(this).dialog('close');
+			}
+		},
+		close: function() {
+			$(this).dialog('destroy');
+			$(this).remove();
+
+		},
+	});
 }

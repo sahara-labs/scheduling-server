@@ -73,7 +73,7 @@ public class ResourcePermissionDao extends GenericDao<ResourcePermission>
             this.logger.debug("To delete resource permission '" + perm.getId() + "', " + num + " user locks have to" +
                     " removed.");
             this.session.beginTransaction();
-            int numDeleted = this.session.createQuery("delete UserLock ul where ula.resourcePermission = :perm")
+            int numDeleted = this.session.createQuery("delete UserLock ul where ul.resourcePermission = :perm")
                     .setEntity("perm", perm)
                     .executeUpdate();
             
@@ -92,9 +92,8 @@ public class ResourcePermissionDao extends GenericDao<ResourcePermission>
             this.logger.debug("To delete resource permission '" + perm.getId() + "', " + num + " sessions need the " +
             		"resource permission nulled.");
             this.session.beginTransaction();
-            int numDeleted = this.session.createQuery("update Session ses set ses.resourcePermission = :null " +
-            		        "where ula.resourcePermission = :perm")
-            		.setEntity("null", null)
+            int numDeleted = this.session.createQuery("update Session ses set ses.resourcePermission = null " +
+            		        "where ses.resourcePermission = :perm")
                     .setEntity("perm", perm)
                     .executeUpdate();
             
@@ -110,12 +109,10 @@ public class ResourcePermissionDao extends GenericDao<ResourcePermission>
                 .uniqueResult();
         if (num > 0)
         {
-            this.logger.debug("To delete resource permission '" + perm.getId() + "', " + num + " bookings need the " +
-            		"resource permission nulled.");
+            this.logger.debug("To delete resource permission '" + perm.getId() + "', " + num + " bookings need to " +
+            		"be deleted.");
             this.session.beginTransaction();
-            int numDeleted = this.session.createQuery("update Bookigngs bk set bk.resourcePermission = :null " +
-                            "where bk.resourcePermission = :perm")
-                    .setEntity("null", null)
+            int numDeleted = this.session.createQuery("delete Bookings bk where bk.resourcePermission = :perm")
                     .setEntity("perm", perm)
                     .executeUpdate();
             
