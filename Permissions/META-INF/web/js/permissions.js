@@ -636,7 +636,7 @@ function addUserToClass()
 	$("body").append(
 			"<div id='perm-adduserdialog' title='Add User to Group: " + id.split("_").join(" ") + "'>" +
 				"<div class='perm-autocomplete'>" +
-					"<label for='perm-acinput'>User: </label>" +
+					"<label for='perm-acinput'>Search: </label>" +
 					"<input id='perm-acinput' type='text' />" +
 				"</div>" + 
 				
@@ -695,7 +695,7 @@ function addUserToClass()
 			"/users/list",
 			{ 
 				search: search,
-				userClass: id,
+				notIn: id,
 				max: 20
 			},
 			function (resp)

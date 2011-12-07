@@ -44,8 +44,11 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
@@ -64,7 +67,6 @@ public class UsersPage extends AbstractPermissionsPage
     public void setupView(HttpServletRequest req)
     {
         // TODO Implement user management page.
-        
     }
     
     /**
@@ -82,10 +84,14 @@ public class UsersPage extends AbstractPermissionsPage
         
         Criteria qu = this.db.createCriteria(User.class);
             
-        if (request.getParameter("search") != null)
+        String search = request.getParameter("search");
+        if (search != null)
         {
             /* Search filter. */
-            qu.add(Restrictions.like("name", request.getParameter("search"), MatchMode.ANYWHERE));
+            qu.add(Restrictions.disjunction()
+                    .add(Restrictions.like("name", search, MatchMode.ANYWHERE))
+                    .add(Restrictions.like("firstName", search, MatchMode.ANYWHERE))
+                    .add(Restrictions.like("lastName", search, MatchMode.ANYWHERE)));
         }
         
         if (request.getParameter("max") != null)
@@ -94,6 +100,27 @@ public class UsersPage extends AbstractPermissionsPage
             qu.setMaxResults(Integer.parseInt(request.getParameter("max")));
         }
         
+        if (request.getParameter("notIn") != null)
+        {
+            /* Users not in class. */
+            UserClass notIn = new UserClassDao(this.db).findByName(request.getParameter("notIn"));
+            if (notIn == null)
+            {
+                this.logger.warn("Not going to add not in class as a user list restriction because the class '" +
+                		request.getParameter("notIn") + "' was not found.");
+            }
+            else
+            {
+                DetachedCriteria subQu = DetachedCriteria.forClass(User.class)
+                        .setProjection(Property.forName("name"))
+                        .createCriteria("userAssociations")
+                            .add(Restrictions.eq("userClass", notIn));
+                        
+                qu.add(Restrictions.not(Restrictions.in("name", subQu.getExecutableCriteria(this.db).list())));
+            }
+        }
+        
+        qu.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         qu.addOrder(Order.asc("lastName"));
         qu.addOrder(Order.asc("name"));
         
@@ -104,11 +131,11 @@ public class UsersPage extends AbstractPermissionsPage
             
             if (user.getFirstName() == null || user.getLastName() == null)
             {
-                uo.put("display", user.getName());
+                uo.put("display", user.getId() + " " + user.getName());
             }
             else
             {
-                uo.put("display", user.getLastName() + ", " + user.getFirstName());
+                uo.put("display", user.getId() + " " + user.getLastName() + ", " + user.getFirstName());
             }
             
             arr.put(uo);
