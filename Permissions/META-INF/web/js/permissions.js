@@ -670,14 +670,14 @@ function addUserToClass()
 	});
 }
 
-var usersList = [];
-var oldSearch = "";
+var usersList = [], idsList = [], oldSearch = "";
 function deleteUserInClass()
 {
 	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
 	
 	/* Clear any old invocations. */
 	usersList = [];
+	idsList = [];
 	oldSearch = "";
 
 	$("body").append(
@@ -698,7 +698,31 @@ function deleteUserInClass()
 		width: 600,
 		buttons: {
 			'Remove': function() {
+				var delUsers = [];
 				
+				$("#perm-deleteusersdialog input:checked").each(function() {
+					var id = $(this).attr('id');
+					for (i in idsList)
+					{
+						if (idsList[i] == id)
+						{
+							delUsers.push(i);
+							break;
+						}
+					}
+				});
+				
+				$.post(
+					"/users/deleteUsersInClass",
+					{
+						users: delUsers.toString(),
+						name: id
+					},
+					function(resp) {
+						if (typeof resp != "object") window.location.reload();
+						else for (i in delUsers) $("#" + idsList[delUsers[i]]).parent().remove();
+					}
+				);
 			},
 			'Cancel': function() {
 				$(this).dialog("close");
@@ -720,23 +744,24 @@ function deleteUserInClass()
 				return;
 			}
 			
-			resp.sort();
+			resp.sort(function(a, b) {
+				return a.display == b.display ? 0 : (a.display > b.display ? 1 : -1);
+			});
 			usersList = resp;
 			
-			var i = -1, c = 0, html = "", len = Math.ceil(resp.length / 4), nid;
+			var i = -1, html = "", len = Math.ceil(resp.length / 4), u;
 			for (i in resp)
 			{
-				if (c > 0 && c % len == 0) html += "</ul></div>";
-				if (c % len == 0) html += "<div class='perm-userscol'><ul>";
+				if (i > 0 && i % len == 0) html += "</ul></div>";
+				if (i % len == 0) html += "<div class='perm-userscol'><ul>";
 				
-				nid = "user-" + i.split(" ").join("").split(",").join("").split(".").join("");
+				u = resp[i];
+				idsList[u.name] = "user-" + u.name.split(" ").join("").split(",").join("").split(".").join("");
 				html +=
 					"<li>" +
-						"<input type='checkbox' id='" + nid + "' />" +
-						"<label for='" + nid + "'>" + resp[i] + "</label>" + 
+						"<input type='checkbox' id='" + idsList[u.name] + "' />" +
+						"<label for='" + idsList[u.name] + "'>" + u.display + "</label>" + 
 					"</li>";
-				
-				c++;
 			}
 			if (i != -1) html += "</ul></div>";
 			
@@ -760,8 +785,8 @@ function deleteUserInClass()
 		
 		for (i in usersList)
 		{
-			nid = "#user-" + i.split(" ").join("").split(",").join("").split(".").join("");
-			if (usersList[i].indexOf(search) == -1)
+			nid = "#" + idsList[usersList[i].name];
+			if (usersList[i].display.indexOf(search) == -1)
 			{
 				$(nid).parent().css("display", "none");
 			}

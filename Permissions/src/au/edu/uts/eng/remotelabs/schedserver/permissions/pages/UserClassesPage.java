@@ -630,16 +630,16 @@ public class UserClassesPage extends AbstractPermissionsPage
      * @throws JSONException
      */
     @SuppressWarnings("unchecked")
-    public JSONObject getUsersList(HttpServletRequest request) throws JSONException
+    public JSONArray getUsersList(HttpServletRequest request) throws JSONException
     {
-        JSONObject obj = new JSONObject();
+        JSONArray list = new JSONArray();
         
         UserClass uc = new UserClassDao(this.db).findByName(request.getParameter("name"));
         if (uc == null)
         {
             this.logger.warn("Unable to provide users list for user class because the class with name '" + 
                     request.getParameter("name") + "' was not found.");
-            return obj;
+            return list;
         }
         
         for (UserAssociation ua : (List<UserAssociation>)this.db.createCriteria(UserAssociation.class)
@@ -649,17 +649,22 @@ public class UserClassesPage extends AbstractPermissionsPage
         {
             User u = ua.getUser();
             
+            JSONObject uo = new JSONObject();
+            uo.put("name", u.getNamespace() + "-_-" + u.getName());
+            
             if (u.getFirstName() == null || u.getLastName() == null)
             {
-                obj.put(u.getName(), u.getName());
+                uo.put("display", u.getName());
             }
             else
             {
-                obj.put(u.getName(), u.getLastName() + ", " + u.getFirstName());
+                uo.put("display", u.getLastName() + ", " + u.getFirstName());
             }
+            
+            list.put(uo);
         }
         
-        return obj;
+        return list;
     }
     
     /**

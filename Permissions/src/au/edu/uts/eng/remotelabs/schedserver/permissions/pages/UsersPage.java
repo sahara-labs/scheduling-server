@@ -38,6 +38,13 @@ package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONObject;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
 /**
@@ -50,6 +57,42 @@ public class UsersPage extends AbstractPermissionsPage
     {
         // TODO Implement user management page.
         
+    }
+    
+    public JSONObject deleteUsersInClass(HttpServletRequest request) throws Exception
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+        UserClass uc = new UserClassDao(this.db).findByName(request.getParameter("name"));
+        if (uc == null)
+        {
+            this.logger.warn("Unable to delete users in user class because the class with name '" + 
+                    request.getParameter("name") + "' was not found.");
+            return obj;
+        }
+        
+        UserDao dao = new UserDao(this.db);
+        UserAssociationDao uaDao = new UserAssociationDao(this.db);
+        
+        for (String userName : request.getParameter("users").split(","))
+        {
+            String ns = userName.substring(0, userName.indexOf("-_-"));
+            String name = userName.substring(userName.indexOf("-_-") + 3);
+            
+            User user = dao.findByName(ns, name);
+            if (user == null)
+            {
+                this.logger.warn("Unable to delete user assocition of user with name '" + ns + ':' + name + 
+                        "' because the user was not found");
+                continue;
+            }
+            
+            this.logger.info("Deleted association with class '" + uc.getName() + "' and user '" + user.qName() + "'.");
+            uaDao.delete(user, uc);
+        }
+        
+        return obj;
     }
 
     @Override
