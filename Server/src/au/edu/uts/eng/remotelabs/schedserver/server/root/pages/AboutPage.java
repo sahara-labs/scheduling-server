@@ -382,6 +382,17 @@ public class AboutPage extends AbstractPage
         this.println("  </div>");
         this.println("</div>");
         
+        /* -- Oxygen Icons --------------------------------------------------------- */
+        this.println("<div class='libblock'>");
+        this.println("  <div class='libname'>");
+        this.println("      <img src='/img/libs/oxygen.png' alt='Oxygen' />");
+        this.println("  </div>");
+        this.println("  <div class='liblicense'>");
+        this.println("      <div class='liblicenseheader'>Oxygen Icons</div>"); 
+        this.printLicense("/META-INF/web/lic/oxygen");
+        this.println("  </div>");
+        this.println("</div>");
+        
         this.println("</div>");
         
         this.println("<script type='text/javascript'>");
