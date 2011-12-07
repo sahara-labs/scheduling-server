@@ -37,8 +37,11 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 
 /**
  * Data access object for the {@link UserAssociation} entity.
@@ -53,5 +56,29 @@ public class UserAssociationDao extends GenericDao<UserAssociation>
     public UserAssociationDao(Session ses)
     {
         super(ses, UserAssociation.class);
+    }
+    
+    /**
+     * Deletes the user association of the user and user class.
+     * 
+     * @param user user whose association to delete
+     * @param userClass associated user class
+     */
+    public void delete(User user, UserClass userClass)
+    {
+        UserAssociation ua = (UserAssociation) this.session.createCriteria(UserAssociation.class)
+                .add(Restrictions.eq("user", user))
+                .add(Restrictions.eq("userClass", userClass))
+                .uniqueResult();
+        
+        if (ua == null)
+        {
+            this.logger.debug("Unable to delete user association between user '" + user.qName() + "' and class '" + 
+                    userClass.getName() + "'.");
+        }
+        else
+        {
+            this.delete(ua);
+        }
     }
 }
