@@ -408,7 +408,7 @@
 }
 
 #perm-userslist {
-	height: 350px;
+	height: 250px;
 	overflow-y: scroll;
 }
 
@@ -439,4 +439,27 @@
 
 #perm-userslist ul {
 	list-style: none;
+}
+
+#perm-adduserdialog .perm-adduserpanel {
+	float: left;
+	width: 225px;
+	margin: 10px 5px 0;
+}
+
+#perm-adduserdialog .perm-addusertitle {
+	padding: 5px;
+	background-color: #EFEFEF;
+	border: 1px solid #B5B5B5;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin-bottom: 4px;
+	font-weight: bold;
+}
+
+#perm-adduserdialog .perm-userscroll {
+	overflow-x: hidden;
+	overflow-y: scroll;
+	height: 250px;
 }

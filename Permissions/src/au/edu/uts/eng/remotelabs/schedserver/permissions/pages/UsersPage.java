@@ -36,9 +36,17 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
@@ -59,7 +67,65 @@ public class UsersPage extends AbstractPermissionsPage
         
     }
     
-    public JSONObject deleteUsersInClass(HttpServletRequest request) throws Exception
+    /**
+     * Gets a list of users with a specific search term. The users may be 
+     * excluded from a specific class. 
+     * 
+     * @param request
+     * @return response
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    public JSONArray list(HttpServletRequest request) throws JSONException
+    {
+        JSONArray arr = new JSONArray();
+        
+        Criteria qu = this.db.createCriteria(User.class);
+            
+        if (request.getParameter("search") != null)
+        {
+            /* Search filter. */
+            qu.add(Restrictions.like("name", request.getParameter("search"), MatchMode.ANYWHERE));
+        }
+        
+        if (request.getParameter("max") != null)
+        {
+            /* Max results. */
+            qu.setMaxResults(Integer.parseInt(request.getParameter("max")));
+        }
+        
+        qu.addOrder(Order.asc("lastName"));
+        qu.addOrder(Order.asc("name"));
+        
+        for (User user : (List<User>)qu.list())
+        {
+            JSONObject uo = new JSONObject();
+            uo.put("name", user.getNamespace() + "-_-" + user.getName());
+            
+            if (user.getFirstName() == null || user.getLastName() == null)
+            {
+                uo.put("display", user.getName());
+            }
+            else
+            {
+                uo.put("display", user.getLastName() + ", " + user.getFirstName());
+            }
+            
+            arr.put(uo);
+        }
+        
+        
+        return arr;
+    }
+    
+    /**
+     * Deletes users from a user class.n
+     * 
+     * @param request
+     * @return response
+     * @throws JSONException
+     */
+    public JSONObject deleteUsersInClass(HttpServletRequest request) throws JSONException
     {
         JSONObject obj = new JSONObject();
         obj.put("success", false);

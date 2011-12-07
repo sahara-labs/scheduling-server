@@ -639,6 +639,24 @@ function addUserToClass()
 					"<label for='perm-acinput'>User: </label>" +
 					"<input id='perm-acinput' type='text' />" +
 				"</div>" + 
+				
+				"<div id='perm-acselect' class='perm-adduserpanel'>" +
+					"<div class='perm-addusertitle'>Select user:</div>" +
+					"<div class='perm-userscroll'>" +
+						"<ul>" +
+						"</ul>" +
+					"</div>" + 
+				"</div>" + 
+				
+				"<div id='perm-selectedusers' class='perm-adduserpanel'>" +
+					"<div class='perm-addusertitle'>Selected users:</div>" +
+					"<div class='perm-userscroll'>" + 
+						"<ul>" +
+						"</ul>" +
+					"</div>" +
+				"</div>" + 
+				
+				"<div style='clear:both'></div>" +
 			"</div>"
 	);
 
@@ -659,20 +677,54 @@ function addUserToClass()
 		},
 	});
 	
+	var lastSearch = "", idsList = [];
+	
 	$("#perm-acinput").keyup(function () {
-		$.post(function() {
-			"/users/autoComplete",
-			{ val: $(this).val() },
-			function(resp) {
+		var search = $(this).val();
+		
+		if (search.length == lastSearch.length) return;
+		lastSearch = search;
+		
+		if (search.length == 0) 
+		{
+			$("#perm-acselect ul").empty();
+			return;
+		}
+		
+		$.post(
+			"/users/list",
+			{ 
+				search: search,
+				userClass: id,
+				max: 20
+			},
+			function (resp)
+			{
+				if (typeof resp != "object") 
+				{
+					window.location.reload();
+					return;
+				}
 				
+				var html = "", u;
+				for (i in resp)
+				{
+					idsList[resp[i].name] = resp[i].name.replace(/\.|\s|,/, "");
+					html += "<li id='" + idsList[resp[i].name] + "'>" + resp[i].display + "</li>";
+				}
+				
+				$("#perm-acselect ul").empty().append(html);
 			}
-		})
+		);
+		
 	});
 }
 
-var usersList = [], idsList = [], oldSearch = "";
+
 function deleteUserInClass()
 {
+	var usersList = [], idsList = [], oldSearch = "";
+	
 	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
 	
 	/* Clear any old invocations. */
@@ -756,7 +808,7 @@ function deleteUserInClass()
 				if (i % len == 0) html += "<div class='perm-userscol'><ul>";
 				
 				u = resp[i];
-				idsList[u.name] = "user-" + u.name.split(" ").join("").split(",").join("").split(".").join("");
+				idsList[u.name] = "user-" + u.name.replace(/\.|\s|,/, "");
 				html +=
 					"<li>" +
 						"<input type='checkbox' id='" + idsList[u.name] + "' />" +
