@@ -663,7 +663,7 @@ function addUserToClass()
 	$("#perm-adduserdialog").dialog({
 		resizable: false,
 		modal: true,
-		closeOnEscape: false,
+		closeOnEscape: true,
 		width: 500,
 		buttons: {
 			'Add': function() {
@@ -746,7 +746,7 @@ function deleteUserInClass()
 	$("#perm-deleteusersdialog").dialog({
 		resizable: false,
 		modal: true,
-		closeOnEscape: false,
+		closeOnEscape: true,
 		width: 600,
 		buttons: {
 			'Remove': function() {
@@ -787,8 +787,8 @@ function deleteUserInClass()
 	});
 	
 	$.post(
-		"/permissions/getUsersList",
-		{ name: id },
+		"/users/list",
+		{ "in": id },
 		function (resp) {
 			if (typeof resp != "object")
 			{
@@ -871,7 +871,7 @@ function deleteAllUsersInClass()
 	$("#perm-removeallusersdialog").dialog({
 		resizable: false,
 		modal: true,
-		closeOnEscape: false,
+		closeOnEscape: true,
 		width: 400,
 		buttons: {
 			'Remove': function() {

@@ -100,11 +100,27 @@ public class UsersPage extends AbstractPermissionsPage
             qu.setMaxResults(Integer.parseInt(request.getParameter("max")));
         }
         
+        if (request.getParameter("in") != null)
+        {
+            /* Users in class. */
+            UserClass inClass = new UserClassDao(this.db).findByName(request.getParameter("in"));
+            if (inClass == null)
+            {
+                this.logger.warn("Not going to add in class as a user list restriction because the class '" + 
+                        request.getParameter("in") + "' was not found.");
+            }
+            else
+            {
+                qu.createCriteria("userAssociations")
+                    .add(Restrictions.eq("userClass", inClass));
+            }
+        }
+        
         if (request.getParameter("notIn") != null)
         {
             /* Users not in class. */
-            UserClass notIn = new UserClassDao(this.db).findByName(request.getParameter("notIn"));
-            if (notIn == null)
+            UserClass notInClass = new UserClassDao(this.db).findByName(request.getParameter("notIn"));
+            if (notInClass == null)
             {
                 this.logger.warn("Not going to add not in class as a user list restriction because the class '" +
                 		request.getParameter("notIn") + "' was not found.");
@@ -114,7 +130,7 @@ public class UsersPage extends AbstractPermissionsPage
                 DetachedCriteria subQu = DetachedCriteria.forClass(User.class)
                         .setProjection(Property.forName("name"))
                         .createCriteria("userAssociations")
-                            .add(Restrictions.eq("userClass", notIn));
+                            .add(Restrictions.eq("userClass", notInClass));
                         
                 qu.add(Restrictions.not(Restrictions.in("name", subQu.getExecutableCriteria(this.db).list())));
             }
@@ -131,11 +147,11 @@ public class UsersPage extends AbstractPermissionsPage
             
             if (user.getFirstName() == null || user.getLastName() == null)
             {
-                uo.put("display", user.getId() + " " + user.getName());
+                uo.put("display", user.getName());
             }
             else
             {
-                uo.put("display", user.getId() + " " + user.getLastName() + ", " + user.getFirstName());
+                uo.put("display", user.getLastName() + ", " + user.getFirstName());
             }
             
             arr.put(uo);

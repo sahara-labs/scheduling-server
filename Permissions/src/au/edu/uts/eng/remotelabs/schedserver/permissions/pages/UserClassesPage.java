@@ -623,51 +623,6 @@ public class UserClassesPage extends AbstractPermissionsPage
     }
     
     /**
-     * Returns a list of the names of all the users in the specified class.
-     * 
-     * @param request
-     * @return response
-     * @throws JSONException
-     */
-    @SuppressWarnings("unchecked")
-    public JSONArray getUsersList(HttpServletRequest request) throws JSONException
-    {
-        JSONArray list = new JSONArray();
-        
-        UserClass uc = new UserClassDao(this.db).findByName(request.getParameter("name"));
-        if (uc == null)
-        {
-            this.logger.warn("Unable to provide users list for user class because the class with name '" + 
-                    request.getParameter("name") + "' was not found.");
-            return list;
-        }
-        
-        for (UserAssociation ua : (List<UserAssociation>)this.db.createCriteria(UserAssociation.class)
-                .add(Restrictions.eq("userClass", uc))
-                .addOrder(Order.asc("user"))
-                .list())
-        {
-            User u = ua.getUser();
-            
-            JSONObject uo = new JSONObject();
-            uo.put("name", u.getNamespace() + "-_-" + u.getName());
-            
-            if (u.getFirstName() == null || u.getLastName() == null)
-            {
-                uo.put("display", u.getName());
-            }
-            else
-            {
-                uo.put("display", u.getLastName() + ", " + u.getFirstName());
-            }
-            
-            list.put(uo);
-        }
-        
-        return list;
-    }
-    
-    /**
      * Deletes all user associations in the specified class.
      * 
      * @param request 
