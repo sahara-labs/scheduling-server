@@ -41,7 +41,7 @@
 				<div class="perm-userclasssection">
 					<div class="perm-sectiontitle">User Class Details</div>
 					
-    				<div class="perm-userclassfields perm-userclasspanel">
+    				<div class="perm-userclassfields perm-userclasspanel saharaform">
         				<div>
         					<label for="${id}-isActive">Active:</label>
         					<input type="checkbox" id="${id}-isActive"  class="isActive"
@@ -186,5 +186,9 @@ $(document).ready(function() {
 	$("#userclasslist .perm-adduser").click(addUserToClass);
 	$("#userclasslist .perm-deleteuser").click(deleteUserInClass);
 	$("#userclasslist .perm-deleteallusers").click(deleteAllUsersInClass);
+	
+	$(".saharaform input, .saharaform select, .saharaform textarea")
+		.focusin(formFocusIn)
+		.focusout(formFocusOut);
 });
 </script>

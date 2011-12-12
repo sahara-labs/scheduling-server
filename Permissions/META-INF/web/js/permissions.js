@@ -36,7 +36,7 @@
 function createClass()
 {
 	$("body").append(
-		"<div id='perm-createclassdialog' title='Add a new class'><form>" +
+		"<div id='perm-createclassdialog' title='Add a new class' class='saharaform'><form>" +
 			"<div>" +
 				"<label for='newClassName'>Name:</label>" +
 				"<input type='text' id='newClassName' class='validate[required]' />" +
@@ -83,6 +83,10 @@ function createClass()
 		width: 400
 	})
 	.children("form").validationEngine();
+	
+	$("#perm-createclassdialog input")
+		.focusin(formFocusIn)
+		.focusout(formFocusOut);
 }
 
 function saveCreateClass() 
@@ -348,7 +352,7 @@ function drawPermissionDialog(title, userClass)
 {
 	var html =
 		"<div id='permissiondialog' title='"+ title+ "'>" +
-			"<form>" +
+			"<form class='saharaform'>" +
 							
 				"<div id='permissiondialog-left' class='perm-col'>" + 
 
@@ -459,6 +463,10 @@ function drawPermissionDialog(title, userClass)
 		
 	})
 	.children("form").validationEngine();
+	
+	$("#permissiondialog input, #permissiondialog select")
+		.focusin(formFocusIn)
+		.focusout(formFocusOut);
 	
 	$(".periodcal").datetimepicker({
 		dateFormat: "dd/mm/yy",
@@ -635,28 +643,20 @@ function addUserToClass()
 
 	$("body").append(
 			"<div id='perm-adduserdialog' title='Add User to Group: " + id.split("_").join(" ") + "'>" +
-				"<div class='perm-autocomplete'>" +
+				"<div class='perm-autocomplete saharaform'>" +
 					"<label for='perm-acinput'>Search: </label>" +
 					"<input id='perm-acinput' type='text' />" +
 				"</div>" + 
 				
-				"<div id='perm-acselect' class='perm-adduserpanel'>" +
-					"<div class='perm-addusertitle'>Select user:</div>" +
-					"<div class='perm-userscroll'>" +
-						"<ul>" +
-						"</ul>" +
-					"</div>" + 
+				"<div id='perm-acuserslist'>" +
 				"</div>" + 
 				
-				"<div id='perm-selectedusers' class='perm-adduserpanel'>" +
-					"<div class='perm-addusertitle'>Selected users:</div>" +
-					"<div class='perm-userscroll'>" + 
-						"<ul>" +
-						"</ul>" +
-					"</div>" +
-				"</div>" + 
+				"<div id='perm-selectedusers'>" +
+					"<p>Users to add:</p>" +
+					"<ul> </ul>" +
+				"</div>" +
 				
-				"<div style='clear:both'></div>" +
+				"<div style='clear:both'> </div>" +
 			"</div>"
 	);
 
@@ -664,12 +664,38 @@ function addUserToClass()
 		resizable: false,
 		modal: true,
 		closeOnEscape: true,
-		width: 500,
+		width: 600,
 		buttons: {
 			'Add': function() {
+				var addUsers = [];
+				$("#perm-selectedusers input").each(function() {
+					var id = $(this).attr('id');
+					for (i in idsList)
+					{
+						if (idsList[i] == id)
+						{
+							addUsers.push(i);
+							break;
+						}
+					}
+				});
 				
+				if (addUsers.length > 0)
+				{
+					$.post(
+						"/users/addUsersToClass",
+						{
+							users: addUsers.toString(),
+							name: id
+						},
+						function(resp) {
+							if (typeof resp != "object") window.location.reload();
+							else ($("#perm-selectedusers ul").empty());
+						}
+					);
+				}
 			},
-			'Cancel': function() { $(this).dialog("close") }
+			'Close': function() { $(this).dialog("close") }
 		},
 		close: function() {
 			$(this).dialog('destroy');
@@ -687,7 +713,7 @@ function addUserToClass()
 		
 		if (search.length == 0) 
 		{
-			$("#perm-acselect ul").empty();
+			$("#perm-acuserslist").empty();
 			return;
 		}
 		
@@ -705,19 +731,42 @@ function addUserToClass()
 					window.location.reload();
 					return;
 				}
-				
-				var html = "", u;
+
+				var i = -1, html = "", len = Math.ceil(resp.length / 3), u;
 				for (i in resp)
 				{
-					idsList[resp[i].name] = resp[i].name.replace(/\.|\s|,/, "");
-					html += "<li id='" + idsList[resp[i].name] + "'>" + resp[i].display + "</li>";
+					if (i > 0 && i % len == 0) html += "</ul></div>";
+					if (i % len == 0) html += "<div class='perm-userscol'><ul>";
+					
+					u = resp[i];
+					idsList[u.name] = "user-" + u.name.replace(/\.|\s|,/, "");
+					html +=
+						"<li>" +
+							"<input type='checkbox' id='" + idsList[u.name] + "' />" +
+							"<label for='" + idsList[u.name] + "'>" + u.display + "</label>" + 
+						"</li>";
 				}
+				if (i != -1) html += "</ul></div>";
+
+				$("#perm-acuserslist").empty().append(html);
 				
-				$("#perm-acselect ul").empty().append(html);
+				$("#perm-acuserslist input").change(function() {
+					
+					if ($(this).is(":checked"))
+					{
+						$(this).parent().detach().appendTo("#perm-selectedusers ul")
+					}
+					else
+					{
+						$(this).parent().remove();
+					}
+				});
 			}
 		);
 		
-	});
+	})
+	.focusin(formFocusIn)
+	.focusout(formFocusOut);
 }
 
 
@@ -734,7 +783,7 @@ function deleteUserInClass()
 
 	$("body").append(
 			"<div id='perm-deleteusersdialog' title='Remove from Group: " + id.split("_").join(" ") + "'>" +
-				"<div id='perm-usersearch'>" +
+				"<div id='perm-usersearch' class='saharaform'>" +
 					"<label for='perm-usersearchinput'>Search: </label>" +
 					"<input id='perm-usersearchinput' />" +
 				"</div>" +
@@ -764,19 +813,22 @@ function deleteUserInClass()
 					}
 				});
 				
-				$.post(
-					"/users/deleteUsersInClass",
-					{
-						users: delUsers.toString(),
-						name: id
-					},
-					function(resp) {
-						if (typeof resp != "object") window.location.reload();
-						else for (i in delUsers) $("#" + idsList[delUsers[i]]).parent().remove();
-					}
-				);
+				if (delUsers.length > 0)
+				{
+					$.post(
+						"/users/deleteUsersInClass",
+						{
+							users: delUsers.toString(),
+							name: id
+						},
+						function(resp) {
+							if (typeof resp != "object") window.location.reload();
+							else for (i in delUsers) $("#" + idsList[delUsers[i]]).parent().remove();
+						}
+					);
+				}
 			},
-			'Cancel': function() {
+			'Close': function() {
 				$(this).dialog("close");
 			}
 		},
@@ -785,7 +837,7 @@ function deleteUserInClass()
 			$(this).remove();
 		},
 	});
-	
+			
 	$.post(
 		"/users/list",
 		{ "in": id },
@@ -847,7 +899,9 @@ function deleteUserInClass()
 				$(nid).parent().css("display", "block");
 			}
 		}
-	});
+	})
+	.focusin(formFocusIn)
+	.focusout(formFocusOut);
 }
 
 function deleteAllUsersInClass()

@@ -407,12 +407,18 @@
 	margin: 10px 0;
 }
 
-#perm-userslist {
-	height: 250px;
-	overflow-y: scroll;
+#perm-acuserslist {
+	float: left;
+	width: 425px;
 }
 
-#perm-userslist .perm-userscol {
+#perm-userslist, #perm-acuserslist {
+	height: 265px;
+	margin-bottom: -14px;
+	overflow-y: auto;
+}
+
+#perm-userslist .perm-userscol, #perm-acuserslist .perm-userscol {
 	clear: right;
 	float: left;
 	width: 120px;
@@ -420,25 +426,39 @@
 	overflow: hidden;
 }
 
-#perm-userslist li {
+#perm-userslist li, #perm-acuserslist li, #perm-selectedusers li {
 	overflow: hidden;
 	padding: 3px;
 	margin: 3px;
 	border-bottom: 1px solid #B5B5B5;
 }
 
-#perm-userslist input {
+#perm-userslist input, #perm-acuserslist li, #perm-selectedusers li {
 	margin-right: 5px;
 }
 
-#perm-userslist label {
+#perm-userslist labe, #perm-acuserslist li, #perm-selectedusers lil {
 	display: inline-block;
 	width: 85px;
 	overflow: hidden;
 }
 
-#perm-userslist ul {
+#perm-userslist ul, #perm-acuserslist ul, #perm-selectedusers ul {
 	list-style: none;
+}
+
+#perm-selectedusers {
+	float: left;
+	width: 140px;
+	overflow-x: hidden;
+	border-left: 1px solid #AAAAAA;
+	margin: -34px 0 -14px;
+	height: 300px;
+	overflow-y: auto;
+}
+
+#perm-selectedusers p {
+	padding: 4px;
 }
 
 #perm-adduserdialog .perm-adduserpanel {
@@ -460,6 +480,6 @@
 
 #perm-adduserdialog .perm-userscroll {
 	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-y: auto;
 	height: 250px;
 }

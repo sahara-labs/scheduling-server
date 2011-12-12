@@ -131,8 +131,12 @@ public class UsersPage extends AbstractPermissionsPage
                         .setProjection(Property.forName("name"))
                         .createCriteria("userAssociations")
                             .add(Restrictions.eq("userClass", notInClass));
-                        
-                qu.add(Restrictions.not(Restrictions.in("name", subQu.getExecutableCriteria(this.db).list())));
+                
+                List<String> names = subQu.getExecutableCriteria(this.db).list();
+                if (names.size() > 0)
+                {
+                    qu.add(Restrictions.not(Restrictions.in("name", names)));
+                }
             }
         }
         
@@ -162,7 +166,58 @@ public class UsersPage extends AbstractPermissionsPage
     }
     
     /**
-     * Deletes users from a user class.n
+     * Adds users to a user class.
+     * 
+     * @param request
+     * @return response
+     * @throws JSONException
+     */
+    public JSONObject addUsersToClass(HttpServletRequest request) throws JSONException
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+        UserClass uc = new UserClassDao(this.db).findByName(request.getParameter("name"));
+        if (uc == null)
+        {
+            this.logger.warn("Unable to add users to user class because the class with name '" + 
+                    request.getParameter("name") + "' was not found.");
+            return obj;
+        }
+        
+        UserDao dao = new UserDao(this.db);
+        UserAssociationDao uaDao = new UserAssociationDao(this.db);
+        
+        String[] splitNames = request.getParameter("users").split(",");
+        if (splitNames.length < 1)
+        {
+            this.logger.warn("Unable to add users to user class because no names have been specified.");
+            return obj;
+        }
+        
+        for (String userName : splitNames)
+        {
+            String ns = userName.substring(0, userName.indexOf("-_-"));
+            String name = userName.substring(userName.indexOf("-_-") + 3);
+            
+            User user = dao.findByName(ns, name);
+            if (user == null)
+            {
+                this.logger.warn("Unable to add user association for user with name '" + ns + ':' + name + 
+                        "' because the user was not found");
+                continue;
+            }
+            
+            this.logger.info("Adding association for class '" + uc.getName() + "' and user '" + user.qName() + "'.");
+            uaDao.add(user, uc);
+        }
+        
+        obj.put("success", true);
+        return obj;
+    }
+    
+    /**
+     * Deletes users from a user class.
      * 
      * @param request
      * @return response
@@ -184,7 +239,14 @@ public class UsersPage extends AbstractPermissionsPage
         UserDao dao = new UserDao(this.db);
         UserAssociationDao uaDao = new UserAssociationDao(this.db);
         
-        for (String userName : request.getParameter("users").split(","))
+        String[] splitNames = request.getParameter("users").split(",");
+        if (splitNames.length < 1)
+        {
+            this.logger.warn("Unable to delete users in user class because no names have been specified.");
+            return obj;
+        }
+        
+        for (String userName : splitNames)
         {
             String ns = userName.substring(0, userName.indexOf("-_-"));
             String name = userName.substring(userName.indexOf("-_-") + 3);
@@ -201,6 +263,7 @@ public class UsersPage extends AbstractPermissionsPage
             uaDao.delete(user, uc);
         }
         
+        obj.put("success", true);
         return obj;
     }
 
