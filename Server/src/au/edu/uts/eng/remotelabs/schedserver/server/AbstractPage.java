@@ -273,9 +273,6 @@ public abstract class AbstractPage
         this.println("   <div class='headerimg' >");
         this.println("        <img src='/img/sahara.png' alt='Sahara Labs' />");
         this.println("    </div>");
-        this.println("    <div id='labshareimg'>");
-        this.println("        <a href='http://www.labshare.edu.au/'><img src='/img/labshare.png' alt='LabShare' /></a>");
-        this.println("    </div>");
         this.println("</div>");   
     }
     
@@ -421,7 +418,13 @@ public abstract class AbstractPage
     {
         this.println("<div id='footer' class='ui-corner-top'>");
         this.println("<a class='plaina' href='http://sourceforge.net/projects/labshare-sahara/' target='_blank'>" +
+                "<img src='/img/logo_small.png' alt='Logo' />" +
         		"Powered by the open source <strong>SAHARA Labs r3.2</strong> system.</a>");
+        this.println(
+                "<div>" +
+                    "<a class='plaina' href='http://www.feit.uts.edu.au/facilities/remote-lab/index.html' target='_blank'>" +
+                    "&copy; UTS 2009-2011</a>" +
+                "</div>");
         this.println("</div>");
     }
     

@@ -283,6 +283,15 @@ a.plaina:hover {
 	box-shadow: 0 -2px 2px #B5B5B5;
 }
 
+#footer img {
+	margin: 0 5px -11px;
+	border: none;
+}
+
+#footer div {
+	float: right;
+}
+
 /******************************************************************************
  ** Alert banner.                                                            **
  *****************************************************************************/
@@ -1080,6 +1089,16 @@ span.code {
 	font-weight: bold;
 	padding: 4px 0 4px 15px;
 	border-radius: 4px;
-}
 
+}
+/******************************************************************************
+ ** Form styling.                                                            **
+ ******************************************************************************/
+
+.saharaform input, .saharaform textarea, .saharaform select {
+	border: 1px solid #AAAAAA;
+	border-radius: 3px;
+	padding: 4px;
+	background: url("../img/linear_grad.png") repeat-x scroll 0 0 #FDFDFD;
+}
 
