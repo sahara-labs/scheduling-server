@@ -41,6 +41,7 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 
 /**
@@ -56,6 +57,22 @@ public class UserAssociationDao extends GenericDao<UserAssociation>
     public UserAssociationDao(Session ses)
     {
         super(ses, UserAssociation.class);
+    }
+    
+    /**
+     * Adds a user association for the user and user class.
+     * 
+     * @param user user to whose association to add
+     * @param userClass class to associate
+     */
+    public void add(User user, UserClass userClass)
+    {
+        UserAssociation ua = new UserAssociation();
+        ua.setUser(user);
+        ua.setUserClass(userClass);
+        ua.setId(new UserAssociationId(user.getId(), userClass.getId()));
+        
+        this.persist(ua);
     }
     
     /**
