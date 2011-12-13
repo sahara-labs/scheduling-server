@@ -916,7 +916,7 @@ function deleteAllUsersInClass()
 				"</div>" +
 				"<div class='ui-priority-secondary'>" +
 					"<span class='ui-icon ui-icon-alert'></span>" +
-					"Only the assoications with the users will be deleted. The associated users will not be deleted " +
+					"Only the associations with the users will be deleted. The associated users will not be deleted " +
 					"by this operation." +				
 				"</div>" +
 			"</div>"

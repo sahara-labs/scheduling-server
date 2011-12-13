@@ -100,12 +100,10 @@ public abstract class AbstractPage
         
         this.headCss.add("/css/schedulingserver.css");
         this.headCss.add("/css/smoothness/jquery-ui.custom.css");
-        this.headCss.add("/css/jqtransform.css");
         this.headCss.add("/css/validationEngine.jquery.css");
         
         this.headJs.add("/js/jquery.js");
         this.headJs.add("/js/jquery-ui.js");
-        this.headJs.add("/js/jquery.jqtransform.js");
         this.headJs.add("/js/jquery.validationEngine-en.js");
         this.headJs.add("/js/jquery.validationEngine.js");
         this.headJs.add("/js/schedulingserver.js");
@@ -335,7 +333,7 @@ public abstract class AbstractPage
         
         /* Logout action button contents. */
         this.println(
-                "<div id='logoutdialog' title='Logout'>\n" + 
+                "<div id='logoutdialog' style='display:none' title='Logout'>\n" + 
         		"    <div class='ui-priority-primary'>\n" + 
         		"        Are you sure you want to logout?\n" + 
         		"    </div>\n" + 
@@ -347,7 +345,7 @@ public abstract class AbstractPage
         
         /* Help action button contents. */
         this.println(
-                "<div id='helpdialog' title='Help and Troubleshooting'>\n" + 
+                "<div id='helpdialog' style='display:none' title='Help and Troubleshooting'>\n" + 
         		"   " + this.getPageHelp() +
         		"</div>");
         
