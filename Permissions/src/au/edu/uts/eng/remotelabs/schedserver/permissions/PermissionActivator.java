@@ -49,7 +49,7 @@ import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.PermissionsPage;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.KeysPage;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.UserClassesPage;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.UsersPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
@@ -94,7 +94,7 @@ public class PermissionActivator implements BundleActivator
 	    this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(3);
 	    this.pageRegistrations.add(context.registerService(HostedPage.class, UsersPage.getHostedPage(), null));
 	    this.pageRegistrations.add(context.registerService(HostedPage.class, UserClassesPage.getHostedPage(), null));
-	    this.pageRegistrations.add(context.registerService(HostedPage.class, PermissionsPage.getHostedPage(), null));
+	    this.pageRegistrations.add(context.registerService(HostedPage.class, KeysPage.getHostedPage(), null));
 	}
 
     @Override

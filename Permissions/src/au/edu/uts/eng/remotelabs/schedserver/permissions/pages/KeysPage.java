@@ -43,7 +43,7 @@ import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 /**
  * The permissions page.
  */
-public class PermissionsPage extends AbstractPermissionsPage
+public class KeysPage extends AbstractPermissionsPage
 {
     
     @Override
@@ -63,7 +63,7 @@ public class PermissionsPage extends AbstractPermissionsPage
 
     public static HostedPage getHostedPage()
     {
-        return new HostedPage("Keys", PermissionsPage.class, "perm", 
+        return new HostedPage("Keys", KeysPage.class, "perm", 
                 "Allows permissions to be created, read, updated and deleted.", true, true);
     }
 }
