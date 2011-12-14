@@ -155,8 +155,8 @@
 $(document).ready(function() {
 	/* Event handler for the accordian. */
 	$(".perm-userclasstitle").click(function() {
-		var $details = $(this).next();
-		var isClosed = $details.css("display") == "none";
+		var details = $(this).next();
+		var isClosed = details.css("display") == "none";
 		
 		$(".perm-userclass .open")
 			.slideUp()
@@ -171,7 +171,7 @@ $(document).ready(function() {
 				.removeClass("ui-icon-circle-arrow-e")
 				.addClass("ui-icon-circle-arrow-s");
 				
-			$details
+			details
 				.addClass("open")
 				.slideDown();
 		}
