@@ -41,12 +41,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
@@ -124,7 +124,7 @@ public class StatusTimeoutChecker implements Runnable
     @SuppressWarnings("unchecked")
     public void run()
     {
-        Session db = null;
+        org.hibernate.Session db = null;
         try
         {
             db = DataAccessActivator.getNewSession();
@@ -153,6 +153,20 @@ public class StatusTimeoutChecker implements Runnable
                         cal.get(Calendar.DATE) + '/' + (cal.get(Calendar.MONTH)+ 1) + '/' + cal.get(Calendar.YEAR) +
                         " - " + cal.get(Calendar.HOUR_OF_DAY) + ':' + cal.get(Calendar.MINUTE) + ':' + cal.get(Calendar.SECOND) +
                         ". Making rig inactive.");
+                
+                if (rig.getSession() != null)
+                {
+                    this.logger.warn("Timed out rig " + rig.getName() + " is in session so the session is being " +
+                    		"terminated.");
+                    Session ses = rig.getSession();
+                    
+                    ses.setActive(false);
+                    ses.setRemovalReason("Rig timed out");
+                    ses.setRemovalTime(new Date());
+                    
+                    rig.setInSession(false);
+                    rig.setSession(null);
+                }
                 
                 rig.setActive(false);
                 rig.setOnline(false);
