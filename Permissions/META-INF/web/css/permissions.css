@@ -115,6 +115,11 @@
 	margin-left: -12px;
 }
 
+#userclasses .perm-pagetitle div {
+	float: right;
+	margin-top: -5px;
+}
+
 .perm-list {
 	list-style: none;
 }

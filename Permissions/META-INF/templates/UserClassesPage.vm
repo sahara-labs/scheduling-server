@@ -24,6 +24,10 @@
 		<span class="ui-icon ui-icon-person"></span>
 		<span id="secondclassicon" class="ui-icon ui-icon-person"></span>
         User Classes:
+        
+        <div class="saharaform">
+            Search: <input id="perm-userclasssearch" type="text" />
+        </div>
 	</div>
 	
 	#if ( $userClasses.size() > 0 )
@@ -179,6 +183,7 @@ $(document).ready(function() {
 	
 	/* Event handlers for the permission buttons. */
 	$("#perm-createclass").click(createClass);
+    $("#perm-userclasssearch").keyup(filterClass);
 	$("#userclasslist .perm-editclass").click(editClass);
 	$("#userclasslist .perm-deleteclass").click(deleteClass);
 	$("#userclasslist .perm-addresperm").click(addPermission);

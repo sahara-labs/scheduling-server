@@ -33,6 +33,31 @@
  * @date 21st October 2011
  */
 
+function filterClass() 
+{
+	var search = $(this).val();
+	
+	if (search.length == 0)
+	{
+		/* Reshow all the hidden permissions. */
+		$("#userclasslist li").show();
+		return;
+	}
+	
+	$("#userclasslist > li").each(function() {
+		var id = $(this).attr("id").split("_").join(" ");
+
+		if (id.indexOf(search) == -1)
+		{
+			if ($(this).css("display") != "none") $(this).hide();
+		}
+		else 
+		{
+			if ($(this).css("display") == "none") $(this).show();
+		}
+	});
+}
+
 function createClass()
 {
 	$("body").append(
