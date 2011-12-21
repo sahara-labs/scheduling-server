@@ -50,25 +50,32 @@
         					<label for="${id}-isActive">Active:</label>
         					<input type="checkbox" id="${id}-isActive"  class="isActive"
 								#if( $uc.isActive() ) checked="checked" #end disabled="disabled" />
+							<input type="hidden" id="${id}-isActive-saved" value="${uc.isActive()}" />
         				</div>
         				<div>
         					<label for="${id}-isQueuable">Queuing:</label>
         					<input type="checkbox" id="${id}-isQueuable" class="isQueuable"
 								#if( $uc.isQueuable() ) checked="checked" #end disabled="disabled" />
+							<input type="hidden" id="${id}-isQueuable-saved" value="${uc.isQueuable()}" />
         				</div>
         				<div>
         					<label for="${id}-isBookable">Reservations:</label>
         					<input type="checkbox" id="${id}-isBookable" class="isBookable"
 								#if( $uc.isBookable() ) checked="checked" #end disabled="disabled" />
+							<input type="hidden" id="${id}-isBookable-saved" value="${uc.isBookable()}" />
         				</div>
 						
 						<div>
 							<label for="${id}-getPriority">Priority:</label>
-							<input type="text" id="${id}-getPriority" class="getPriority" value="$uc.getPriority()" disabled="disabled" />
+							<input type="text" id="${id}-getPriority" class="getPriority validate[required,custom[integer],min[1],max[255]]"
+								value="${uc.getPriority()}" disabled="disabled" />
+							<input type="hidden" id="${id}-getPriority-saved" value="${uc.getPriority()}" />
 						</div>
 						<div>
 							<label for="${id}-getTimeHorizon">Time Horizon:</label>
-							<input type="text" id="${id}-getTimeHorizon" class="getTimeHorizon" value="$uc.getTimeHorizon()" disabled="disabled" />
+							<input type="text" id="${id}-getTimeHorizon" class="getTimeHorizon validate[required,custom[integer],min[0]]" 
+								value="${uc.getTimeHorizon()}" disabled="disabled" />
+							<input type="hidden" id="${id}-getTimeHorizon-saved" value="${uc.getTimeHorizon()}" />
 						</div>
                     </form></div>
     				<div class="perm-userclassoperations perm-userclasspanel">
@@ -168,6 +175,7 @@ $(document).ready(function() {
 				.removeClass("ui-icon-circle-arrow-s")
 				.addClass("ui-icon-circle-arrow-e");
 		
+		
 		if (isClosed)
 		{
 			$(this).children("span")
@@ -178,7 +186,13 @@ $(document).ready(function() {
 				.addClass("open")
 				.slideDown();
 		}
+		else
+		{
+			cancelEditClass($(this).parent());
+		}
 	});
+	
+	$(".perm-userclassfields form").validationEngine();
 	
 	/* Event handlers for the permission buttons. */
 	$("#perm-createclass").click(createClass);

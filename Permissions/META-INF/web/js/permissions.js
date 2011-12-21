@@ -191,6 +191,8 @@ function editClass()
 	}
 	else
 	{
+		if (!$li.find(".perm-userclassfields form").validationEngine("validate")) return;
+		
 		$.post(
 				"/permissions/updateClass",
 				{
@@ -209,7 +211,25 @@ function editClass()
 					else
 					{
 						userClassMode[id] = false;
-						$li.find("input").attr("disabled", "disabled");
+						
+						$li.find('input[type!="hidden"]').attr("disabled", "disabled").each(function() {						
+							if ($(this).attr("type") == "checkbox")
+							{
+								if ($(this).is(":checked"))
+								{
+									$("#" + $(this).attr("id") + "-saved").val("true")
+								}
+								else
+								{
+									$("#" + $(this).attr("id") + "-saved").val("false")
+								}
+							}
+							else
+							{
+								$("#" + $(this).attr("id") + "-saved").val($(this).val());
+							}
+						});
+						
 						$li.find(".perm-editclass").empty().append(
 							"<img alt='Edit' src='/img/perm-edit.png' />" +
 							"<br />" +
@@ -234,7 +254,44 @@ function editClass()
 				}
 			);
 	}
-}	
+}
+
+function cancelEditClass($li)
+{
+	$li.find(".perm-userclassfields form").validationEngine("hideAll");
+
+	/* Restore the old values. */
+	$li.find('.perm-userclassfields input[type!="hidden"]').attr("disabled", "disabled").each(function() {
+		if ($(this).attr("type") == "checkbox")
+		{
+			if ($("#" + $(this).attr("id") + "-saved").val() == "true")
+			{
+				$(this).attr("checked", "checked");
+			}
+			else
+			{
+				$(this).removeAttr("checked");
+			}
+		}
+		else
+		{
+			$(this).val($("#" + $(this).attr("id") + "-saved").val());
+		}
+	});
+
+	$li.find(".perm-editclass").empty().append(
+			"<img alt='Edit' src='/img/perm-edit.png' />" +
+			"<br />" +
+			"Edit"
+	);
+
+	$li.find(".perm-deleteclass").empty().append(
+			"<img alt='Delete' src='/img/perm-delete.png' />" +
+			"<br />" +
+			"Delete"
+	);
+	
+}
 
 function deleteClass()
 {
@@ -304,18 +361,8 @@ function deleteClass()
 	else
 	{
 		userClassMode[id] = false;
-		$li.find("input").attr("disabled", "disabled");
-		$li.find(".perm-editclass").empty().append(
-			"<img alt='Edit' src='/img/perm-edit.png' />" +
-			"<br />" +
-			"Edit"
-		);
 		
-		$li.find(".perm-deleteclass").empty().append(
-				"<img alt='Delete' src='/img/perm-delete.png' />" +
-				"<br />" +
-				"Delete"
-		);
+		cancelEditClass($li);
 	}
 }
 
