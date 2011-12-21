@@ -569,7 +569,7 @@ function savePermission() {
 			
 				permList.append(
 						"<li id='perm-" + resp.id + "'>" + (name == "" ? $("#permissionType").val() + ": " +
-						$("#permissionResource").val().split(" ").join(" ") : name) + "</li>");
+						$("#permissionResource").val().split("_").join(" ") : name) + "</li>");
 				$("#perm-" + resp.id).click(loadPermission);
 			}
 			

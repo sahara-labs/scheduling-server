@@ -45,7 +45,7 @@
 				<div class="perm-userclasssection">
 					<div class="perm-sectiontitle">User Class Details</div>
 					
-    				<div class="perm-userclassfields perm-userclasspanel saharaform">
+    				<div class="perm-userclassfields perm-userclasspanel saharaform"><form>
         				<div>
         					<label for="${id}-isActive">Active:</label>
         					<input type="checkbox" id="${id}-isActive"  class="isActive"
@@ -70,7 +70,7 @@
 							<label for="${id}-getTimeHorizon">Time Horizon:</label>
 							<input type="text" id="${id}-getTimeHorizon" class="getTimeHorizon" value="$uc.getTimeHorizon()" disabled="disabled" />
 						</div>
-    				</div>
+                    </form></div>
     				<div class="perm-userclassoperations perm-userclasspanel">
     					<ul>
                     		<li><a class="perm-editclass perm-button">
@@ -96,13 +96,12 @@
                                     #if ( $rp.getDisplayName() )
                                         $rp.getDisplayName()
                                     #else
-                                        $rp.getType():
                                         #if ( $rp.getType().equals("TYPE") && $rp.getRigType() )
-                                            $rp.getRigType().getName().replaceAll('_', ' ')
+                                            Rig Type: $rp.getRigType().getName().replaceAll('_', ' ')
                                         #elseif ( $rp.getType().equals("RIG") && $rp.getRig() )
-                                            $rp.getRig().getName().replaceAll('_', ' ')
+                                            Rig: $rp.getRig().getName().replaceAll('_', ' ')
                                         #elseif ( $rp.getType().equals("CAPABILITY") && $rp.getRequestCapabilities() )
-                                            $rp.getRequestCapabilities().getCapabilities()
+                                            Capabilities: $rp.getRequestCapabilities().getCapabilities()
                                         #end
                                     #end
                                 </li>

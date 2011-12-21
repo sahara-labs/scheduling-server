@@ -48,8 +48,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RequestCapabilitiesDao;
@@ -276,31 +278,34 @@ public class UserClassesPage extends AbstractPermissionsPage
      */
     public JSONArray loadResources(HttpServletRequest request)
     {
-        JSONArray list = new JSONArray();
+        Criteria qu = null;
         
         if ("RIG".equals(request.getParameter("type")))
         {
-            for (Rig rig : new RigDao(this.db).list())
-            {
-                list.put(rig.getName());
-            }
+            qu = this.db.createCriteria(Rig.class)
+                    .addOrder(Order.asc("name"))
+                    .setProjection(Property.forName("name"));
         }
         else if ("RIGTYPE".equals(request.getParameter("type")))
         {
-            for (RigType rigType : new RigTypeDao(this.db).list())
-            {
-                list.put(rigType.getName());
-            }
+            qu = this.db.createCriteria(RigType.class)
+                    .addOrder(Order.asc("name"))
+                    .setProjection(Property.forName("name"));
         }
-        else if ("CAPABILITY".equals(request.getParameter("type")))
+        else if ("CAPABILITIES".equals(request.getParameter("type")))
         {
-            for (RequestCapabilities caps : new RequestCapabilitiesDao(this.db).list())
-            {
-                list.put(caps.getCapabilities());
-            }
+            qu = this.db.createCriteria(RequestCapabilities.class)
+                    .addOrder(Order.asc("capabilities"))
+                    .setProjection(Property.forName("capabilities"));
         }
-        
-        return list;
+        else
+        {
+            this.logger.warn("Unable to provide resource list because resource type '" + request.getParameter("type") +
+                    "' is not one of 'RIG', 'RIGTYPE' or 'CAPABILITIES'.");
+            return new JSONArray();
+        }
+
+        return new JSONArray(qu.list());
     }
     
     /**
@@ -366,7 +371,7 @@ public class UserClassesPage extends AbstractPermissionsPage
             }
             perm.setRigType(rigType);
         }
-        else if ("Capability".equals(request.getParameter("Type")))
+        else if ("Capabilities".equals(request.getParameter("Type")))
         {
             perm.setType(ResourcePermission.CAPS_PERMISSION);
             
@@ -474,7 +479,7 @@ public class UserClassesPage extends AbstractPermissionsPage
             }
             perm.setRigType(rigType);
         }
-        else if ("Capability".equals(request.getParameter("Type")))
+        else if ("Capabilities".equals(request.getParameter("Type")))
         {
             perm.setType(ResourcePermission.CAPS_PERMISSION);
             
