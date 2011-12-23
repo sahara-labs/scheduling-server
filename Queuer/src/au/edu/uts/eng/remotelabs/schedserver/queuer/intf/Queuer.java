@@ -53,7 +53,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -486,6 +485,7 @@ public class Queuer implements QueuerSkeletonInterface
      * @param ses database session
      * @return queue information
      */
+    @SuppressWarnings("unchecked")
     private QueueType getQueueForPermission(ResourcePermission perm, org.hibernate.Session ses)
     {
         /* Default values. */
@@ -567,29 +567,34 @@ public class Queuer implements QueuerSkeletonInterface
             
             /* Are all the rigs who have match rig capabilities to the
              * request capabilities. */
-            for (MatchingCapabilities match : requestCaps.getMatchingCapabilitieses())
+            Criteria qu = ses.createCriteria(Rig.class)
+                    .addOrder(Order.asc("name"))
+                    .createCriteria("rigCapabilities")
+                        .createCriteria("matchingCapabilitieses")
+                            .add(Restrictions.eq("requestCapabilities", requestCaps));
+            
+            /* Are all the rigs who have match rig capabilities to the
+             * request capabilities. */
+            for (Rig capRig : (List<Rig>)qu.list())
             {
-                for (Rig capRig : match.getRigCapabilities().getRigs())
-                {
-                    if (!capRig.getRigType().isCodeAssignable()) queue.setIsCodeAssignable(false);
-                    
-                    /* To be viable, only one rig needs to be online. */
-                    if (capRig.isOnline()) queue.setViable(true);
-                    
-                    /* To be 'has free', only one rig needs to be free. */
-                    if (free = this.isRigFree(capRig, perm, ses)) queue.setHasFree(true);
-                    
-                    /* Add target. */
-                    QueueTargetType target = new QueueTargetType();
-                    target.setViable(capRig.isOnline());
-                    target.setIsFree(free);
-                    queue.addQueueTarget(target);
-                    ResourceIDType resTarget = new ResourceIDType();
-                    resTarget.setType(ResourcePermission.RIG_PERMISSION);
-                    resTarget.setResourceID(capRig.getId().intValue());
-                    resTarget.setResourceName(capRig.getName());
-                    target.setResource(resTarget);
-                }
+                if (!capRig.getRigType().isCodeAssignable()) queue.setIsCodeAssignable(false);
+
+                /* To be viable, only one rig needs to be online. */
+                if (capRig.isOnline()) queue.setViable(true);
+
+                /* To be 'has free', only one rig needs to be free. */
+                if (free = this.isRigFree(capRig, perm, ses)) queue.setHasFree(true);
+
+                /* Add target. */
+                QueueTargetType target = new QueueTargetType();
+                target.setViable(capRig.isOnline());
+                target.setIsFree(free);
+                queue.addQueueTarget(target);
+                ResourceIDType resTarget = new ResourceIDType();
+                resTarget.setType(ResourcePermission.RIG_PERMISSION);
+                resTarget.setResourceID(capRig.getId().intValue());
+                resTarget.setResourceName(capRig.getName());
+                target.setResource(resTarget);
             }
         }
 
