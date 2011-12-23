@@ -58,7 +58,7 @@ public class IndexPage extends AbstractPage
     private static final Map<String, String> links = Collections.synchronizedMap(new LinkedHashMap<String, String>());
     static
     {
-        IndexPage.links.put("Diagnostics", "/info");
+//        IndexPage.links.put("Diagnostics", "/info");
 //        IndexPage.links.put("Documentation", "/doc");
         IndexPage.links.put("About", "/about");
     }
@@ -184,7 +184,7 @@ public class IndexPage extends AbstractPage
      */
     public static void addPageLink(String name, String link, String icon, String toolTip)
     {
-        IndexPage.links.remove("Diagnostics");
+//        IndexPage.links.remove("Diagnostics");
 //        IndexPage.links.remove("Documentation");
         IndexPage.links.remove("About");
         
@@ -192,7 +192,7 @@ public class IndexPage extends AbstractPage
         IndexPage.icons.put(name, icon);
         IndexPage.toolTips.put(name, toolTip);
         
-        IndexPage.links.put("Diagnostics", "/info");
+//        IndexPage.links.put("Diagnostics", "/info");
 //        IndexPage.links.put("Documentation", "/doc");
         IndexPage.links.put("About", "/about");
     }

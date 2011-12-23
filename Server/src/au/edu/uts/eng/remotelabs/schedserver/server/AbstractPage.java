@@ -547,13 +547,13 @@ public abstract class AbstractPage
      */
     public static void addNavLink(String name, String link)
     {
-        AbstractPage.navLinks.remove("Diagnostics");
+//        AbstractPage.navLinks.remove("Diagnostics");
 //        AbstractPage.navLinks.remove("Documentation");
         AbstractPage.navLinks.remove("About");
         
         AbstractPage.navLinks.put(name, link);
         
-        navLinks.put("Diagnostics", "/info");
+//        navLinks.put("Diagnostics", "/info");
 //        navLinks.put("Documentation", "/doc");
         navLinks.put("About", "/about");
     }
