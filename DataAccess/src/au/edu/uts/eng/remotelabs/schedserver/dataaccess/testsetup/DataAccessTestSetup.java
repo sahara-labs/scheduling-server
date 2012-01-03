@@ -54,12 +54,13 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeInformation;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeMedia;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyConstraint;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyRedemption;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
@@ -70,7 +71,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.impl.SystemErrLogger;
 public class DataAccessTestSetup
 {
     /** Whether the database is setup. */
-    public  static boolean isSetup = false;
+    public static boolean isSetup = false;
     
     /** JDBC string. */
     public static String jdbc = "jdbc:mysql://127.0.0.1:3306/sahara";
@@ -121,13 +122,14 @@ public class DataAccessTestSetup
             cfg.addAnnotatedClass(RigOfflineSchedule.class);
             cfg.addAnnotatedClass(RigLog.class);
             cfg.addAnnotatedClass(RigType.class);
-            cfg.addAnnotatedClass(RigTypeInformation.class);
-            cfg.addAnnotatedClass(RigTypeMedia.class);
             cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
             cfg.addAnnotatedClass(User.class);
             cfg.addAnnotatedClass(UserAssociation.class);
             cfg.addAnnotatedClass(UserAssociationId.class);
             cfg.addAnnotatedClass(UserClass.class);
+            cfg.addAnnotatedClass(UserClassKey.class);
+            cfg.addAnnotatedClass(UserClassKeyConstraint.class);
+            cfg.addAnnotatedClass(UserClassKeyRedemption.class);
             cfg.addAnnotatedClass(UserLock.class);
 
             f = DataAccessActivator.class.getDeclaredField("sessionFactory");

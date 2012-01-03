@@ -5,7 +5,7 @@
  *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2010, University of Technology, Sydney
+ * Copyright (c) 2012, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,99 +32,73 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 6th September 2010
+ * @date 3rd January 2012
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
-
-import static javax.persistence.GenerationType.AUTO;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-
 /**
- * RigTypeMedia entity class which maps to the rig_type_media table.
- * <p />
- * The rig rigType media holds a list of media resources that relate to the rig rigType.
+ * Store redemption of users.
  */
 @Entity
-@Table(name = "rig_type_media")
-public class RigTypeMedia implements Serializable
+@Table(name = "user_class_key_redemption")
+public class UserClassKeyRedemption implements Serializable
 {
-    /** Serializable class. */
-    private static final long serialVersionUID = 242664161429465518L;
-    
+    private static final long serialVersionUID = -9010792260048736914L;
+
     /** Record primary key. */
-    private int id;
+    private Long id;
     
-    /** The rig rigType the media file relates to. */
-    private RigType rigType;
+    /** The key that redeemed the user. */
+    private UserClassKey classKey;
     
-    /** The file name of the media file. This should not be the absolute path
-     *  but a relative path from the Scheduling Server media directory. */
-    private String fileName;
-    
-    /** The MIME rigType of file. */
-    private String mime;
-    
-    public RigTypeMedia()
-    {
-        /* Bean style constructor. */
-    }
+    /** The user that was redeemed. */
+    private User user;
 
     @Id
-    @GeneratedValue(strategy = AUTO)
-    @Column(name = "id", unique = true, nullable = false)
-    public int getId()
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    public Long getId()
     {
         return this.id;
     }
 
-    public void setId(int id)
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rig_type_id", nullable = false)
-    public RigType getRigType()
+    @JoinColumn(name = "user_class_key_id", nullable = false)
+    @ManyToOne(optional = false)
+    public UserClassKey getClassKey()
     {
-        return this.rigType;
+        return this.classKey;
     }
 
-    public void setRigType(RigType type)
+    public void setClassKey(UserClassKey classKey)
     {
-        this.rigType = type;
+        this.classKey = classKey;
     }
 
-    @Column(name = "file_name", nullable = false, length = 255)
-    public String getFileName()
+    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(optional = false)
+    public User getUser()
     {
-        return this.fileName;
+        return this.user;
     }
 
-    public void setFileName(String fileName)
+    public void setUser(User user)
     {
-        this.fileName = fileName;
+        this.user = user;
     }
-
-    @Column(name = "mime", nullable = false, length = 50)
-    public String getMime()
-    {
-        return this.mime;
-    }
-
-    public void setMime(String mime)
-    {
-        this.mime = mime;
-    }
-
 }

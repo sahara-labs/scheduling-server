@@ -32,18 +32,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2012
+ * @date 3rd January 2012
  */
-package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
+package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
+
+import org.hibernate.Session;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
 
 /**
- * 
+ * Data access object for the {@link UserClassKey} class.
  */
-public class UserAssociationRedemption
+public class UserClassKeyDao extends GenericDao<UserClassKey>
 {
-    private Long id;
+
+    /**
+     * Opens a new database session.
+     */
+    public UserClassKeyDao()
+    {
+        super(UserClassKey.class);
+    }
     
-    private UserClassKey classKey;
-    
-    private User user;
+    /** 
+     * Reuses the specified session.
+     * 
+     * @param ses session to reuse.
+     */
+    public UserClassKeyDao(Session ses)
+    {
+        super(ses, UserClassKey.class);
+    }
 }

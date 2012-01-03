@@ -20,12 +20,13 @@
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType" />
-		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeInformation" />
-		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigTypeMedia" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyConstraint" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyRedemption"  />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock" />
     </session-factory>
 </hibernate-configuration>

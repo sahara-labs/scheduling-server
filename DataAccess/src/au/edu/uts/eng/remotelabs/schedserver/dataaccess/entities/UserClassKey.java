@@ -47,6 +47,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -72,7 +73,7 @@ public class UserClassKey implements Serializable
     private Set<UserClassKeyConstraint> constraints = new HashSet<UserClassKeyConstraint>(0);
     
     /** The list of users that have redeemed this association. */
-    private Set<UserAssociationRedemption> redemptions = new HashSet<UserAssociationRedemption>(0);
+    private Set<UserClassKeyRedemption> redemptions = new HashSet<UserClassKeyRedemption>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -99,6 +100,7 @@ public class UserClassKey implements Serializable
     }
 
     @JoinColumn(name = "user_class_id", nullable = false)
+    @ManyToOne(optional = false)
     public UserClass getUserClass()
     {
         return this.userClass;
@@ -121,12 +123,12 @@ public class UserClassKey implements Serializable
     }
 
     @OneToMany(mappedBy = "classKey", fetch = FetchType.LAZY)
-    public Set<UserAssociationRedemption> getRedemptions()
+    public Set<UserClassKeyRedemption> getRedemptions()
     {
         return this.redemptions;
     }
 
-    public void setRedemptions(Set<UserAssociationRedemption> redemptions)
+    public void setRedemptions(Set<UserClassKeyRedemption> redemptions)
     {
         this.redemptions = redemptions;
     }
