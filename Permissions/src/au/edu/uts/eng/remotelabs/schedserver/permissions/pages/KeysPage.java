@@ -38,6 +38,11 @@ package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONArray;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
 /**
@@ -49,11 +54,38 @@ public class KeysPage extends AbstractPermissionsPage
     @Override
     public void setupView(HttpServletRequest req)
     {
-        // TODO Auto-generated method stub
-        
+        /* Does not have page. */
+        throw new UnsupportedOperationException();
     }
-    
-
+    /**
+     * Returns the list of keys for a user class.
+     * 
+     * @param request request
+     * @return list of permission keys
+     */
+    public JSONArray getList(HttpServletRequest request)
+    {
+        JSONArray arr = new JSONArray();
+        
+        String className = request.getParameter("name");
+        if (className == null)
+        {
+            this.logger.warn("Unable to provide permission key list because the user class name was not provided.");
+            return arr;
+        }
+        
+        UserClass userClass = new UserClassDao().findByName(className);
+        if (userClass == null)
+        {
+            this.logger.warn("Unable to provide user class key list because the user class with name '" + className +
+                    "' was not found.");
+            return arr;
+        }
+        
+        for (UserClassKey key : userClass.getKeys()) arr.put(key.getRedeemKey());
+        
+        return arr;
+    }
 
     @Override
     protected String getPageType()
@@ -64,6 +96,6 @@ public class KeysPage extends AbstractPermissionsPage
     public static HostedPage getHostedPage()
     {
         return new HostedPage("Keys", KeysPage.class, "perm", 
-                "Allows permissions to be created, read, updated and deleted.", true, true);
+                "Allows permissions to be created, read, updated and deleted.", false, false);
     }
 }

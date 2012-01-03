@@ -141,6 +141,10 @@
 							<img src="/img/perm-deleteuser.png" alt="Del" /><br />
 							Remove
 						</a>
+						<a class="perm-userclasskeys perm-button">
+							<img src="/img/perm-keys.png" alt="Key" /><br />
+							Access Keys
+						</a>
                         <a class="perm-deleteallusers perm-button">
 							<img src="/img/perm-delete.png" alt="Del" /><br />
 							Remove All
@@ -204,6 +208,7 @@ $(document).ready(function() {
 	$("#userclasslist .perm-adduser").click(addUserToClass);
 	$("#userclasslist .perm-deleteuser").click(deleteUserInClass);
 	$("#userclasslist .perm-deleteallusers").click(deleteAllUsersInClass);
+	$("#userclasslist .perm-userclasskeys").click(userClassKeys);
 	
 	$(".saharaform input, .saharaform select, .saharaform textarea")
 		.focusin(formFocusIn)

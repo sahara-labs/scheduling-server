@@ -69,6 +69,11 @@ public class UserClassKey implements Serializable
     /** The user class this key redeems. */
     private UserClass userClass;
     
+    private boolean active;
+    
+    /** The number of remaining uses of the key. */
+    private int remaining;
+    
     /** The constraints list that must hold for a key to be redeemed. */
     private Set<UserClassKeyConstraint> constraints = new HashSet<UserClassKeyConstraint>(0);
     
@@ -109,6 +114,28 @@ public class UserClassKey implements Serializable
     public void setUserClass(UserClass userClass)
     {
         this.userClass = userClass;
+    }
+
+    @Column(name = "active")
+    public boolean isActive()
+    {
+        return this.active;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
+    }
+
+    @Column(name = "remaining")
+    public int getRemaining()
+    {
+        return this.remaining;
+    }
+
+    public void setRemaining(int remaining)
+    {
+        this.remaining = remaining;
     }
 
     @OneToMany(mappedBy = "classKey", fetch = FetchType.EAGER)

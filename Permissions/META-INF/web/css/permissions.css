@@ -257,10 +257,8 @@
 	margin: 8px 3px;
 }
 
-.perm-userssection .perm-deleteallusers {
-	float: right;
+.perm-userssection .perm-deleteallusers, .perm-userssection .perm-userclasskeys {
 	height: 64px;
-	margin-right: 6px;
 }
 
 .perm-userssection .perm-sectiontitle {
@@ -335,12 +333,15 @@
 	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+	box-shadow: 0 0 2px #B5B5B5;
+	-moz-box-shadow: 0 0 2px #B5B5B5;
+	-webkit-box-shadow: 0 0 2px #B5B5B5;
 }
 
 .perm-permissionlist li:hover {
-	box-shadow: 0 0 3px #B5B5B5;
-	-moz-box-shadow: 0 0 3px #B5B5B5;
-	-webkit-box-shadow: 0 0 3px #B5B5B5;
+	box-shadow: 0 0 3px #606060;
+	-moz-box-shadow: 0 0 3px #606060;
+	-webkit-box-shadow: 0 0 3px #606060;
 }
 
 #permissiondialog .timeline {
@@ -489,4 +490,15 @@
 	overflow-x: hidden;
 	overflow-y: auto;
 	height: 250px;
+}
+
+#perm-keysdialog .ui-state-highlight {
+	width: 300px;
+	margin: 0 auto;
+	padding: 5px;
+}
+
+#perm-keysdialog span.ui-icon {
+	float: left;
+	margin-right: 5px;
 }

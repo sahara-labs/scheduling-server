@@ -1025,3 +1025,61 @@ function deleteAllUsersInClass()
 		},
 	});
 }
+
+function userClassKeys()
+{
+	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+
+	$("body").append(
+			"<div id='perm-keysdialog' title='Access Keys'>" +
+
+			"</div>"
+	);
+
+	$("#perm-keysdialog").dialog({
+		resizable: false,
+		modal: true,
+		closeOnEscape: true,
+		width: 600,
+		height: 300,
+		buttons: {
+			'Add': function() {
+				
+			},
+			'Close': function() {
+				$(this).dialog('close');
+			}
+		},
+		close: function() {
+			$(this).dialog('destroy');
+			$(this).remove();
+
+		},
+	});
+	
+	$.post(
+		"/keys/getList",
+		{ name: id },
+		function(resp) {
+			if (!$.isArray(resp)) 
+			{
+				window.location.reload();
+				return;
+			}
+			
+			if (resp.length > 0)
+			{
+				
+			}
+			else
+			{
+				$("#perm-keysdialog").append(
+						"<div class='ui-state-highlight ui-corner-all'>" +
+							"<span class='ui-icon ui-icon-info'></span>" +
+							"This user class has no access keys." +
+						"</div>"
+				);
+			}
+		}
+	)
+}
