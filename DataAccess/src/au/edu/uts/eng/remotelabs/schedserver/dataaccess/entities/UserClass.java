@@ -109,9 +109,17 @@ public class UserClass implements java.io.Serializable
     /** The time offset from a booking can be made. */
     private int timeHorizon;
     
+    /** The user associations to the users in this class. */
     private Set<UserAssociation> userAssociations = new HashSet<UserAssociation>(0);
+    
+    /** The academic permissions relating to this class. */
     private Set<AcademicPermission> academicPermissions = new HashSet<AcademicPermission>(0);
+    
+    /** The resource permissions this class has. */
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
+    
+    /** The user class keys to add users to this class. */
+    private Set<UserClassKey> keys = new HashSet<UserClassKey>(0);
 
     public UserClass()
     {
@@ -236,8 +244,7 @@ public class UserClass implements java.io.Serializable
         return this.academicPermissions;
     }
 
-    public void setAcademicPermissions(
-            final Set<AcademicPermission> academicPermissions)
+    public void setAcademicPermissions(final Set<AcademicPermission> academicPermissions)
     {
         this.academicPermissions = academicPermissions;
     }
@@ -248,9 +255,19 @@ public class UserClass implements java.io.Serializable
         return this.resourcePermissions;
     }
 
-    public void setResourcePermissions(
-            final Set<ResourcePermission> resourcePermissions)
+    public void setResourcePermissions(final Set<ResourcePermission> resourcePermissions)
     {
         this.resourcePermissions = resourcePermissions;
+    }
+
+    @OneToMany(mappedBy = "userClass", fetch = FetchType.LAZY)
+    public Set<UserClassKey> getKeys()
+    {
+        return this.keys;
+    }
+
+    public void setKeys(Set<UserClassKey> keys)
+    {
+        this.keys = keys;
     }
 }
