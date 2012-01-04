@@ -486,6 +486,11 @@
 	font-weight: bold;
 }
 
+#perm-keysdialog {
+	padding: 0px;
+	margin-bottom: -7px;
+}
+
 #perm-adduserdialog .perm-userscroll {
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -494,7 +499,7 @@
 
 #perm-keysdialog .ui-state-highlight {
 	width: 300px;
-	margin: 0 auto;
+	margin: 10px auto;
 	padding: 5px;
 }
 
@@ -508,12 +513,31 @@
 }
 
 #perm-keyslist {
-	width: 350px;
+	width: 510px;
 	border-right: 1px solid #AAAAAA;
 }
 
 #perm-keysactions {
-	width: 99px;
 	border-left: 1px solid #AAAAAA;
 	margin-left: -1px;
+}
+
+#perm-keysactions .perm-button {
+	width: 55px;
+	height: 55px;
+	margin: 10px;
+}
+
+.perm-buttondisabled {
+	opacity: 0.6;
+	-webkit-opacity: 0.6;
+	-moz-opacity: 0.6;
+	cursor: default;
+	
+}
+
+.perm-buttondisabled:hover {
+	box-shadow: 0 0 4px #B5B5B5;
+	-moz-box-shadow: 0 0 4px #B5B5B5;
+	-webkit-box-shadow: 0 0 4px #B5B5B5;
 }

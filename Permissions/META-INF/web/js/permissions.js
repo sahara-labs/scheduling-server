@@ -1032,24 +1032,26 @@ function userClassKeys()
 
 	$("body").append(
 			"<div id='perm-keysdialog' title='Access Keys'>" +
-				"<div id='perm-keyslist'>" +
+				"<div id='perm-keyslist'>&nbsp;" +
 					"<ul>" +
 					"</ul>" +
+					
 				"</div>" +
 				"<div id='perm-keysactions'>" +
-					"<a class='perm-userclasskeys perm-button'>" +
+					"<a class='perm-keysadd perm-button'>" +
 						"<img src='/img/perm-add.png' alt='Add' /><br />" +
 						"Add Key" +
 					"</a>" +
-					"<a class='perm-userclasskeys perm-button'>" +
+					"<a class='perm-keysemail perm-button perm-buttondisabled'>" +
 						"<img src='/img/perm-email.png' alt='Email' /><br />" +
 						"Email Key" +
 					"</a>" +
-					"<a class='perm-userclasskeys perm-button'>" +
+					"<a class='perm-keysdelete perm-button perm-buttondisabled'>" +
 						"<img src='/img/perm-delete.png' alt='Delete' /><br />" +
 						"Delete Key" +
 					"</a>" +
 				"</div>" +
+				"<div style='clear:both'></div>" +
 			"</div>"
 	);
 
@@ -1058,7 +1060,6 @@ function userClassKeys()
 		modal: true,
 		closeOnEscape: true,
 		width: 600,
-		height: 300,
 		buttons: {
 			'Close': function() {
 				$(this).dialog('close');
@@ -1069,6 +1070,8 @@ function userClassKeys()
 			$(this).remove();
 		},
 	});
+	
+	$("#perm-keysdialog .perm-keysadd").click(addKey);
 	
 	$.post(
 		"/keys/getList",
@@ -1082,7 +1085,9 @@ function userClassKeys()
 			
 			if (resp.length > 0)
 			{
-				
+				var i, html = ''; 
+				for (i in resp) html += keyLi(resp[i]);
+				$("#perm-keyslist ul").append(html);
 			}
 			else
 			{
@@ -1095,4 +1100,18 @@ function userClassKeys()
 			}
 		}
 	)
+	
+	function addKey()
+	{
+		
+	}
+	
+	function keyLi(key)
+	{
+		var li = "<li class='" +
+					"<span>Key: </span> " + key.name;
+		
+		return li;
+	}
 }
+

@@ -36,12 +36,16 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
@@ -62,8 +66,11 @@ public class KeysPage extends AbstractPermissionsPage
      * 
      * @param request request
      * @return list of permission keys
+     * @throws JSONException 
      */
-    public JSONArray getList(HttpServletRequest request)
+    
+    @SuppressWarnings("unchecked")
+    public JSONArray getList(HttpServletRequest request) throws JSONException
     {
         JSONArray arr = new JSONArray();
         
@@ -74,15 +81,19 @@ public class KeysPage extends AbstractPermissionsPage
             return arr;
         }
         
-        UserClass userClass = new UserClassDao().findByName(className);
-        if (userClass == null)
-        {
-            this.logger.warn("Unable to provide user class key list because the user class with name '" + className +
-                    "' was not found.");
-            return arr;
-        }
         
-        for (UserClassKey key : userClass.getKeys()) arr.put(key.getRedeemKey());
+        for (UserClassKey key : (List<UserClassKey>) this.db.createCriteria(UserClassKey.class)
+                .addOrder(Order.asc("active"))
+                .addOrder(Order.desc("id"))
+                .createCriteria("userClass")
+                    .add(Restrictions.eq("name", className)).list())
+        {
+            JSONObject keyObj = new JSONObject();
+            keyObj.put("name", key.getRedeemKey());
+            keyObj.put("active", key.isActive());
+            keyObj.put("remaining", key.getRemaining());
+            arr.put(keyObj);
+        }
         
         return arr;
     }
