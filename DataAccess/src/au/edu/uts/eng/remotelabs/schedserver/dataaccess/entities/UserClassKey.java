@@ -93,7 +93,7 @@ public class UserClassKey implements Serializable
         this.id = id;
     }
 
-    @Column(name = "redeem_key", unique = true, length = 255)
+    @Column(name = "redeem_key", unique = true, nullable = false, length = 255)
     public String getRedeemKey()
     {
         return this.redeemKey;
