@@ -998,7 +998,7 @@ function deleteAllUsersInClass()
 		resizable: false,
 		modal: true,
 		closeOnEscape: true,
-		width: 400,
+		width: 450,
 		buttons: {
 			'Remove': function() {
 				$.post(
@@ -1032,7 +1032,24 @@ function userClassKeys()
 
 	$("body").append(
 			"<div id='perm-keysdialog' title='Access Keys'>" +
-
+				"<div id='perm-keyslist'>" +
+					"<ul>" +
+					"</ul>" +
+				"</div>" +
+				"<div id='perm-keysactions'>" +
+					"<a class='perm-userclasskeys perm-button'>" +
+						"<img src='/img/perm-add.png' alt='Add' /><br />" +
+						"Add Key" +
+					"</a>" +
+					"<a class='perm-userclasskeys perm-button'>" +
+						"<img src='/img/perm-email.png' alt='Email' /><br />" +
+						"Email Key" +
+					"</a>" +
+					"<a class='perm-userclasskeys perm-button'>" +
+						"<img src='/img/perm-delete.png' alt='Delete' /><br />" +
+						"Delete Key" +
+					"</a>" +
+				"</div>" +
 			"</div>"
 	);
 
@@ -1043,9 +1060,6 @@ function userClassKeys()
 		width: 600,
 		height: 300,
 		buttons: {
-			'Add': function() {
-				
-			},
 			'Close': function() {
 				$(this).dialog('close');
 			}
@@ -1053,7 +1067,6 @@ function userClassKeys()
 		close: function() {
 			$(this).dialog('destroy');
 			$(this).remove();
-
 		},
 	});
 	
@@ -1073,7 +1086,7 @@ function userClassKeys()
 			}
 			else
 			{
-				$("#perm-keysdialog").append(
+				$("#perm-keyslist").empty().append(
 						"<div class='ui-state-highlight ui-corner-all'>" +
 							"<span class='ui-icon ui-icon-info'></span>" +
 							"This user class has no access keys." +
