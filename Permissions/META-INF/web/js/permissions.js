@@ -1035,7 +1035,6 @@ function userClassKeys()
 				"<div id='perm-keyslist'>&nbsp;" +
 					"<ul>" +
 					"</ul>" +
-					
 				"</div>" +
 				"<div id='perm-keysactions'>" +
 					"<a class='perm-keysadd perm-button'>" +
@@ -1103,7 +1102,28 @@ function userClassKeys()
 	
 	function addKey()
 	{
-		
+		if ($("#perm-keysmodal").length == 0)
+		{
+			$("#perm-keysdialog").append(
+					"<div id='perm-keysmodal' class='saharaform'>" +
+						"<div class='perm-keysmodalcontents'><form>" +
+							"<div class='keys-title'>Required Details:</div>" +
+							"<div>" +
+								"<label for='keys-userclass'>User Class: </label>" +
+								"<input id='keys-userclass' type='text' value='" + id.split("_").join(" ") + "' disabled='disabled' />" +
+							"</div>" +
+							"<div>" +
+								"<label for='keys-uses'>Key Uses: </label>" +
+								"<input id='keys-uses' type='text' class='validate[required,custom[integer],min[0]]' />" +
+							"</div>" +
+						"</form></div>" +
+					"</div>"
+			);
+		}
+		else
+		{
+			$("#perm-keysmodal").remove();
+		}
 	}
 	
 	function keyLi(key)

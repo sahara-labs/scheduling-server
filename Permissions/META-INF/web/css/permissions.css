@@ -487,6 +487,7 @@
 }
 
 #perm-keysdialog {
+	position: relative;
 	padding: 0px;
 	margin-bottom: -7px;
 }
@@ -540,4 +541,17 @@
 	box-shadow: 0 0 4px #B5B5B5;
 	-moz-box-shadow: 0 0 4px #B5B5B5;
 	-webkit-box-shadow: 0 0 4px #B5B5B5;
+}
+
+#perm-keysmodal {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 510px;
+	height: 100%;
+	background-color: #FFFFFF;
+}
+
+#perm-keysmodal .perm-keysmodalcontents {
+	padding: 10px;
 }
