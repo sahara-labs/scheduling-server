@@ -75,6 +75,9 @@ public class UserClassKey implements Serializable
     /** The number of remaining uses of the key. */
     private int remaining;
     
+    /** Whether the key is user targeted. */
+    private boolean userTargeted;
+    
     /** The constraints list that must hold for a key to be redeemed. */
     private Set<UserClassKeyConstraint> constraints = new HashSet<UserClassKeyConstraint>(0);
     
@@ -137,6 +140,17 @@ public class UserClassKey implements Serializable
     public void setRemaining(int remaining)
     {
         this.remaining = remaining;
+    }
+
+    @Column(name = "user_targeted")
+    public boolean isUserTargeted()
+    {
+        return this.userTargeted;
+    }
+
+    public void setUserTargeted(boolean userTargeted)
+    {
+        this.userTargeted = userTargeted;
     }
 
     @OneToMany(mappedBy = "classKey", fetch = FetchType.EAGER)
