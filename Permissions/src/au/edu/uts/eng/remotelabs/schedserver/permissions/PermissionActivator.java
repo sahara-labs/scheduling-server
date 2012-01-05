@@ -46,7 +46,9 @@ import org.apache.velocity.app.Velocity;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.KeysPage;
@@ -69,6 +71,9 @@ public class PermissionActivator implements BundleActivator
     /** Hosted page registrations. */
     private List<ServiceRegistration<HostedPage>> pageRegistrations;
     
+    /** Configuration service tracker. */
+    private static ServiceTracker<Config, Config> configTracker;
+    
     /** Logger. */
     private Logger logger;
 
@@ -77,6 +82,9 @@ public class PermissionActivator implements BundleActivator
 	{
 	    this.logger = LoggerActivator.getLogger();
 	    this.logger.info("Starting the " + context.getBundle().getSymbolicName() + " bundle...");
+	    
+	    PermissionActivator.configTracker = new ServiceTracker<Config, Config>(context, Config.class, null);
+	    PermissionActivator.configTracker.open();
 	    
 	    /* Register the Permissions service. */
 	    this.logger.debug("Registering the Permissions SOAP interface service.");
@@ -106,6 +114,22 @@ public class PermissionActivator implements BundleActivator
 	    
 	    for (ServiceRegistration<HostedPage> pageReg : this.pageRegistrations) pageReg.unregister();
 	    this.pageRegistrations.clear();
+	    
+	    PermissionActivator.configTracker.close();
+	    PermissionActivator.configTracker = null;
 	}
-
+    
+    /**
+     * Returns the configured value or null if the property does not exist.
+     * 
+     * @param prop property
+     * @return value or null
+     */
+    public static String getConfig(String prop)
+    {
+        if (PermissionActivator.configTracker == null) return null;
+        
+        Config conf = PermissionActivator.configTracker.getService();
+        return conf == null ? null : conf.getProperty(prop);
+    }
 }

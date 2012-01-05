@@ -48,7 +48,8 @@ Import-Package: au.edu.uts.eng.remotelabs.schedserver.config,
  javax.xml.xpath,
  org.hibernate,
  org.hibernate.criterion,
- org.osgi.framework;version="0.0.0"
+ org.osgi.framework;version="0.0.0",
+ org.osgi.util.tracker;version="1.5.0"
 Bundle-ClassPath: .,
  lib/axiom-api-1.2.8.jar,
  lib/axiom-dom-1.2.8.jar,

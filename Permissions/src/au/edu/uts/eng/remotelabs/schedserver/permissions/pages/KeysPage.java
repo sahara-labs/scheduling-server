@@ -46,6 +46,8 @@ import org.codehaus.jettison.json.JSONObject;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
@@ -68,7 +70,6 @@ public class KeysPage extends AbstractPermissionsPage
      * @return list of permission keys
      * @throws JSONException 
      */
-    
     @SuppressWarnings("unchecked")
     public JSONArray getList(HttpServletRequest request) throws JSONException
     {
@@ -77,25 +78,82 @@ public class KeysPage extends AbstractPermissionsPage
         String className = request.getParameter("name");
         if (className == null)
         {
-            this.logger.warn("Unable to provide permission key list because the user class name was not provided.");
+            this.logger.warn("Unable to provide access key list because the user class name was not provided.");
             return arr;
         }
         
         
         for (UserClassKey key : (List<UserClassKey>) this.db.createCriteria(UserClassKey.class)
-                .addOrder(Order.asc("active"))
+                .add(Restrictions.eq("active", Boolean.TRUE))
                 .addOrder(Order.desc("id"))
                 .createCriteria("userClass")
                     .add(Restrictions.eq("name", className)).list())
         {
             JSONObject keyObj = new JSONObject();
-            keyObj.put("name", key.getRedeemKey());
+            keyObj.put("key", key.getRedeemKey());
             keyObj.put("active", key.isActive());
             keyObj.put("remaining", key.getRemaining());
             arr.put(keyObj);
         }
         
         return arr;
+    }
+
+    /**
+     * Adds a new access key.
+     * 
+     * @param request web request
+     * @return whether successful
+     * @throws JSONException
+     */
+    public JSONObject addKey(HttpServletRequest request) throws JSONException 
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+        String className = request.getParameter("name");
+        if (className == null)
+        {
+            this.logger.warn("Unable to create access key because the user class name was not provided.");
+            return obj;
+        }
+        
+        UserClass userClass = new UserClassDao(this.db).findByName(className);
+        if (userClass == null)
+        {
+            this.logger.warn("Unable to create access key because the user class with name '" + className + "' was " +
+            		"not found.");
+            return obj;
+        }
+        
+        UserClassKey newKey = new UserClassKey();
+        newKey.setActive(true);
+        newKey.setUserClass(userClass);
+        
+        try
+        {
+            newKey.setRemaining(Integer.parseInt(request.getParameter("uses")));
+        }
+        catch (NumberFormatException nfe)
+        {
+            this.logger.warn("Unable to create access key because the uses number was not supplied or invalid.");
+            return obj;
+        }
+        
+        newKey.generateKey();
+        
+        this.db.beginTransaction();
+        this.db.persist(newKey);
+        this.db.getTransaction().commit();
+        
+        this.logger.info("Added new access key '" + newKey.getRedeemKey() + "' for user class '" + 
+                userClass.getName() + "'.");
+        
+        obj.put("success", true);
+        obj.put("key", newKey.getRedeemKey());
+        obj.put("active", newKey.isActive());
+        obj.put("remaining", newKey.getRemaining());
+        return obj;
     }
 
     @Override
@@ -106,7 +164,6 @@ public class KeysPage extends AbstractPermissionsPage
 
     public static HostedPage getHostedPage()
     {
-        return new HostedPage("Keys", KeysPage.class, "perm", 
-                "Allows permissions to be created, read, updated and deleted.", false, false);
+        return new HostedPage("Keys", KeysPage.class, null, null, false, false);
     }
 }

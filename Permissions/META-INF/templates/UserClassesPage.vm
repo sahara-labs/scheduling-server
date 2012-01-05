@@ -26,7 +26,7 @@
         User Classes:
         
         <div class="saharaform">
-            Search: <input id="perm-userclasssearch" type="text" />
+            Filter:&nbsp;&nbsp;<input id="perm-userclasssearch" type="text" />
         </div>
 	</div>
 	

@@ -43,7 +43,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-commons-annotations.jar"/>
-	<classpathentry kind="lib" path="/SchedServer-Framework/lib/org.eclipse.osgi_3.7.0.v20110613.jar"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

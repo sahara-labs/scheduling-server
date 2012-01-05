@@ -61,32 +61,34 @@ function filterClass()
 function createClass()
 {
 	$("body").append(
-		"<div id='perm-createclassdialog' title='Add a new class' class='saharaform'><form>" +
-			"<div>" +
-				"<label for='newClassName'>Name:</label>" +
-				"<input type='text' id='newClassName' class='validate[required]' />" +
-			"</div>" +
-			"<div>" +
-				"<label for='newClassActive'>Active:</label>" +
-				"<input type='checkbox' id='newClassActive' />" +
-			"</div>" +
-			"<div>" +
-				"<label for='newClassQueuable'>Queuing:</label>" +
-				"<input type='checkbox' id='newClassQueuable' />" +
-			"</div>" +
-			"<div>" +
-				"<label for='newClassBookable'>Reservations:</label>" +
-				"<input type='checkbox' id='newClassBookable' />" +
-			"</div>" +
-			"<div>" +
-				"<label for='newClassPriority'>Priority:</label>" +
-				"<input type='text' id='newClassPriority' value='1' class='validate[required,custom[integer],min[1]],max[255]' />" +
-			"</div>" +
-			"<div>" +
-				"<label for='newClassTimeHorizon'>Time Horizon:</label>" +
-				"<input type='text' id='newClassTimeHorizon' value='0' class='validate[required,custom[integer],min[0]]' />" +
-			"</div>" +
-		"</form></div>"
+		"<div id='perm-createclassdialog' title='Add a new class' class='saharaform'>" +
+			"<form>" +
+				"<div>" +
+					"<label for='newClassName'>Name:</label>" +
+					"<input type='text' id='newClassName' class='validate[required]' />" +
+				"</div>" +
+				"<div>" +
+					"<label for='newClassActive'>Active:</label>" +
+					"<input type='checkbox' id='newClassActive' />" +
+				"</div>" +
+				"<div>" +
+					"<label for='newClassQueuable'>Queuing:</label>" +
+					"<input type='checkbox' id='newClassQueuable' />" +
+				"</div>" +
+				"<div>" +
+					"<label for='newClassBookable'>Reservations:</label>" +
+					"<input type='checkbox' id='newClassBookable' />" +
+				"</div>" +
+				"<div>" +
+					"<label for='newClassPriority'>Priority:</label>" +
+					"<input type='text' id='newClassPriority' value='1' class='validate[required,custom[integer],min[1]],max[255]' />" +
+				"</div>" +
+				"<div>" +
+					"<label for='newClassTimeHorizon'>Time Horizon:</label>" +
+					"<input type='text' id='newClassTimeHorizon' value='0' class='validate[required,custom[integer],min[0]]' />" +
+				"</div>" +
+			"</form>" +
+		"</div>"
 	);
 	
 	$("#perm-createclassdialog").dialog({
@@ -716,7 +718,7 @@ function addUserToClass()
 	$("body").append(
 			"<div id='perm-adduserdialog' title='Add User to Group: " + id.split("_").join(" ") + "'>" +
 				"<div class='perm-autocomplete saharaform'>" +
-					"<label for='perm-acinput'>Search: </label>" +
+					"<label for='perm-acinput'>Search:&nbsp;&nbsp;</label>" +
 					"<input id='perm-acinput' type='text' />" +
 				"</div>" + 
 				
@@ -856,7 +858,7 @@ function deleteUserInClass()
 	$("body").append(
 			"<div id='perm-deleteusersdialog' title='Remove from Group: " + id.split("_").join(" ") + "'>" +
 				"<div id='perm-usersearch' class='saharaform'>" +
-					"<label for='perm-usersearchinput'>Search: </label>" +
+					"<label for='perm-usersearchinput'>Filter:&nbsp;&nbsp;</label>" +
 					"<input id='perm-usersearchinput' />" +
 				"</div>" +
 				"<div id='perm-userslist'> </div>" +
@@ -978,7 +980,8 @@ function deleteUserInClass()
 
 function deleteAllUsersInClass()
 {
-	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+	var $li = $(this).parents(".perm-userclass"), 
+		id = $li.attr("id");
 
 	$("body").append(
 			"<div id='perm-removeallusersdialog' title='Remove all user associations'>" +
@@ -1028,12 +1031,14 @@ function deleteAllUsersInClass()
 
 function userClassKeys()
 {
-	var $li = $(this).parents(".perm-userclass"), id = $li.attr("id");
+	var $li = $(this).parents(".perm-userclass"), 
+		id = $li.attr("id"),
+		committing = false;
 
 	$("body").append(
 			"<div id='perm-keysdialog' title='Access Keys'>" +
 				"<div id='perm-keyslist'>&nbsp;" +
-					"<ul>" +
+					"<ul id='perm-activekeys'>" +
 					"</ul>" +
 				"</div>" +
 				"<div id='perm-keysactions'>" +
@@ -1041,13 +1046,13 @@ function userClassKeys()
 						"<img src='/img/perm-add.png' alt='Add' /><br />" +
 						"Add Key" +
 					"</a>" +
-					"<a class='perm-keysemail perm-button perm-buttondisabled'>" +
+					"<a class='perm-keysemail perm-button'>" +
 						"<img src='/img/perm-email.png' alt='Email' /><br />" +
 						"Email Key" +
 					"</a>" +
-					"<a class='perm-keysdelete perm-button perm-buttondisabled'>" +
-						"<img src='/img/perm-delete.png' alt='Delete' /><br />" +
-						"Delete Key" +
+					"<a class='perm-keysbulk perm-button'>" +
+						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
+						"Bulk Email" +
 					"</a>" +
 				"</div>" +
 				"<div style='clear:both'></div>" +
@@ -1060,9 +1065,7 @@ function userClassKeys()
 		closeOnEscape: true,
 		width: 600,
 		buttons: {
-			'Close': function() {
-				$(this).dialog('close');
-			}
+			'Close': closeDialog
 		},
 		close: function() {
 			$(this).dialog('destroy');
@@ -1071,6 +1074,8 @@ function userClassKeys()
 	});
 	
 	$("#perm-keysdialog .perm-keysadd").click(addKey);
+	$("#perm-keysdialog .perm-keysemail").click(emailKey);
+	$("#perm-keysdialog .perm-keysbulk").click(bulkEmail);
 	
 	$.post(
 		"/keys/getList",
@@ -1090,7 +1095,7 @@ function userClassKeys()
 			}
 			else
 			{
-				$("#perm-keyslist").empty().append(
+				$("#perm-keyslist").append(
 						"<div class='ui-state-highlight ui-corner-all'>" +
 							"<span class='ui-icon ui-icon-info'></span>" +
 							"This user class has no access keys." +
@@ -1102,34 +1107,146 @@ function userClassKeys()
 	
 	function addKey()
 	{
-		if ($("#perm-keysmodal").length == 0)
-		{
-			$("#perm-keysdialog").append(
-					"<div id='perm-keysmodal' class='saharaform'>" +
-						"<div class='perm-keysmodalcontents'><form>" +
+		if ($("#perm-keysmodal").length != 0) return;
+		
+		$("#perm-keysdialog").append(
+				"<div id='perm-keysmodal' class='saharaform'>" +
+					"<form>" +
+						"<div class='perm-keysmodalcol'>" +
 							"<div class='keys-title'>Required Details:</div>" +
-							"<div>" +
+							"<div class='perm-keysformline'>" +
 								"<label for='keys-userclass'>User Class: </label>" +
 								"<input id='keys-userclass' type='text' value='" + id.split("_").join(" ") + "' disabled='disabled' />" +
 							"</div>" +
-							"<div>" +
+							"<div class='perm-keysformline'>" +
 								"<label for='keys-uses'>Key Uses: </label>" +
-								"<input id='keys-uses' type='text' class='validate[required,custom[integer],min[0]]' />" +
+								"<input id='keys-uses' type='text' class='validate[required,custom[integer],min[1]]' value='1' />" +
 							"</div>" +
-						"</form></div>" +
-					"</div>"
-			);
-		}
-		else
-		{
-			$("#perm-keysmodal").remove();
-		}
+						"</div>" +
+						"<div class='perm-keysmodalcol'>" +	
+							"<div class='keys-title'>Constraints:</div>" +
+						"</div>" +
+						"<div style='clear:both'></div>" +
+					"</form>" +
+				"</div>"
+		).dialog("option", {
+			title: "Add a New Access Key",
+			buttons: {
+				'Add': commitAddKey,
+				'Back': restoreDialog,
+				'Close': closeDialog
+			}
+		});
+		
+		$("#perm-keysmodal input").focusin(formFocusIn).focusout(formFocusOut);
+		$("#perm-keysmodal form").validationEngine();
+	}
+	
+	function commitAddKey()
+	{
+		if (committing) return;
+		committing = true;
+		
+		if (!$("#perm-keysmodal form").validationEngine("validate")) return;
+		
+		$.post(
+				"/keys/addKey",
+				{
+					name: id,
+					uses: $("#keys-uses").val()
+				},
+				function(resp) {
+					if (typeof resp != "object")
+					{
+						window.location.reload();
+						return;
+					}
+					
+					committing = false;
+					$("#perm-activekeys").append(keyLi(resp));
+					$("#perm-keyslist .ui-state-highlight").remove();
+					restoreDialog();
+				}
+		);
+	}
+	
+	function emailKey()
+	{
+		if ($("#perm-keysmodal").length != 0) return;
+		
+		$("#perm-keysdialog").append(
+				"<div id='perm-keysmodal' class='saharaform'>" +
+					"<form>" +
+						"<div class='perm-keysmodalcol'>" +
+							"<div class='keys-title'>User Details:</div>" +
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-firstname'>First Name: </label>" +
+								"<input id='keys-lastname' type='text' class='validate[required]' />" +
+							"</div>" +
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-lastname'>Last Name: </label>" +
+								"<input id='keys-lastname' type='text' class='validate[required]' />" +
+							"</div>" +
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-email'>Email: </label>" +
+								"<input id='keys-email' type='text' class='validate[required,custom[email]]' />" +
+							"</div>" +
+						"</div>" +
+						"<div class='perm-keysmodalcol'>" +	
+							"<div class='keys-title'>(Optional) Message:</div>" +
+							"<textarea id='keys-emailmessage' />" +
+						"</div>" +
+						"<div style='clear:both'></div>" +
+					"</form>" +
+				"</div>"
+		).dialog("option", {
+			title: "Email Access Key",
+			buttons: {
+				'Email': commitEmailKey,
+				'Back': restoreDialog,
+				'Close': closeDialog
+			}
+		});
+		
+		$("#perm-keysmodal form").validationEngine();
+		$("#perm-keysmodal input, #perm-keysmodal textarea").focusin(formFocusIn).focusout(formFocusOut);
+	}
+	
+	function commitEmailKey()
+	{
+		
+	}
+	
+	function bulkEmail()
+	{
+		alert("Bulk");
+	}
+	
+	
+	
+	function restoreDialog()
+	{
+		$("#perm-keysmodal form").validationEngine("hideAll");
+		$("#perm-keysmodal").remove();
+		
+		$(this).dialog("option", {
+			title: "Access Keys",
+			buttons: {
+				'Close': closeDialog
+			}
+		});
+	}
+	
+	function closeDialog()
+	{
+		$("#perm-keysmodal form").validationEngine("hideAll");
+		$(this).dialog('close');
 	}
 	
 	function keyLi(key)
 	{
-		var li = "<li class='" +
-					"<span>Key: </span> " + key.name;
+		var li = "<li>" +
+					"<span>Key: </span> " + key.key + "</li>";
 		
 		return li;
 	}

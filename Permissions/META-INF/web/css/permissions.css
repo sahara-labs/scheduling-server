@@ -547,11 +547,42 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 510px;
+	width: 100%;
 	height: 100%;
 	background-color: #FFFFFF;
 }
 
-#perm-keysmodal .perm-keysmodalcontents {
+#perm-keysmodal .perm-keysmodalcol {
+	float: left;
+	width: 275px;
 	padding: 10px;
 }
+
+#perm-keysmodal .keys-title {
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+#perm-keysmodal .perm-keysformline {
+	margin: 8px 0;
+}
+
+#perm-keysmodal label {
+	width: 80px;
+	margin-top:5px;
+}
+
+#perm-keysmodal #keys-email {
+	width: 230px;
+}
+
+#perm-keysmodal input {
+	width: 150px;
+}
+
+#keys-emailmessage {
+	margin: 7px 0 0 -10px;
+	height: 170px;
+	width: 275px;
+}
+
