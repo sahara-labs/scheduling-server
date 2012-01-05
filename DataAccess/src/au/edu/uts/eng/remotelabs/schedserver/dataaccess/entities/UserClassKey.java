@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -158,5 +159,13 @@ public class UserClassKey implements Serializable
     public void setRedemptions(Set<UserClassKeyRedemption> redemptions)
     {
         this.redemptions = redemptions;
+    }
+    
+    /**
+     * Generates a key.
+     */
+    public void generateKey()
+    {
+        this.redeemKey = UUID.randomUUID().toString();
     }
 }
