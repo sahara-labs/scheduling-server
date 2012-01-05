@@ -1109,3 +1109,10 @@ span.code {
 	background: url("../img/linear_grad.png") repeat-x scroll 0 0 #FDFDFD;
 }
 
+.saharaform label {
+	display: inline-block;
+	float: left;
+	clear: left;
+}
+
+
