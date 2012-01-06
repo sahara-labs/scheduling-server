@@ -353,7 +353,7 @@
 	margin-left: -45px;
 }
 
-#startcalopen, #expirycalopen {
+#startcalopen, #expirycalopen, #keys-expiryopen {
 	width: 25px;
 	float: right;
 	padding: 3px;
@@ -567,22 +567,39 @@
 	margin: 8px 0;
 }
 
+#perm-keysmodal .perm-keysformlinedis {
+	opacity: 0.6;
+	-webkit-opacity: 0.6;
+	-moz-opacity: 0.6;
+	cursor: default;
+}
+
 #perm-keysmodal label {
 	width: 80px;
 	margin-top:5px;
 }
 
 #perm-keysmodal #keys-email {
-	width: 230px;
+	width: 260px;
+	margin-top: 5px;
 }
 
 #perm-keysmodal input {
-	width: 150px;
+	width: 180px;
 }
 
 #keys-emailmessage {
 	margin: 7px 0 0 -10px;
 	height: 170px;
-	width: 275px;
+	width: 285px;
 }
+
+#perm-keysmodal #keys-expiry {
+	width: 130px;
+}
+
+#keys-expiryopen {
+	margin: -7px 0 0 0;
+}
+
 

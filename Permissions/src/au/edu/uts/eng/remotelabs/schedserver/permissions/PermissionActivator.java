@@ -51,6 +51,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.KeysPage;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.UserClassesPage;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.pages.UsersPage;
@@ -71,6 +72,9 @@ public class PermissionActivator implements BundleActivator
     /** Hosted page registrations. */
     private List<ServiceRegistration<HostedPage>> pageRegistrations;
     
+    /** Messenger service tracker. */
+    private static ServiceTracker<MessengerService, MessengerService> messengerTracker;
+    
     /** Configuration service tracker. */
     private static ServiceTracker<Config, Config> configTracker;
     
@@ -85,6 +89,10 @@ public class PermissionActivator implements BundleActivator
 	    
 	    PermissionActivator.configTracker = new ServiceTracker<Config, Config>(context, Config.class, null);
 	    PermissionActivator.configTracker.open();
+	    
+	    PermissionActivator.messengerTracker =
+	            new ServiceTracker<MessengerService, MessengerService>(context, MessengerService.class, null);
+	    PermissionActivator.messengerTracker.open();
 	    
 	    /* Register the Permissions service. */
 	    this.logger.debug("Registering the Permissions SOAP interface service.");
@@ -115,9 +123,23 @@ public class PermissionActivator implements BundleActivator
 	    for (ServiceRegistration<HostedPage> pageReg : this.pageRegistrations) pageReg.unregister();
 	    this.pageRegistrations.clear();
 	    
+	    PermissionActivator.messengerTracker.close();
+	    PermissionActivator.messengerTracker = null;
+	    
 	    PermissionActivator.configTracker.close();
 	    PermissionActivator.configTracker = null;
 	}
+    
+    /**
+     * Returns a messenger service tracker service. If the service has not been found, 
+     * null is returned.
+     * 
+     * @return messenger service or null
+     */
+    public static MessengerService getMessenger()
+    {
+        return PermissionActivator.messengerTracker == null ? null : PermissionActivator.messengerTracker.getService();
+    }
     
     /**
      * Returns the configured value or null if the property does not exist.

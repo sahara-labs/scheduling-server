@@ -1122,6 +1122,19 @@ function userClassKeys()
 								"<label for='keys-uses'>Key Uses: </label>" +
 								"<input id='keys-uses' type='text' class='validate[required,custom[integer],min[1]]' value='1' />" +
 							"</div>" +
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-hastimelimit'>Time Limited: </label>" +
+								"<input id='keys-hastimelimit' type='checkbox' />" +
+							"</div>" +
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-expiry'>Expiry: </label>" +
+								"<div class='perm-keysformlinedis'>" +
+									"<input id='keys-expiry' type='text' disabled='disabled' />" +
+									"<a id='keys-expiryopen' class='perm-button calopen ui-corner-all'>" +
+										"<img src='/img/daypicker.png' alt='Open' />" +
+									"</a>" +
+								"</div>" +
+							"</div>" +
 						"</div>" +
 						"<div class='perm-keysmodalcol'>" +	
 							"<div class='keys-title'>Constraints:</div>" +
@@ -1140,6 +1153,30 @@ function userClassKeys()
 		
 		$("#perm-keysmodal input").focusin(formFocusIn).focusout(formFocusOut);
 		$("#perm-keysmodal form").validationEngine();
+		
+		$("#keys-expiry").datetimepicker({
+			dateFormat: "dd/mm/yy",
+			showOn: "focus"
+		});
+		
+		$("#keys-expiryopen").click(function() {
+			if ($("#keys-hastimelimit").is(":checked")) $("#keys-expiry").datetimepicker("show");
+		});
+		
+		$("#keys-hastimelimit").click(function() {			
+			if ($(this).is(":checked"))
+			{
+				$("#keys-expiry")
+					.removeAttr("disabled")
+					.parent().removeClass("perm-keysformlinedis");
+			}
+			else
+			{
+				$("#keys-expiry")
+					.attr("disabled", "disabled")
+					.parent().addClass("perm-keysformlinedis");
+			}
+		});
 	}
 	
 	function commitAddKey()
@@ -1153,7 +1190,9 @@ function userClassKeys()
 				"/keys/addKey",
 				{
 					name: id,
-					uses: $("#keys-uses").val()
+					uses: $("#keys-uses").val(),
+					timelimited: $("#keys-hastimelimit").is(":checked"),
+					expiry: $("#keys-expiry").val()
 				},
 				function(resp) {
 					if (typeof resp != "object")
@@ -1210,6 +1249,8 @@ function userClassKeys()
 		
 		$("#perm-keysmodal form").validationEngine();
 		$("#perm-keysmodal input, #perm-keysmodal textarea").focusin(formFocusIn).focusout(formFocusOut);
+		
+		
 	}
 	
 	function commitEmailKey()

@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -77,6 +78,9 @@ public class UserClassKey implements Serializable
     
     /** Whether the key is user targeted. */
     private boolean userTargeted;
+    
+    /** Optional key expiry. */
+    private Date expiry;
     
     /** The constraints list that must hold for a key to be redeemed. */
     private Set<UserClassKeyConstraint> constraints = new HashSet<UserClassKeyConstraint>(0);
@@ -151,6 +155,17 @@ public class UserClassKey implements Serializable
     public void setUserTargeted(boolean userTargeted)
     {
         this.userTargeted = userTargeted;
+    }
+
+    @Column(name = "expiry", nullable = true)
+    public Date getExpiry()
+    {
+        return this.expiry;
+    }
+
+    public void setExpiry(Date expiry)
+    {
+        this.expiry = expiry;
     }
 
     @OneToMany(mappedBy = "classKey", fetch = FetchType.EAGER)

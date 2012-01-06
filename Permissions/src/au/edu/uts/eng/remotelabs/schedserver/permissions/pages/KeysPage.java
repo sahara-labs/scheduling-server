@@ -36,6 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +53,8 @@ import org.hibernate.criterion.Restrictions;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
+import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.PermissionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
 /**
@@ -63,6 +69,7 @@ public class KeysPage extends AbstractPermissionsPage
         /* Does not have page. */
         throw new UnsupportedOperationException();
     }
+    
     /**
      * Returns the list of keys for a user class.
      * 
@@ -85,6 +92,7 @@ public class KeysPage extends AbstractPermissionsPage
         
         for (UserClassKey key : (List<UserClassKey>) this.db.createCriteria(UserClassKey.class)
                 .add(Restrictions.eq("active", Boolean.TRUE))
+                .add(Restrictions.eq("userTargeted", Boolean.FALSE))
                 .addOrder(Order.desc("id"))
                 .createCriteria("userClass")
                     .add(Restrictions.eq("name", className)).list())
@@ -140,6 +148,22 @@ public class KeysPage extends AbstractPermissionsPage
             return obj;
         }
         
+        if ("true".equals(request.getParameter("timelimited")) && 
+                !(request.getParameter("expiry") == null || "".equals(request.getParameter("expiry"))))
+        {
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            try
+            {
+                newKey.setExpiry(formatter.parse(request.getParameter("expiry")));
+            }
+            catch (ParseException e)
+            {
+                this.logger.warn("Not adding expiry time for key because the provided expiry '" + 
+                        request.getParameter("expiry") + "' is not in the correct format.");
+            }
+            
+        }
+        
         newKey.generateKey();
         
         this.db.beginTransaction();
@@ -154,6 +178,64 @@ public class KeysPage extends AbstractPermissionsPage
         obj.put("active", newKey.isActive());
         obj.put("remaining", newKey.getRemaining());
         return obj;
+    }
+    
+    /**
+     * Generates a key and emails it to the specified user.
+     * 
+     * @param request request
+     * @return whether successful
+     * @throws JSONException
+     */
+    public JSONObject emailKey(HttpServletRequest request) throws JSONException
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+        String ucName = request.getParameter("name");
+        if (ucName == null)
+        {
+            this.logger.warn("Unable to email user access key because the user class name was not supplied.");
+            obj.put("reason", "User class name not supplied.");
+            return obj;
+        }
+        
+        UserClass userClass = new UserClassDao(this.db).findByName(ucName);
+        if (userClass == null)
+        {
+            this.logger.warn("Unable to email user access key because the user class '" + ucName + "' was not found.");
+            obj.put("reason", "User class not found.");
+            return obj;
+        }
+        
+        if (request.getAttribute("first") == null || request.getAttribute("last") == null || 
+                request.getAttribute("email") == null)
+        {
+            this.logger.warn("Unable to email user class access key because not all parameters were supplied.");
+            obj.put("reason", "Missing parameter.");
+            return obj;
+        }
+            
+        UserClassKey key = new UserClassKey();
+        key.setActive(true);
+        key.setUserTargeted(true);
+        key.setUserClass(userClass);
+        key.setRemaining(1);
+        
+        this.db.beginTransaction();
+        this.db.persist(key);
+        this.db.getTransaction().commit();
+        
+        MessengerService service = PermissionActivator.getMessenger();
+
+        
+        obj.put("success", true);
+        return obj;
+    }
+    
+    private void sendAccessKeyEmail(String key, String email, String first, String last)
+    {
+        
     }
 
     @Override
