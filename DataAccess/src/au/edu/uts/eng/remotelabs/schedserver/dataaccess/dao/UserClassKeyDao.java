@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
 
@@ -62,5 +63,19 @@ public class UserClassKeyDao extends GenericDao<UserClassKey>
     public UserClassKeyDao(Session ses)
     {
         super(ses, UserClassKey.class);
+    }
+    
+    /**
+     * Finds a key using is redeem key value. If not found 
+     * <tt>null</tt> is returned.
+     * 
+     * @param key key value
+     * @return key or null if not found
+     */
+    public UserClassKey findKey(String key)
+    {
+        return (UserClassKey) this.session.createCriteria(UserClassKey.class)
+                .add(Restrictions.eq("redeemKey", key))
+                .uniqueResult();
     }
 }

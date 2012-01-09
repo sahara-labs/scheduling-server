@@ -36,10 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
-import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,8 +52,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassKeyDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyConstraint;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.PermissionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
@@ -72,7 +74,11 @@ public class KeysPage extends AbstractPermissionsPage
     }
     
     /**
-     * Returns the list of keys for a user class.
+     * Returns the list of keys for a user class. If the parameter 'historical'
+     * is part of the request parameters and has a value of 'true', non-usable
+     * keys are returned otherwise usable keys are returned. Usable keys are 
+     * those that are 'active', have remaining uses and have not elasped
+     * their expiry time. 
      * 
      * @param request request
      * @return list of permission keys
@@ -127,6 +133,59 @@ public class KeysPage extends AbstractPermissionsPage
         return arr;
     }
 
+    /**
+     * Returns all the details of an access key.
+     * 
+     * @param request request with key param
+     * @return key details
+     * @throws JSONException 
+     */
+    public JSONObject keyDetails(HttpServletRequest request) throws JSONException
+    {
+        JSONObject obj = new JSONObject();
+        
+        String keyStr = request.getParameter("key");
+        if (keyStr == null)
+        {
+            this.logger.warn("Unable to provide key details because no 'key' parameter was provided.");
+            obj.put("error", "No key specified.");
+            return obj;
+        }
+     
+        UserClassKey key = new UserClassKeyDao(this.db).findKey(keyStr);
+        if (key == null)
+        {
+            this.logger.warn("Unable to provide key details because key '" + keyStr + "' was not found.");
+            obj.put("error", "Key not found.");
+            return obj;
+        }
+        
+        obj.put("id", key.getId());
+        obj.put("key", key.getRedeemKey());
+        obj.put("class", key.getUserClass().getName());
+        obj.put("active", key.isActive());
+        obj.put("remaining", key.getRemaining());
+        obj.put("userTargetted", key.isUserTargeted());
+        obj.put("hasExpiry", key.getExpiry() != null);
+        
+        if (key.getExpiry() != null)
+        {
+            obj.put("expiry", key.getExpiry());
+        }
+        
+        for (UserClassKeyConstraint constraint : key.getConstraints())
+        {
+            JSONObject cObj = new JSONObject();
+            cObj.put("name", constraint.getName());
+            cObj.put("value", constraint.getValue());
+            obj.accumulate("constraints", cObj);
+        }
+        
+        
+        
+        return obj;
+    }
+    
     /**
      * Adds a new access key.
      * 

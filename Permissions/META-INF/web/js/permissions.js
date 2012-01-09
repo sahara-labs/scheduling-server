@@ -1093,9 +1093,7 @@ function userClassKeys()
 				for (i in resp) html += keyLi(resp[i]);
 				$("#perm-keyslist ul").append(html);
 				
-				$("#perm-keyslist ul li").click(function() {
-					 showKey($(this).text().split(/\s/)[1]);
-				});
+				$("#perm-keyslist ul li").click(showKey);
 			}
 			else
 			{
@@ -1109,8 +1107,10 @@ function userClassKeys()
 		}
 	)
 	
-	function showKey(key)
+	function showKey()
 	{
+		var key = $(this).text().split(/\s/)[1];
+		
 		$("#perm-keysdialog").append(
 				"<div id='perm-keysmodal' class='saharaform'>" +
 					"<form>" +
@@ -1132,7 +1132,7 @@ function userClassKeys()
 		});
 
 		$.post(
-			"/keys/details",
+			"/keys/keyDetails",
 			{
 				key: key
 			},
@@ -1239,7 +1239,11 @@ function userClassKeys()
 					}
 					
 					committing = false;
-					$("#perm-activekeys").append(keyLi(resp));
+					$("#perm-activekeys")
+						.append(keyLi(resp))
+						.children(":last").click(showKey);
+						
+					
 					$("#perm-keyslist .ui-state-highlight").remove();
 					restoreDialog();
 				}
