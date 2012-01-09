@@ -323,7 +323,7 @@
 	list-style: none;
 }
 
-.perm-permissionlist li {
+.perm-permissionlist li, #perm-keyslist li {
 	overflow: hidden;
 	margin: 3px;
 	padding: 3px;
@@ -515,12 +515,33 @@
 
 #perm-keyslist {
 	width: 510px;
-	border-right: 1px solid #AAAAAA;
+	border-left: 1px solid #AAAAAA;
+	margin-left: -1px;
+}
+
+#perm-keyslist ul {
+	list-style: none;
+}
+
+#perm-keyslist ul li {
+	margin: 3px 10px;
+}
+
+#perm-keyslist .perm-keylabel {
+	font-size: 0.8em;	
+}
+
+#perm-keyslist .perm-keyvalue {
+	font-family: "Courier New", Courier, monospace;
+}
+
+#perm-keyslist .perm-keyremaining {
+	display: inline-block;
+	float: right;
 }
 
 #perm-keysactions {
-	border-left: 1px solid #AAAAAA;
-	margin-left: -1px;
+	border-right: 1px solid #AAAAAA;
 }
 
 #perm-keysactions .perm-button {
@@ -601,5 +622,7 @@
 #keys-expiryopen {
 	margin: -7px 0 0 0;
 }
+
+
 
 

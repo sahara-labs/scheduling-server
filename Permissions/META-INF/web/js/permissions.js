@@ -1037,10 +1037,6 @@ function userClassKeys()
 
 	$("body").append(
 			"<div id='perm-keysdialog' title='Access Keys'>" +
-				"<div id='perm-keyslist'>&nbsp;" +
-					"<ul id='perm-activekeys'>" +
-					"</ul>" +
-				"</div>" +
 				"<div id='perm-keysactions'>" +
 					"<a class='perm-keysadd perm-button'>" +
 						"<img src='/img/perm-add.png' alt='Add' /><br />" +
@@ -1054,6 +1050,10 @@ function userClassKeys()
 						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
 						"Bulk Email" +
 					"</a>" +
+				"</div>" +
+				"<div id='perm-keyslist'>&nbsp;" +
+					"<ul id='perm-activekeys'>" +
+					"</ul>" +
 				"</div>" +
 				"<div style='clear:both'></div>" +
 			"</div>"
@@ -1092,6 +1092,10 @@ function userClassKeys()
 				var i, html = ''; 
 				for (i in resp) html += keyLi(resp[i]);
 				$("#perm-keyslist ul").append(html);
+				
+				$("#perm-keyslist ul li").click(function() {
+					 showKey($(this).text().split(/\s/)[1]);
+				});
 			}
 			else
 			{
@@ -1104,6 +1108,39 @@ function userClassKeys()
 			}
 		}
 	)
+	
+	function showKey(key)
+	{
+		$("#perm-keysdialog").append(
+				"<div id='perm-keysmodal' class='saharaform'>" +
+					"<form>" +
+						"<div class='perm-keysmodalcol'>" +
+							"<div class='keys-title'>Details:</div>" +
+						"</div>" +
+						"<div class='perm-keysmodalcol'>" +	
+							"<div class='keys-title'>Redeemed Users:</div>" +
+						"</div>" +
+						"<div style='clear:both'></div>" +
+					"</form>" +
+				"</div>"
+		).dialog("option", {
+			title: "Key '" + key + "' Details",
+			buttons: {
+				'Back': restoreDialog,
+				'Close': closeDialog
+			}
+		});
+
+		$.post(
+			"/keys/details",
+			{
+				key: key
+			},
+			function(resp) {
+				
+			}
+		);
+	}
 	
 	function addKey()
 	{
@@ -1287,7 +1324,16 @@ function userClassKeys()
 	function keyLi(key)
 	{
 		var li = "<li>" +
-					"<span>Key: </span> " + key.key + "</li>";
+					"<span class='perm-keylabel'>Key: </span>" +
+					"<span class='perm-keyvalue'>" + key.key + "</span> " +
+					"<span class='perm-keyremaining'>(";
+
+		if      (key.remaining === 0) li += "no more uses";
+		else if (key.remaining === 1) li += "1 use";
+		else if (key.remaining > 1)   li += key.remaining + " uses";
+		
+		li += ")</span>" + 
+			"</li>";
 		
 		return li;
 	}

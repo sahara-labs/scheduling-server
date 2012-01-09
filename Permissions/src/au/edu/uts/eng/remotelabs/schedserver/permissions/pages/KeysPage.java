@@ -36,10 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
+import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
@@ -89,13 +90,32 @@ public class KeysPage extends AbstractPermissionsPage
             return arr;
         }
         
-        
-        for (UserClassKey key : (List<UserClassKey>) this.db.createCriteria(UserClassKey.class)
-                .add(Restrictions.eq("active", Boolean.TRUE))
+        Criteria qu = this.db.createCriteria(UserClassKey.class)
                 .add(Restrictions.eq("userTargeted", Boolean.FALSE))
-                .addOrder(Order.desc("id"))
-                .createCriteria("userClass")
-                    .add(Restrictions.eq("name", className)).list())
+                .addOrder(Order.asc("id"));
+                
+        if ("true".equals(request.getAttribute("historical")))
+        {
+            qu.add(Restrictions.disjunction()
+                    .add(Restrictions.eq("active", Boolean.FALSE))
+                    .add(Restrictions.eq("remaining", 0)))
+              .add(Restrictions.or(
+                      Restrictions.isNull("expiry"),
+                      Restrictions.lt("expiry", new Date())));
+        }
+        else
+        {
+            qu.add(Restrictions.eq("active", Boolean.TRUE))
+              .add(Restrictions.gt("remaining", 0))
+              .add(Restrictions.or(
+                      Restrictions.isNull("expiry"), 
+                      Restrictions.gt("expiry", new Date())));
+        }
+        
+        qu = qu.createCriteria("userClass")
+                    .add(Restrictions.eq("name", className));
+        
+        for (UserClassKey key : (List<UserClassKey>) qu.list())
         {
             JSONObject keyObj = new JSONObject();
             keyObj.put("key", key.getRedeemKey());
