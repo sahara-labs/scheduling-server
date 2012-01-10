@@ -41,6 +41,8 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -54,6 +56,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyConstraint;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 
 /**
@@ -93,7 +97,7 @@ public class UserClassDaoTester extends TestCase
         assertNull(this.dao.findByName("doesnotexist"));
     }
     
-    @Test
+     @Test
     public void testDeleteId()
     {
         Session ses = DataAccessActivator.getNewSession();
@@ -207,6 +211,7 @@ public class UserClassDaoTester extends TestCase
         ses.getTransaction().commit();
     }
     
+    @Test
     public void testDeleteUserAssociations()
     {
         Session ses = DataAccessActivator.getNewSession();
@@ -257,5 +262,56 @@ public class UserClassDaoTester extends TestCase
         ses.delete(us3);
         ses.delete(uc);
         ses.getTransaction().commit();
+    }
+    
+    @Test
+    public void testDeleteUserClassKeyRef()
+    {
+        Session ses = DataAccessActivator.getNewSession();
+        ses.beginTransaction();
+        
+        UserClass uc = new UserClass();
+        uc.setName("clazz");
+        uc.setPriority((short) 10);
+        uc.setActive(true);
+        uc.setKickable(true);
+        uc.setQueuable(true);
+        uc.setBookable(true);
+        uc.setUsersLockable(true);
+        ses.save(uc);
+        
+        UserClassKey key = new UserClassKey();
+        key.generateKey();
+        key.setRemaining(1);
+        key.setUserClass(uc);
+        ses.save(key);
+        
+        UserClassKeyConstraint keyConst = new UserClassKeyConstraint();
+        keyConst.setClassKey(key);
+        keyConst.setName("foo_const");
+        keyConst.setValue("bar_const");
+        ses.save(keyConst);
+        
+        ses.getTransaction().commit();
+        
+        this.dao.delete(this.dao.get(uc.getId()));
+        
+        int num = (Integer) ses.createCriteria(UserClass.class)
+                .add(Restrictions.eq("id", uc.getId()))
+                .setProjection(Projections.rowCount())
+                .uniqueResult();
+        assertEquals(0, num);
+        
+        num = (Integer) ses.createCriteria(UserClassKey.class)
+                .add(Restrictions.eq("redeemKey", key.getRedeemKey()))
+                .setProjection(Projections.rowCount())
+                .uniqueResult();
+        assertEquals(0, num);
+        
+        num = (Integer) ses.createCriteria(UserClassKeyConstraint.class)
+                .add(Restrictions.eq("classKey.id", key.getId()))
+                .setProjection(Projections.rowCount())
+                .uniqueResult();
+        assertEquals(0, num);
     }
 }

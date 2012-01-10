@@ -47,6 +47,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
 
 /**
  * Data access object for user class entities.
@@ -86,6 +87,15 @@ public class UserClassDao extends GenericDao<UserClass>
     @Override
     public void delete(UserClass uc)
     {
+        /* Delete any access keys. */
+        if (uc.getKeys().size() > 0)
+        {
+            UserClassKeyDao keyDao = new UserClassKeyDao(this.session);
+            for (UserClassKey key : uc.getKeys())
+            {
+                keyDao.delete(key);
+            }
+        }
         
         /* Delete all the user associations. */
         this.deleteUserAssociations(uc);

@@ -36,10 +36,15 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.io.Serializable;
+
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyConstraint;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyRedemption;
 
 /**
  * Data access object for the {@link UserClassKey} class.
@@ -77,5 +82,53 @@ public class UserClassKeyDao extends GenericDao<UserClassKey>
         return (UserClassKey) this.session.createCriteria(UserClassKey.class)
                 .add(Restrictions.eq("redeemKey", key))
                 .uniqueResult();
+    }
+    
+    @Override
+    public void delete(Serializable id)
+    {
+        UserClassKey key = this.get(id);
+        if (key != null) this.delete(key);
+    }
+    
+    @Override
+    public void delete(UserClassKey key)
+    {
+        this.logger.info("Deleting user class key '" + key.getRedeemKey() + "'.");
+        
+        /* Delete all constraints. */
+        if (key.getConstraints().size() > 0)
+        {
+            this.session.beginTransaction();
+            for (UserClassKeyConstraint constraint : key.getConstraints())
+            {
+                this.session.delete(constraint);
+            }
+            this.session.getTransaction().commit();
+        }
+        
+        /* As there are potentially a large number of redepemtions, a DML
+         * operation is used. */
+        int num = (Integer) this.session.createCriteria(UserClassKeyRedemption.class)
+                .add(Restrictions.eq("classKey", key))
+                .setProjection(Projections.count("id"))
+                .uniqueResult();
+        if (num > 0)
+        {
+            /* Delete all redemptions. */
+            this.logger.debug("To delete user class key '" + key.getRedeemKey() + "', " + num + " redemptions have to" +
+            		" deleted.");
+            this.session.beginTransaction();
+            int numDeleted = this.session.createQuery("delete " + UserClassKeyRedemption.class.getSimpleName() + 
+                            " uk where uk.classKey = :key")
+                    .setEntity("key", key)
+                    .executeUpdate();
+            
+            this.logger.info("Deleted " + numDeleted + " redemptions when deleting user class key '" + 
+                    key.getRedeemKey() + "'.");
+            this.session.getTransaction().commit();
+        }
+        
+        super.delete(key);
     }
 }
