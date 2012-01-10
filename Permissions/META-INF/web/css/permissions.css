@@ -623,6 +623,46 @@
 	margin: -7px 0 0 0;
 }
 
+#perm-redeemuserslist {
+	width: 200px;
+	float: right;
+}
 
+#perm-redeemuserslist .ui-state-highlight {
+	width: 160px;
+}
 
+#perm-keydetailsdisplay table {
+	width: 360px;
+}
 
+#perm-keydetailsdisplay .firstcol {
+	width: 80px;
+}
+
+#perm-constraints .perm-constraintslabel {
+	display: block;
+	float: none;
+	margin-bottom: 5px;
+}
+
+#perm-constraints .perm-constraintsline {
+	margin-bottom: 5px;
+	padding-bottom: 7px;
+	border-bottom: 1px solid #AAAAAA;
+}
+
+#perm-constraints .perm-constraintsline input, #perm-constraints .perm-constraintsline select {
+	width: 225px;
+}
+
+#perm-constraints .perm-constraintenable {
+	float: left;
+	padding: 0 5px;
+	margin: 3px 5px 0 0;
+	border-right: 1px solid #AAAAAA;
+}
+
+#perm-constraints .perm-constraintenable input {
+	width: auto;
+}

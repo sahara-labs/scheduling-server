@@ -1114,10 +1114,10 @@ function userClassKeys()
 		$("#perm-keysdialog").append(
 				"<div id='perm-keysmodal' class='saharaform'>" +
 					"<form>" +
-						"<div class='perm-keysmodalcol'>" +
+						"<div id='perm-keydetailsdisplay' class='perm-keysmodalcol'>" +
 							"<div class='keys-title'>Details:</div>" +
 						"</div>" +
-						"<div class='perm-keysmodalcol'>" +	
+						"<div id='perm-redeemuserslist'>" +	
 							"<div class='keys-title'>Redeemed Users:</div>" +
 						"</div>" +
 						"<div style='clear:both'></div>" +
@@ -1137,7 +1137,59 @@ function userClassKeys()
 				key: key
 			},
 			function(resp) {
+				if (typeof resp != "object")
+				{
+					window.location.reload();
+					return;
+				}
 				
+				var i, o, html = 
+					"<table>" +
+						"<tr><td class='firstcol'>Key:</td><td>" + resp.key + "</td></tr>" +
+						"<tr><td class='firstcol'>Class:</td><td>" + resp.userClass.split("_").join(" ") + "</td></tr>" + 
+						"<tr><td class='firstcol'>Active:</td><td>" + resp.active + "</td></tr>" + 
+						"<tr><td class='firstcol'>Remaining Uses:</td><td>" + resp.remaining + "</td></tr>";
+				
+				if (resp.hasExpiry)
+				{
+					html += "<tr><td class='firstcol'>Expiry:</td><td>" + resp.expiry.substr(0, resp.expiry.length - 2) + "</td></tr>";
+				}
+				
+				if ($.isArray(resp.constraints))
+				{
+					for (i in resp.constraints)
+					{
+						var o = resp.constraints[i];
+						
+						html += "<tr><td class='firstcol'>" + o.name + ":</td><td>" + o.value + "</td></tr>"; 
+					}
+				}
+						
+				html += "</table>";
+				$("#perm-keydetailsdisplay").append(html);
+				
+				if ($.isArray(resp.user))
+				{
+					html = "<ul>";
+					
+					for (i in resp.user)
+					{
+						html += "<li>" + resp.user[i] + "</li>";
+					}
+					
+					html += "</ul>";
+					
+					$("#perm-redeemuserslist").append(html);
+				}
+				else
+				{
+					$("#perm-redeemuserslist").append(
+						"<div class='ui-state-highlight ui-corner-all'>" +
+							"<span class='ui-icon ui-icon-info'></span>" +
+							"No redeemed users." +
+						"</div>"
+					);
+				}
 			}
 		);
 	}
@@ -1173,7 +1225,7 @@ function userClassKeys()
 								"</div>" +
 							"</div>" +
 						"</div>" +
-						"<div class='perm-keysmodalcol'>" +	
+						"<div id='perm-constraints' class='perm-keysmodalcol' class='saharaform'>" +	
 							"<div class='keys-title'>Constraints:</div>" +
 						"</div>" +
 						"<div style='clear:both'></div>" +
@@ -1214,6 +1266,70 @@ function userClassKeys()
 					.parent().addClass("perm-keysformlinedis");
 			}
 		});
+		
+		$.post(
+			"/keys/getConstraints",
+			 null,
+			 function(resp) {
+				if (typeof resp != "object")
+				{
+					window.location.reload();
+					return;
+				}
+				
+				var i, j, c, r, html =
+						"<div class='perm-constraintsform'>";
+				for (i in resp)
+				{
+					c = resp[i];
+
+					html += 
+						"<div class='perm-constraintsline'>" +
+							"<label for='keys-" + c.name + "-en' class='perm-constraintslabel'>" + c.name + ":</label>" +
+							"<div class='perm-constraintenable'><input id='keys-" + c.name + "-en'  type='checkbox' /></div>";
+					
+					if (c.hasRestriction)
+					{
+						html += "<select id='keys-" + c.name + "'  disabled='disabled'>" +
+									"<option value=''>&nbsp;</option>";
+						
+						for (j in c.restriction)
+						{
+							r = c.restriction[j].split(/:/);
+							html += "<option value='" + r[1] + "'>" + r[0] + "</option>";
+						}
+						
+						html += "</select>";
+					}
+					else
+					{
+						html += "<input id='keys-" + c.name + "' type='text' disabled='disabled' />";
+					}
+					
+					html +=	
+						"</div>";
+				}
+				
+				html += "</div>";
+				
+				$("#perm-constraints")
+					.append(html)
+					.find("input, select").focusin(formFocusIn).focusout(formFocusOut);
+				
+				$('#perm-constraints input[type="checkbox"]').click(function() {
+					var $input = $(this).parent().next();
+					
+					if ($input.attr("disabled"))
+					{
+						$input.removeAttr("disabled");
+					}
+					else
+					{
+						$input.val("").attr("disabled", "disabled");
+					}
+				});
+			 }
+		);
 	}
 	
 	function commitAddKey()
@@ -1223,14 +1339,21 @@ function userClassKeys()
 		
 		if (!$("#perm-keysmodal form").validationEngine("validate")) return;
 		
+		var params = {
+				name: id,
+				uses: $("#keys-uses").val(),
+				timelimited: $("#keys-hastimelimit").is(":checked"),
+				expiry: $("#keys-expiry").val()
+		};
+		
+		$("#perm-constraints input[type='checkbox']:checked").each(function() {
+			var $input = $(this).parent().next();
+			params[$input.attr("id").substr(5)] = $input.val();
+		});
+		
 		$.post(
 				"/keys/addKey",
-				{
-					name: id,
-					uses: $("#keys-uses").val(),
-					timelimited: $("#keys-hastimelimit").is(":checked"),
-					expiry: $("#keys-expiry").val()
-				},
+				params,
 				function(resp) {
 					if (typeof resp != "object")
 					{
@@ -1290,8 +1413,6 @@ function userClassKeys()
 		
 		$("#perm-keysmodal form").validationEngine();
 		$("#perm-keysmodal input, #perm-keysmodal textarea").focusin(formFocusIn).focusout(formFocusOut);
-		
-		
 	}
 	
 	function commitEmailKey()

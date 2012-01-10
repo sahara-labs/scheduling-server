@@ -36,6 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,9 +57,11 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassKeyDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKey;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyConstraint;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClassKeyRedemption;
 import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerService;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.PermissionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
@@ -162,7 +168,7 @@ public class KeysPage extends AbstractPermissionsPage
         
         obj.put("id", key.getId());
         obj.put("key", key.getRedeemKey());
-        obj.put("class", key.getUserClass().getName());
+        obj.put("userClass", key.getUserClass().getName());
         obj.put("active", key.isActive());
         obj.put("remaining", key.getRemaining());
         obj.put("userTargetted", key.isUserTargeted());
@@ -178,10 +184,18 @@ public class KeysPage extends AbstractPermissionsPage
             JSONObject cObj = new JSONObject();
             cObj.put("name", constraint.getName());
             cObj.put("value", constraint.getValue());
-            obj.accumulate("constraints", cObj);
+            obj.append("constraints", cObj);
         }
-        
-        
+
+        for (UserClassKeyRedemption redemption : key.getRedemptions())
+        {
+            User user = redemption.getUser();
+            if (user.getFirstName() != null && user.getLastName() != null)
+            {
+                obj.append("user", user.getLastName() + ", " + user.getFirstName());
+            }
+            else obj.append("user", user.getName());
+        }
         
         return obj;
     }
@@ -247,6 +261,27 @@ public class KeysPage extends AbstractPermissionsPage
         
         this.db.beginTransaction();
         this.db.persist(newKey);
+        
+        /* Check if any constraints are set. */
+        String constraints = PermissionActivator.getConfig("Access_Keys_Constraints");
+        if (constraints != null)
+        {
+            for (String c : constraints.split(","))
+            {
+                c = c.trim();
+                if (request.getParameter(c) == null) continue;
+                
+                UserClassKeyConstraint co = new UserClassKeyConstraint();
+                co.setClassKey(newKey);
+                co.setName(c);
+                co.setValue(request.getParameter(c));
+                this.db.persist(co);
+                
+                this.logger.info("Adding constraint for key '" + newKey.getRedeemKey() + "' with '" + c + "' = '" +
+                        request.getParameter(c) + "'.");
+            }
+        }
+
         this.db.getTransaction().commit();
         
         this.logger.info("Added new access key '" + newKey.getRedeemKey() + "' for user class '" + 
@@ -315,6 +350,79 @@ public class KeysPage extends AbstractPermissionsPage
     private void sendAccessKeyEmail(String key, String email, String first, String last)
     {
         
+    }
+    
+    /**
+     * Gets the possible constraints that may be used to validate key redemption. 
+     * 
+     * 
+     * @param request
+     * @return response
+     */
+    public JSONArray getConstraints(HttpServletRequest request) throws JSONException
+    {
+        JSONArray arr = new JSONArray();
+        
+        String constraints = PermissionActivator.getConfig("Access_Keys_Constraints");
+        if (constraints == null)
+        {
+            this.logger.debug("No constraints configured for use access key restriction.");
+            return arr;
+        }
+        
+        for (String c : constraints.split(","))
+        {
+            c = c.trim();
+            
+            JSONObject cObj = new JSONObject();
+            cObj.put("name", c);
+            
+            InputStream is = this.getClass().getResourceAsStream("/META-INF/resources/Constraints_" + c);
+            if (is == null)
+            {
+                this.logger.debug("No constraint restrictions for access key constraint '" + c + "'.");
+                cObj.put("hasRestriction", false);
+            }
+            else
+            {
+                cObj.put("hasRestriction", true);
+                
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line = null;
+                try
+                {
+                    while ((line = reader.readLine()) != null)
+                    {
+                        if (line.startsWith("#")) continue; // Comment line
+                        cObj.accumulate("restriction", line);
+                    }
+                }
+                catch (IOException e)
+                {
+                    this.logger.error("Error reading constraint restriction file '" + c + "'. Error message: " + 
+                                e.getMessage());
+                    cObj.put("hasRestriction", false);
+                }
+                finally
+                {
+                    try
+                    {
+                        reader.close();
+                    }
+                    catch (IOException e)
+                    {
+                        this.logger.error("Error closing constraint restriction file '" + c + "'. Error message: " + 
+                                e.getMessage());
+                    }
+                }
+                        
+            }
+            
+            arr.put(cObj);
+        }
+        
+        
+        return arr;
     }
 
     @Override
