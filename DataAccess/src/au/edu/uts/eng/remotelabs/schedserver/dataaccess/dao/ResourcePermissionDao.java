@@ -36,6 +36,8 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.io.Serializable;
+
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -57,6 +59,13 @@ public class ResourcePermissionDao extends GenericDao<ResourcePermission>
     public ResourcePermissionDao(Session ses)
     {
         super(ses, ResourcePermission.class);
+    }
+    
+    @Override
+    public void delete(Serializable id)
+    {
+        ResourcePermission perm = this.get(id);
+        if (perm != null) this.delete(perm);
     }
     
     @Override
