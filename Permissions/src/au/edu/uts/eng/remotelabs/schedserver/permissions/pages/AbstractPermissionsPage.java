@@ -110,7 +110,6 @@ public abstract class AbstractPermissionsPage extends AbstractPage
             {
                 this.logger.error("BUG: Exception invoking post method " + this.postMethod.getName() + ", message: " + 
                         e.getMessage());
-                        
             }
         }
         else

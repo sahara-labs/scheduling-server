@@ -1126,6 +1126,7 @@ function userClassKeys()
 		).dialog("option", {
 			title: "Key '" + key + "' Details",
 			buttons: {
+				'Discard': discardKey,
 				'Back': restoreDialog,
 				'Close': closeDialog
 			}
@@ -1192,6 +1193,37 @@ function userClassKeys()
 				}
 			}
 		);
+		
+		function discardKey()
+		{
+			$.post(
+				"/keys/invalidateKey",
+				{
+					key: key
+				},
+				function(resp) {
+					if (typeof resp == "object" && resp.success)
+					{
+						$("#perm-activekeys .perm-keyvalue").each(function () {
+							if ($(this).text() == key) $(this).parent().remove();
+							
+							if ($("#perm-activekeys").children().length == 0)
+							{
+								$("#perm-keyslist").append(
+										"<div class='ui-state-highlight ui-corner-all'>" +
+											"<span class='ui-icon ui-icon-info'></span>" +
+											"This user class has no access keys." +
+										"</div>"
+								);
+							}
+						});
+						restoreDialog();
+					}
+					else window.location.reload();
+				}
+				
+			);
+		}
 	}
 	
 	function addKey()
@@ -1245,7 +1277,8 @@ function userClassKeys()
 		
 		$("#keys-expiry").datetimepicker({
 			dateFormat: "dd/mm/yy",
-			showOn: "focus"
+			showOn: "focus",
+			minDate: new Date()
 		});
 		
 		$("#keys-expiryopen").click(function() {
@@ -1384,7 +1417,7 @@ function userClassKeys()
 							"<div class='keys-title'>User Details:</div>" +
 							"<div class='perm-keysformline'>" +
 								"<label for='keys-firstname'>First Name: </label>" +
-								"<input id='keys-lastname' type='text' class='validate[required]' />" +
+								"<input id='keys-firstname' type='text' class='validate[required]' />" +
 							"</div>" +
 							"<div class='perm-keysformline'>" +
 								"<label for='keys-lastname'>Last Name: </label>" +
@@ -1394,8 +1427,19 @@ function userClassKeys()
 								"<label for='keys-email'>Email: </label>" +
 								"<input id='keys-email' type='text' class='validate[required,custom[email]]' />" +
 							"</div>" +
+							"<div id='keys-expiryline' class='perm-keysformline'>" +
+								"<label for='keys-expiry'>Expiry: </label>" +
+								"<input id='keys-expiry' type='text' class='validate[required]' />" +
+								"<a id='keys-expiryopen' class='perm-button calopen ui-corner-all'>" +
+									"<img src='/img/daypicker.png' alt='Open' />" +
+								"</a>" +
+							"</div>" +
 						"</div>" +
-						"<div class='perm-keysmodalcol'>" +	
+						"<div class='perm-keysmodalcol'>" + 
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-type'>Type: </label>" +
+								"<select id='keys-type'></select>" +
+							"</div>" +
 							"<div class='keys-title'>(Optional) Message:</div>" +
 							"<textarea id='keys-emailmessage' />" +
 						"</div>" +
@@ -1411,12 +1455,46 @@ function userClassKeys()
 			}
 		});
 		
+		$.post(
+			"/keys/getEmailKeyTypes",
+			null,
+			function(resp) {
+				
+			}
+		);
+		
 		$("#perm-keysmodal form").validationEngine();
 		$("#perm-keysmodal input, #perm-keysmodal textarea").focusin(formFocusIn).focusout(formFocusOut);
+		
+		$("#keys-expiry").datetimepicker({
+			dateFormat: "dd/mm/yy",
+			showOn: "focus",
+			minDate: new Date()
+		});
+		
+		$("#keys-expiryopen").click(function() {
+			$("#keys-expiry").datetimepicker("show");
+		});
 	}
 	
 	function commitEmailKey()
 	{
+		if (!$("#perm-keysmodal form").validationEngine("validate")) return;
+		
+		$.post(
+			"/keys/emailKey",
+			{
+				name: id,
+				first: $("#keys-firstname").val(),
+				last: $("#keys-lastname").val(),
+				email: $("#keys-email").val(),
+				message: $("#keys-emailmessage").val(),
+				expiry: $("#keys-expiry").val()
+			},
+			function (resp) {
+				alert(resp.success);
+			}
+		);
 		
 	}
 	
@@ -1432,7 +1510,7 @@ function userClassKeys()
 		$("#perm-keysmodal form").validationEngine("hideAll");
 		$("#perm-keysmodal").remove();
 		
-		$(this).dialog("option", {
+		$("#perm-keysdialog").dialog("option", {
 			title: "Access Keys",
 			buttons: {
 				'Close': closeDialog

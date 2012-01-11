@@ -40,11 +40,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -295,6 +298,45 @@ public class KeysPage extends AbstractPermissionsPage
     }
     
     /**
+     * Invalidates a key so it may no longer be used for redemption. 
+     *  
+     * @param request
+     * @return response 
+     * @throws JSONException
+     */
+    public JSONObject invalidateKey(HttpServletRequest request) throws JSONException
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("success", false);
+        
+        String keyStr = request.getParameter("key");
+        if (keyStr == null)
+        {
+            this.logger.warn("Unable to invalidate key because the key was not specified.");
+            obj.put("reason", "Key not specified.");
+            return obj;
+        }
+        
+        UserClassKey key = new UserClassKeyDao(this.db).findKey(keyStr);
+        if (key == null)
+        {
+            this.logger.warn("Unable to invalidate key because the key '" + keyStr + "' was not found.");
+            obj.put("reason", "Key not found.");
+            return obj;
+        }
+        
+        this.logger.info("Invalidating key '" + key.getRedeemKey() + "'.");
+        key.setActive(false);
+        
+        this.db.beginTransaction();
+        this.db.flush();
+        this.db.getTransaction().commit();
+        
+        obj.put("success", true);
+        return obj;
+    }
+    
+    /**
      * Generates a key and emails it to the specified user.
      * 
      * @param request request
@@ -322,8 +364,8 @@ public class KeysPage extends AbstractPermissionsPage
             return obj;
         }
         
-        if (request.getAttribute("first") == null || request.getAttribute("last") == null || 
-                request.getAttribute("email") == null)
+        if (request.getParameter("first") == null || request.getParameter("last") == null || 
+                request.getParameter("email") == null || request.getParameter("expiry") == null)
         {
             this.logger.warn("Unable to email user class access key because not all parameters were supplied.");
             obj.put("reason", "Missing parameter.");
@@ -335,21 +377,80 @@ public class KeysPage extends AbstractPermissionsPage
         key.setUserTargeted(true);
         key.setUserClass(userClass);
         key.setRemaining(1);
+        key.generateKey();
+        
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        try
+        {
+            key.setExpiry(formatter.parse(request.getParameter("expiry")));
+        }
+        catch (ParseException e)
+        {
+            this.logger.warn("Unable to email user class access key because the expiry time '" + request.getParameter("expiry") +
+            		"' was not in the correct format.");
+            obj.put("reason", "Expiry in incorrect format.");
+            return obj;
+        }
         
         this.db.beginTransaction();
         this.db.persist(key);
         this.db.getTransaction().commit();
         
-        MessengerService service = PermissionActivator.getMessenger();
+        /* Transient user who is the receipt of the message. */
+        User user = new User();
+        user.setFirstName(request.getParameter("first"));
+        user.setLastName(request.getParameter("last"));
+        user.setEmail(request.getParameter("email"));
+        
+        Map<String, String> macros = new HashMap<String, String>();
+        macros.put("classname", userClass.getName().replaceAll("_", " "));
+        macros.put("firstname", user.getFirstName());
+        macros.put("lastname", user.getLastName());
+        macros.put("expiry", key.getExpiry().toString());
+        
+        
+        macros.put("targeturl", "http://locahost"); // FIXME
+        
 
+        String message = request.getParameter("message");
+        boolean useMessage = message != null && !"".equals(message);
+        if (useMessage) macros.put("message", message);
+        
+        URL template = useMessage ? this.getClass().getResource("/META-INF/resources/Access_Key_Email_with_Message") :
+            this.getClass().getResource("/META-INF/resources/Access_Key_Email");
+        if (template == null)
+        {
+            this.logger.error("Unable to send access key email because the email template was not found. This is " +
+            		"likely a build error.");
+            obj.put("reason", "Template not found.");
+            return obj;
+        }
+        
+        MessengerService service = PermissionActivator.getMessenger();
+        service.sendTemplatedMessage(user, template, macros);
         
         obj.put("success", true);
         return obj;
     }
     
-    private void sendAccessKeyEmail(String key, String email, String first, String last)
+    public JSONArray getEmailKeyTypes(HttpServletRequest request)
     {
+        JSONArray arr = new JSONArray();
         
+        String types = PermissionActivator.getConfig("Access_Keys_Email_Targets");
+        if (types == null)
+        {
+            this.logger.warn("No access key email types have been configured, atleast one is needed.");
+            return arr;
+        }
+        
+        for (String s : types.split(","))
+        {
+            s = s.trim();
+            arr.put(s.substring(0, s.indexOf('=')));
+        }
+        
+        return arr;
     }
     
     /**
