@@ -1438,7 +1438,9 @@ function userClassKeys()
 						"<div class='perm-keysmodalcol'>" + 
 							"<div class='perm-keysformline'>" +
 								"<label for='keys-type'>Type: </label>" +
-								"<select id='keys-type'></select>" +
+								"<select id='keys-type' class='validate[required]'>" +
+									"<option value=''>&nbsp;</option>" +
+								"</select>" +
 							"</div>" +
 							"<div class='keys-title'>(Optional) Message:</div>" +
 							"<textarea id='keys-emailmessage' />" +
@@ -1459,7 +1461,18 @@ function userClassKeys()
 			"/keys/getEmailKeyTypes",
 			null,
 			function(resp) {
+				if (!$.isArray(resp))
+				{
+					window.location.reload();
+					return;
+				}
 				
+				var html = "";
+				for (i in resp)
+				{
+					html += "<option value='" + resp[i] + "'>" + resp[i] + "</option>";
+				}
+				$("#keys-type").append(html);
 			}
 		);
 		
@@ -1489,10 +1502,17 @@ function userClassKeys()
 				last: $("#keys-lastname").val(),
 				email: $("#keys-email").val(),
 				message: $("#keys-emailmessage").val(),
-				expiry: $("#keys-expiry").val()
+				expiry: $("#keys-expiry").val(),
+				type: $("#keys-type").val()
 			},
 			function (resp) {
-				alert(resp.success);
+				if (typeof resp != "object")
+				{
+					window.location.reload();
+					return;
+				}
+				
+				restoreDialog();
 			}
 		);
 		
