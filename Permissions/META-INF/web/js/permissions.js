@@ -1515,15 +1515,12 @@ function userClassKeys()
 				restoreDialog();
 			}
 		);
-		
 	}
 	
 	function bulkEmail()
 	{
 		alert("Bulk");
 	}
-	
-	
 	
 	function restoreDialog()
 	{

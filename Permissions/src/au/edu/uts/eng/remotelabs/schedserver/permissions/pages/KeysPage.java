@@ -365,7 +365,8 @@ public class KeysPage extends AbstractPermissionsPage
         }
         
         if (request.getParameter("first") == null || request.getParameter("last") == null || 
-                request.getParameter("email") == null || request.getParameter("expiry") == null)
+                request.getParameter("email") == null || request.getParameter("expiry") == null ||
+                request.getParameter("type") == null)
         {
             this.logger.warn("Unable to email user class access key because not all parameters were supplied.");
             obj.put("reason", "Missing parameter.");
@@ -407,11 +408,9 @@ public class KeysPage extends AbstractPermissionsPage
         macros.put("firstname", user.getFirstName());
         macros.put("lastname", user.getLastName());
         macros.put("expiry", key.getExpiry().toString());
+        macros.put("key", key.getRedeemKey());
+        macros.put("targeturl", this.generateEmailTarget(request.getParameter("type"), key.getRedeemKey())); 
         
-        
-        macros.put("targeturl", "http://locahost"); // FIXME
-        
-
         String message = request.getParameter("message");
         boolean useMessage = message != null && !"".equals(message);
         if (useMessage) macros.put("message", message);
@@ -433,6 +432,12 @@ public class KeysPage extends AbstractPermissionsPage
         return obj;
     }
     
+    /**
+     * Returns the configured email types.
+     * 
+     * @param request
+     * @return response
+     */
     public JSONArray getEmailKeyTypes(HttpServletRequest request)
     {
         JSONArray arr = new JSONArray();
@@ -451,6 +456,22 @@ public class KeysPage extends AbstractPermissionsPage
         }
         
         return arr;
+    }
+    
+    /**
+     * Generate email target.
+     *
+     * @param type 
+     * @param key key to email
+     * @return email target
+     */
+    public String generateEmailTarget(String type, String key)
+    {
+        
+        
+        
+        
+        return key;
     }
     
     /**
