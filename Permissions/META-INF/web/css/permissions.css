@@ -542,6 +542,7 @@
 
 #perm-keysactions {
 	border-right: 1px solid #AAAAAA;
+	height: 240px;
 }
 
 #perm-keysactions .perm-button {

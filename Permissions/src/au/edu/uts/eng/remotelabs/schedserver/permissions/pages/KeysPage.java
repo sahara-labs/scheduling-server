@@ -86,7 +86,7 @@ public class KeysPage extends AbstractPermissionsPage
      * Returns the list of keys for a user class. If the parameter 'historical'
      * is part of the request parameters and has a value of 'true', non-usable
      * keys are returned otherwise usable keys are returned. Usable keys are 
-     * those that are 'active', have remaining uses and have not elasped
+     * those that are 'active', have remaining uses and have not elapsed
      * their expiry time. 
      * 
      * @param request request

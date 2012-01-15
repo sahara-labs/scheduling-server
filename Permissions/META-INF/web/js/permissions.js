@@ -1046,10 +1046,10 @@ function userClassKeys()
 						"<img src='/img/perm-email.png' alt='Email' /><br />" +
 						"Email Key" +
 					"</a>" +
-					"<a class='perm-keysbulk perm-button'>" +
-						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
-						"Bulk Email" +
-					"</a>" +
+//					"<a class='perm-keysbulk perm-button'>" +
+//						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
+//						"Bulk Email" +
+//					"</a>" +
 				"</div>" +
 				"<div id='perm-keyslist'>&nbsp;" +
 					"<ul id='perm-activekeys'>" +
@@ -1075,7 +1075,7 @@ function userClassKeys()
 	
 	$("#perm-keysdialog .perm-keysadd").click(addKey);
 	$("#perm-keysdialog .perm-keysemail").click(emailKey);
-	$("#perm-keysdialog .perm-keysbulk").click(bulkEmail);
+//	$("#perm-keysdialog .perm-keysbulk").click(bulkEmail);
 	
 	$.post(
 		"/keys/getList",
