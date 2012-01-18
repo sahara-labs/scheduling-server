@@ -361,6 +361,20 @@ public class KeysPage extends AbstractPermissionsPage
             return obj;
         }
         
+        if (request.getParameter("first") == null || request.getParameter("last") == null || 
+                request.getParameter("email") == null || request.getParameter("expiry") == null)
+        {
+            this.logger.warn("Unable to email user class access key because not all parameters were supplied.");
+            obj.put("reason", "Missing parameter.");
+            return obj;
+        }
+        
+        /* Transient user who is the receipt of the message. */
+        User user = new User();
+        user.setFirstName(request.getParameter("first"));
+        user.setLastName(request.getParameter("last"));
+        user.setEmail(request.getParameter("email"));
+        
         String ucName = request.getParameter("name");
         if (ucName == null)
         {
@@ -376,44 +390,48 @@ public class KeysPage extends AbstractPermissionsPage
             obj.put("reason", "User class not found.");
             return obj;
         }
-        
-        if (request.getParameter("first") == null || request.getParameter("last") == null || 
-                request.getParameter("email") == null || request.getParameter("expiry") == null)
+            
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Date expiry;
+        try
         {
-            this.logger.warn("Unable to email user class access key because not all parameters were supplied.");
-            obj.put("reason", "Missing parameter.");
+            expiry = formatter.parse(request.getParameter("expiry"));
+        }
+        catch (ParseException e)
+        {
+            this.logger.warn("Unable to email user class access key because the expiry time '" + 
+                    request.getParameter("expiry") + "' was not in the correct format.");
+            obj.put("reason", "Incorrect date format.");
             return obj;
         }
-            
+        
+        this.generateAndSend(keyType, expiry, user, userClass, request.getParameter("message"));
+        obj.put("success", true);
+        return obj;
+    }
+
+    /**
+     * Generates an access key and emails it to the user.
+     * 
+     * @param keyType type of access key
+     * @param expiry key expiry 
+     * @param user the user to send to (may be transient)
+     * @param userClass class to generate the key with
+     * @param message optional email message
+     */
+    private void generateAndSend(String keyType, Date expiry, User user, UserClass userClass, String message)
+    {
         UserClassKey key = new UserClassKey();
         key.setActive(true);
         key.setUserTargeted(true);
         key.setUserClass(userClass);
         key.setRemaining(1);
         key.generateKey();
-        
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        try
-        {
-            key.setExpiry(formatter.parse(request.getParameter("expiry")));
-        }
-        catch (ParseException e)
-        {
-            this.logger.warn("Unable to email user class access key because the expiry time '" + request.getParameter("expiry") +
-            		"' was not in the correct format.");
-            obj.put("reason", "Expiry in incorrect format.");
-            return obj;
-        }
+        key.setExpiry(expiry);
         
         this.db.beginTransaction();
         this.db.persist(key);
         this.db.getTransaction().commit();
-        
-        /* Transient user who is the receipt of the message. */
-        User user = new User();
-        user.setFirstName(request.getParameter("first"));
-        user.setLastName(request.getParameter("last"));
-        user.setEmail(request.getParameter("email"));
         
         Map<String, String> macros = new HashMap<String, String>();
         macros.put("classname", userClass.getName().replaceAll("_", " "));
@@ -423,7 +441,6 @@ public class KeysPage extends AbstractPermissionsPage
         macros.put("key", key.getRedeemKey());
         macros.put("targeturl", this.generateEmailTargetURL(keyType, key.getRedeemKey())); 
         
-        String message = request.getParameter("message");
         if (message != null && !"".equals(message)) macros.put("message", message);
         
         /* The template may be stored explicitly for a type. If it isn't, 
@@ -455,15 +472,12 @@ public class KeysPage extends AbstractPermissionsPage
         {
             this.logger.error("Unable to send access key email because the email template was not found. This is " +
             		"likely a build error.");
-            obj.put("reason", "Template not found.");
-            return obj;
         }
-        
-        MessengerService service = PermissionActivator.getMessenger();
-        service.sendTemplatedMessage(user, template, macros);
-        
-        obj.put("success", true);
-        return obj;
+        else
+        {
+            MessengerService service = PermissionActivator.getMessenger();
+            service.sendTemplatedMessage(user, template, macros);
+        }
     }
     
     /**

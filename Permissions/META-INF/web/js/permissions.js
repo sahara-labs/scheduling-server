@@ -1046,10 +1046,10 @@ function userClassKeys()
 						"<img src='/img/perm-email.png' alt='Email' /><br />" +
 						"Email Key" +
 					"</a>" +
-					"<a class='perm-keysbulk perm-button'>" +
-						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
-						"Bulk Email" +
-					"</a>" +
+//					"<a class='perm-keysbulk perm-button'>" +
+//						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
+//						"Bulk Email" +
+//					"</a>" +
 				"</div>" +
 				"<div id='perm-keyslist'>&nbsp;" +
 					"<ul id='perm-activekeys'>" +
@@ -1529,8 +1529,8 @@ function userClassKeys()
 						"<div class='perm-keysmodalcol'>" +
 							"<div class='keys-title'>User Details:</div>" +
 							"<div class='perm-keysformline'>" +
-								"<label for='keys-email'>Email: </label>" +
-								"<input id='keys-email' type='text' class='validate[required,custom[email]]' />" +
+								"<label for='keys-userfile'>File: </label>" +
+								"<input id='keys-userfile' name='userfile' type='file' class='validate[required' />" +
 							"</div>" +
 							"<div id='keys-expiryline' class='perm-keysformline'>" +
 								"<label for='keys-expiry'>Expiry: </label>" +
