@@ -1046,10 +1046,10 @@ function userClassKeys()
 						"<img src='/img/perm-email.png' alt='Email' /><br />" +
 						"Email Key" +
 					"</a>" +
-//					"<a class='perm-keysbulk perm-button'>" +
-//						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
-//						"Bulk Email" +
-//					"</a>" +
+					"<a class='perm-keysbulk perm-button'>" +
+						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
+						"Bulk Email" +
+					"</a>" +
 				"</div>" +
 				"<div id='perm-keyslist'>&nbsp;" +
 					"<ul id='perm-activekeys'>" +
@@ -1075,7 +1075,7 @@ function userClassKeys()
 	
 	$("#perm-keysdialog .perm-keysadd").click(addKey);
 	$("#perm-keysdialog .perm-keysemail").click(emailKey);
-//	$("#perm-keysdialog .perm-keysbulk").click(bulkEmail);
+	$("#perm-keysdialog .perm-keysbulk").click(bulkEmail);
 	
 	$.post(
 		"/keys/getList",
@@ -1402,6 +1402,7 @@ function userClassKeys()
 					
 					$("#perm-keyslist .ui-state-highlight").remove();
 					restoreDialog();
+					displayMessage("Key added.");
 				}
 		);
 	}
@@ -1513,15 +1514,87 @@ function userClassKeys()
 				}
 				
 				restoreDialog();
+				displayMessage("Email sent.");
 			}
 		);
 	}
 	
 	function bulkEmail()
 	{
-		alert("Bulk");
+		if ($("#perm-keysmodal").length != 0) return;
+		
+		$("#perm-keysdialog").append(
+				"<div id='perm-keysmodal' class='saharaform'>" +
+					"<form>" +
+						"<div class='perm-keysmodalcol'>" +
+							"<div class='keys-title'>User Details:</div>" +
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-email'>Email: </label>" +
+								"<input id='keys-email' type='text' class='validate[required,custom[email]]' />" +
+							"</div>" +
+							"<div id='keys-expiryline' class='perm-keysformline'>" +
+								"<label for='keys-expiry'>Expiry: </label>" +
+								"<input id='keys-expiry' type='text' class='validate[required]' />" +
+								"<a id='keys-expiryopen' class='perm-button calopen ui-corner-all'>" +
+									"<img src='/img/daypicker.png' alt='Open' />" +
+								"</a>" +
+							"</div>" +
+						"</div>" +
+						"<div class='perm-keysmodalcol'>" + 
+							"<div class='perm-keysformline'>" +
+								"<label for='keys-type'>Type: </label>" +
+								"<select id='keys-type' class='validate[required]'>" +
+									"<option value=''>&nbsp;</option>" +
+								"</select>" +
+							"</div>" +
+							"<div class='keys-title'>(Optional) Message:</div>" +
+							"<textarea id='keys-emailmessage' />" +
+						"</div>" +
+						"<div style='clear:both'></div>" +
+					"</form>" +
+				"</div>"
+		).dialog("option", {
+			title: "Email Access Key",
+			buttons: {
+				'Email': commitEmailKey,
+				'Back': restoreDialog,
+				'Close': closeDialog
+			}
+		});
+		
+		$.post(
+			"/keys/getEmailKeyTypes",
+			null,
+			function(resp) {
+				if (!$.isArray(resp))
+				{
+					window.location.reload();
+					return;
+				}
+				
+				var html = "";
+				for (i in resp)
+				{
+					html += "<option value='" + resp[i] + "'>" + resp[i] + "</option>";
+				}
+				$("#keys-type").append(html);
+			}
+		);
+		
+		$("#perm-keysmodal form").validationEngine();
+		$("#perm-keysmodal input, #perm-keysmodal textarea").focusin(formFocusIn).focusout(formFocusOut);
+		
+		$("#keys-expiry").datetimepicker({
+			dateFormat: "dd/mm/yy",
+			showOn: "focus",
+			minDate: new Date()
+		});
+		
+		$("#keys-expiryopen").click(function() {
+			$("#keys-expiry").datetimepicker("show");
+		});
 	}
-	
+
 	function restoreDialog()
 	{
 		$("#perm-keysmodal form").validationEngine("hideAll");
@@ -1539,6 +1612,20 @@ function userClassKeys()
 	{
 		$("#perm-keysmodal form").validationEngine("hideAll");
 		$(this).dialog('close');
+	}
+	
+	function displayMessage(message)
+	{
+		$("#perm-keysdialog").append(
+			"<div id='perm-displaymessage'>" +
+				"<span class='ui-icon ui-icon-info'></span>" +
+				message + 
+			"</div>"
+		);
+		
+		setTimeout(function() {
+			$("#perm-displaymessage").fadeOut();
+		}, 2000);
 	}
 	
 	function keyLi(key)

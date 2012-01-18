@@ -672,3 +672,22 @@
 #perm-keysmodal #keys-expiryline {
 	margin-top: 15px;
 }
+
+#perm-displaymessage {
+	position: absolute;
+	bottom: -5px;
+	right: 17px;
+	padding: 5px;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border: 1px solid #AAAAAA;
+	background-color: #AAAAAA;
+	color: #FEFEFE;
+	box-shadow: 0 0 8px #AAAAAA;
+	-moz-box-shadow: 0 0 8px #AAAAAA;
+	-webkit-box-shadow: 0 0 8px #AAAAAA;
+	opacity: 0.75;
+	-moz-opacity: 0.75;
+	-webkit-opacity: 0.75;
+}

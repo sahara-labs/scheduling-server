@@ -1,0 +1,18 @@
+Remote Laboratory access to ${classname}
+
+Dear ${firstname} ${lastname},
+
+You have been given access to use a remote laboratory experiment. To 
+access this please click the link below and follow the on screen
+prompts:
+
+   ${targeturl}
+   
+This link will be active until: ${expiry}
+
+The following message has been left for you:
+
+${message}
+   
+Regards,
+Remote Laboratory System

@@ -37,9 +37,11 @@
 package au.edu.uts.eng.remotelabs.schedserver.permissions.pages;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -348,6 +350,17 @@ public class KeysPage extends AbstractPermissionsPage
         JSONObject obj = new JSONObject();
         obj.put("success", false);
         
+        /* Make sure the specified type actually exists. */
+        String keyType = request.getParameter("type");
+        String keyTypes = PermissionActivator.getConfig("Access_Keys_Types");
+        if (keyType == null || keyTypes == null || !keyTypes.contains(keyType))
+        {
+            this.logger.warn("Unable to email user access key because the key type " + keyType + " is not in the " +
+            		"configured key type list.");
+            obj.put("reason", "Key type not correct.");
+            return obj;
+        }
+        
         String ucName = request.getParameter("name");
         if (ucName == null)
         {
@@ -365,8 +378,7 @@ public class KeysPage extends AbstractPermissionsPage
         }
         
         if (request.getParameter("first") == null || request.getParameter("last") == null || 
-                request.getParameter("email") == null || request.getParameter("expiry") == null ||
-                request.getParameter("type") == null)
+                request.getParameter("email") == null || request.getParameter("expiry") == null)
         {
             this.logger.warn("Unable to email user class access key because not all parameters were supplied.");
             obj.put("reason", "Missing parameter.");
@@ -409,14 +421,36 @@ public class KeysPage extends AbstractPermissionsPage
         macros.put("lastname", user.getLastName());
         macros.put("expiry", key.getExpiry().toString());
         macros.put("key", key.getRedeemKey());
-        macros.put("targeturl", this.generateEmailTarget(request.getParameter("type"), key.getRedeemKey())); 
+        macros.put("targeturl", this.generateEmailTargetURL(keyType, key.getRedeemKey())); 
         
         String message = request.getParameter("message");
         boolean useMessage = message != null && !"".equals(message);
         if (useMessage) macros.put("message", message);
         
-        URL template = useMessage ? this.getClass().getResource("/META-INF/resources/Access_Key_Email_with_Message") :
-            this.getClass().getResource("/META-INF/resources/Access_Key_Email");
+        /* The template may be stored explicitly for a type. If it isn't, 
+         * the default template is used. */
+        URL template = null;
+
+        File templateFile = new File(PermissionActivator.getConfig("Access_Keys_" + keyType + "_Email"));
+        if (templateFile.exists())
+        {            
+            try
+            {
+                template = templateFile.toURI().toURL();
+            }
+            catch (MalformedURLException e)
+            {
+                this.logger.warn("Configured access key template locate ('" + 
+                        PermissionActivator.getConfig("Acccess_Keys_" + keyType + "_Email") + " was malformed. " +
+                        "Falling back to default template.");
+            }
+        }
+        
+        if (template == null)
+        {
+            template = this.getClass().getResource("/META-INF/templates/Access_Email");
+        }
+        
         if (template == null)
         {
             this.logger.error("Unable to send access key email because the email template was not found. This is " +
@@ -442,7 +476,7 @@ public class KeysPage extends AbstractPermissionsPage
     {
         JSONArray arr = new JSONArray();
         
-        String types = PermissionActivator.getConfig("Access_Keys_Email_Targets");
+        String types = PermissionActivator.getConfig("Access_Keys_Types");
         if (types == null)
         {
             this.logger.warn("No access key email types have been configured, atleast one is needed.");
@@ -451,27 +485,48 @@ public class KeysPage extends AbstractPermissionsPage
         
         for (String s : types.split(","))
         {
-            s = s.trim();
-            arr.put(s.substring(0, s.indexOf('=')));
+            arr.put(s.trim());
         }
         
         return arr;
     }
     
     /**
-     * Generate email target.
+     * Generate email target URL. The URL may include  
      *
      * @param type 
      * @param key key to email
      * @return email target
      */
-    public String generateEmailTarget(String type, String key)
+    private String generateEmailTargetURL(String type, String key)
     {
+        String url = PermissionActivator.getConfig("Access_Keys_" + type + "_URL");
+        if (url == null)
+        {
+            /* No URL configured fallback to the default format which is just 
+             * the site address. */
+            this.logger.debug("No URL format has been configured for access key type '" + type + "'. Using just " +
+            		"site address.");
+            url = "<site>";
+        }
         
+        if (url.contains("<site>"))
+        {
+            String site = PermissionActivator.getConfig("Site_Address");
+            if (site == null)
+            {
+                this.logger.error("Please configure the property 'Site_Address' with the remote laboratory public " +
+                		"so access key emails have the correct destination.");
+            }
+            url = url.replace("<site>", site);
+        }
         
+        if (url.contains("<key>"))
+        {
+            url = url.replace("<key>", key);
+        }
         
-        
-        return key;
+        return url;
     }
     
     /**
@@ -497,53 +552,56 @@ public class KeysPage extends AbstractPermissionsPage
             c = c.trim();
             
             JSONObject cObj = new JSONObject();
+            arr.put(cObj);
             cObj.put("name", c);
             
-            InputStream is = this.getClass().getResourceAsStream("/META-INF/resources/Constraints_" + c);
-            if (is == null)
+            BufferedReader reader = null;
+            try
             {
-                this.logger.debug("No constraint restrictions for access key constraint '" + c + "'.");
-                cObj.put("hasRestriction", false);
-            }
-            else
-            {
-                cObj.put("hasRestriction", true);
+                /* If a files exists in 'conf/resources/' called 'Constraint_<constraint>',
+                 * load that files as the a select list of constraint options. 
+                 * The file format should be:
+                 *      <Constraint value display name>:<Constraint value>
+                 */
+                File constsFile = new File("conf/resources/Constraint_" + c);
+                if (!constsFile.exists())
+                {
+                    this.logger.debug("No constraint restrictions for access key constraint '" + c + "'.");
+                    cObj.put("hasRestriction", false);
+                    continue;
+                }
                 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                cObj.put("hasRestriction", true);
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(constsFile)));
                 String line = null;
+                while ((line = reader.readLine()) != null)
+                {
+                    if (line.startsWith("#")) continue; // Comment line
+                    cObj.accumulate("restriction", line);
+                }
+            }
+            catch (IOException e)
+            {
+                this.logger.error("Error reading constraint restriction file '" + c + "'. Error message: " + 
+                        e.getMessage());
+                cObj.put("hasRestriction", false);
+                
+            }
+            finally
+            {
                 try
                 {
-                    while ((line = reader.readLine()) != null)
-                    {
-                        if (line.startsWith("#")) continue; // Comment line
-                        cObj.accumulate("restriction", line);
-                    }
+                    if (reader != null) reader.close();
                 }
                 catch (IOException e)
                 {
-                    this.logger.error("Error reading constraint restriction file '" + c + "'. Error message: " + 
-                                e.getMessage());
-                    cObj.put("hasRestriction", false);
+                    this.logger.error("Error closing constraint restriction file '" + c + "'. Error message: " + 
+                            e.getMessage());
                 }
-                finally
-                {
-                    try
-                    {
-                        reader.close();
-                    }
-                    catch (IOException e)
-                    {
-                        this.logger.error("Error closing constraint restriction file '" + c + "'. Error message: " + 
-                                e.getMessage());
-                    }
-                }
-                        
             }
-            
-            arr.put(cObj);
+
         }
-        
-        
+            
         return arr;
     }
 

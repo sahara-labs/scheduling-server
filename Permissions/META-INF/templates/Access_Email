@@ -1,0 +1,21 @@
+Remote Laboratory access to ${classname}
+
+Dear ${firstname} ${lastname},
+
+You have been given access to use a remote laboratory experiment. Please 
+go to the following address:
+
+   ${targeturl}
+   
+and enter the key:
+   
+    ${key}
+    
+For more details please consult the linked web site.
+
+The following message has been left for you:
+
+${message}
+   
+Regards,
+Remote Laboratory System
