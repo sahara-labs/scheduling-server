@@ -38,6 +38,7 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -155,6 +156,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         bk.setResourcePermission(perm);
         
         /* Timing information. */
+        bk.setCreationTime(new Date());
         bk.setStartTime(start.getTime());
         bk.setEndTime(end.getTime());
         bk.setDuration((int) (end.getTimeInMillis() - start.getTimeInMillis()) / 1000);

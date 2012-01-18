@@ -70,6 +70,9 @@ public class Bookings implements Serializable
     /** The resoruce resourcePermission this booking was created from. */
     private ResourcePermission resourcePermission;
     
+    /** The time at which the booking was created. */
+    private Date creationTime;
+    
     /** The start time of the booking. */
     private Date startTime;
     
@@ -145,6 +148,17 @@ public class Bookings implements Serializable
     public void setResourcePermission(ResourcePermission permission)
     {
         this.resourcePermission = permission;
+    }
+
+    @Column(name = "creation_time", nullable = true)
+    public Date getCreationTime()
+    {
+        return this.creationTime;
+    }
+
+    public void setCreationTime(Date creationTime)
+    {
+        this.creationTime = creationTime;
     }
 
     @Column(name = "start_time", nullable = false)
