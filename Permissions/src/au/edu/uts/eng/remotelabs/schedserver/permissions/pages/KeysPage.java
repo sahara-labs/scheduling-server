@@ -184,22 +184,26 @@ public class KeysPage extends AbstractPermissionsPage
             obj.put("expiry", key.getExpiry());
         }
         
+        JSONArray consArr = new JSONArray();
+        obj.put("constraints", consArr);
         for (UserClassKeyConstraint constraint : key.getConstraints())
         {
             JSONObject cObj = new JSONObject();
             cObj.put("name", constraint.getName());
             cObj.put("value", constraint.getValue());
-            obj.append("constraints", cObj);
+            consArr.put(cObj);
         }
 
+        JSONArray userArr = new JSONArray();
+        obj.put("user", userArr);
         for (UserClassKeyRedemption redemption : key.getRedemptions())
         {
             User user = redemption.getUser();
             if (user.getFirstName() != null && user.getLastName() != null)
             {
-                obj.append("user", user.getLastName() + ", " + user.getFirstName());
+                userArr.put(user.getLastName() + ", " + user.getFirstName());
             }
-            else obj.append("user", user.getName());
+            else userArr.put(user.getName());
         }
         
         return obj;
