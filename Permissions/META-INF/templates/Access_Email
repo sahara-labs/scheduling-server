@@ -13,8 +13,7 @@ and enter the key:
     
 For more details please consult the linked web site.
 
-The following message has been left for you:
-
+%{message}The following message has been left for you:
 ${message}
    
 Regards,

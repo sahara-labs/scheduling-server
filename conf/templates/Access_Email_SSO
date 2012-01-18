@@ -10,7 +10,7 @@ prompts:
    
 This link will be active until: ${expiry}
 
-The following message has been left for you:
+%{message}The following message has been left for you:
 
 ${message}
    

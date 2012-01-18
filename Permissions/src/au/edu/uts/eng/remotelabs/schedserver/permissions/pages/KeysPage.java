@@ -424,15 +424,15 @@ public class KeysPage extends AbstractPermissionsPage
         macros.put("targeturl", this.generateEmailTargetURL(keyType, key.getRedeemKey())); 
         
         String message = request.getParameter("message");
-        boolean useMessage = message != null && !"".equals(message);
-        if (useMessage) macros.put("message", message);
+        if (message != null && !"".equals(message)) macros.put("message", message);
         
         /* The template may be stored explicitly for a type. If it isn't, 
          * the default template is used. */
         URL template = null;
 
-        File templateFile = new File(PermissionActivator.getConfig("Access_Keys_" + keyType + "_Email"));
-        if (templateFile.exists())
+        String configuredTemplate = PermissionActivator.getConfig("Access_Keys_" + keyType + "_Email");
+        File templateFile;
+        if (configuredTemplate != null && (templateFile = new File(configuredTemplate)).exists())
         {            
             try
             {

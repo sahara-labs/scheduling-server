@@ -1624,7 +1624,9 @@ function userClassKeys()
 		);
 		
 		setTimeout(function() {
-			$("#perm-displaymessage").fadeOut();
+			$("#perm-displaymessage").fadeOut(400, function() {
+				$(this).remove();
+			});
 		}, 2000);
 	}
 	

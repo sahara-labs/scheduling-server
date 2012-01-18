@@ -56,9 +56,16 @@ import au.edu.uts.eng.remotelabs.schedserver.messenger.MessengerActivator;
  * ...
  * &lt;Body line n&gt;
  * </pre>
+ * 
+ * Template lines beginning with <tt>#</tt> are treated as comment lines and are excluded
+ * from the resultant email.
+ * <br />
  * Template lines can contain macros in the format <tt>${macro}</tt>. These are
  * replaced with a value from the supplied macro list or if the macro isn't in
  * the list, it is loaded from configuration.
+ * <br/>
+ * Template lines that start with <tt>%{variable}</tt> are conditionally included
+ * provided the variable has been provided and is not an empty string. 
  */
 public class Templator
 {
@@ -101,6 +108,19 @@ public class Templator
         String line, prevLine = null;
         while ((line = reader.readLine()) != null)
         {
+            /* Comment line. */
+            if (line.startsWith("#")) continue;
+            
+            /* Conditional lines. */
+            if (line.startsWith("%{"))
+            {
+                String var = line.substring(2, line.indexOf("}"));
+                if (!this.macros.containsKey(var) || this.macros.get(var) == null ||
+                        "".equals(this.macros.get(var))) continue;
+                
+                line = line.substring(line.indexOf("}") + 1);
+            }
+            
             line = this.replaceMacros(line);
             
             /* Prepend the previous lines content if they exist. */
