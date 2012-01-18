@@ -25,6 +25,5 @@ Export-Package: au.edu.uts.eng.remotelabs.schedserver.permissions
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 META-INF/web=META-INF/web;-donotcopy=.svn, \
 META-INF/templates=META-INF/templates;-donotcopy=.svn, \
-META-INF/resources=META-INF/resources;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}
