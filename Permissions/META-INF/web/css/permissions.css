@@ -426,6 +426,10 @@
 	overflow-y: auto;
 }
 
+#perm-acuserslist input, #perm-selectedusers input {
+	margin-right: 5px;
+}
+
 #perm-userslist .perm-userscol, #perm-acuserslist .perm-userscol {
 	clear: right;
 	float: left;

@@ -934,7 +934,7 @@ function deleteUserInClass()
 				if (i % len == 0) html += "<div class='perm-userscol'><ul>";
 				
 				u = resp[i];
-				idsList[u.name] = "user-" + u.name.replace(/\.|\s|,/, "");
+				idsList[u.name] = "user-" + u.name.replace(/\.|\s|,|'/g, "");
 				html +=
 					"<li>" +
 						"<input type='checkbox' id='" + idsList[u.name] + "' />" +
