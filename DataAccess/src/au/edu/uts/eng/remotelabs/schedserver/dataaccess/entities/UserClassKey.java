@@ -168,7 +168,7 @@ public class UserClassKey implements Serializable
         this.expiry = expiry;
     }
 
-    @OneToMany(mappedBy = "classKey", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "classKey", fetch = FetchType.LAZY)
     public Set<UserClassKeyConstraint> getConstraints()
     {
         return this.constraints;
