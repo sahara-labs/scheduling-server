@@ -771,7 +771,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         cal.add(Calendar.DAY_OF_MONTH, MAX_DAYS - HOT_DAYS);
         String maxDayThres = TimeUtil.getDayKey(cal);
         
-        this.logger.info("Running booking engine stale day clean. Clean thresholds are: current day=" + currentDay +
+        this.logger.debug("Running booking engine stale day clean. Clean thresholds are: current day=" + currentDay +
         		", hot days=" + hotDayThres + ", max days=" + maxDayThres);
         
         synchronized (this.days)
