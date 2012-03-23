@@ -631,7 +631,10 @@
 
 #perm-redeemuserslist {
 	width: 200px;
+	height: 240px;
 	float: right;
+	overflow-y: auto;
+	list-style: disc inside none;
 }
 
 #perm-redeemuserslist .ui-state-highlight {
