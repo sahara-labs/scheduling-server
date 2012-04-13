@@ -107,7 +107,7 @@ public class ServerActivator implements BundleActivator
     public void stop(final BundleContext context) throws Exception
     {
         /* The framework will cleanup any services in use and remove the service listener. */
-        this.logger.warn("Stopping the server bundle.");
+        this.logger.debug("Stopping the server bundle.");
         this.server.stop();
         
         ServerActivator.configTracker.close();

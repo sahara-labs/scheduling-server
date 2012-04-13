@@ -88,13 +88,13 @@ public class LoggerActivator implements BundleActivator
     static
     {
         /* Common configuration. */
-        LoggerActivator.loggerProperties.put("Logger_Type", "File");
-        LoggerActivator.loggerProperties.put("Log_Level", "INFO");
+        LoggerActivator.loggerProperties.put("Logger_Type", "RolledFile");
+        LoggerActivator.loggerProperties.put("Log_Level", "WARN");
         LoggerActivator.loggerProperties.put("Default_Log_Format", "[__LEVEL__] - [__ISO8601__] - __MESSAGE__");
 
         /* File and rolled file configuration. */
-        LoggerActivator.loggerProperties.put("Log_File_Name", "SchedServer.log");
-        LoggerActivator.loggerProperties.put("Log_File_Max_Size", "10");
+        LoggerActivator.loggerProperties.put("Log_File_Name", "schedulingserver.log");
+        LoggerActivator.loggerProperties.put("Log_File_Max_Size", "1");
         LoggerActivator.loggerProperties.put("Log_File_Backups", "5");
         
         /* Syslog logger configuration. */
@@ -130,15 +130,15 @@ public class LoggerActivator implements BundleActivator
             conf = this.confService.getService();
             
             /* Common configuration. */
-            LoggerActivator.loggerProperties.put("Logger_Type", conf.getProperty("Logger_Type", "File"));
-            LoggerActivator.loggerProperties.put("Log_Level", conf.getProperty("Log_Level", "INFO"));
+            LoggerActivator.loggerProperties.put("Logger_Type", conf.getProperty("Logger_Type", "RolledFile"));
+            LoggerActivator.loggerProperties.put("Log_Level", conf.getProperty("Log_Level", "WARN"));
             LoggerActivator.loggerProperties.put("Default_Log_Format", 
                     conf.getProperty("Default_Log_Format", "[__LEVEL__] - [__ISO8601__] - __MESSAGE__"));
 
             /* File and rolled file configuration. */
             LoggerActivator.loggerProperties.put("Log_File_Name", 
-                    conf.getProperty("Log_File_Name", "SchedServer.log"));
-            LoggerActivator.loggerProperties.put("Log_File_Max_Size", conf.getProperty("Log_File_Max_Size", "10"));
+                    conf.getProperty("Log_File_Name", "schedulingserver.log"));
+            LoggerActivator.loggerProperties.put("Log_File_Max_Size", conf.getProperty("Log_File_Max_Size", "1"));
             LoggerActivator.loggerProperties.put("Log_File_Backups", conf.getProperty("Log_File_Backups", "5"));
             
             /* Syslog logger configuration. */

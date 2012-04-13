@@ -272,7 +272,7 @@ public class KeysPage extends AbstractPermissionsPage
         this.db.persist(newKey);
         
         /* Check if any constraints are set. */
-        String constraints = PermissionActivator.getConfig("Access_Keys_Constraints");
+        String constraints = PermissionActivator.getConfig("Access_Keys_Constraints", null);
         if (constraints != null)
         {
             for (String c : constraints.split(","))
@@ -356,7 +356,7 @@ public class KeysPage extends AbstractPermissionsPage
         
         /* Make sure the specified type actually exists. */
         String keyType = request.getParameter("type");
-        String keyTypes = PermissionActivator.getConfig("Access_Keys_Types");
+        String keyTypes = PermissionActivator.getConfig("Access_Keys_Types", "Form");
         if (keyType == null || keyTypes == null || !keyTypes.contains(keyType))
         {
             this.logger.warn("Unable to email user access key because the key type " + keyType + " is not in the " +
@@ -451,7 +451,7 @@ public class KeysPage extends AbstractPermissionsPage
          * the default template is used. */
         URL template = null;
 
-        String configuredTemplate = PermissionActivator.getConfig("Access_Keys_" + keyType + "_Email");
+        String configuredTemplate = PermissionActivator.getConfig("Access_Keys_" + keyType + "_Email", null);
         File templateFile;
         if (configuredTemplate != null && (templateFile = new File(configuredTemplate)).exists())
         {            
@@ -462,7 +462,7 @@ public class KeysPage extends AbstractPermissionsPage
             catch (MalformedURLException e)
             {
                 this.logger.warn("Configured access key template locate ('" + 
-                        PermissionActivator.getConfig("Acccess_Keys_" + keyType + "_Email") + " was malformed. " +
+                        PermissionActivator.getConfig("Acccess_Keys_" + keyType + "_Email", null) + " was malformed. " +
                         "Falling back to default template.");
             }
         }
@@ -494,7 +494,7 @@ public class KeysPage extends AbstractPermissionsPage
     {
         JSONArray arr = new JSONArray();
         
-        String types = PermissionActivator.getConfig("Access_Keys_Types");
+        String types = PermissionActivator.getConfig("Access_Keys_Types", "Form");
         if (types == null)
         {
             this.logger.warn("No access key email types have been configured, atleast one is needed.");
@@ -518,7 +518,7 @@ public class KeysPage extends AbstractPermissionsPage
      */
     private String generateEmailTargetURL(String type, String key)
     {
-        String url = PermissionActivator.getConfig("Access_Keys_" + type + "_URL");
+        String url = PermissionActivator.getConfig("Access_Keys_" + type + "_URL", "Form");
         if (url == null)
         {
             /* No URL configured fallback to the default format which is just 
@@ -530,7 +530,7 @@ public class KeysPage extends AbstractPermissionsPage
         
         if (url.contains("<site>"))
         {
-            String site = PermissionActivator.getConfig("Site_Address");
+            String site = PermissionActivator.getConfig("Site_Address", null);
             if (site == null)
             {
                 this.logger.error("Please configure the property 'Site_Address' with the remote laboratory public " +
@@ -558,7 +558,7 @@ public class KeysPage extends AbstractPermissionsPage
     {
         JSONArray arr = new JSONArray();
         
-        String constraints = PermissionActivator.getConfig("Access_Keys_Constraints");
+        String constraints = PermissionActivator.getConfig("Access_Keys_Constraints", null);
         if (constraints == null)
         {
             this.logger.debug("No constraints configured for use access key restriction.");

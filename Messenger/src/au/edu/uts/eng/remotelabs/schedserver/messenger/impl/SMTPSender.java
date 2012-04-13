@@ -80,20 +80,20 @@ public class SMTPSender
     {
         /* Load administrator email. */
         String tmp = config.getProperty("Admin_Email");
-        if (tmp == null)
-        {
-            this.logger.warn("Failed loaded administrator emails so administrative emails will not be sent out.");
-        }
-        else
-        {
-            String emails[] = tmp.split(";");
-            for (String e : emails)
-            {
-                e = e.trim();
-                this.logger.info("Loaded administrator email '" + e + "' to send notifications to.");
-                this.adminEmails.add(e);
-            }
-        }
+//        if (tmp == null)
+//        {
+//            this.logger.warn("Failed loaded administrator emails so administrative emails will not be sent out.");
+//        }
+//        else
+//        {
+//            String emails[] = tmp.split(";");
+//            for (String e : emails)
+//            {
+//                e = e.trim();
+//                this.logger.info("Loaded administrator email '" + e + "' to send notifications to.");
+//                this.adminEmails.add(e);
+//            }
+//        }
         
         /* Load mail session properties. */
         Properties props = new Properties();

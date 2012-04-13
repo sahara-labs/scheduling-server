@@ -75,7 +75,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 public class StatusTimeoutChecker implements Runnable
 {
     /** The default timeout in minutes. */
-    public static final int DEFAULT_TIMEOUT = 300;
+    public static final int DEFAULT_TIMEOUT = 100;
     
     /** The period a rig must provide a status update, otherwise the rig
      *  is put offline. */
@@ -102,7 +102,7 @@ public class StatusTimeoutChecker implements Runnable
         catch (NumberFormatException nfe)
         {
             this.timeout = StatusTimeoutChecker.DEFAULT_TIMEOUT;
-            this.logger.warn("Configured rig time out period '" + tmStr + "' is not valid, using the default value " +
+            this.logger.debug("Configured rig time out period '" + tmStr + "' is not valid, using the default value " +
                     " of " + this.timeout + " seconds.");
         }
     }

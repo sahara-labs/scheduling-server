@@ -1042,10 +1042,10 @@ function userClassKeys()
 						"<img src='/img/perm-add.png' alt='Add' /><br />" +
 						"Add Key" +
 					"</a>" +
-					"<a class='perm-keysemail perm-button'>" +
-						"<img src='/img/perm-email.png' alt='Email' /><br />" +
-						"Email Key" +
-					"</a>" +
+//					"<a class='perm-keysemail perm-button'>" +
+//						"<img src='/img/perm-email.png' alt='Email' /><br />" +
+//						"Email Key" +
+//					"</a>" +
 //					"<a class='perm-keysbulk perm-button'>" +
 //						"<img src='/img/perm-bulkemail.png' alt='Bulk' /><br />" +
 //						"Bulk Email" +

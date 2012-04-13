@@ -48,10 +48,7 @@ public class SystemErrLogger extends AbstractLogger
     { 
         /* Does nothing. */
     }
-   
-    /* 
-     * @see au.edu.uts.eng.remotelabs.rigclient.util.ILogger#log(java.lang.short, java.lang.String)
-     */
+
     @Override
     public void log(final int level, final String message)
     {

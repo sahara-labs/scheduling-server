@@ -114,14 +114,13 @@ public class DataAccessConfiguration
         
         /* hibernate.c3p0 connection pool defaults. */
         this.props.setProperty("hibernate.c3p0.min_size", "3");
-        this.props.setProperty("hibernate.c3p0.max_size", "50");
+        this.props.setProperty("hibernate.c3p0.max_size", "100");
         this.props.setProperty("hibernate.c3p0.timeout", "600");
         
         /* Property to enable c3p0 connection pooling. */
         this.props.setProperty("hibernate.connection.provider_class", 
                 "org.hibernate.connection.C3P0ConnectionProvider");
-        
-        // TODO Remove SQL debug statements.
+
         this.props.setProperty("hibernate.show_sql", "false");
         this.props.setProperty("hibernate.format_sql", "false");
         this.props.setProperty("hibernate.use_sql_comments", "false");
@@ -211,7 +210,7 @@ public class DataAccessConfiguration
         prop = this.config.getProperty("DB_Conn_Pool_Min_Size");
         if (prop == null)
         {
-            this.logger.warn("Database connection pool minimum size (DB_Conn_Pool_Min_Size) not found," +
+            this.logger.debug("Database connection pool minimum size (DB_Conn_Pool_Min_Size) not found," +
                     " using the default (" + this.props.getProperty("hibernate.c3p0.min_size") + ").");
         }
         else
@@ -223,7 +222,7 @@ public class DataAccessConfiguration
         prop = this.config.getProperty("DB_Conn_Pool_Max_Size");
         if (prop == null)
         {
-            this.logger.warn("Database connection pool maximum size (DB_Conn_Pool_Max_Size) not found," +
+            this.logger.debug("Database connection pool maximum size (DB_Conn_Pool_Max_Size) not found," +
                     " using the default (" + this.props.getProperty("hibernate.c3p0.max_size") + ").");
         }
         else
@@ -235,7 +234,7 @@ public class DataAccessConfiguration
         prop = this.config.getProperty("DB_Conn_Timeout");
         if (prop == null)
         {
-            this.logger.warn("Database connection timeout (DB_Conn_Timeout) not found," +
+            this.logger.debug("Database connection timeout (DB_Conn_Timeout) not found," +
                     " using the default (" + this.props.getProperty("hibernate.c3p0.timeout") + ").");
         }
         else

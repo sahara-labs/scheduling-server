@@ -145,13 +145,14 @@ public class PermissionActivator implements BundleActivator
      * Returns the configured value or null if the property does not exist.
      * 
      * @param prop property
+     * @param def default property
      * @return value or null
      */
-    public static String getConfig(String prop)
+    public static String getConfig(String prop, String def)
     {
-        if (PermissionActivator.configTracker == null) return null;
+        if (PermissionActivator.configTracker == null) return def;
         
         Config conf = PermissionActivator.configTracker.getService();
-        return conf == null ? null : conf.getProperty(prop);
+        return conf == null ? def : conf.getProperty(prop);
     }
 }
