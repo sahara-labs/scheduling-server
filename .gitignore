@@ -1,0 +1,10 @@
+# Ignore all jar files
+*.jar
+
+# Ignore all class files
+*.class
+
+# Ignore all build artefacts
+*.rpm
+*.zip
+*.tar.gz
