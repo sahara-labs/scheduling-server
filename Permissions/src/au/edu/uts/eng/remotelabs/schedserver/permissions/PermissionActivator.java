@@ -39,10 +39,8 @@ package au.edu.uts.eng.remotelabs.schedserver.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.axis2.transport.http.AxisServlet;
-import org.apache.velocity.app.Velocity;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -99,13 +97,6 @@ public class PermissionActivator implements BundleActivator
 	    ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
 	    this.soapRegistration = context.registerService(ServletContainerService.class, soapService, null);
-	    
-	    /* Setup the permissions web interface. */
-	    Properties velProps = new Properties();
-	    velProps.setProperty("resource.loader", "class");
-	    velProps.setProperty("class.resource.loader.description", "Velocity Classpath Resource Loader");
-	    velProps.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-	    Velocity.init(velProps);
 
 	    this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(3);
 	    this.pageRegistrations.add(context.registerService(HostedPage.class, UsersPage.getHostedPage(), null));

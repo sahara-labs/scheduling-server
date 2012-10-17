@@ -37,6 +37,9 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.server;
 
+import java.util.Properties;
+
+import org.apache.velocity.app.Velocity;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -98,6 +101,12 @@ public class ServerActivator implements BundleActivator
                     ref.getBundle().getSymbolicName() + '.');
             pageListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
+        
+        /* Setup Veloctiy to use a custom resource loader. */
+	    Properties velProps = new Properties();
+	    velProps.setProperty("resource.loader", "class");
+	    velProps.setProperty("class.resource.loader.class", "au.edu.uts.eng.remotelabs.schedserver.server.impl.BundleResourceLoader");
+	    Velocity.init(velProps);
         
         /* Start the server. */
         this.server.start();

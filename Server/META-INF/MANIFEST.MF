@@ -13,10 +13,16 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: University of Technology, Sydney
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.server;uses:="org.osgi.framework,javax.servlet.http",
  javax.servlet,
- javax.servlet.http
+ javax.servlet.http,
+ org.apache.velocity,
+ org.apache.velocity.app,
+ org.apache.velocity.context,
+ org.apache.velocity.exception,
+ org.apache.velocity.io
 Bundle-ClassPath: .,
  lib/jetty-6.1.26.jar,
  lib/jetty-sslengine-6.1.26.jar,
  lib/jetty-util-6.1.26.jar,
- lib/servlet-api-2.5-20081211.jar
+ lib/servlet-api-2.5-20081211.jar,
+ lib/velocity-1.7-dep.jar
 Bundle-ActivationPolicy: lazy
