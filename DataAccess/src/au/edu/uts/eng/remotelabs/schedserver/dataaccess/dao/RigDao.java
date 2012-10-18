@@ -82,9 +82,9 @@ public class RigDao extends GenericDao<Rig>
      */
     public Rig findByName(String name)
     {
-        Criteria cri = this.session.createCriteria(Rig.class);
-        cri.add(Restrictions.eq("name", name));
-        return (Rig) cri.uniqueResult();
+        return (Rig) this.session.createCriteria(Rig.class)
+                .add(Restrictions.eq("name", name))
+                .uniqueResult();
     }
     
     /**
@@ -108,5 +108,24 @@ public class RigDao extends GenericDao<Rig>
         cri.add(Restrictions.eq("online", true));
         cri.add(Restrictions.eq("inSession", false));
         return cri.list();
+    }
+
+    /**
+     * Finds a <em>meta</em> rig which has the provided name and meta data. The
+     * metadata is wildcarded as it need not be the only meta data the rig has.
+     * <br /> 
+     * Examples of meta rigs are rigs which belong to other sites but are
+     * imitated here for multisite use.
+     * 
+     * @param name the name of the rig
+     * @param meta the meta the rig must have
+     * @return rig or null if not found
+     */
+    public Rig findMetaRig(String name, String meta)
+    {
+        return (Rig) this.session.createCriteria(Rig.class)
+                .add(Restrictions.eq("name", name))
+                .add(Restrictions.like("meta", "%" + meta + "%"))
+                .uniqueResult();
     }
 }

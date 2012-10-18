@@ -149,4 +149,16 @@ Date: 28th December 2009
 		<buildRequiredBundle bundle="SchedulingServer-Reports.jar" bundleProject="Reports" />
 	</target>
 
+	<!-- ### MultiSite Bundle. -->
+	<detectIfBundlePresent property="missing.multisite" bundle="SchedulingServer-MultiSite.jar" />
+	<target name="multiSiteBundle" if="missing.multisite">
+		<buildRequiredBundle bundle="SchedulingServer-MultiSite.jar" bundleProject="MultiSite" />
+	</target>
+	
+	<!-- ### MultiSite Provider Bundle. -->
+	<detectIfBundlePresent property="missing.multisiteprovider" bundle="SchedulingServer-MultiSiteProvider.jar" />
+	<target name="multiSiteProviderBundle" if="missing.multisiteprovider">
+		<buildRequiredBundle bundle="SchedulingServer-MultiSiteProvider.jar" bundleProject="MultiSiteProvider" />
+	</target>
+
 </project>

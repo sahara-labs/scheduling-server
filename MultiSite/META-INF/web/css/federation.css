@@ -1,0 +1,413 @@
+/**
+ * SAHARA Scheduling Server
+ *
+ * @license See LICENSE in the top level directory for complete license terms.
+ *
+ * Copyright (c) 2011, Michael Diponio
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the University of Technology, Sydney nor the names
+ *    of its contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Michael Diponio (mdiponio)
+ * @date 12th September 2011
+ */
+ 
+/* ----------------------------------------------------------------------------
+ * -- Tabs bar                                                               --
+ * ---------------------------------------------------------------------------- */
+
+#lefttabbar {
+	margin-left: -105px;
+}
+
+#federationpage .selectedtab {
+	width: 130px;
+	padding: 2px 0 4px;
+}
+#federationpage .notselectedtab {
+	width: 110px;
+	padding: 0 0 4px;
+}
+
+#federationpage .linkbutcontlabel {
+	text-align: right;
+	padding-right: 10px;
+}
+
+#tabcontents {
+	width: 730px;
+	border-left: 3px solid #B5B5B5;
+	margin-left: 6px;
+}
+
+#lefttabbar {
+	border-right: 3px solid #A0A0A0;
+}
+
+/* ----------------------------------------------------------------------------
+ * -- Sites list                                                             --
+ * ---------------------------------------------------------------------------- */
+ 
+#addsitediag {
+	padding: 20px 0 0 10px;
+}
+
+#fedsites, #fedperiods, #requests {
+   border: 1px solid #B5B5B5;
+   border-radius: 0 4px 0 0;
+   box-shadow: 0 0 4px #B5B5B5;
+   -webkit-border-radius: 0 4px 0 0;
+   -webkit-box-shadow: 0 0 4px #B5B5B5;
+   -moz-border-radius: 0 4px 0 0;
+   -moz-box-shadow: 0 0 4px #B5B5B5;
+}
+
+#fedtitle {
+	padding: 8px;
+	border-bottom: 1px solid #B5B5B5;
+	background-color: #EFEFEF;
+}
+
+#fedsites ul li {
+    list-style: none;
+    border-bottom: 1px solid #B5B5B5;
+}
+
+#fedsites .fedsitetitle {
+	color: #606060;
+	padding: 8px;
+}
+
+#fedsites .fedsitetitle:hover {
+	color: #000000;
+	box-shadow: 0 0 4px #AAAAAA;
+}
+
+#fedsites .siteonline {
+	background-color: #C6FFC5;
+}
+
+#fedsites .siteoffline {
+	background-color: #FCC1C1;
+}
+
+#fedsites .sitedisplayed {
+	border: 1px solid #B5B5B5;
+	box-shadow: 0 2px 6px #B5B5B5;
+}
+
+#fedsites .fedsitetitle span {
+	float: left;
+	margin: 0 5px 0 15px;
+}
+
+#fedsites .fedsite {
+	display: none;
+}
+
+#fedsites .sitedetails {
+	float: left;
+	width: 430px;
+}
+
+#fedsites .siterole {
+	border-left: 1px solid #B5B5B5;
+    box-shadow: 0 0 2px #B5B5B5;
+    -webkit-box-shadow: 0 0 2px #B5B5B5;
+    -moz-box-shadow: 0 0 2px #B5B5B5;
+    float: right;
+    height: 180px;
+    overflow-y: hidden;
+    padding: 5px;
+    width: 129px;
+}
+
+#fedsites .siterolelabel {
+	background-color: #EFEFEF;
+    border: 1px solid #B5B5B5;
+    border-radius: 0 0 4px 4px;
+    -moz-border-radius: 0 0 4px 4px;
+    -webkit-border-radius: 0 0 4px 4px;
+    box-shadow: 0 0 3px #B5B5B5;
+    -webkit-box-shadow: 0 0 3px #B5B5B5;
+    -moz-box-shadow: 0 0 3px #B5B5B5;
+    padding: 5px;
+    color: #606060;
+}
+
+#fedsites .siterole table {
+	width: 100%;
+}
+
+#fedsites .siterole button {
+	float: right;
+	width: 60px;
+	margin-left: 15px;
+}
+
+.fedbutton {
+	display: block;
+	border-radius: 4px 4px 4px 4px;
+	border: 1px solid #B5B5B5;
+	background-color: #EFEFEF;
+	text-align: center;
+	font-size: 0.9em;
+	color: #606060;
+	box-shadow: 0 0 4px #B5B5B5;
+	-webkit-box-shadow: 0 0 4px #B5B5B5;
+	-moz-box-shadow: 0 0 4px #B5B5B5;
+	cursor: pointer;
+}
+
+.fedbutton:hover {
+	color: #606060;
+	box-shadow: 0 0 4px #606060;
+	-webkit-box-shadow: 0 0 4px #606060;
+	-moz-box-shadow: 0 0 4px #606060;
+}
+
+#fedsites .siterole a {
+	margin: 25px auto 0;
+	width: 75px;
+	height: 75px;
+}
+
+#tabcontents .fedtopbutton {
+	display: block;    
+	position: absolute;
+	margin: -35px 0 0 0px;
+	padding: 5px;
+}
+
+#tabcontents .fedtopbutton span, #fedperiods .ui-state span {
+	float: left;
+	margin-right: 5px;
+}
+
+#fedsites .siteclear {
+	clear: both;
+}
+
+.requestloading {
+	width: 100%;
+	text-align: center;
+}
+
+.errormessage {
+	padding: 6px;
+	margin: 0 20px 10px;
+}
+
+.errormessage span {
+	float: left;
+	margin-right: 10px;
+}
+
+#providerresourcelist ul {
+	list-style: none;
+}
+
+#providerresourcelist ul.reqpermtypelist li {
+	display: inline;
+}
+
+#providerresourcelist .fedbutton {
+	float: left;
+	margin: 5px;
+	padding: 5px;
+}
+
+#providerresourcelist .fedbutton span {
+	float: left;
+	margin-right: 5px;
+}
+
+#providerresourcelist div {
+	clear: both;
+	padding: 5px;
+	width: 100%;
+	font-weight: bold;
+}
+
+#permback {
+	width: 75px;
+	padding: 3px;
+}
+
+#permback span {
+	float: left;
+	margin: 0 5px;
+}
+
+/* ----------------------------------------------------------------------------
+ * -- Periods Tab.                                                          --
+ * ---------------------------------------------------------------------------- */
+ 
+#fedperiods .ui-state {
+	width: 200px;
+	margin: 10px auto;
+	padding: 5px;
+}
+
+#timeperiodlist {
+	list-style: none;
+}
+
+#timeperiodlist .resourceperiodheader {
+	padding: 5px 10px;
+	border: 1px solid #A0A0A0;
+	background-color: #A0A0A0;
+	color: #EFEFEF;
+	font-weight: bold;
+	box-shadow: 0 1px 3px #A0A0A0;
+}
+
+#timeperiodlist .resourceperiodlist {
+	list-style: none;
+}
+
+#timeperiodlist .resourceperiodlist li {
+	height: 30px;
+	border-bottom: 1px dashed #E0E0E0;
+}
+
+#timeperiodlist .resourceperiodlist li:hover {
+	box-shadow: 0 0 4px #A0A0A0;
+}
+
+#timeperiodlist .timeperiod {
+	padding: 5px;
+	margin-left: 15px;
+}
+
+#timeperiodlist .timeperiod span {
+	margin: 0 4px;
+	float: left;
+}
+
+#timeperiodlist .timeperioddelete {
+	display: block;
+	float: right;
+	height:20px;
+	width: 20px;
+	margin: -5px 5px 0 0;
+}
+
+#timeperiodlist .timeperioddelete span {
+	margin: 2px auto;
+}
+
+#timeperiodlist .timeperiodclear {
+	clear: both;
+}
+
+#addperioddiag .timeselectors {
+	margin: -5px auto 0;
+	width: 450px;
+}
+
+#addperioddiag .timeline .fedbutton {
+	float: left;
+	width: 34px;
+	height: 34px;
+	margin: -5px 0 0 10px;
+	padding: 4px;
+}
+
+.timeline {
+    float: left;
+    padding: 10px;
+}
+
+.timefield {
+    float: left;
+}
+
+.timelinelabel {
+    margin: 5px 0 0;
+}
+
+.ui-datepicker {
+	box-shadow: 0 0 10px #B5B5B5;
+}
+
+#addperioddiag .resourceselectors {
+	width: 315px;
+	margin: 10px auto;
+}
+
+#addperioddiag .resourceselector {
+	float: left;
+	width: 100px;
+	height: 20px;
+	padding: 5px 0;
+}
+
+#addperioddiag .selectedselector {
+	background-color: #FCFAF2;
+	border: 1px solid #FCEFA1;
+}
+
+#rigresource {
+	border-radius: 4px 0 0 4px;
+}
+
+#rigtyperesource {
+	border-radius: 0;
+}
+
+#capsresource {
+	border-radius: 0 4px 4px 0;
+}
+
+#resourcelist {
+	clear: both;
+	margin: 10px 5px;
+}
+
+#resourcelist .resourceitem {
+	float:left;
+	padding: 5px;
+	margin: 10px 0 0 -1px;
+}
+
+#resourcelist .resourceitem span {
+	display: block;
+	float: left;
+	margin: 3px 4px;
+}
+
+/* ----------------------------------------------------------------------------
+   -- Consumer Requests Tab.                                                 --
+   ---------------------------------------------------------------------------- */
+#requests .norequests {
+	width: 265px;
+	margin: 10px auto;
+	padding: 5px;
+}
+
+#requests .norequests span {
+	float: left;
+	margin-right: 10px;
+}

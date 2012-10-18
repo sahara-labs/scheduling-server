@@ -1,6 +1,6 @@
 Bundle-Name: Queuer
 Bundle-SymbolicName: SchedulingServer-Queuer
-Bundle-Version: 1.1.0
+Bundle-Version: 3.0.0.capstone
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -16,10 +16,13 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.queuer.intf, \
-au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types, \
-au.edu.uts.eng.remotelabs.schedserver.queuer.impl
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.queuer
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.queuer.intf,\
+	au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types,\
+	au.edu.uts.eng.remotelabs.schedserver.queuer.impl,\
+	au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.queuer, \
+au.edu.uts.eng.remotelabs.schedserver.queuer.pojo, \
+au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Data Access
 Bundle-SymbolicName: SchedulingServer-DataAccess
-Bundle-Version: 2.0.0
+Bundle-Version: 3.0.0.capstone
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -28,6 +28,7 @@ Bundle-ClassPath: lib/antlr-2.7.6.jar,
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
+ au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener,
  org.hibernate,
  org.hibernate.criterion,
  org.hibernate.type

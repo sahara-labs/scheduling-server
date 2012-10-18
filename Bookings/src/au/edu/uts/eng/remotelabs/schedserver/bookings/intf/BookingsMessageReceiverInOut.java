@@ -78,7 +78,7 @@ public class BookingsMessageReceiverInOut extends AbstractInOutMessageReceiver
         try
         {
             final Object obj = this.getTheImplementationObject(msgContext);
-            final BookingsInterface skel = (BookingsInterface) obj;
+            final BookingsSOAP skel = (BookingsSOAP) obj;
 
             SOAPEnvelope envelope = null;
             final AxisOperation op = msgContext.getOperationContext().getAxisOperation();

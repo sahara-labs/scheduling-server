@@ -77,7 +77,7 @@ public class QueuerMessageReceiverInOut extends AbstractInOutMessageReceiver
         try
         {
             final Object obj = this.getTheImplementationObject(msgContext);
-            final QueuerSkeletonInterface skel = (QueuerSkeletonInterface) obj;
+            final QueuerSOAP skel = (QueuerSOAP) obj;
 
             SOAPEnvelope envelope = null;
             final AxisOperation op = msgContext.getOperationContext().getAxisOperation();

@@ -2,15 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Queuer
 Bundle-SymbolicName: SchedulingServer-Queuer
-Bundle-Version: 1.1.0
+Bundle-Version: 3.0.0.capstone
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings,
+ au.edu.uts.eng.remotelabs.schedserver.bookings.pojo,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
+ au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener,
  au.edu.uts.eng.remotelabs.schedserver.logger,
+ au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests,
  au.edu.uts.eng.remotelabs.schedserver.rigoperations,
  au.edu.uts.eng.remotelabs.schedserver.rigprovider,
  au.edu.uts.eng.remotelabs.schedserver.rigproxy,
@@ -84,4 +87,6 @@ Bundle-ClassPath: .,
  lib/wsdl4j-1.6.2.jar,
  lib/wstx-asl-3.2.4.jar,
  lib/XmlSchema-1.4.3.jar
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.queuer
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.queuer,
+ au.edu.uts.eng.remotelabs.schedserver.queuer.pojo,
+ au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types

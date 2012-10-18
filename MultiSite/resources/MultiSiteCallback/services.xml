@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serviceGroup>
+    <service name="MultiSiteCallback">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.MultiSiteCallbackMessageReceiverInOut"/>
+        </messageReceivers>
+        
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.multisite.intf.callback.MultiSiteCallbackSOAPImpl</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        
+        <operation name="bookingCancelled" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/bookingCancelled</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/MultiSiteCallback/bookingCancelledResponse</outputActionMapping>
+        </operation>
+        <operation name="sessionStarted" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/sessionStarted</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/MultiSiteCallback/sessionStartedResponse</outputActionMapping>
+        </operation>
+        <operation name="sessionFinished" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/sessionFinished</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/MultiSiteCallback/sessionFinishedResponse</outputActionMapping>
+        </operation>
+        <operation name="sessionUpdate" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/sessionUpdate</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/MultiSiteCallback/MultiSiteCallback/sessionUpdateResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

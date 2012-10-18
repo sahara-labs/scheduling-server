@@ -101,6 +101,12 @@ public class ExtensionMapper
         {
             return OperationRequestType.Factory.parse(reader);
         }
+        
+        if ("http://remotelabs.eng.uts.edu.au/schedserver/queuer".equals(namespaceURI)
+                && "RemoteLoadType".equals(typeName))
+        {
+            return RemoteLoadType.Factory.parse(reader);
+        }
 
         throw new ADBException("Unsupported type " + namespaceURI + " " + typeName);
     }

@@ -39,8 +39,8 @@ package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
 import org.hibernate.Session;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueRun;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
 /**
  * Runs queue assignment for rigs that have been registered or have come online.

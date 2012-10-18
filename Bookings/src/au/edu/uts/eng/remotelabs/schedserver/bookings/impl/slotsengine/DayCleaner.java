@@ -36,7 +36,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 
 /**
@@ -47,7 +47,7 @@ public class DayCleaner implements BookingManagementTask
     @Override
     public void run()
     {
-        ((SlotBookingEngine)BookingActivator.getBookingEngine()).cleanStaleDays();
+        ((SlotBookingEngine)BookingsActivator.getBookingEngine()).cleanStaleDays();
     }
 
     @Override

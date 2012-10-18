@@ -42,6 +42,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
@@ -49,6 +50,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncService;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.RigClientAsyncServiceCallbackHandler;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ActivityDetectableType;
 import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectableResponse;
+import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 
 /**
  * Kicks off users who have time expired.
@@ -90,6 +92,8 @@ public class SessionIdleKicker extends RigClientAsyncServiceCallbackHandler
             db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
+            
+            // FIXME Offline broadcast
         }
     }
     
@@ -114,6 +118,8 @@ public class SessionIdleKicker extends RigClientAsyncServiceCallbackHandler
             ses.setRemovalTime(new Date());
             dao.flush();
             
+            SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
+            
             if (this.notTest) new RigReleaser().release(ses, dao.getSession());
         }
         
@@ -133,6 +139,8 @@ public class SessionIdleKicker extends RigClientAsyncServiceCallbackHandler
         rig.setOnline(false);
         rig.setOfflineReason("Activity detection failed with reason " + e.getMessage() + '.');
         dao.flush();
+        
+        // FIXME Offline broadcast
         
         dao.closeSession();
     }

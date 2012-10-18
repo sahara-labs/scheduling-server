@@ -16,10 +16,13 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.session.intf, \
-au.edu.uts.eng.remotelabs.schedserver.session.intf.types, \
-au.edu.uts.eng.remotelabs.schedserver.session.impl
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.session
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.session.intf,\
+	au.edu.uts.eng.remotelabs.schedserver.session.intf.types,\
+	au.edu.uts.eng.remotelabs.schedserver.session.impl,\
+	au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl
+
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.session, \
+au.edu.uts.eng.remotelabs.schedserver.session.pojo
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn

@@ -129,6 +129,9 @@
 										<xsd:enumeration
 											value="CAPABILITY">
 										</xsd:enumeration>
+										<xsd:enumeration
+											value="CONSUMER">
+										</xsd:enumeration>
 									</xsd:restriction>
 								</xsd:simpleType>
 							</xsd:element>
@@ -145,9 +148,10 @@
 							<xsd:element name="timeHorizon"
 								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-                            <xsd:element name="maxBookings" type="xsd:int" maxOccurs="1" minOccurs="0">
+							<xsd:element name="maxBookings"
+								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-                            <xsd:element name="sessionDuration"
+							<xsd:element name="sessionDuration"
 								type="xsd:int" maxOccurs="1" minOccurs="0">
 								<xsd:annotation>
 									<xsd:documentation>
@@ -174,6 +178,9 @@
 								type="xsd:dateTime" maxOccurs="1" minOccurs="0">
 							</xsd:element>
 							<xsd:element name="displayName"
+								type="xsd:string" maxOccurs="1" minOccurs="0">
+							</xsd:element>
+							<xsd:element name="remoteSite"
 								type="xsd:string" maxOccurs="1" minOccurs="0">
 							</xsd:element>
 						</xsd:sequence>

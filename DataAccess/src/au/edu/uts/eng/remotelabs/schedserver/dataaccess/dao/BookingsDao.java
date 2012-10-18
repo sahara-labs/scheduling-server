@@ -36,9 +36,14 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.util.Calendar;
+
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 
 /**
  * Data access object for the {@link Bookings} entity.
@@ -66,5 +71,38 @@ public class BookingsDao extends GenericDao<Bookings>
     public BookingsDao(Session ses)
     {
         super(ses, Bookings.class);
+    }
+    
+    /**
+     * Gets a users booking that will start next.
+     * 
+     * @param user user to booking for
+     * @return booking or null if not found
+     */
+    public Bookings getNextBooking(User user)
+    {
+        return this.getNextBookingWithin(user, 0);
+    }
+    
+    /**
+     * Gets a users booking that will start anyone between now and now 
+     * plus the specified duration. 
+     * 
+     * @param user user to find the booking for
+     * @param duration duration to find bookings within
+     * @return booking or null if not found
+     */
+    public Bookings getNextBookingWithin(User user, int duration)
+    {
+        Calendar start = Calendar.getInstance();
+        start.add(Calendar.SECOND, duration);
+        
+        return (Bookings) this.session.createCriteria(Bookings.class)
+            .add(Restrictions.eq("active", Boolean.TRUE))
+            .add(Restrictions.eq("user", user))
+            .add(Restrictions.lt("startTime", start.getTime()))
+            .setMaxResults(1)
+            .addOrder(Order.asc("startTime"))
+            .uniqueResult();
     }
 }

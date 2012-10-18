@@ -69,7 +69,7 @@ public class SessionMessageReceiverInOut extends AbstractInOutMessageReceiver
         try
         {
             final Object obj = this.getTheImplementationObject(msgContext);
-            final SessionSkeletonInterface impl = (SessionSkeletonInterface) obj;
+            final SessionSOAP impl = (SessionSOAP) obj;
             SOAPEnvelope envelope = null;
             
             final AxisOperation op = msgContext.getOperationContext().getAxisOperation();

@@ -37,8 +37,6 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
-// Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
-
 import static javax.persistence.GenerationType.AUTO;
 
 import java.util.Date;
@@ -53,6 +51,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -75,22 +74,28 @@ public class ResourcePermission implements java.io.Serializable
     /** Capability resource permission type. */
     public static final String CAPS_PERMISSION = "CAPABILITY";
     
+    /** Consumer permission. */
+    public static final String CONSUMER_PERMISSION = "CONSUMER";
+    
     /** Serializable class. */
     private static final long serialVersionUID = -2292524825260205119L;
     
     /** Primary key. */
     private Long id;
-    
-    /** Rig type this resource permission refers to if it is a permission
-     *  granting access to a rig type. */
-    private RigType rigType;
-    
+
     /** User class this resource permission refers to. */
     private UserClass userClass;
+    
+    /** Whether the resource permission is remote. */
+    private boolean remote;
     
     /** Rig this resource permission refers to if it is a permission granting 
      *  access to a specific rig. */
     private Rig rig;
+    
+    /** Rig type this resource permission refers to if it is a permission
+     *  granting access to a rig type. */
+    private RigType rigType;
     
     /** Request capabilities this resource permission refers to if it is
      *  a permission granting access to a specific request capabilities. */
@@ -132,6 +137,9 @@ public class ResourcePermission implements java.io.Serializable
     
     /** Whether to use activity detection for sessions. */
     private boolean useActivityDetection;
+    
+    /** The details for this remote permission. */
+    private RemotePermission remotePermission;
 
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
     private Set<Session> sessionsForResourcePermission = new HashSet<Session>(0);
@@ -152,8 +160,42 @@ public class ResourcePermission implements java.io.Serializable
     public void setId(final Long id)
     {
         this.id = id;
+    }   
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_class_id", nullable = true)
+    public UserClass getUserClass()
+    {
+        return this.userClass;
     }
 
+    public void setUserClass(final UserClass userClass)
+    {
+        this.userClass = userClass;
+    }
+    
+    @Column(name = "is_remote", nullable = false)
+    public boolean isRemote()
+    {
+        return this.remote;
+    }
+
+    public void setRemote(boolean remote)
+    {
+        this.remote = remote;
+    }
+    
+    @Column(name = "type", nullable = false, length = 10)
+    public String getType()
+    {
+        return this.type;
+    }
+
+    public void setType(final String type)
+    {
+        this.type = type;
+    }
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     public RigType getRigType()
@@ -164,18 +206,6 @@ public class ResourcePermission implements java.io.Serializable
     public void setRigType(final RigType rigType)
     {
         this.rigType = rigType;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_class_id", nullable = false)
-    public UserClass getUserClass()
-    {
-        return this.userClass;
-    }
-
-    public void setUserClass(final UserClass userClass)
-    {
-        this.userClass = userClass;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -201,17 +231,6 @@ public class ResourcePermission implements java.io.Serializable
             final RequestCapabilities requestCapabilities)
     {
         this.requestCapabilities = requestCapabilities;
-    }
-
-    @Column(name = "type", nullable = false, length = 10)
-    public String getType()
-    {
-        return this.type;
-    }
-
-    public void setType(final String type)
-    {
-        this.type = type;
     }
 
     @Column(name = "session_duration", nullable = false)
@@ -344,5 +363,16 @@ public class ResourcePermission implements java.io.Serializable
     public void setSessionsForResourcePermission(final Set<Session> sessionsForResourcePermission)
     {
         this.sessionsForResourcePermission = sessionsForResourcePermission;
+    }
+    
+    @OneToOne(optional = true, mappedBy = "permission")
+    public RemotePermission getRemotePermission()
+    {
+        return this.remotePermission;
+    }
+    
+    public void setRemotePermission(final RemotePermission remotePermission)
+    {
+        this.remotePermission = remotePermission;
     }
 }

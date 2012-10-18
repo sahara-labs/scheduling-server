@@ -5,9 +5,11 @@ Bundle-SymbolicName: SchedulingServer-RigManagement
 Bundle-Version: 1.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings,
+ au.edu.uts.eng.remotelabs.schedserver.bookings.pojo,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
+ au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener,
  au.edu.uts.eng.remotelabs.schedserver.logger,
  au.edu.uts.eng.remotelabs.schedserver.rigoperations,
  au.edu.uts.eng.remotelabs.schedserver.rigproxy,

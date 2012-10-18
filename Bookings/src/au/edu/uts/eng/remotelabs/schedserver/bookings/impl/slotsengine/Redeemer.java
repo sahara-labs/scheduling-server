@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingManagementTask;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.BookingNotification;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -54,10 +54,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener.BookingsEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
 /**
  * Tasks that converts bookings to sessions (i.e. redeems the booking).
@@ -136,7 +138,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                     synchronized (this.currentDay = this.engine.getDayBookings(nowDay))
                     {
                         this.currentDay.fullLoad(db);
-                    };
+                    }
                 }
 
                 /* Time must always go forwards... */
@@ -157,7 +159,8 @@ public class Redeemer implements BookingManagementTask, RigEventListener
                                 " because no free resources were found in the slot period.");
                         
                         this.currentDay.removeBooking(mb);
-                        new BookingNotification(b).notifyCancel();
+                        
+                        BookingsActivator.notifyBookingsEvent(BookingsEvent.SYSTEM_CANCELLED, b, db);
                     }
 
                     if (this.redeemingBookings.size() > 0)
@@ -394,7 +397,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     private void fireFreeEvent(Rig rig, org.hibernate.Session db)
     {
         /* Fire event the rig is online. */
-        for (RigEventListener evt : BookingActivator.getRigEventListeners())
+        for (RigEventListener evt : BookingsActivator.getRigEventListeners())
         {
             /* Check so we don't fire event to us. */
             if (evt == this) continue;
@@ -481,10 +484,12 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         this.logger.info("Assigned " + session.getUser().qName() + " to rig " + rig.getName() + " (session=" +
                 session.getId() + ").");
 
-        if (this.notTest)
-        {
-            new RigAllocator().allocate(session, db);
-        }
+        
+        /* Notify a session has started. */
+        BookingsActivator.notifySessionEvent(SessionEvent.ASSIGNED, session, db);
+        
+        /* Allocate the rig to the user. */
+        if (this.notTest)  new RigAllocator().allocate(session, db);
     }
     
     /**

@@ -51,7 +51,11 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.AcademicPermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilitiesId;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermissionLog;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestablePermissionPeriod;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
@@ -101,6 +105,10 @@ public class DataAccessActivator implements BundleActivator
         cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config.class);
         cfg.addAnnotatedClass(MatchingCapabilities.class);
         cfg.addAnnotatedClass(MatchingCapabilitiesId.class);
+        cfg.addAnnotatedClass(RemotePermission.class);
+        cfg.addAnnotatedClass(RemotePermissionLog.class);
+        cfg.addAnnotatedClass(RequestablePermissionPeriod.class);
+        cfg.addAnnotatedClass(RemoteSite.class);
         cfg.addAnnotatedClass(RequestCapabilities.class);
         cfg.addAnnotatedClass(ResourcePermission.class);
         cfg.addAnnotatedClass(Rig.class);

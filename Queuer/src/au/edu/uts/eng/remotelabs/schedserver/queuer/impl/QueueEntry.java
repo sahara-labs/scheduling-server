@@ -37,6 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.queuer.impl;
 
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.CAPS_PERMISSION;
+import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.CONSUMER_PERMISSION;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.RIG_PERMISSION;
 import static au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission.TYPE_PERMISSION;
 
@@ -49,6 +50,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserLockDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -58,8 +60,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.QueueRequest;
+import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.SessionInformationRequest;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 
 /**
  * Class which provides utility for entry to the queue. To add a user to the
@@ -67,14 +73,14 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  * <ol>
  *  <li><tt>isInQueue</tt> - Checks whether the user is already in the queue
  *  or if they have an in progress rig session. If the response is 
- *  <code>false</code> queue entry can procede.</li>
+ *  <code>false</code> queue entry can proceed.</li>
  *  <li><tt>hasPermission</tt> - Checks whether the user (set up in the call
  *  to <tt>isInQueue</tt>) has access to the requested permission OR resource,
  *  depending on which overloaded method is called. If the response is 
- *  <code>true</code> queue entry can procede.</li>
+ *  <code>true</code> queue entry can proceed.</li>
  *  <li><tt>canUserQueue</tt> - Checks whether can queue. The ability can 
  *  queue is based on rig viability and rig use.If the response is 
- *  <code>true</code> queue entry can procede.</li>
+ *  <code>true</code> queue entry can proceed.</li>
  *  <li><tt>addToQueue</tt> - Actually add the user to the queue for the 
  *  requested resource (set up in the call to one of <tt>hasPermission</tt>
  *  overloaded methods). If the response is <code>true</code> the user
@@ -92,6 +98,9 @@ public class QueueEntry
     
     /** Active queue or rig session. */
     private Session activeSession;
+    
+    /** Failure reason. */
+    private String errorMessage;
     
     /** Database session. */
     private org.hibernate.Session db;
@@ -125,18 +134,11 @@ public class QueueEntry
      * Permission is having an association to the user class which 
      * owns the resource permission.
      * 
-     * @param permId resource permission identifier
+     * @param perm resource permission 
      * @return true if the user has permission use the resource permission 
      */
-    public boolean hasPermission(long permId)
+    public boolean hasPermission(ResourcePermission perm)
     {
-        ResourcePermission perm = new ResourcePermissionDao(this.db).get(permId);
-        if (perm == null)
-        {
-            this.logger.warn("Resource permission with identifier " + permId + " not found.");
-            return false;
-        }
-        
         UserClass permClass = perm.getUserClass();
         
         /* First check, whether the user class the permission is part of 
@@ -144,7 +146,8 @@ public class QueueEntry
         if (!permClass.isActive())
         {
             this.logger.warn("Failed permission check for resoruce permission " + perm.getId() + " as it's user class " +
-            		"is not active.");
+                    "is not active.");
+            this.errorMessage = "Permission class not active";
             return false;
         }
         
@@ -154,13 +157,14 @@ public class QueueEntry
             if (perm.getStartTime().after(new Date()))
             {
                 this.logger.warn("Failed permission check for resource permission " + perm.getId() + " because the  " +
-                		"permissions time window has not begun yet. (Starts on " + perm.getStartTime().toString() + ")");
+                        "permissions time window has not begun yet. (Starts on " + perm.getStartTime().toString() + ")");
             }
             else
             {
                 this.logger.warn("Failed permission check for resource permission " + perm.getId() + " because the  " +
                         "permissions time window has expired. (Ended on " + perm.getExpiryTime().toString() + ")");
             }
+            this.errorMessage = "Permission not active";
             return false;
         }
         
@@ -176,8 +180,30 @@ public class QueueEntry
         }
 
         this.logger.warn("User " + this.user.getNamespace() + ':' + this.user.getName() + " does not have " +
-                		"permission to queue for permission with identifier " + perm.getId() + '.');
+                        "permission to queue for permission with identifier " + perm.getId() + '.');
+        this.errorMessage = "User does not have permission";
         return false;
+    }
+    
+    /**
+     * Checks if a user has permission to use the resoruce permission.
+     * Permission is having an association to the user class which 
+     * owns the resource permission.
+     * 
+     * @param permId resource permission identifier
+     * @return true if the user has permission use the resource permission 
+     */
+    public boolean hasPermission(long permId)
+    {
+        ResourcePermission perm = new ResourcePermissionDao(this.db).get(permId);
+        if (perm == null)
+        {
+            this.logger.warn("Resource permission with identifier " + permId + " not found.");
+            this.errorMessage = "Permission not found";
+            return false;
+        }
+        
+        return this.hasPermission(perm);
     }
     
     /**
@@ -212,7 +238,6 @@ public class QueueEntry
         
         RequestCapabilities caps;
         RequestCapabilitiesDao capsDao = new RequestCapabilitiesDao(this.db);
-        
         
         if (RIG_PERMISSION.equals(type) && (resId > 0 && (rig = rigDao.get(resId)) != null || 
                  resName != null && (rig = rigDao.findByName(resName)) != null))
@@ -373,9 +398,11 @@ public class QueueEntry
             if (resId > 0) this.logger.warn("Resource with id " + resId + " not found.");
             else if (resName != null) this.logger.warn("Resource with name " + resName + " not found.");
             else this.logger.warn("Resource not found because no identity information was found.");
+            this.errorMessage = "Resource not found";
             return false;
         }
         
+        this.errorMessage = "User does not have permission";
         return false;
     }
     
@@ -397,6 +424,7 @@ public class QueueEntry
         if (lock != null && lock.isIsLocked())
         {
             this.logger.warn("Cannot queue for resource permission because it is locked for the user.");
+            this.errorMessage = "Permission locked";
             return false;
         }
         
@@ -406,6 +434,7 @@ public class QueueEntry
             if (rig == null)
             {
                 this.logger.error("Incorrect configuration of a rig type permission. The rig for it was not set.");
+                this.errorMessage = "Permission incorrectly configured";
                 return false;
             }
             
@@ -424,11 +453,13 @@ public class QueueEntry
                 }
                 this.logger.info("Cannot queue for rig " + rig.getName() + " because it is in use and the user doesn't " +
                 		"have permission to queue for the rig.");
+                this.errorMessage = "User cannot queue";
                 return false;
             }
             else
             {
                 this.logger.info("Cannot queue for rig " + rig.getName() + " because it is offline.");
+                this.errorMessage = "Rig is offline";
             }
         }
         else if (TYPE_PERMISSION.equals(this.resourcePerm.getType()))
@@ -438,6 +469,7 @@ public class QueueEntry
             if (type == null)
             {
                 this.logger.error("Incorrect configuration of a rig type permission. The rig type for it was not set.");
+                this.errorMessage = "Permisson incorrectly configured";
                 return false;
             }
             
@@ -462,11 +494,13 @@ public class QueueEntry
                 }
                 this.logger.info("Cannot queue for rig type " + type.getName() + " because none of its rigs are " +
                 		"free and the user doesn't have permission to queue for it.");
+                this.errorMessage = "User cannot queue";
                 return false;
             }
             
             this.logger.info("Cannot queue for rig type " + type.getName() + " because none of its rigs are " +
             		"online.");
+            this.errorMessage = "No rigs in type are online";
         }
         else if (CAPS_PERMISSION.equals(this.resourcePerm.getType()))
         {
@@ -476,6 +510,7 @@ public class QueueEntry
             {
                 this.logger.error("Incorrect configuration of a request capabilities permission. The request " +
                 		"capabilities for it was not set.");
+                this.errorMessage = "Permission incorrectly configured";
                 return false;
             }
             
@@ -491,7 +526,7 @@ public class QueueEntry
                     }
                     else if (rig.isOnline())
                     {
-                        /* If there is atleast one online, but in use, the
+                        /* If there is at least one online, but in use, the
                          * queue access will be based on the user class
                          * queueable flag. */
                         hasOnline = true;
@@ -507,16 +542,22 @@ public class QueueEntry
                 }
                 this.logger.info("Unable to queue for request capabilities " + caps.getCapabilities() + " as no matching " +
                 		"rigs are free and the user doesn't have permission to queue for it.");
+                this.errorMessage = "No rigs have request capabilities are online";
                 return false;
             }
             this.logger.info("Unable to queue for request capabilities " + caps.getCapabilities() + " as no " +
             		"matching rigs are online.");
         }
+        else if (CONSUMER_PERMISSION.equals(this.resourcePerm.getType()))
+        { 
+            return this.resourcePerm.getUserClass().isQueuable();
+        }
         else
         {
             this.logger.error("Unknown resource permission type " + this.resourcePerm.getType() + ". This must be " +
-            		"either RIG for a rig permission, TYPE for a rig type permission or CAPABILITY for a request " +
-            		"capabilities permission.");
+            		"either RIG for a rig permission, TYPE for a rig type permission, CAPABILITY for a request " +
+            		"capabilities permission or CONSUMER for a consumer permission.");
+            this.errorMessage = "Unknown permission type";
         }
         
         return false;
@@ -568,6 +609,10 @@ public class QueueEntry
             ses.setRequestedResourceId(caps.getId());
             ses.setRequestedResourceName(caps.getCapabilities());
         }
+        else if (CONSUMER_PERMISSION.equals(type))
+        {
+            if (!this.handleConsumerQueue(ses)) return false;
+        }
 
         ses.setCodeReference(code);
         ses.setExtensions(this.resourcePerm.getAllowedExtensions());
@@ -579,7 +624,140 @@ public class QueueEntry
         
         /* Add the session to the queue. */
         this.activeSession = Queue.getInstance().addEntry(ses, this.db);
+        
+        if (this.activeSession != null) QueueActivator.notifySessionEvent(
+                    this.activeSession.getRig() == null ? SessionEvent.QUEUED : SessionEvent.ASSIGNED,
+                    this.activeSession, this.db);
+        
         return this.activeSession != null;
+    }
+
+    /**
+     * Handles a consumer queue.
+     * 
+     * @param ses queue session
+     * @return true if successful
+     */
+    private boolean handleConsumerQueue(Session ses)
+    {
+        RemotePermission remotePerm = this.resourcePerm.getRemotePermission();
+        if (remotePerm == null)
+        {
+            this.logger.warn("Cannot queue for a consumer permission (id=" + this.resourcePerm.getId() + 
+                    ") because there is no remote permission.");
+            this.errorMessage = "No remote permission mapped";
+            return false;
+        }
+        
+        String remoteSite = remotePerm.getSite().getName();
+        
+        QueueRequest providerCall = new QueueRequest();
+        if (!providerCall.addToQueue(remotePerm, this.user, this.db))
+        {
+            this.logger.warn("Remote queue failed with reason '" + providerCall.getFailureReason() + "'.");
+            this.errorMessage = "COMMUNICATION ERROR: '" + remoteSite + "' failed (" + providerCall.getFailureReason() + ")";
+            return false;
+        }
+        
+        if (!providerCall.wasOperationSuccessful() || providerCall.isInBooking())
+        {
+            /* Provider failed to queue. The in-booking condition signifies 
+             * a queue error because if a user in that state no queue attempts
+             * will succeed. */
+            this.logger.info("Provider '" + remoteSite + "' failed to queue for permission (id=" + 
+                    this.resourcePerm.getId() + ") with reason: " + providerCall.getOperationReason() + ".");
+            this.errorMessage = "PROVIDER ERROR:" + providerCall.getOperationReason();
+            return false;
+        }
+        
+        ses.setRequestedResourceId(-1L);
+        if (providerCall.isInQueue())
+        {
+            this.logger.debug("Provider queuing succeeded, user '" + this.user.getName() + "' now in queue state.");
+            ses.setRequestedResourceName(providerCall.getResourceName());
+        }
+        else if (providerCall.isInSession())
+        {
+            this.logger.debug("Provider queuing succeeded, user '" + this.user.getName() + "' now in session state.");
+            
+            /* Since in session state, we now need to unpack session 
+             * information. */
+            SessionInformationRequest provSes = providerCall.getSession();
+            if (provSes == null)
+            {
+                this.logger.error("PROVIDER BUG: Queue response specifies the user is in session, but no session " +
+                        "has been specified."); 
+                this.errorMessage = "No session information provided";
+                return false;
+            }
+            
+            ses.setAssignmentTime(new Date());
+            ses.setRequestedResourceName(provSes.getResourceName());
+             
+            /* Session state conditions. */
+            ses.setReady(provSes.isReady());
+            ses.setInGrace(provSes.isInGrace());
+
+            /* Remote rig type may not exist either, if not will need to be added. */
+            String siteNs = remotePerm.getSite().getUserNamespace();
+            RigType remoteType = new RigTypeDao(this.db).
+                    loadOrCreate(siteNs + ':' + provSes.getRigType(), false, "provider=" + remoteSite, remotePerm.getSite());
+            
+            RigDao rigDao = new RigDao(this.db);
+            Rig remoteRig = rigDao.findByName(siteNs + ':' + provSes.getRigName());
+            if (remoteRig == null)
+            {
+                /* Provider rig has not previously been used at site so it 
+                 * must be created. */
+                remoteRig = new Rig();
+                /* Rig name format is <Provider>:<Specificed rig name>. */
+                remoteRig.setName(siteNs + ':' + provSes.getRigName());
+                /* Meta information about source. */
+                remoteRig.setMeta("provider=" + remoteSite);
+                remoteRig.setActive(false);  // The rig cannot take local sessions so cannot be online
+                remoteRig.setOnline(false);  
+                remoteRig.setManaged(false); // Is not managed because normal watch dogging does not apply
+                remoteRig.setContactUrl(provSes.getContactURL());
+                remoteRig.setLastUpdateTimestamp(new Date());
+                remoteRig.setRigType(remoteType);
+                remoteRig.setSite(remotePerm.getSite());
+                
+                rigDao.persist(remoteRig);
+            }
+            else
+            {
+                /* Rig details may have changed since last used session. */
+                boolean requiresFlush = false;
+                if (remoteRig.getContactUrl() == null || !remoteRig.getContactUrl().equals(provSes.getContactURL()))
+                {
+                    remoteRig.setContactUrl(provSes.getContactURL());
+                    remoteRig.setLastUpdateTimestamp(new Date());
+                    requiresFlush = true;
+                }
+                
+                if (!remoteRig.getRigType().getId().equals(remoteType.getId()))
+                {
+                    remoteRig.setRigType(remoteType);
+                    requiresFlush = true;
+                }
+                      
+                if (requiresFlush) rigDao.flush();
+            }
+            
+            ses.setRig(remoteRig);
+            
+            ses.setExtensions((short)provSes.getExtensions());
+            ses.setDuration(provSes.getDuration());
+        }
+        else
+        {
+            /* Some unexpected state, something wrong so queuing failed. */
+            this.logger.error("Some unknown state returned from user so assuming queuing failed.");
+            this.errorMessage = "Unknown state";
+            return false;
+        }
+        
+        return true;
     }
     
     /**
@@ -628,5 +806,15 @@ public class QueueEntry
     public Session getActiveSession()
     {
         return this.activeSession;
+    }
+    
+    /**
+     * Gets an error message if a method called returns false.
+     *  
+     * @return error message or null if no error
+     */
+    public String getErrorMessage()
+    {
+        return this.errorMessage;
     }
 }
