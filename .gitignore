@@ -4,7 +4,16 @@
 # Ignore all class files
 *.class
 
+# Ignore servicewrapper components
+*.o
+servicewrapper
+
 # Ignore all build artefacts
+package/*
 *.rpm
 *.zip
 *.tar.gz
+
+# Other stuff
+*.log
+*~

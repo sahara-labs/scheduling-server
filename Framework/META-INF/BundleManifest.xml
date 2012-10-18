@@ -21,7 +21,6 @@
 	<entry key="B12">SchedulingServer-RigManagement</entry>
 	<entry key="B13">SchedulingServer-Queuer</entry>
 	<entry key="B14">SchedulingServer-Session</entry>
-	<entry key="B15">SchedulingServer-MultiSite</entry>
-	<entry key="B16">SchedulingServer-Reports</entry>
-	<entry key="B17">SchedulingServer-Server</entry>
+	<entry key="B15">SchedulingServer-Reports</entry>
+	<entry key="B16">SchedulingServer-Server</entry>
 </properties>

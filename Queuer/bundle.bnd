@@ -17,9 +17,10 @@ org.apache.log4j, \
 *
 
 Private-Package: au.edu.uts.eng.remotelabs.schedserver.queuer.intf,\
-	au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types,\
-	au.edu.uts.eng.remotelabs.schedserver.queuer.impl,\
-	au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl
+au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types,\
+au.edu.uts.eng.remotelabs.schedserver.queuer.impl,\
+au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl
+	
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.queuer, \
 au.edu.uts.eng.remotelabs.schedserver.queuer.pojo, \
 au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types
