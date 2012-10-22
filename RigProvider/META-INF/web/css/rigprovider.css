@@ -1,3 +1,30 @@
 /**
  * CSS for the Rig Provider interface.
  */
+ 
+#content .contentheader {
+	display: none;
+}
+
+/* ----------------------------------------------------------------------------
+ * -- Rig Types Page                                                         --
+ * ---------------------------------------------------------------------------- */
+#rig-types {
+	margin-top: 10px;
+}
+
+#rig-types .box-title .saharaform {
+	float: right;
+	margin-top: -5px;
+}
+
+#no-rig-types {
+	width: 150px;
+	margin: 10px auto;
+	padding: 5px;
+}
+
+#no-rig-types .ui-icon {
+	float: left;
+	margin-right: 5px;
+}

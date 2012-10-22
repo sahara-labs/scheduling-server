@@ -59,7 +59,7 @@ public abstract class AbstractRigProviderPage extends AbstractPage
 {
 	/** Web page context which contains any dynamic variables to inject into
 	 *  the template to be rendered. */
-	private final Context context;
+	protected final Context context;
 	
 	 /** Post methods. */
     private Method postMethod;

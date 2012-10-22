@@ -243,6 +243,7 @@ public abstract class AbstractPage
     protected void addHead()
     {
         this.println("<head>");
+        this.println("	<meta http-equiv='Content-Type' content='text/html' charset='utf-8' />");
         this.println("  <title>Scheduling Server - " + this.getPageTitle() + "</title>");
         
         for (String css : this.headCss)
