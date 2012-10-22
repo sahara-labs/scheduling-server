@@ -38,19 +38,19 @@ package au.edu.uts.eng.remotelabs.schedserver.rigprovider.pages;
 
 import javax.servlet.http.HttpServletRequest;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 
 /**
  * Page to administer rig types.
  */
-public class Rigs extends AbstractRigProviderPage 
+public class RigTypes extends AbstractRigProviderPage 
 {
 
 	@Override
 	public void setupView(HttpServletRequest req) 
 	{
-		// TODO Auto-generated method stub
-
+		this.context.put("types", new RigTypeDao(this.db).list());
 	}
 
 	@Override
@@ -66,6 +66,6 @@ public class Rigs extends AbstractRigProviderPage
 	 */
 	public static HostedPage getHostedPage()
     {
-        return new HostedPage("Rigs", Rigs.class, "rigs", "Allows rigs to be administered.", true, true);
+        return new HostedPage("Rigs", RigTypes.class, "rigs", "Allows rigs to be administered.", true, true);
     }
 }
