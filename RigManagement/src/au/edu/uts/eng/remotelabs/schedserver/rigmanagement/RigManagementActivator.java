@@ -53,12 +53,14 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.impl.RigMaintenanceNotifier;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pages.RigTypes;
+import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -78,6 +80,9 @@ public class RigManagementActivator implements BundleActivator
     
     /** Maintenance notifier. */
     private ServiceRegistration<Runnable> notifierReg;
+    
+    /** Hosted page registrations. */
+    private List<ServiceRegistration<HostedPage>> pageRegistrations;
     
     /** Logger. */
     private Logger logger;
@@ -114,12 +119,19 @@ public class RigManagementActivator implements BundleActivator
         ServletContainerService soapService = new ServletContainerService();
         soapService.addServlet(new ServletContainer(new AxisServlet(), true));
         this.soapService = context.registerService(ServletContainerService.class, soapService, null);
+        
+        /* Hosts interface pages. */
+        this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(1);
+	    this.pageRegistrations.add(context.registerService(HostedPage.class, new HostedPage("Rigs", RigTypes.class, 
+	    		"rigs", "Allows rigs to be administered.", true, true), null));
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
 		this.logger.info("The rig management bundle is shutting down.");
+		
+		for (ServiceRegistration<HostedPage> reg : this.pageRegistrations) reg.unregister();
 		
 		this.soapService.unregister();
 		this.notifierReg.unregister();

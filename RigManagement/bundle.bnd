@@ -8,7 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.w3c.dom, \
 javax.xml, javax.xml.*, javax.xml.datatype, \
 javax.xml.namespace, javax.xml.xpath, !javax.portlet, \
-org.apache.log4j, \
+org.apache.log4j, org.apache.velocity, org.apache.velocity.*, \
 !org.jdom.*, !nu.xom, \
 !com.sun.*, !org.apache.*, !org.dom4j.*, !org.relaxng.*, \
 !au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup, \

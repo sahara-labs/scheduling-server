@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 30th January 2012
  */
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.pages;
+package au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pages;
 
 import javax.servlet.http.HttpServletRequest;
 

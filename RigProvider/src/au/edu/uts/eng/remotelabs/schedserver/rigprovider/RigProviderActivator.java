@@ -65,8 +65,6 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.StatusTimeoutChecker;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.pages.RigTypes;
-import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -93,8 +91,6 @@ public class RigProviderActivator implements BundleActivator
     /** The list of session event listeners. */
     private static List<SessionEventListener> sessionListeners;
     
-    /** Hosted page registrations. */
-    private List<ServiceRegistration<HostedPage>> pageRegistrations;
     
     /** Configuration service tracker. */
     private static ServiceTracker<Config, Config> configTracker;
@@ -147,11 +143,6 @@ public class RigProviderActivator implements BundleActivator
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new AxisServlet(), true));
         this.serverReg = context.registerService(ServletContainerService.class, service, null);
-        
-        /* Hosts interface pages. */
-        this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(1);
-	    this.pageRegistrations.add(context.registerService(HostedPage.class, new HostedPage("Rigs", RigTypes.class, 
-	    		"rigs", "Allows rigs to be administered.", true, true), null));
     }
 
     @Override
