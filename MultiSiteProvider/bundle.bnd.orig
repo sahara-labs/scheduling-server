@@ -1,0 +1,37 @@
+Bundle-Name: MultiSiteProvider
+Bundle-SymbolicName: SchedulingServer-MultiSiteProvider
+Bundle-Version: 1.0.0.capstone
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.multisite.provider.MultiSiteProviderActivator
+Bundle-Vendor: Michael Diponio
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+
+Import-Package: org.w3c.dom,\
+	!javax.ws.*,\
+	!javax.jws.*, \
+	javax.xml,\
+	javax.xml.*,\
+	javax.xml.datatype,\
+	javax.xml.namespace,\
+	javax.xml.xpath,\
+	!javax.portlet,\
+	org.apache.log4j,\
+	!org.jdom.*,\
+	!nu.xom,\
+	!com.sun.*,\
+	!org.apache.*,\
+	!org.dom4j.*,\
+	!org.relaxng.*,\
+	!au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup,\
+	!au.edu.uts.eng.remotelabs.schedserver.logger.impl,\
+	!org.junit,\
+	!junit.*,\
+	*
+
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.multisite.provider, \
+au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests, \
+au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.callback
+
+Private-Package: !au.edu.uts.eng.remotelabs.schedserver.multisite, *
+
+Include-Resource: lib/=lib/;-donotcopy=.svn
+Bundle-ClassPath: ., ${findpath;lib/.*.jar}
