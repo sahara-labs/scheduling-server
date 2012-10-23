@@ -55,8 +55,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
-import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.ActivityDetectableType;
-import au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectableResponse;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.ActivityDetectableType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.IsActivityDetectableResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionIdleKicker;
 
 /**
@@ -80,7 +80,7 @@ public class SessionIdleKickerTester extends TestCase
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionIdleKicker#activityDetectionResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types.IsActivityDetectableResponse)}.
+     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionIdleKicker#activityDetectionResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.IsActivityDetectableResponse)}.
      */
     @Test
     public void testActivityDetectionResponseCallback() throws Exception

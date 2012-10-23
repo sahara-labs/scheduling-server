@@ -39,6 +39,5 @@
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/bin" sourcepath="/SchedServer-DataAccess/src"/>
 	<classpathentry kind="lib" path="/SchedServer-Logger/bin"/>
 	<classpathentry kind="lib" path="/SchedServer-DataAccess/lib/hibernate-annotations.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SchedServer-RigProxy"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

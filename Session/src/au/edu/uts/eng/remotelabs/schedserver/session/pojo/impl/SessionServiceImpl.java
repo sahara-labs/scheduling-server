@@ -44,7 +44,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventLis
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSessionRequest;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 
 import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;

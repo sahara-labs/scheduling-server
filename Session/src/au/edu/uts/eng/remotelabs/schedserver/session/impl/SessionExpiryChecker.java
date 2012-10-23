@@ -53,8 +53,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventLis
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueInfo;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigNotifier;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigNotifier;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 
 /**
