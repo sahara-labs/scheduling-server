@@ -17,3 +17,6 @@ package/*
 # Other stuff
 *.log
 *~
+
+# Generated database documentation
+doc/db
