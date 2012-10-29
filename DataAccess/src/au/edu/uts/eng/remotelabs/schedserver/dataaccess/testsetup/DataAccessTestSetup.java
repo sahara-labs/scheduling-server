@@ -58,6 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SessionFile;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
@@ -131,6 +132,7 @@ public class DataAccessTestSetup
             cfg.addAnnotatedClass(RigLog.class);
             cfg.addAnnotatedClass(RigType.class);
             cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
+            cfg.addAnnotatedClass(SessionFile.class);
             cfg.addAnnotatedClass(User.class);
             cfg.addAnnotatedClass(UserAssociation.class);
             cfg.addAnnotatedClass(UserAssociationId.class);
