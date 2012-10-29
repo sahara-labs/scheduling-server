@@ -13,6 +13,9 @@
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Project" />			
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ProjectMetadata" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ProjectMetadataType" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission" />
      	<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermissionLog" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite" />
