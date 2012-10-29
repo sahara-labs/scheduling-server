@@ -67,6 +67,9 @@ public class Project implements Serializable
 	/** Record primary key. */
 	private Long id;
 	
+	/** The creator of the project. */
+	private User user;
+	
 	/** Identifier of the project. */
 	private String activity;
 	
@@ -91,6 +94,9 @@ public class Project implements Serializable
 	/** Whether this project is open access or contact supervisor. */
 	private boolean isOpen;
 	
+	/** Whether to auto publish collections as sessions are run. */
+	private boolean autoPublishCollections;
+	
 	/** This projects metadata. */
 	private Set<ProjectMetadata> metadata = new HashSet<ProjectMetadata>(0);
 	
@@ -110,6 +116,18 @@ public class Project implements Serializable
     public void setId(Long id)
     {
         this.id = id;
+    }
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "users_id", nullable = false)
+    public User getUser()
+    {
+        return this.user;
+    }
+
+    public void setUser(User user)
+    {
+        this.user = user;
     }
 
     @Column(name = "activity", unique = true, nullable = false)
@@ -213,5 +231,21 @@ public class Project implements Serializable
     public void setMetadata(Set<ProjectMetadata> metadata)
     {
         this.metadata = metadata;
+    }
+
+    @Column(name = "auto_publish_collections")
+    public boolean autoPublishCollections()
+    {
+        return this.autoPublishCollections;
+    }
+
+    public void setAutoPublishCollections(boolean autoPublishCollections)
+    {
+        this.autoPublishCollections = autoPublishCollections;
+    }
+
+    public boolean isAutoPublishCollections()
+    {
+        return this.autoPublishCollections;
     }
 }
