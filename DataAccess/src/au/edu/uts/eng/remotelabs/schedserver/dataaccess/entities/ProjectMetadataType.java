@@ -61,6 +61,9 @@ public class ProjectMetadataType implements Serializable
     /** The name of the metadata types. */
     private String name;
     
+    /** Description of metadata field. */
+    private String description;
+    
     /** Regular expression to validate potential values of this type. */
     private String regex;
     
@@ -92,6 +95,17 @@ public class ProjectMetadataType implements Serializable
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    @Column(name = "description", nullable = false)
+    public String getDescription()
+    {
+        return this.description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
     }
 
     @Column(name = "regex", nullable = true)
