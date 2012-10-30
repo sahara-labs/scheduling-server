@@ -38,7 +38,6 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 import java.io.Serializable;
 
-import javax.jws.HandlerChain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;

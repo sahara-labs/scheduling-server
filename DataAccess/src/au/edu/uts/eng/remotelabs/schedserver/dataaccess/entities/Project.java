@@ -82,9 +82,6 @@ public class Project implements Serializable
 	/** The time the project metadata was last updated. */
 	private Date lastUpdate;
 	
-	/** Whether this project is ready to publish to the UTS metadata store. */
-	private boolean readyToPublish;
-	
 	/** When this project was published. */
 	private Date publishTime;
 	
@@ -175,17 +172,6 @@ public class Project implements Serializable
     public void setLastUpdate(Date lastUpdate)
     {
         this.lastUpdate = lastUpdate;
-    }
-
-    @Column(name = "ready_to_publish", nullable = false)
-    public boolean isReadyToPublish()
-    {
-        return this.readyToPublish;
-    }
-
-    public void setReadyToPublish(boolean readyToPublish)
-    {
-        this.readyToPublish = readyToPublish;
     }
 
     @Temporal(TemporalType.DATE)
