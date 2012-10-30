@@ -97,6 +97,9 @@ public class Project implements Serializable
 	/** This projects metadata. */
 	private Set<ProjectMetadata> metadata = new HashSet<ProjectMetadata>(0);
 	
+	/** This projects collections. */
+	private Set<Collection> collections = new HashSet<Collection>(0);
+	
 	public Project()
 	{
 	    /* Bean style constructor. */
@@ -207,18 +210,7 @@ public class Project implements Serializable
     {
         this.isOpen = isOpen;
     }
-
-    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
-    public Set<ProjectMetadata> getMetadata()
-    {
-        return this.metadata;
-    }
-
-    public void setMetadata(Set<ProjectMetadata> metadata)
-    {
-        this.metadata = metadata;
-    }
-
+    
     @Column(name = "auto_publish_collections")
     public boolean autoPublishCollections()
     {
@@ -230,8 +222,25 @@ public class Project implements Serializable
         this.autoPublishCollections = autoPublishCollections;
     }
 
-    public boolean isAutoPublishCollections()
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    public Set<ProjectMetadata> getMetadata()
     {
-        return this.autoPublishCollections;
+        return this.metadata;
+    }
+
+    public void setMetadata(Set<ProjectMetadata> metadata)
+    {
+        this.metadata = metadata;
+    }
+    
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    public Set<Collection> getCollections()
+    {
+        return this.collections;
+    }
+
+    public void setCollections(Set<Collection> collections)
+    {
+        this.collections = collections;
     }
 }
