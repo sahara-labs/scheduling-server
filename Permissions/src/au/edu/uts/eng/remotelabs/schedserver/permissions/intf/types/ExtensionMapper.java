@@ -64,12 +64,6 @@ public class ExtensionMapper
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
-                && "UserListType".equals(typeName))
-        {
-            return UserListType.Factory.parse(reader);
-        }
-
-        if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
                 && "UserType".equals(typeName))
         {
             return UserType.Factory.parse(reader);
@@ -79,12 +73,6 @@ public class ExtensionMapper
                 && "UserClassListType".equals(typeName))
         {
             return UserClassListType.Factory.parse(reader);
-        }
-
-        if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
-                && "UserAssociationType".equals(typeName))
-        {
-            return UserAssociationType.Factory.parse(reader);
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
@@ -121,12 +109,6 @@ public class ExtensionMapper
                 && "UserIDType".equals(typeName))
         {
             return UserIDType.Factory.parse(reader);
-        }
-
-        if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
-                && "BulkAddUserClassUsersType".equals(typeName))
-        {
-            return BulkAddUserClassUsersType.Factory.parse(reader);
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
@@ -187,12 +169,6 @@ public class ExtensionMapper
                 && "PermissionListType".equals(typeName))
         {
             return PermissionListType.Factory.parse(reader);
-        }
-
-        if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
-                && "UserClassesRequestType".equals(typeName))
-        {
-            return UserClassesRequestType.Factory.parse(reader);
         }
 
         if ("http://remotelabs.eng.uts.edu.au/schedserver/permissions".equals(namespaceURI)
