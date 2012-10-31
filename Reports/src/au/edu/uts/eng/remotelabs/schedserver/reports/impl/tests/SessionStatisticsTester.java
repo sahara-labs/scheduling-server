@@ -36,37 +36,10 @@ public class SessionStatisticsTester extends TestCase
 
         short sh = 1;
         
-        Session ses1 = new Session();
-        ses1.setUserName("test1");
-        ses1.setUserNamespace("REPS");
-        ses1.setRequestTime(request);
-        ses1.setResourceType("RIG");
-        ses1.setRequestedResourceName("Rig1");
-        ses1.setPriority(sh);
-        ses1.setActivityLastUpdated(after);
-        ses1.setAssignedRigName("Rig1");
-        ses1.setAssignmentTime(assign);
-        ses1.setActive(true);
-        ses1.setRemovalTime(remove);
-        ses1.setRemovalReason("ended");
-        ses1.setCodeReference("none");
-        ses1.setExtensions(sh);
-
-        Session ses2 = new Session();
-        ses2.setUserName("test1");
-        ses2.setUserNamespace("REPS");
-        ses2.setRequestTime(request2);
-        ses2.setResourceType("RIG");
-        ses2.setRequestedResourceName("Rig1");
-        ses2.setPriority(sh);
-        ses2.setActivityLastUpdated(after2);
-        ses2.setAssignedRigName("Rig1");
-        ses2.setAssignmentTime(assign2);
-        ses2.setActive(true);
-        ses2.setRemovalTime(remove2);
-        ses2.setRemovalReason("ended");
-        ses2.setCodeReference("none");
-        ses2.setExtensions(sh);
+        Session ses1 = new Session("test1", "REPS", request, "RIG", "Rig1", sh, after, "Rig1", assign, true, remove,
+                "ended", "none", sh);
+        Session ses2 = new Session("test1", "REPS", request2, "RIG", "Rig1", sh, after2, "Rig1", assign2, true, remove2,
+                "ended", "none", sh);
         
         this.record.addRecord(ses1);
         
@@ -126,69 +99,14 @@ public class SessionStatisticsTester extends TestCase
 
         short sh = 1;
         
-        Session ses1 = new Session();
-        ses1.setUserName("test1");
-        ses1.setUserNamespace("REPS");
-        ses1.setRequestTime(request);
-        ses1.setResourceType("RIG");
-        ses1.setRequestedResourceName("Rig1");
-        ses1.setPriority(sh);
-        ses1.setActivityLastUpdated(after);
-        ses1.setAssignedRigName("Rig1");
-        ses1.setAssignmentTime(assign);
-        ses1.setActive(true);
-        ses1.setRemovalTime(remove);
-        ses1.setRemovalReason("ended");
-        ses1.setCodeReference("none");
-        ses1.setExtensions(sh);
-          
-        Session ses2 = new Session();
-        ses2.setUserName("test1");
-        ses2.setUserNamespace("REPS");
-        ses2.setRequestTime(request2);
-        ses2.setResourceType("RIG");
-        ses2.setRequestedResourceName("Rig1");
-        ses2.setPriority(sh);
-        ses2.setActivityLastUpdated(after2);
-        ses2.setAssignedRigName("Rig1");
-        ses2.setAssignmentTime(assign2);
-        ses2.setActive(true);
-        ses2.setRemovalTime(remove2);
-        ses2.setRemovalReason("ended");
-        ses2.setCodeReference("none");
-        ses2.setExtensions(sh);
-          
-        Session ses3 = new Session();
-        ses3.setUserName("test1");
-        ses3.setUserNamespace("REPS");
-        ses3.setRequestTime(request3);
-        ses3.setResourceType("RIG");
-        ses3.setRequestedResourceName("Rig1");
-        ses3.setPriority(sh);
-        ses3.setActivityLastUpdated(after3);
-        ses3.setAssignedRigName("Rig1");
-        ses3.setAssignmentTime(assign3);
-        ses3.setActive(true);
-        ses3.setRemovalTime(remove3);
-        ses3.setRemovalReason("ended");
-        ses3.setCodeReference("none");
-        ses3.setExtensions(sh);
-          
-        Session ses4 = new Session();
-        ses4.setUserName("test1");
-        ses4.setUserNamespace("REPS");
-        ses4.setRequestTime(request4);
-        ses4.setResourceType("RIG");
-        ses4.setRequestedResourceName("Rig1");
-        ses4.setPriority(sh);
-        ses4.setActivityLastUpdated(after4);
-        ses4.setAssignedRigName("Rig1");
-        ses4.setAssignmentTime(assign4);
-        ses4.setActive(true);
-        ses4.setRemovalTime(remove4);
-        ses4.setRemovalReason("ended");
-        ses4.setCodeReference("none");
-        ses4.setExtensions(sh);
+        Session ses1 = new Session("test1", "REPS", request, "RIG", "Rig1", sh, after, "Rig1", assign, true, remove,
+                "ended", "none", sh);
+        Session ses2 = new Session("test1", "REPS", request2, "RIG", "Rig1", sh, after2, "Rig1", assign2, true, remove2,
+                "ended", "none", sh);
+        Session ses3 = new Session("test1", "REPS", request3, "RIG", "Rig1", sh, after3, "Rig1", assign3, true, remove3,
+                "ended", "none", sh);
+        Session ses4 = new Session("test1", "REPS", request4, "RIG", "Rig1", sh, after4, "Rig1", assign4, true, remove4,
+                "ended", "none", sh);
         
         this.record.addRecord(ses1);
         this.record.addRecord(ses2);
@@ -212,4 +130,6 @@ public class SessionStatisticsTester extends TestCase
         assertEquals(medQ,25*60);
         assertEquals(medS,50*60);
     }
+
+
 }
