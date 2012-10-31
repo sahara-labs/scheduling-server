@@ -48,7 +48,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserAssociationDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserClassDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
@@ -62,35 +61,9 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddAcademicPermission;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddPermission;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUser;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociation;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserAssociationResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClass;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserClassResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserLock;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.AddUserResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.BulkAddUserClassUsers;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteAcademicPermission;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeletePermission;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUser;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociation;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserAssociationResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClass;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserClassResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserLock;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.DeleteUserResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditAcademicPermission;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditPermission;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUser;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClass;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserClassResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.EditUserResponse;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSOAPImpl;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissionsForUser;
@@ -99,21 +72,17 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetPermissio
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClasses;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserClassesForUser;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUserResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetUsersInUserClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.OperationResponseType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockListType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PermissionWithLockType;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.PersonaType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceClass;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLock;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UnlockUserLockResponse;
-import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserAssociationType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassIDType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserClassType;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserIDType;
@@ -123,925 +92,23 @@ import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserNameName
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.UserType;
 
 /**
- * Tests the {@link Permissions} class.
+ * Tests the {@link PermissionsSOAPImpl} class.
  */
-public class PermissionsTester extends TestCase
+public class PermissionsSOAPImplTester extends TestCase
 {
     /** Object of class under test. */
-    private Permissions permissions;
+    private PermissionsSOAPImpl permissions;
     
     @Override
     @Before
     public void setUp() throws Exception
     {
         DataAccessTestSetup.setup();
-        this.permissions = new Permissions();
+        this.permissions = new PermissionsSOAPImpl();
     }
 
     /**
-     * Test method for {@link Permissions#addAcademicPermission(AddAcademicPermission)}.
-     */
-    @Test
-    public void testAddAcademicPermission()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#addPermission(AddPermission)}.
-     */
-    @Test
-    public void testAddPermission()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#addUser(AddUser)}.
-     */
-    @Test
-    public void testAddUser() throws Exception
-    {
-        AddUser req = new AddUser();
-        UserType user = new UserType();
-        req.setAddUser(user);
-        user.setRequestorQName("TESTNS:mdiponio");
-        UserNameNamespaceSequence nsname = new UserNameNamespaceSequence();
-        nsname.setUserNamespace("TESTNS");
-        nsname.setUserName("tmachet");
-        user.setUserNameNamespaceSequence(nsname);
-        user.setPersona(PersonaType.ADMIN);
-        
-        AddUserResponse resp = this.permissions.addUser(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getAddUserResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        
-        UserDao dao = new UserDao();
-        User us = dao.findByName("TESTNS", "tmachet");
-        assertNotNull(us);
-        dao.delete(us);
-        dao.closeSession();
-        
-        OMElement ele = resp.getOMElement(AddUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-
-    /**
-     * Test method for {@link Permissions#editUser(EditUser)}.
-     */
-    @Test
-    public void testEditUser() throws Exception
-    {
-        User user = new User();
-        user.setNamespace("TESTNS");
-        user.setName("tmachet");
-        user.setPersona("USER");
-        UserDao dao = new UserDao();
-        dao.persist(user);
-        
-        EditUser req = new EditUser();
-        UserType ty = new UserType();
-        req.setEditUser(ty);
-        ty.setRequestorQName("TESTNS:mdiponio");
-        ty.setUserID(String.valueOf(user.getId()));
-        UserNameNamespaceSequence seq = new UserNameNamespaceSequence();
-        seq.setUserNamespace("TESTNS-ENG");
-        seq.setUserName("tmachet");
-        ty.setUserNameNamespaceSequence(seq);
-        ty.setPersona(PersonaType.ADMIN);
-        
-        EditUserResponse resp = this.permissions.editUser(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getEditUserResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertNull(op.getFailureReason());
-        assertEquals(0, op.getFailureCode());
-        
-        dao.refresh(user);
-        assertEquals("TESTNS-ENG", user.getNamespace());
-        assertEquals("tmachet", user.getName());
-        assertEquals("ADMIN", user.getPersona());
-        
-        dao.delete(user);
-        
-        OMElement ele = resp.getOMElement(EditUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#deleteUser(DeleteUser)}.
-     */
-    @Test
-    public void testDeleteUser() throws Exception
-    {
-        UserDao dao = new UserDao();
-        User user = new User();
-        user.setPersona("USER");
-        user.setName("tmachet");
-        user.setNamespace("TESTNS");
-        dao.persist(user);
-        
-        DeleteUser req = new DeleteUser();
-        UserIDType usTy = new UserIDType();
-        req.setDeleteUser(usTy);
-        usTy.setRequestorQName("TESTNS:mdiponio");
-        UserNameNamespaceSequence seq = new UserNameNamespaceSequence();
-        seq.setUserNamespace("TESTNS");
-        seq.setUserName("tmachet");
-        usTy.setUserNameNamespaceSequence(seq);
-        
-        DeleteUserResponse resp = this.permissions.deleteUser(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getDeleteUserResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        
-        assertNull(dao.findByName("TESTNS", "tmachet"));
-        
-        OMElement ele = resp.getOMElement(DeleteUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#deleteUser(DeleteUser)}.
-     */
-    @Test
-    public void testDeleteUserID() throws Exception
-    {
-        UserDao dao = new UserDao();
-        User user = new User();
-        user.setPersona("USER");
-        user.setName("tmachet");
-        user.setNamespace("TESTNS");
-        dao.persist(user);
-        
-        DeleteUser req = new DeleteUser();
-        UserIDType usTy = new UserIDType();
-        req.setDeleteUser(usTy);
-        usTy.setRequestorQName("TESTNS:mdiponio");
-        usTy.setUserID(String.valueOf(user.getId()));
-        
-        DeleteUserResponse resp = this.permissions.deleteUser(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getDeleteUserResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        
-        assertNull(dao.findByName("TESTNS", "tmachet"));
-        
-        OMElement ele = resp.getOMElement(DeleteUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-
-    /**
-     * Test method for {@link Permissions#addUserAssociation(AddUserAssociation)}.
-     */
-    @Test
-    public void testAddUserAssociation() throws Exception
-    {
-        UserDao uDao = new UserDao();
-        User user = new User("tuser", "ns1", "ADMIN");
-        uDao.persist(user);
-        UserClassDao cDao = new UserClassDao(uDao.getSession());
-        UserClass ucls = new UserClass();
-        ucls.setName("usClass");
-        cDao.persist(ucls);
-        UserAssociationDao aDao = new UserAssociationDao(uDao.getSession());
-        
-        AddUserAssociation req = new AddUserAssociation();
-        UserAssociationType assocType = new UserAssociationType();
-        req.setAddUserAssociation(assocType);
-        assocType.setRequestorQName("TESTNS:mdiponio");
-        UserIDType uid = new UserIDType();
-        uid.setUserQName("ns1:tuser");
-        assocType.setUser(uid);
-        UserClassIDType cid = new UserClassIDType();
-        cid.setUserClassName("usClass");
-        assocType.setUserClass(cid);
-        
-        AddUserAssociationResponse resp = this.permissions.addUserAssociation(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getAddUserAssociationResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        UserAssociation ua = aDao.get(new UserAssociationId(user.getId(), ucls.getId()));
-        assertNotNull(ua);
-        assertEquals(user.getId(), ua.getUser().getId());
-        assertEquals(ucls.getId(), ua.getUserClass().getId());
-        aDao.delete(ua);
-        uDao.delete(user);
-        cDao.delete(ucls);
-        cDao.closeSession();
-        
-        OMElement ele = resp.getOMElement(AddUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#addUserAssociation(AddUserAssociation)}.
-     */
-    @Test
-    public void testAddUserAssociationID() throws Exception
-    {
-        UserDao uDao = new UserDao();
-        User user = new User("tuser", "ns1", "ADMIN");
-        uDao.persist(user);
-        UserClassDao cDao = new UserClassDao(uDao.getSession());
-        UserClass ucls = new UserClass();
-        ucls.setName("usClass");
-        cDao.persist(ucls);
-        UserAssociationDao aDao = new UserAssociationDao(uDao.getSession());
-        
-        AddUserAssociation req = new AddUserAssociation();
-        UserAssociationType assocType = new UserAssociationType();
-        req.setAddUserAssociation(assocType);
-        assocType.setRequestorQName("TESTNS:mdiponio");
-        UserIDType uid = new UserIDType();
-        uid.setUserID(String.valueOf(user.getId()));
-        assocType.setUser(uid);
-        UserClassIDType cid = new UserClassIDType();
-        cid.setUserClassID((ucls.getId().intValue()));
-        assocType.setUserClass(cid);
-        
-        AddUserAssociationResponse resp = this.permissions.addUserAssociation(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getAddUserAssociationResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        UserAssociation ua = aDao.get(new UserAssociationId(user.getId(), ucls.getId()));
-        assertNotNull(ua);
-        assertEquals(user.getId(), ua.getUser().getId());
-        assertEquals(ucls.getId(), ua.getUserClass().getId());
-        aDao.delete(ua);
-        uDao.delete(user);
-        cDao.delete(ucls);
-        cDao.closeSession();
-        
-        OMElement ele = resp.getOMElement(AddUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#addUserAssociation(AddUserAssociation)}.
-     */
-    @Test
-    public void testAddUserAssociationNoIdName() throws Exception
-    {
-        AddUserAssociation req = new AddUserAssociation();
-        UserAssociationType assocType = new UserAssociationType();
-        req.setAddUserAssociation(assocType);
-        assocType.setRequestorQName("TESTNS:mdiponio");
-        UserIDType uid = new UserIDType();
-        assocType.setUser(uid);
-        UserClassIDType cid = new UserClassIDType();
-        assocType.setUserClass(cid);
-        
-        AddUserAssociationResponse resp = this.permissions.addUserAssociation(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getAddUserAssociationResponse();
-        assertNotNull(op);
-        assertFalse(op.getSuccessful());
-        assertEquals(2, op.getFailureCode());
-        assertNotNull(op.getFailureReason());
-        
-        OMElement ele = resp.getOMElement(AddUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>false</successful>"));
-    }
-
-    /**
-     * Test method for {@link Permissions#addUserClass(AddUserClass)}.
-     */
-    @Test
-    public void testAddUserClass() throws Exception
-    {
-        AddUserClass req = new AddUserClass();
-        UserClassType cls = new UserClassType();
-        req.setAddUserClass(cls);
-        
-        cls.setUserClassName("newClass");
-        cls.setPriority(10);
-        cls.setTimeHorizon(15);
-        cls.setIsActive(true);
-        cls.setIsKickable(true);
-        cls.setIsQueuable(true);
-        cls.setIsBookable(true);
-        cls.setIsUserLockable(true);
-        cls.setRequestorQName("TESTNS:mdiponio");
-        
-        AddUserClassResponse resp = this.permissions.addUserClass(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getAddUserClassResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        UserClassDao dao = new UserClassDao();
-        UserClass uc = dao.findByName("newClass");
-        assertNotNull(uc);
-        
-        assertEquals("newClass", uc.getName());
-        assertEquals(10, uc.getPriority());
-        assertEquals(15, uc.getTimeHorizon());
-        assertTrue(uc.isActive());
-        assertTrue(uc.isKickable());
-        assertTrue(uc.isQueuable());
-        assertTrue(uc.isBookable());
-        assertTrue(uc.isUsersLockable());
-        
-        dao.delete(uc);
-        dao.closeSession();
-        
-        OMElement ele = resp.getOMElement(AddUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#addUserClass(AddUserClass)}.
-     */
-    @Test
-    public void testAddUserClassFalse() throws Exception
-    {
-        AddUserClass req = new AddUserClass();
-        UserClassType cls = new UserClassType();
-        req.setAddUserClass(cls);
-        
-        cls.setUserClassName("newClass");
-        cls.setPriority(100);
-        cls.setTimeHorizon(1000);
-        cls.setIsActive(false);
-        cls.setIsKickable(false);
-        cls.setIsQueuable(false);
-        cls.setIsUserLockable(false);
-        cls.setRequestorQName("TESTNS:mdiponio");
-        
-        AddUserClassResponse resp = this.permissions.addUserClass(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getAddUserClassResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        UserClassDao dao = new UserClassDao();
-        UserClass uc = dao.findByName("newClass");
-        assertNotNull(uc);
-        
-        assertEquals("newClass", uc.getName());
-        assertEquals(100, uc.getPriority());
-        assertFalse(uc.isActive());
-        assertFalse(uc.isKickable());
-        assertFalse(uc.isQueuable());
-        assertFalse(uc.isUsersLockable());
-        assertFalse(uc.isBookable());
-        assertEquals(1000, uc.getTimeHorizon());
-        
-        dao.delete(uc);
-        dao.closeSession();
-        
-        OMElement ele = resp.getOMElement(AddUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#addUserClass(AddUserClass)}.
-     */
-    @Test
-    public void testAddUserClassExists() throws Exception
-    {
-        UserClassDao dao = new UserClassDao();
-        UserClass uc = new UserClass();
-        uc.setName("exists");
-        uc.setPriority((short) 190);
-        dao.persist(uc);
-        
-        AddUserClass req = new AddUserClass();
-        UserClassType cls = new UserClassType();
-        req.setAddUserClass(cls);
-        cls.setRequestorQName("TESTNS:mdiponio");
-        cls.setUserClassName("exists");
-        cls.setPriority(10);
-        cls.setIsActive(true);
-        cls.setIsKickable(true);
-        cls.setIsQueuable(true);
-        cls.setIsUserLockable(true);
-        
-        AddUserClassResponse resp = this.permissions.addUserClass(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getAddUserClassResponse();
-        assertNotNull(op);
-        assertFalse(op.getSuccessful());
-        assertEquals(3, op.getFailureCode());
-        assertNotNull(op.getFailureReason());
-        
-        dao.delete(uc);
-        dao.closeSession();
-        
-        OMElement ele = resp.getOMElement(AddUserResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>false</successful>"));
-    }
-
-    /**
-     * Test method for {@link Permissions#addUserLock(AddUserLock)}.
-     */
-    @Test
-    public void testAddUserLock()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#bulkAddUserClassUsers(BulkAddUserClassUsers)}.
-     */
-    @Test
-    public void testBulkAddUserClassUsers()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#deleteAcademicPermission(DeleteAcademicPermission)}.
-     */
-    @Test
-    public void testDeleteAcademicPermission()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#deletePermission(DeletePermission)}.
-     */
-    @Test
-    public void testDeletePermission()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#deleteUserAssociation(DeleteUserAssociation)}.
-     */
-    @Test
-    public void testDeleteUserAssociation() throws Exception
-    {
-        Session ses = DataAccessActivator.getNewSession();
-        ses.beginTransaction();
-        User user = new User("tuser", "ns", "USER");
-        ses.save(user);
-        UserClass cls = new UserClass();
-        cls.setName("tclass");
-        ses.save(cls);
-        UserAssociation ass = new UserAssociation();
-        ass.setId(new UserAssociationId(user.getId(), cls.getId()));
-        ass.setUser(user);
-        ass.setUserClass(cls);
-        ses.save(ass);
-        ses.getTransaction().commit();
-        
-        DeleteUserAssociation req = new DeleteUserAssociation();
-        UserAssociationType assocType = new UserAssociationType();
-        req.setDeleteUserAssociation(assocType);
-        assocType.setRequestorQName("TESTNS:mdiponio");
-        UserIDType uid = new UserIDType();
-        uid.setUserQName("ns:tuser");
-        assocType.setUser(uid);
-        UserClassIDType cid = new UserClassIDType();
-        cid.setUserClassName("tclass");
-        assocType.setUserClass(cid);
-        
-        DeleteUserAssociationResponse resp = this.permissions.deleteUserAssociation(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getDeleteUserAssociationResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        ses.beginTransaction();
-        ses.delete(user);
-        ses.delete(cls);
-        ses.getTransaction().commit();
-        
-        OMElement ele = resp.getOMElement(DeleteUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#deleteUserAssociation(DeleteUserAssociation)}.
-     */
-    @Test
-    public void testDeleteUserAssociationID() throws Exception
-    {
-        Session ses = DataAccessActivator.getNewSession();
-        ses.beginTransaction();
-        User user = new User("tuser", "ns", "USER");
-        ses.save(user);
-        UserClass cls = new UserClass();
-        cls.setName("tclass");
-        ses.save(cls);
-        UserAssociation ass = new UserAssociation();
-        ass.setId(new UserAssociationId(user.getId(), cls.getId()));
-        ass.setUser(user);
-        ass.setUserClass(cls);
-        ses.save(ass);
-        ses.getTransaction().commit();
-        
-        DeleteUserAssociation req = new DeleteUserAssociation();
-        UserAssociationType assocType = new UserAssociationType();
-        req.setDeleteUserAssociation(assocType);
-        assocType.setRequestorQName("TESTNS:mdiponio");
-        UserIDType uid = new UserIDType();
-        uid.setUserID(String.valueOf(user.getId()));
-        assocType.setUser(uid);
-        UserClassIDType cid = new UserClassIDType();
-        cid.setUserClassID(cls.getId().intValue());
-        assocType.setUserClass(cid);
-        
-        DeleteUserAssociationResponse resp = this.permissions.deleteUserAssociation(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getDeleteUserAssociationResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        ses.beginTransaction();
-        ses.delete(user);
-        ses.delete(cls);
-        ses.getTransaction().commit();
-        
-        OMElement ele = resp.getOMElement(DeleteUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#deleteUserAssociation(DeleteUserAssociation)}.
-     */
-    @Test
-    public void testDeleteUserAssociationNoID() throws Exception
-    {   
-        DeleteUserAssociation req = new DeleteUserAssociation();
-        UserAssociationType assocType = new UserAssociationType();
-        req.setDeleteUserAssociation(assocType);
-        assocType.setRequestorQName("TESTNS:mdiponio");
-        UserIDType uid = new UserIDType();
-        assocType.setUser(uid);
-        UserClassIDType cid = new UserClassIDType();
-        assocType.setUserClass(cid);
-        
-        DeleteUserAssociationResponse resp = this.permissions.deleteUserAssociation(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getDeleteUserAssociationResponse();
-        assertNotNull(op);
-        assertFalse(op.getSuccessful());
-        assertEquals(2, op.getFailureCode());
-        assertNotNull(op.getFailureReason());
-        
-        OMElement ele = resp.getOMElement(DeleteUserAssociationResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>false</successful>"));
-    }
-
-    /**
-     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
-     */
-    @Test
-    public void testDeleteUserClass() throws Exception
-    {
-        UserClassDao dao = new UserClassDao();
-        UserClass uc = new UserClass();
-        uc.setName("todelete");
-        dao.persist(uc);
-        
-        DeleteUserClass req = new DeleteUserClass();
-        UserClassIDType cid = new UserClassIDType();
-        req.setDeleteUserClass(cid);
-        cid.setUserClassName("todelete");
-        
-        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
-        assertNotNull(resp);
-        OperationResponseType op = resp.getDeleteUserClassResponse();
-        assertNotNull(op);
-        
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        assertNull(dao.findByName("todelete"));
-        
-        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
-     */
-    @Test
-    public void testDeleteUserClassID() throws Exception
-    {
-        UserClassDao dao = new UserClassDao();
-        UserClass uc = new UserClass();
-        uc.setName("todelete");
-        dao.persist(uc);
-        
-        DeleteUserClass req = new DeleteUserClass();
-        UserClassIDType cid = new UserClassIDType();
-        req.setDeleteUserClass(cid);
-        cid.setUserClassID(uc.getId().intValue());
-        
-        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
-        assertNotNull(resp);
-        OperationResponseType op = resp.getDeleteUserClassResponse();
-        assertNotNull(op);
-        
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        assertNull(dao.findByName("todelete"));
-        
-        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
-     */
-    @Test
-    public void testDeleteUserClassNotExist() throws Exception
-    {
-        DeleteUserClass req = new DeleteUserClass();
-        UserClassIDType cid = new UserClassIDType();
-        req.setDeleteUserClass(cid);
-        cid.setUserClassName("todelete");
-        
-        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
-        assertNotNull(resp);
-        OperationResponseType op = resp.getDeleteUserClassResponse();
-        assertNotNull(op);
-        
-        assertFalse(op.getSuccessful());
-        assertEquals(3, op.getFailureCode());
-        assertNotNull(op.getFailureReason());
-        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>false</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#deleteUserClass(DeleteUserClass)}.
-     */
-    @Test
-    public void testDeleteUserClassNoIdName() throws Exception
-    {
-
-        DeleteUserClass req = new DeleteUserClass();
-        UserClassIDType cid = new UserClassIDType();
-        req.setDeleteUserClass(cid);
-        
-        DeleteUserClassResponse resp = this.permissions.deleteUserClass(req);
-        assertNotNull(resp);
-        OperationResponseType op = resp.getDeleteUserClassResponse();
-        assertNotNull(op);
-        
-        assertFalse(op.getSuccessful());
-        assertEquals(2, op.getFailureCode());
-        assertNotNull(op.getFailureReason());
-        
-        OMElement ele = resp.getOMElement(DeleteUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>false</successful>"));
-    }
-
-    /**
-     * Test method for {@link Permissions#deleteUserLock(DeleteUserLock)}.
-     */
-    @Test
-    public void testDeleteUserLock()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#editAcademicPermission(EditAcademicPermission)}.
-     */
-    @Test
-    public void testEditAcademicPermission()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#editPermission(EditPermission)}.
-     */
-    @Test
-    public void testEditPermission()
-    {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link Permissions#editUserClass(EditUserClass)}.
-     */
-    @Test
-    public void testEditUserClass() throws Exception
-    {
-        UserClassDao dao = new UserClassDao();
-        UserClass uc = new UserClass();
-        uc.setName("uclass");
-        uc.setPriority((short) 190);
-        dao.persist(uc);
-        
-        EditUserClass req = new EditUserClass();
-        UserClassType cls = new UserClassType();
-        req.setEditUserClass(cls);
-        cls.setRequestorQName("TESTNS:mdiponio");
-        cls.setUserClassName("uclass");
-        cls.setPriority(10);
-        cls.setIsActive(true);
-        cls.setIsKickable(true);
-        cls.setIsQueuable(true);
-        cls.setIsUserLockable(true);
-        
-        EditUserClassResponse resp = this.permissions.editUserClass(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getEditUserClassResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        dao.refresh(uc);
-        assertEquals("uclass", uc.getName());
-        assertEquals(10, uc.getPriority());
-        assertTrue(uc.isActive());
-        assertTrue(uc.isKickable());
-        assertTrue(uc.isQueuable());
-        assertTrue(uc.isUsersLockable());
-        
-        dao.delete(uc);
-        dao.closeSession();
-        
-        OMElement ele = resp.getOMElement(EditUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#editUserClass(EditUserClass)}.
-     */
-    @Test
-    public void testEditUserClassID() throws Exception
-    {
-        UserClassDao dao = new UserClassDao();
-        UserClass uc = new UserClass();
-        uc.setName("uclass");
-        uc.setPriority((short) 190);
-        dao.persist(uc);
-        
-        EditUserClass req = new EditUserClass();
-        UserClassType cls = new UserClassType();
-        req.setEditUserClass(cls);
-        cls.setUserClassID(uc.getId().intValue());
-        cls.setRequestorQName("TESTNS:mdiponio");
-        cls.setUserClassName("newname");
-        cls.setPriority(10);
-        cls.setIsActive(true);
-        cls.setIsKickable(false);
-        cls.setIsQueuable(true);
-        cls.setIsUserLockable(false);
-        
-        EditUserClassResponse resp = this.permissions.editUserClass(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getEditUserClassResponse();
-        assertNotNull(op);
-        assertTrue(op.getSuccessful());
-        assertEquals(0, op.getFailureCode());
-        assertNull(op.getFailureReason());
-        
-        dao.refresh(uc);
-        assertEquals("newname", uc.getName());
-        assertEquals(10, uc.getPriority());
-        assertTrue(uc.isActive());
-        assertFalse(uc.isKickable());
-        assertTrue(uc.isQueuable());
-        assertFalse(uc.isUsersLockable());
-        
-        dao.delete(uc);
-        dao.closeSession();
-        
-        OMElement ele = resp.getOMElement(EditUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>true</successful>"));
-    }
-    
-    /**
-     * Test method for {@link Permissions#editUserClass(EditUserClass)}.
-     */
-    @Test
-    public void testEditUserClassDoesExist() throws Exception
-    {
-        EditUserClass req = new EditUserClass();
-        UserClassType cls = new UserClassType();
-        req.setEditUserClass(cls);
-        cls.setRequestorQName("TESTNS:mdiponio");
-        cls.setUserClassName("notexists");
-        cls.setPriority(10);
-        
-        EditUserClassResponse resp = this.permissions.editUserClass(req);
-        assertNotNull(resp);
-        
-        OperationResponseType op = resp.getEditUserClassResponse();
-        assertNotNull(op);
-        assertFalse(op.getSuccessful());
-        assertEquals(3, op.getFailureCode());
-        assertNotNull(op.getFailureReason());
-        
-        OMElement ele = resp.getOMElement(EditUserClassResponse.MY_QNAME, OMAbstractFactory.getOMFactory());
-        assertNotNull(ele);
-        String xml = ele.toStringWithConsume();
-        assertNotNull(xml);
-        assertTrue(xml.contains("<successful>false</successful>"));
-    }
-
-
-    /**
-     * Test method for {@link Permissions#getAcademicPermission(GetAcademicPermission)}.
+     * Test method for {@link PermissionsSOAPImpl#getAcademicPermission(GetAcademicPermission)}.
      */
     @Test
     public void testGetAcademicPermission()
@@ -1050,7 +117,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getAcademicPermissionsForAcademic(GetAcademicPermissionsForAcademic)}.
+     * Test method for {@link PermissionsSOAPImpl#getAcademicPermissionsForAcademic(GetAcademicPermissionsForAcademic)}.
      */
     @Test
     public void testGetAcademicPermissionsForAcademic()
@@ -1059,7 +126,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getAcademicPermissionsForUserClass(GetAcademicPermissionsForUserClass)}.
+     * Test method for {@link PermissionsSOAPImpl#getAcademicPermissionsForUserClass(GetAcademicPermissionsForUserClass)}.
      */
     @Test
     public void testGetAcademicPermissionsForUserClass()
@@ -1068,7 +135,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getPermission(GetPermission)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermission(GetPermission)}.
      */
     @Test
     public void testGetPermission()
@@ -1146,7 +213,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getPermission(GetPermission)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermission(GetPermission)}.
      */
     @Test
     public void testGetPermissionRig()
@@ -1230,7 +297,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getPermission(GetPermission)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermission(GetPermission)}.
      */
     @Test
     public void testGetPermissionCaps()
@@ -1308,7 +375,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermissionsForUser(GetPermissionsForUser)}.
      */
     @Test
     public void testGetPermissionsForUser() throws Exception
@@ -1569,7 +636,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermissionsForUser(GetPermissionsForUser)}.
      */
     @Test
     public void testGetPermissionsForUserLocked()
@@ -1670,7 +737,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermissionsForUser(GetPermissionsForUser)}.
      */
     @Test
     public void testGetPermissionsForUserNotLocked()
@@ -1765,7 +832,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermissionsForUser(GetPermissionsForUser)}.
      */
     @Test
     public void testGetPermissionsForUserNoPerms() throws Exception
@@ -1797,7 +864,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getPermissionsForUser(GetPermissionsForUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermissionsForUser(GetPermissionsForUser)}.
      */
     @Test
     public void testGetPermissionsForUserNoUser() throws Exception
@@ -1823,7 +890,7 @@ public class PermissionsTester extends TestCase
 
 
     /**
-     * Test method for {@link Permissions#getPermissionsForUserClass(GetPermissionsForUserClass)}.
+     * Test method for {@link PermissionsSOAPImpl#getPermissionsForUserClass(GetPermissionsForUserClass)}.
      */
     @Test
     public void testGetPermissionsForUserClass()
@@ -1832,7 +899,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getUser(GetUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getUser(GetUser)}.
      */
     @Test
     public void testGetUser() throws Exception
@@ -1881,7 +948,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getUser(GetUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getUser(GetUser)}.
      */
     @Test
     public void testGetUserQName() throws Exception
@@ -1930,7 +997,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getUser(GetUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getUser(GetUser)}.
      */
     @Test
     public void testGetUserSeq() throws Exception
@@ -1979,7 +1046,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getUserClass(GetUserClass)}.
+     * Test method for {@link PermissionsSOAPImpl#getUserClass(GetUserClass)}.
      */
     @Test
     public void testGetUserClass() throws Exception
@@ -2026,7 +1093,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#getUserClass(GetUserClass)}.
+     * Test method for {@link PermissionsSOAPImpl#getUserClass(GetUserClass)}.
      */
     @Test
     public void testGetUserClassName() throws Exception
@@ -2074,7 +1141,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getUserClasses(GetUserClasses)}.
+     * Test method for {@link PermissionsSOAPImpl#getUserClasses(GetUserClasses)}.
      */
     @Test
     public void testGetUserClasses()
@@ -2083,7 +1150,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getUserClassesForUser(GetUserClassesForUser)}.
+     * Test method for {@link PermissionsSOAPImpl#getUserClassesForUser(GetUserClassesForUser)}.
      */
     @Test
     public void testGetUserClassesForUser()
@@ -2092,7 +1159,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#getUsersInUserClass(GetUsersInUserClass)}.
+     * Test method for {@link PermissionsSOAPImpl#getUsersInUserClass(GetUsersInUserClass)}.
      */
     @Test
     public void testGetUsersInUserClass()
@@ -2101,7 +1168,7 @@ public class PermissionsTester extends TestCase
     }
 
     /**
-     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     * Test method for {@link PermissionsSOAPImpl#unlockUserLock(UnlockUserLock)}.
      */
     @Test
     public void testUnlockUserLockID()
@@ -2152,7 +1219,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     * Test method for {@link PermissionsSOAPImpl#unlockUserLock(UnlockUserLock)}.
      */
     @Test
     public void testUnlockUserLockIDWrongKey()
@@ -2203,7 +1270,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     * Test method for {@link PermissionsSOAPImpl#unlockUserLock(UnlockUserLock)}.
      */
     @Test
     public void testUnlockUserLockPermUser()
@@ -2261,7 +1328,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     * Test method for {@link PermissionsSOAPImpl#unlockUserLock(UnlockUserLock)}.
      */
     @Test
     public void testUnlockUserLockPermUserWrongKey()
@@ -2319,7 +1386,7 @@ public class PermissionsTester extends TestCase
     }
     
     /**
-     * Test method for {@link Permissions#unlockUserLock(UnlockUserLock)}.
+     * Test method for {@link PermissionsSOAPImpl#unlockUserLock(UnlockUserLock)}.
      */
     @Test
     public void testUnlockUserLockNoKey()
@@ -2353,7 +1420,7 @@ public class PermissionsTester extends TestCase
         UserIDType uid = new UserIDType();
         uid.setUserID(String.valueOf(user.getId()));
         
-        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        Method meth = PermissionsSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
         meth.setAccessible(true);
         User loaded = (User)meth.invoke(this.permissions, uid, ses);
         assertNotNull(loaded);
@@ -2385,7 +1452,7 @@ public class PermissionsTester extends TestCase
         seq.setUserName(user.getName());
         uid.setUserNameNamespaceSequence(seq);
         
-        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        Method meth = PermissionsSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
         meth.setAccessible(true);
         User loaded = (User)meth.invoke(this.permissions, uid, ses);
         assertNotNull(loaded);
@@ -2414,7 +1481,7 @@ public class PermissionsTester extends TestCase
         UserIDType uid = new UserIDType();
         uid.setUserQName(user.getNamespace() + ":" + user.getName());
         
-        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        Method meth = PermissionsSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
         meth.setAccessible(true);
         User loaded = (User)meth.invoke(this.permissions, uid, ses);
         assertNotNull(loaded);
@@ -2438,7 +1505,7 @@ public class PermissionsTester extends TestCase
         uid.setUserQName("PERM_TEST:does_not_exist");
         Session ses = DataAccessActivator.getNewSession();
         
-        Method meth = Permissions.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
+        Method meth = PermissionsSOAPImpl.class.getDeclaredMethod("getUserFromUserID", UserIDType.class, Session.class);
         meth.setAccessible(true);
         assertNull(meth.invoke(this.permissions, uid, ses));
         
