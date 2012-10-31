@@ -38,7 +38,7 @@ Date: 29th January 2010
     <property name="component.name" value="Scheduling Server Rig Management Bundle"/>
     <property name="service.archive.name" value="RigManagement.aar"/>
     <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,
-    	messengerBundle,rigOperationsBundle,serverBundle,bookingsBundle">
+    	messengerBundle,serverBundle,bookingsBundle">
         <buildProject/>
     </target>
 </project>
