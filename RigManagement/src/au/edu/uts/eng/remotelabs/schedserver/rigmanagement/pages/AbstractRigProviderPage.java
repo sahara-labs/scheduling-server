@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 19th October 2012
  */
-package au.edu.uts.eng.remotelabs.schedserver.rigprovider.pages;
+package au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pages;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -74,8 +74,8 @@ public abstract class AbstractRigProviderPage extends AbstractPage
 		this.db = DataAccessActivator.getNewSession();
 		
 		/* Added web page resources. */
-		this.headCss.add("/css/rigprovider.css");
-        this.headJs.add("/js/rigprovider.js");
+		this.headCss.add("/css/rigmanagement.css");
+        this.headJs.add("/js/rigmanagement.js");
 	}
 	
 	@Override

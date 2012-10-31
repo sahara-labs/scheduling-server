@@ -26,4 +26,5 @@ lib/=lib/;-donotcopy=.svn
 
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider, \
 au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok
+
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}
