@@ -86,8 +86,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeIDType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypesType;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigMaintenance;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigMaintenance;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 
 /**
  * Rig management SOAP service.

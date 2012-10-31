@@ -63,7 +63,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigAllocator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigAllocator;
 
 /**
  * The queue.

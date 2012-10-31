@@ -61,7 +61,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 
 /**
  * Implementation of the Queuer POJO service.

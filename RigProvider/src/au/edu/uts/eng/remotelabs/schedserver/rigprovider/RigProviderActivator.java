@@ -239,4 +239,11 @@ public class RigProviderActivator implements BundleActivator
             listener.eventOccurred(event, session, db);
         }
     }
+    
+    
+    public static int getAsyncTimeout()
+    {
+    	// TODO
+    	return 0;
+    }
 }

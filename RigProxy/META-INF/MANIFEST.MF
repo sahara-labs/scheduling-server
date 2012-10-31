@@ -96,6 +96,4 @@ Bundle-ClassPath: .,
  lib/xml-resolver-1.2.jar,
  lib/xmlbeans-2.3.0.jar,
  lib/XmlSchema-1.4.3.jar
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigproxy,
- au.edu.uts.eng.remotelabs.schedserver.rigproxy.intf.types
 Require-Bundle: SchedulingServer-DataAccess

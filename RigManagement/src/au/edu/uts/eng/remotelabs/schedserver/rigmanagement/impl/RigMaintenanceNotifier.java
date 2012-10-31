@@ -53,8 +53,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventLis
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigMaintenance;
-import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigMaintenance;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 
 /**
  * Notifies a rig to go into maintenance if a it is in a maintenance 
