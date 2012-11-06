@@ -27,13 +27,14 @@
 			#set( $id = $rt.getName() )
 			
 			<li id="$id" class="box-list-item">
-            <a class="box-list-title">
-				<span class="ui-icon ui-icon-circle-arrow-e"></span>
-				#removeUnderscores( $rt.getName().replaceAll(" ", "") )
-			</a>
-			<div class="box-list-details">
-				Some stuff
-			</div>
+                <a class="box-list-title">
+    				<span class="ui-icon ui-icon-circle-arrow-e"></span>
+    				#removeUnderscores( $rt.getName().replaceAll(" ", "") )
+    			</a>
+    			<div class="box-list-details">
+    				Some stuff
+    			</div>
+			</li>
 		#end
 		
 		</ul>
@@ -73,32 +74,44 @@ $(document).ready(function() {
 	});
 	
 	/* -- Filter rig types by typed names. -------------------- */
-	$("#rig-types-filter").keyup(function() {
-		var filter = $(this).val();
+	$("#rig-types-filter").keyup(function(e) {
+		var filter;
 		
+		switch (e.keyCode)
+		{
+			case 27: // Escape key clears selection
+				$(this).val('');
+				filter = '';
+				break;
+				
+			default: // All other keys
+        		var filter = $(this).val();
+				break;
+		}
+    
 		if (filter == "")
-		{
-			/* Filter cleared, show all rig types. */
-			$("#rig-types-list > .box-list-item").show();
-		}
-		else
-		{
-			filter = filter.toLowerCase();
-		
-			$("#rig-types-list > .box-list-item").each(function() {
-				var lcId = $(this).attr("id").split("_").join(" ").toLowerCase();
-				if (lcId.indexOf(filter) == 0)
-				{
-					$(this).show();
-				}
-				else
-				{
-					$(this).hide();
-				}
-			});
-		}
+    	{
+        	/* Filter cleared, show all rig types. */
+        	$("#rig-types-list > .box-list-item").show();
+        }
+        else
+        {
+        	filter = filter.toLowerCase();
+        	
+        	$("#rig-types-list > .box-list-item").each(function() {
+        		var lcId = $(this).attr("id").split("_").join(" ").toLowerCase();
+        		if (lcId.indexOf(filter) == 0)
+        		{
+        			$(this).show();
+        		}
+        		else
+        		{
+        			$(this).hide();
+        		}
+        	});
+        }
 	});
-	
+		
 	/* -- Applies interaction styling. ----------------------- */
 	$(".saharaform input, .saharaform select, .saharaform textarea")
 		.focusin(formFocusIn)

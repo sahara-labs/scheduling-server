@@ -4,7 +4,7 @@
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagementMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement</parameter>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagementSOAPImpl</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="putRigOffline" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/rigmanagement">

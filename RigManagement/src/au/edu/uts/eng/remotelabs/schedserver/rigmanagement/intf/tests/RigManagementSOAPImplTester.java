@@ -51,7 +51,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
-import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagement;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.RigManagementSOAPImpl;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.GetTypeStatus;
@@ -69,10 +69,10 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypesTy
 /**
  * Tests the {@link RigManagement} class.
  */
-public class RigManagementTester extends TestCase
+public class RigManagementSOAPImplTester extends TestCase
 {
     /** Object under test. */
-    private RigManagement service;
+    private RigManagementSOAPImpl service;
 
     @Override
     @Before
@@ -81,7 +81,7 @@ public class RigManagementTester extends TestCase
         super.setUp();
         
         DataAccessTestSetup.setup();
-        this.service = new RigManagement();
+        this.service = new RigManagementSOAPImpl();
     }
 
     @Test

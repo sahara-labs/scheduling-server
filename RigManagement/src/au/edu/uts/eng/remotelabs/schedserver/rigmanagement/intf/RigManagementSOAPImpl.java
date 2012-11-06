@@ -92,7 +92,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 /**
  * Rig management SOAP service.
  */
-public class RigManagement implements RigManagementInterface
+public class RigManagementSOAPImpl implements RigManagementSOAP
 {
     /** Logger. */
     public Logger logger;
@@ -100,7 +100,7 @@ public class RigManagement implements RigManagementInterface
     /** Flag for unit testing to disable rig client communication. */ 
     private boolean notTest = true;
     
-    public RigManagement()
+    public RigManagementSOAPImpl()
     {
         this.logger = LoggerActivator.getLogger();
     }

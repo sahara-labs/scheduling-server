@@ -32,47 +32,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2012
+ * @date 5th November 2012
  */
-package au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pages;
+package au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pojo.impl;
 
-import java.util.List;
+import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
+import org.hibernate.Session;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
-import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pojo.RigManagementService;
 
 /**
- * Page to administer rig types.
+ * Implementation of the Rig Management service.
  */
-public class RigTypes extends AbstractRigProviderPage 
+public class RigManagementServiceImpl implements RigManagementService
 {
 
-	@Override
-	public void setupView(HttpServletRequest req) 
-	{
-	    List<RigType> types = new RigTypeDao(this.db).orderedList();
-	    
-	    
-	    
-		this.context.put("types", types); 
-	}
-
-	@Override
-	protected String getPageType() 
-	{
-		return "Rigs";
-	}
-	
-	/**
-	 * Provides details about hosting this page.
-	 * 
-	 * @return populated
-	 */
-	public static HostedPage getHostedPage()
+    @Override
+    public ResourceStatus getRigTypeStatus(RigType rigtype, Session db)
     {
-        return new HostedPage("Rigs", RigTypes.class, "rigs", "Allows rigs to be administered.", true, true);
+        // TODO Auto-generated method stub
+        return null;
     }
+
+    @Override
+    public ResourceStatus getRigStatus(Rig rig, Session db)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean putRigOffline(Rig rig, Date start, Date end, String reason, Session db)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean cancelRigOffline(RigOfflineSchedule schedule, Session db)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean freeRig(Rig rig, Session db)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

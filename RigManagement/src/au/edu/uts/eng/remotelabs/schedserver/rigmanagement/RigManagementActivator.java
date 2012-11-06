@@ -60,6 +60,8 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.impl.RigMaintenanceNotifier;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pages.RigTypes;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pojo.RigManagementService;
+import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.pojo.impl.RigManagementServiceImpl;
 import au.edu.uts.eng.remotelabs.schedserver.server.HostedPage;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
@@ -74,6 +76,9 @@ public class RigManagementActivator implements BundleActivator
     
     /** The list of session event listeners. */
     private static List<SessionEventListener> sessionListeners;
+    
+    /** Management service registration. */
+    private ServiceRegistration<RigManagementService> managementService;
     
     /** SOAP servlet service registration. */
     private ServiceRegistration<ServletContainerService> soapService;
@@ -114,6 +119,10 @@ public class RigManagementActivator implements BundleActivator
         props.put("period", String.valueOf(RigMaintenanceNotifier.RUN_PERIOD));
         this.notifierReg = context.registerService(Runnable.class, new RigMaintenanceNotifier(), props);
         
+        /* Register the Management POJO service. */
+        this.logger.debug("Registering the Rig Management POJO service.");
+        this.managementService = context.registerService(RigManagementService.class, new RigManagementServiceImpl(), null);
+        
         /* Register the Rig Management SOAP service. */
         this.logger.debug("Registering the Rig Management SOAP service.");
         ServletContainerService soapService = new ServletContainerService();
@@ -133,6 +142,7 @@ public class RigManagementActivator implements BundleActivator
 		
 		for (ServiceRegistration<HostedPage> reg : this.pageRegistrations) reg.unregister();
 		
+		this.managementService.unregister();
 		this.soapService.unregister();
 		this.notifierReg.unregister();
 		

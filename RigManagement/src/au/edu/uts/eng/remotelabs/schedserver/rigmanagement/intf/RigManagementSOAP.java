@@ -53,7 +53,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.PutRigOffl
 /**
  * Rig Management SOAP service interface.
  */
-public interface RigManagementInterface
+public interface RigManagementSOAP
 {
     /**
      * Get all rig types.

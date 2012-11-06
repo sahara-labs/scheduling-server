@@ -76,7 +76,7 @@ public class RigManagementMessageReceiverInOut extends AbstractInOutMessageRecei
     {
         try
         {
-            final RigManagementInterface skel = (RigManagementInterface) this.getTheImplementationObject(msgContext);
+            final RigManagementSOAP skel = (RigManagementSOAP) this.getTheImplementationObject(msgContext);
 
             SOAPEnvelope envelope = null;
             final AxisOperation op = msgContext.getOperationContext().getAxisOperation();
