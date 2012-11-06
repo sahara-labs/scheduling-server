@@ -1,6 +1,6 @@
 Bundle-Name: MultiSiteProvider
 Bundle-SymbolicName: SchedulingServer-MultiSiteProvider
-Bundle-Version: 1.0.0.capstone
+Bundle-Version: 1.0.0.alpha
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.multisite.provider.MultiSiteProviderActivator
 Bundle-Vendor: Michael Diponio
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
