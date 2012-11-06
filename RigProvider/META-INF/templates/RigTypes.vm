@@ -1,0 +1,107 @@
+##
+## Rig Types 
+##
+
+#macro( removeUnderscores $arg )
+	$arg.replaceAll("_", " ")
+#end
+
+#macro( removeSpaces $arg )
+	$arg.replaceAll(" ", "")
+#end
+
+<div id='rig-types' class='box'>
+	<div class="box-title">
+		<span id="secondclassicon" class="ui-icon ui-icon-gear"></span>
+        Rig Types:
+        
+        <div class="saharaform">
+            Filter:&nbsp;&nbsp;<input id="rig-types-filter" type="text" />
+        </div>
+	</div>
+	
+	#if( $types.size() > 0)
+		<ul id="rig-types-list" class="box-list">
+		
+		#foreach( $rt in $types )
+			#set( $id = $rt.getName() )
+			
+			<li id="$id" class="box-list-item">
+            <a class="box-list-title">
+				<span class="ui-icon ui-icon-circle-arrow-e"></span>
+				#removeUnderscores( $rt.getName().replaceAll(" ", "") )
+			</a>
+			<div class="box-list-details">
+				Some stuff
+			</div>
+		#end
+		
+		</ul>
+	#else ## No rig types information message 	
+		<div id="no-rig-types" class="ui-corner-all ui-state ui-state-highlight">
+			<span class="ui-icon ui-icon-info"></span>
+            No rig types.
+		</div>
+	#end
+</div>
+	
+<script type="text/javascript">
+$(document).ready(function() {
+	/* -- Open and close detail boxes. ------------------------- */
+	$(".box-list-title").click(function() {
+		var details = $(this).next();
+		var isClosed = details.css("display") == "none";
+		
+		$(".box-list-item .open")
+			.slideUp()
+			.removeClass("open")
+			.prev().children("span")
+				.removeClass("ui-icon-circle-arrow-s")
+				.addClass("ui-icon-circle-arrow-e");
+		
+		
+		if (isClosed)
+		{
+			$(this).children("span")
+				.removeClass("ui-icon-circle-arrow-e")
+				.addClass("ui-icon-circle-arrow-s");
+				
+			details
+				.addClass("open")
+				.slideDown();
+		}
+	});
+	
+	/* -- Filter rig types by typed names. -------------------- */
+	$("#rig-types-filter").keyup(function() {
+		var filter = $(this).val();
+		
+		if (filter == "")
+		{
+			/* Filter cleared, show all rig types. */
+			$("#rig-types-list > .box-list-item").show();
+		}
+		else
+		{
+			filter = filter.toLowerCase();
+		
+			$("#rig-types-list > .box-list-item").each(function() {
+				var lcId = $(this).attr("id").split("_").join(" ").toLowerCase();
+				if (lcId.indexOf(filter) == 0)
+				{
+					$(this).show();
+				}
+				else
+				{
+					$(this).hide();
+				}
+			});
+		}
+	});
+	
+	/* -- Applies interaction styling. ----------------------- */
+	$(".saharaform input, .saharaform select, .saharaform textarea")
+		.focusin(formFocusIn)
+		.focusout(formFocusOut);
+});
+</script>
