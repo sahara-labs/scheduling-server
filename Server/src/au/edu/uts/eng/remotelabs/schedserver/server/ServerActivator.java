@@ -106,6 +106,7 @@ public class ServerActivator implements BundleActivator
 	    Properties velProps = new Properties();
 	    velProps.setProperty("resource.loader", "class");
 	    velProps.setProperty("class.resource.loader.class", "au.edu.uts.eng.remotelabs.schedserver.server.impl.BundleResourceLoader");
+	    velProps.setProperty("velocimacro.library=", ""); // Reset default macro library to stop ERROR log 
 	    Velocity.init(velProps);
         
         /* Start the server. */

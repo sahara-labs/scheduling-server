@@ -74,7 +74,7 @@ public class RigReleaser extends RigClientAsyncServiceCallbackHandler
         try
         {
             int setupTime = this.rig.getRigType().getTearDownTime();
-            boolean async = setupTime > 0 && setupTime > RigProviderActivator.getAsyncTimeout() - 10;
+            boolean async = setupTime > 0 && setupTime > RigAllocator.RIG_CLIENT_ASYNC_TIMEOUT - 10;
             
             RigClientAsyncService service = new RigClientAsyncService(this.rig.getName(), db);
             service.release(ses.getUserName(), async, this);

@@ -69,12 +69,12 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
  * <br />
  * The time out period may be configured with the <tt>Rig_Timeout_Period</tt>
  * which specifies the time out period in seconds. The default timeout period
- * is 300 seconds.
+ * is 180 seconds.
  */
 public class StatusTimeoutChecker implements Runnable
 {
     /** The default timeout in minutes. */
-    public static final int DEFAULT_TIMEOUT = 100;
+    public static final int DEFAULT_TIMEOUT = 180;
     
     /** The period a rig must provide a status update, otherwise the rig
      *  is put offline. */
@@ -90,8 +90,7 @@ public class StatusTimeoutChecker implements Runnable
     {
         this.logger = LoggerActivator.getLogger();
 
-        String tmStr = RigProviderActivator.getConfigurationProperty("Rig_Timeout_Period", 
-                String.valueOf(StatusTimeoutChecker.DEFAULT_TIMEOUT));
+        String tmStr = RigProviderActivator.getConfigurationProperty("Rig_Timeout_Period", String.valueOf(DEFAULT_TIMEOUT));
         try
         {
             this.timeout = Integer.parseInt(tmStr);

@@ -66,7 +66,6 @@ import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.util.CallbackReceiver;
 import org.apache.axis2.util.Utils;
 
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.RigClientAsyncServiceCallbackHandler;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.AbortBatchControl;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.AbortBatchControlResponse;
@@ -107,7 +106,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.SlaveR
 public class RigClientAsyncServiceImpl extends Stub
 {
 	/** The default async operation timeout in seconds. */
-    public static final int DEFAULT_ASYNC_TIMEOUT = 60;
+    public static final int ASYNC_TIMEOUT = 120;
 	
     protected AxisOperation[] _operations;
 
@@ -142,19 +141,7 @@ public class RigClientAsyncServiceImpl extends Stub
         configurationContext = this._serviceClient.getServiceContext().getConfigurationContext();
         this._serviceClient.getOptions().setTo(new EndpointReference(targetEndpoint));
         this._serviceClient.getOptions().setUseSeparateListener(useSeparateListener);
-        
-        
-        int timeout;
-        try
-	    {
-	        timeout = Integer.parseInt(RigProviderActivator.getConfigurationProperty("Rig_Client_Async_Timeout", 
-	        		String.valueOf(DEFAULT_ASYNC_TIMEOUT)));
-	    }
-	    catch (NumberFormatException ex)
-	    {
-	    	timeout = DEFAULT_ASYNC_TIMEOUT;
-	    }
-        this._serviceClient.getOptions().setTimeOutInMilliSeconds(timeout * 1000);
+        this._serviceClient.getOptions().setTimeOutInMilliSeconds(ASYNC_TIMEOUT * 1000);
     }
 
     public RigClientAsyncServiceImpl(final String targetEndpoint) throws AxisFault
