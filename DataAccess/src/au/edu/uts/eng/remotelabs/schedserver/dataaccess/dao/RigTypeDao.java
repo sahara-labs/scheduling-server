@@ -36,7 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import java.util.List;
+
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
@@ -69,6 +72,17 @@ public class RigTypeDao extends GenericDao<RigType>
     public RigTypeDao(Session ses)
     {
         super(ses, RigType.class);
+    }
+    
+    /**
+     * Returns the list of rig types ordered by name.
+     * 
+     * @return list of entities
+     */
+    @SuppressWarnings("unchecked")
+	public List<RigType> orderedList()
+    {
+        return this.session.createCriteria(this.clazz).addOrder(Order.asc("name")).list();
     }
     
     /**
