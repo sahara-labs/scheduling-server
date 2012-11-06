@@ -50,7 +50,7 @@ public class RigTypes extends AbstractRigProviderPage
 	@Override
 	public void setupView(HttpServletRequest req) 
 	{
-		this.context.put("types", new RigTypeDao(this.db).list());
+		this.context.put("types", new RigTypeDao(this.db).orderedList());
 	}
 
 	@Override

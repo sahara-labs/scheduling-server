@@ -1,3 +1,0 @@
-/**
- * Rig Provider Javascript.
- */
