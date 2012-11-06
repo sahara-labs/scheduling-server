@@ -1,6 +1,6 @@
 Bundle-Name: RigManagement
 Bundle-SymbolicName: SchedulingServer-RigManagement
-Bundle-Version: 1.0.0
+Bundle-Version: 2.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
