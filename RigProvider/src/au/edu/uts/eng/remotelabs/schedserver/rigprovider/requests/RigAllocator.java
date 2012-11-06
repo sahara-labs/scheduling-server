@@ -58,6 +58,10 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.Operat
  */
 public class RigAllocator extends RigClientAsyncServiceCallbackHandler
 {
+    /** The timeout in seconds before an asynchronous SOAP operation fails. */
+    public static final int RIG_CLIENT_ASYNC_TIMEOUT = 120;
+    
+    
     /** Session that is being allocated. */
     private Session session;
     
@@ -84,7 +88,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
         try
         {
             int setupTime = rig.getRigType().getSetUpTime();
-            boolean async = setupTime > 0 && setupTime > RigProviderActivator.getAsyncTimeout() - 10;
+            boolean async = setupTime > 0 && setupTime > RigAllocator.RIG_CLIENT_ASYNC_TIMEOUT - 10;
             
             RigClientAsyncService service = new RigClientAsyncService(rig.getName(), db);
             service.allocate(ses.getUserName(), async, this);
