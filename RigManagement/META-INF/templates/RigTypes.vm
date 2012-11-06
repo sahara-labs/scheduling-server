@@ -10,6 +10,18 @@
 	$arg.replaceAll(" ", "")
 #end
 
+## Add new rig type button
+<div id="rig-types-button-bar">
+	<ul>
+		<li><a id="new-rig-type">
+				<img src="/img/perm-add.png" alt="Add" />
+				<br />
+				Add <br />Rig Type
+		</a></li>
+	</ul>
+</div>
+
+## List of existing rig types
 <div id='rig-types' class='box'>
 	<div class="box-title">
 		<span id="secondclassicon" class="ui-icon ui-icon-gear"></span>
