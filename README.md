@@ -12,3 +12,6 @@ Scheduling Server
 The Scheduling Server is one component of the Sahara Remote Labs framework (along with the Web Interface and Rig Client). Provides the majority of Sahara’s core functionality. It is developed using Java and requires an SQL database (either MySQL or PostgreSQL).  It manages users, gives access to rigs (with queuing or reservations) and helps to administrate the rigs associated with the remote lab. Additional development may be needed for the Scheduling Server if the functionality of Sahara is to be extended.
 
 More information and installation files can be found at: http://sourceforge.net/projects/labshare-sahara/
+
+The Rig Client can be found at: https://github.com/mdiponio/sahara-labs-rig-client
+The Web Interface can be found at: https://github.com/mdiponio/sahara-labs-web-interface
