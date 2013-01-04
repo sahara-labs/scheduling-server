@@ -211,8 +211,8 @@ public class Project implements Serializable
         this.isOpen = isOpen;
     }
     
-    @Column(name = "auto_publish_collections")
-    public boolean autoPublishCollections()
+    @Column(name = "auto_publish_collections", nullable = false)
+    public boolean isAutoPublishCollections()
     {
         return this.autoPublishCollections;
     }
