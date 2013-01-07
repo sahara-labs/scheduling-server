@@ -51,8 +51,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * Project entity that stores information about research projects.
@@ -153,7 +151,6 @@ public class Project implements Serializable
         this.userClass = userClass;
     }
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "creation_time", nullable = false)
     public Date getCreationTime()
     {
@@ -165,7 +162,6 @@ public class Project implements Serializable
         this.creationTime = creationTime;
     }
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "last_update", nullable = false)
     public Date getLastUpdate()
     {
@@ -177,7 +173,6 @@ public class Project implements Serializable
         this.lastUpdate = lastUpdate;
     }
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "publish_time", nullable = true)
     public Date getPublishTime()
     {
