@@ -108,7 +108,7 @@ public class Collection implements Serializable
         this.project = project;
     }
 
-    @Column(name = "publish_name", nullable = true)
+    @Column(name = "publish_time", nullable = true)
     public Date getPublishTime()
     {
         return this.publishTime;
