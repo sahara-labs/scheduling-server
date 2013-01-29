@@ -51,6 +51,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTo
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RegisterLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RemoveLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.UpdateLocalRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFiles;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFilesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.CallbackRequestType;
@@ -342,4 +344,10 @@ public class RigProviderSOAPImpl implements RigProvider
         return response;
     }
 
+    @Override
+    public AddSessionFilesResponse addSessionFiles(AddSessionFiles sessionFiles)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

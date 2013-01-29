@@ -9,6 +9,11 @@
         <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProviderSOAPImpl</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        
+        <operation name="registerRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/registerRig</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/registerRigResponse</outputActionMapping>
+        </operation>
         <operation name="removeRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/removeRig</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/removeRigResponse</outputActionMapping>
@@ -17,9 +22,17 @@
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/updateRigStatus</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/updateRigStatusResponse</outputActionMapping>
         </operation>
-        <operation name="registerRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
-            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/registerRig</actionMapping>
-            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/registerRigResponse</outputActionMapping>
+        <operation name="allocateCallback" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/allocateCallback</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/allocateCallbackResponse</outputActionMapping>
+        </operation>
+        <operation name="releaseCallback" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/releaseCallback</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/releaseCallbackResponse</outputActionMapping>
+        </operation>
+        <operation name="addSessionFiles" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/addSessionFiles</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/LocalRigProvider/addSessionFilesResponse</outputActionMapping>
         </operation>
     </service>
 </serviceGroup>
