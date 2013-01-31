@@ -38,10 +38,17 @@ package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
 import java.util.Date;
 
+import javax.activation.DataHandler;
+
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SessionFile;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -66,6 +73,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallb
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.SessionFiles;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.StatusType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatusResponse;
@@ -386,7 +394,95 @@ public class RigProviderSOAPImpl implements RigProvider
     @Override
     public AddSessionFilesResponse addSessionFiles(AddSessionFiles sessionFiles)
     {
-        // TODO Auto-generated method stub
-        return null;
+        org.hibernate.Session db = null;
+        try
+        {
+            /* Request parameters. */
+            SessionFiles files = sessionFiles.getAddSessionFiles();                    
+            this.logger.debug("Received " + this.getClass().getSimpleName() + "#addSessionFiles with parameters name=" +
+                    files.getName() + ", user=" + files.getUser() + ", number of files=" + files.getFiles().length);
+            
+            /* Response parameters. */
+            AddSessionFilesResponse response = new AddSessionFilesResponse();
+            ProviderResponse status = new ProviderResponse();
+            response.setAddSessionFilesResponse(status);
+            
+            
+            db = DataAccessActivator.getNewSession();
+            
+            /* Load the session that generated the session file. This is the last 
+             * session the user was on the rig. */
+            Session session = (Session) db.createCriteria(Session.class)
+                            .createAlias("rig", "rig")
+                            .createAlias("user", "user")
+                            .add(Restrictions.eq("rig.name", files.getName()))
+                            .add(Restrictions.eq("user.name", files.getUser()))
+                            .addOrder(Order.desc("activityLastUpdated"))
+                            .setMaxResults(1)
+                            .uniqueResult();
+            
+            if (session == null)
+            {
+                this.logger.warn("Unable to store session files for user '" + files.getUser() + "' because their " +
+                		"session on rig '" + files.getName() + "' was not found.");
+                status.setSuccessful(false);
+                status.setErrorReason("Session not found");
+                return response;
+            }
+            
+            for (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.SessionFile file : files.getFiles())
+            {
+                SessionFile sf = new SessionFile();
+                sf.setSession(session);
+                sf.setName(file.getName());
+                sf.setPath(file.getPath());
+                sf.setTimestamp(file.getTimestamp().getTime());
+                sf.setTransferMethod(file.getTransfer().toString());
+                
+                if (SessionFile.ATTACHMENT_TRANSFER.equals(sf.getTransferMethod()))
+                {
+                    /* The file needs to be download. */
+                    DataHandler data = file.getFile();
+                    if (data == null)
+                    {
+                        this.logger.warn("Cannot save sessionf ile with name '" + sf.getName() + "' because it no " +
+                        		"attached file even though the transfer method is 'ATTACHMENT'.");
+                        continue;
+                    }
+                    
+                    // TODO The actual downloading of a file should be handled elsewhere
+                }
+                else if (SessionFile.FILESYSTEM_TRANSFER.equals(sf.getTransferMethod()))
+                {
+                    /* As the file is on a shared directory, it should already 
+                     * exist. */
+                    // FIXME There should be some form of verification here
+                    sf.setTransferred(true);
+                }
+                else if (SessionFile.WEBDAV_TRANSFER.equals(sf.getTransferMethod()))
+                {
+                    /* The file will be coming later. */
+                    sf.setTransferred(false);
+                }
+                else
+                {
+                    this.logger.warn("Cannot save session file with name '" + sf.getName() + "' because its transfer " +
+                    		"method '" + sf.getTransferMethod() + "' is unknown.");
+                    continue;
+                }
+                
+                /* Store the new session file record. */
+                db.beginTransaction();
+                db.persist(sf);
+                db.getTransaction().commit();
+            }
+            
+            status.setSuccessful(true);
+            return response;
+        }
+        finally
+        {
+            if (db != null) db.close();
+        }
     }
 }

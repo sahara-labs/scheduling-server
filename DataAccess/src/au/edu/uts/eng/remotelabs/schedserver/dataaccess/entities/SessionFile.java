@@ -56,6 +56,15 @@ import javax.persistence.Table;
 @Table(name = "session_file")
 public class SessionFile implements Serializable
 {
+    /** File transfer where the file is appended to a SOAP request. */
+    public static final String ATTACHMENT_TRANSFER = "ATTACHMENT";
+    
+    /** File transfer where the file is transferred using a shared file system. */
+    public static final String FILESYSTEM_TRANSFER = "FILESYSTEM";
+    
+    /** File transfer where the file is transferred using a WebDAV server. */
+    public static final String WEBDAV_TRANSFER = "WEBDAV";
+    
     /** Serializable class. */
     private static final long serialVersionUID = 5304061154397701117L;
     
@@ -73,6 +82,12 @@ public class SessionFile implements Serializable
     
     /** Creation timestamp. */
     private Date timestamp;
+    
+    /** The transfer method used to get the file to the Scheduling Server. */
+    private String transferMethod;
+    
+    /** Whether the file has been transferred. */
+    private boolean isTransferred;
 
     public SessionFile()
     {
@@ -126,6 +141,7 @@ public class SessionFile implements Serializable
         this.path = path;
     }
 
+    @Column(name = "timestamp", nullable = false)
     public Date getTimestamp()
     {
         return this.timestamp;
@@ -134,5 +150,27 @@ public class SessionFile implements Serializable
     public void setTimestamp(Date timestamp)
     {
         this.timestamp = timestamp;
+    }
+
+    @Column(name = "transfer", nullable = false, length = 10)
+    public String getTransferMethod()
+    {
+        return this.transferMethod;
+    }
+
+    public boolean isTransferred()
+    {
+        return this.isTransferred;
+    }
+
+    @Column(name = "is_transferred", nullable = false)
+    public void setTransferMethod(String transferMethod)
+    {
+        this.transferMethod = transferMethod;
+    }
+
+    public void setTransferred(boolean isTransferred)
+    {
+        this.isTransferred = isTransferred;
     }
 }
