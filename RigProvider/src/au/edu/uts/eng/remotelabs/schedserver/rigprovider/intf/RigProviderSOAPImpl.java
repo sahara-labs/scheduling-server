@@ -445,7 +445,7 @@ public class RigProviderSOAPImpl implements RigProvider
                     DataHandler data = file.getFile();
                     if (data == null)
                     {
-                        this.logger.warn("Cannot save sessionf ile with name '" + sf.getName() + "' because it no " +
+                        this.logger.warn("Cannot save session ile with name '" + sf.getName() + "' because it no " +
                         		"attached file even though the transfer method is 'ATTACHMENT'.");
                         continue;
                     }
