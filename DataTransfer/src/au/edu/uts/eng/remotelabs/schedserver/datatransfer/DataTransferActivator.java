@@ -34,29 +34,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 23th February 2009
+ * @dat 18th March 2013
  */
 
 package au.edu.uts.eng.remotelabs.schedserver.datatransfer;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.datatransfer.impl.DataFilesTransferImpl;
+import au.edu.uts.eng.remotelabs.schedserver.datatransfer.impl.RedboxIngestFiles;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 
 /**
  * Activator for the DataTransfer module.
  */
 public class DataTransferActivator implements BundleActivator 
 {
+    /** Service registration for the Data Files service. */
+    private ServiceRegistration<DataFilesService> dataFilesReg;
+    
+    /** Service registration for the session event listener to generate
+     *  metadata ingest files. */
+    private ServiceRegistration<SessionEventListener> sessionListenerReg;
+
+    /** Logger. */
+    private Logger logger;
+    
     @Override
-    public void start(BundleContext bundleContext) throws Exception 
+    public void start(BundleContext context) throws Exception 
     {
-        // TODO
+        this.logger.debug("Data transfer module starting up...");
+        
+        /* Register the data files service. */
+        this.dataFilesReg = context.registerService(DataFilesService.class, new DataFilesTransferImpl(), null);
+        
+        /* Register a session notifier which auto-generates ingest files. */
+        this.sessionListenerReg = context.registerService(SessionEventListener.class, new RedboxIngestFiles(), null);
 	}
 
     @Override
-	public void stop(BundleContext bundleContext) throws Exception 
+	public void stop(BundleContext context) throws Exception 
 	{
-		// TODO
+        this.logger.debug("Data transfer module shutting down...");
+        
+        /* Unregister bundle services. */
+        this.dataFilesReg.unregister();
+        this.sessionListenerReg.unregister();
+        
 	}
 
 }

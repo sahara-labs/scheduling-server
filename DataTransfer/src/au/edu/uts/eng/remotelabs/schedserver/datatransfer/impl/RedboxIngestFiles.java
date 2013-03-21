@@ -32,38 +32,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 18th March 2013
+ * @date 30th January 2013
  */
-package au.edu.uts.eng.remotelabs.schedserver.datatransfer;
+package au.edu.uts.eng.remotelabs.schedserver.datatransfer.impl;
 
-import javax.activation.DataHandler;
-
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SessionFile;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 
 /**
- * Receives a file that has been transferred to the Scheduling Server and 
- * processes it according to any registered data transfer notifiers. 
- * <br />
- * An example of a data transfer notifier is a notifier that generates 
- * a Redbox metadata ingest file for a session attached to a project that
- * autogenerates project metadata.
+ * 
  */
-public interface DataFilesService
+public class RedboxIngestFiles implements SessionEventListener
 {
-    /**
-     * Processes a received file. 
-     * 
-     * @param file file that was received
-     * @return true if file successfully processed
-     */
-    public boolean receiveFile(SessionFile file);
-    
-    /**
-     * Processes a received file.
-     * 
-     * @param file file that was received
-     * @param fileContents data handler containing received file contents
-     * @return true if file successfully processed
-     */
-    public boolean receiveFile(SessionFile file, DataHandler fileContents);
+
+    @Override
+    public void eventOccurred(SessionEvent event, Session session, org.hibernate.Session db)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
