@@ -97,6 +97,9 @@ public class User implements java.io.Serializable
     /** The users last name. */
     private String lastName;
     
+    /** A research identifier. */
+    private String researchIdentifier;
+    
     /** The email address of the user. */
     private String email;
     
@@ -193,6 +196,17 @@ public class User implements java.io.Serializable
     public void setLastName(String lastName)
     {
         this.lastName = lastName;
+    }
+
+    @Column(name = "research_identifier", nullable = true, length = 50)
+    public String getResearchIdentifier()
+    {
+        return this.researchIdentifier;
+    }
+
+    public void setResearchIdentifer(String researchIdentifer)
+    {
+        this.researchIdentifier = researchIdentifer;
     }
 
     @Column(name = "email", nullable = true, length = 100)
