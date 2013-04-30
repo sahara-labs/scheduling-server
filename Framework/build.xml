@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-                     ## Sahara Scheduling Server ##
+                    ## Sahara Scheduling Server ##
 
 Copyright (c) 2009, University of Technology, Sydney
 All rights reserved.
@@ -9,13 +9,13 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
     * Redistributions of source code must retain the above copyright notice, 
-      this list of conditions and the following disclaimer.
+    this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright 
-      notice, this list of conditions and the following disclaimer in the 
-      documentation and/or other materials provided with the distribution.
+    notice, this list of conditions and the following disclaimer in the 
+    documentation and/or other materials provided with the distribution.
     * Neither the name of the University of Technology, Sydney nor the names 
-      of its contributors may be used to endorse or promote products derived from 
-      this software without specific prior written permission.
+    of its contributors may be used to endorse or promote products derived from 
+    this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
@@ -33,67 +33,81 @@ Date: 28th December 2009
 
 -->
 <project name="Scheduling Server Framework" default="build" basedir=".">
-	
-	<import file="../common.xml" />
-	
-	<!-- Properties -->
-	<property name="component.name" value="Scheduling Server Framework" />
-	<property name="dist.dir" location="dist" />
-	
-	<!-- FIXME: Detected OSGI Jar filename. -->
-	<property name="osgi.lib" location="lib/org.eclipse.osgi_3.7.0.v20110613.jar" />
-	
-	<!-- Code compilation -->
-	<target name="build">
-		<mkdir dir="${build.classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" listfiles="yes">
-			<compilerarg line="-Xlint -Xlint:-path" />
-			<classpath refid="project.classpath" />
-		</javac>
-		<echo>The ${component.name} has been successfully built.</echo>
-	</target>
-	
-	<target name="bundle" depends="build">
-		   <!-- Not an OSGI bundle. -->
-	</target>
-	
-	<target name="dist" depends="build">
-		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/SchedulingServer.jar" manifest="MANIFEST.MF">
-			<!-- <zipfileset src="lib/org.apache.felix.framework-2.0.1.jar"/> -->
-			<zipfileset src="${osgi.lib}" dirmode="777" filemode="666">
-				<exclude name="**/*.RSA" />
-				<exclude name="**/*.SF" />
-				<exclude name="**/eclipse.inf" />
-				<exclude name="**/CDC-*.profile" />
-				<exclude name="**/J2SE-*.profile" />
-				<exclude name="**/about_files/*" />
-				<exclude name="**/.*" />
-				<exclude name="about.html" />
-			</zipfileset>
-		    <fileset dir="${build.classes.dir}"/>
-			<zipfileset dir="META-INF" prefix="META-INF" />
-		</jar>
-	</target>
-	
-	<!-- Clean previously built code. -->
-	<target name="clean">
-		<delete dir="${build.classes.dir}" verbose="no" />
-		<delete dir="${reports.bugs.xml.dir}" verbose="no" />
-		<delete dir="${reports.junit.html.dir}" verbose="no" />
-		<delete dir="${reports.junit.xml.dir}" verbose="no" />
-		<delete dir="${reports.pmd.xml.dir}" verbose="no" />
-		<delete verbose="no">
-			<fileset dir="${javadoc.dir}">
-				<exclude name="**/README" />
-				<include name="**/*" />
-				<exclude name="${javadoc.dir}" />
-			</fileset>
-		</delete>
-		<delete dir="${javadoc.dir}/resources" />
-		<delete dir="${javadoc.dir}/au" />
-		<delete dir="${reports.emma.dir}" verbose="no" />
-		<delete dir="${dist.dir}" />
-	</target>
+    
+    <import file="../common.xml" />
+    
+    <!-- Properties -->
+    <property name="component.name" value="Scheduling Server Framework" />
+    <property name="dist.dir" location="dist" />
+    <property name="osgi.lib" location="osgi/osgi.jar" />
+    
+    <!-- Code compilation -->
+    <target name="build">
+        <mkdir dir="${build.classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" listfiles="yes">
+            <compilerarg line="-Xlint -Xlint:-path" />
+            <classpath refid="project.classpath" />
+        </javac>
+        <echo>The ${component.name} has been successfully built.</echo>
+    </target>
+    
+    <target name="bundle" depends="build">
+        <!-- Not an OSGI bundle. -->
+    </target>
+    
+    <!-- Detection of the OSGi library to use as the packaged OSGi. -->
+    <target name="osgi-check">
+        <available property="osgi.exists" file="${osgi.lib}" />
+    </target>
+    
+    <target name="osgi-lib" depends="osgi-check" unless="osgi.exists">
+        <move tofile="osgi/osgi.jar">
+            <fileset dir="osgi">
+                <include name="**/*.jar" />
+                <exclude name="README" />
+            </fileset>
+        </move>
+        <available property="osgi.exists" file="${osgi.lib}" />
+        <fail unless="osgi.exists" message="The OSGi framework library was not detected in the 'Framework/osgi' directory."  />
+    </target>
+    
+    <target name="dist" depends="build,osgi-lib">
+        <mkdir dir="${dist.dir}" />
+        <jar destfile="${dist.dir}/SchedulingServer.jar" manifest="MANIFEST.MF">
+            <zipfileset src="${osgi.lib}" dirmode="777" filemode="666">
+                <exclude name="**/*.RSA" />
+                <exclude name="**/*.SF" />
+                <exclude name="**/eclipse.inf" />
+                <exclude name="**/CDC-*.profile" />
+                <exclude name="**/J2SE-*.profile" />
+                <exclude name="**/about_files/*" />
+                <exclude name="**/about_files" />
+                <exclude name="**/.*" />
+                <exclude name="about.html" />
+            </zipfileset>
+            <fileset dir="${build.classes.dir}"/>
+            <zipfileset dir="META-INF" prefix="META-INF" />
+        </jar>
+    </target>
+    
+    <!-- Clean previously built code. -->
+    <target name="clean">
+        <delete dir="${build.classes.dir}" verbose="no" />
+        <delete dir="${reports.bugs.xml.dir}" verbose="no" />
+        <delete dir="${reports.junit.html.dir}" verbose="no" />
+        <delete dir="${reports.junit.xml.dir}" verbose="no" />
+        <delete dir="${reports.pmd.xml.dir}" verbose="no" />
+        <delete verbose="no">
+            <fileset dir="${javadoc.dir}">
+                <exclude name="**/README" />
+                <include name="**/*" />
+                <exclude name="${javadoc.dir}" />
+            </fileset>
+        </delete>
+        <delete dir="${javadoc.dir}/resources" />
+        <delete dir="${javadoc.dir}/au" />
+        <delete dir="${reports.emma.dir}" verbose="no" />
+        <delete dir="${dist.dir}" />
+    </target>
 
 </project>

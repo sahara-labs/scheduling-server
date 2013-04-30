@@ -204,7 +204,7 @@ public class User implements java.io.Serializable
         return this.researchIdentifier;
     }
 
-    public void setResearchIdentifer(String researchIdentifer)
+    public void setResearchIdentifier(String researchIdentifer)
     {
         this.researchIdentifier = researchIdentifer;
     }

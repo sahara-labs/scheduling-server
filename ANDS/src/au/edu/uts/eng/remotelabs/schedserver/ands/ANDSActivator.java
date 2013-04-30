@@ -1,11 +1,9 @@
 /**
  * SAHARA Scheduling Server
  *
- * Schedules and assigns local laboratory rigs.
- *
  * @license See LICENSE in the top level directory for complete license terms.
  *
- * Copyright (c) 2013, University of Technology, Sydney
+ * Copyright (c) 2009, University of Technology, Sydney
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,24 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Michael Diponio (mdiponio)
- * @date 30th January 2013
+ * @dat 18th March 2013
  */
-package au.edu.uts.eng.remotelabs.schedserver.datatransfer.impl;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+package au.edu.uts.eng.remotelabs.schedserver.ands;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import au.edu.uts.eng.remotelabs.schedserver.ands.impl.RedboxIngestFilesGenerator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
 /**
- * 
+ * Activator for the ANDS module.
  */
-public class RedboxIngestFiles implements SessionEventListener
+public class ANDSActivator implements BundleActivator 
 {
+    /** Service registration for the session event listener to generate
+     *  metadata ingest files. */
+    private ServiceRegistration<SessionEventListener> sessionListenerReg;
+
+    /** Logger. */
+    private Logger logger;
+    
+    @Override
+    public void start(BundleContext context) throws Exception 
+    {
+        this.logger = LoggerActivator.getLogger();
+        this.logger.debug("ANDS module starting up...");
+
+        /* Register a session notifier which auto-generates ingest files. */
+        this.sessionListenerReg = context.registerService(SessionEventListener.class, new RedboxIngestFilesGenerator(), null);
+	}
 
     @Override
-    public void eventOccurred(SessionEvent event, Session session, org.hibernate.Session db)
-    {
-        // TODO Auto-generated method stub
+	public void stop(BundleContext context) throws Exception 
+	{
+        this.logger.debug("ANDS module shutting down...");
         
+        /* Unregister bundle services. */
+        this.sessionListenerReg.unregister();
+        
+	}
+    
+    /**
+     * Returns a configures property value.
+     * 
+     * @param prop property to obtain value of
+     * @param defValue default value of property
+     * @return 	property value
+     */
+    public static String getConfigurationProperty(String prop, String defValue)
+    {
+        
+        
+        return null;
     }
-
 }

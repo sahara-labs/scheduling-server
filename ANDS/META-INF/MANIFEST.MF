@@ -3,10 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Data Transfer
 Bundle-SymbolicName: SchedulingServer-DataTransfer
 Bundle-Version: 1.0.0.alpha
-Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.datatransfer.DataTransferActivator
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.ands.ANDSActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
+Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
+ au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener,
  au.edu.uts.eng.remotelabs.schedserver.logger,
  org.hibernate,
