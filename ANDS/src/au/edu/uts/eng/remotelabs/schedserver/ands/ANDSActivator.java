@@ -52,7 +52,7 @@ public class ANDSActivator implements BundleActivator
     /** Service registration for the session event listener to generate
      *  metadata ingest files. */
     private ServiceRegistration<SessionEventListener> sessionListenerReg;
-
+    
     /** Logger. */
     private Logger logger;
     
@@ -73,20 +73,5 @@ public class ANDSActivator implements BundleActivator
         
         /* Unregister bundle services. */
         this.sessionListenerReg.unregister();
-        
 	}
-    
-    /**
-     * Returns a configures property value.
-     * 
-     * @param prop property to obtain value of
-     * @param defValue default value of property
-     * @return 	property value
-     */
-    public static String getConfigurationProperty(String prop, String defValue)
-    {
-        
-        
-        return null;
-    }
 }

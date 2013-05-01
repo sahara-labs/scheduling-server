@@ -1,7 +1,7 @@
 Bundle-Name: ANDS
 Bundle-SymbolicName: SchedulingServer-ANDS
 Bundle-Version: 1.0.0.alpha
-Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.ands.DataTransferActivator
+Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.ands.ANDSActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 

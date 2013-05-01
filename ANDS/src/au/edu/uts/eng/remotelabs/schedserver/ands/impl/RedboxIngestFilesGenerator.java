@@ -39,8 +39,10 @@ package au.edu.uts.eng.remotelabs.schedserver.ands.impl;
 import java.util.Date;
 import java.util.HashSet;
 
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ConfigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ProjectDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Collection;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Project;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
@@ -52,6 +54,10 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class RedboxIngestFilesGenerator implements SessionEventListener
 {
+    /** The name of the database configuration property that stores the location
+     *  of the ANDS datastore. */
+    public static final String STORAGE_PROP_KEY = "ANDS_Storage_Mount";
+    
     /** Logger. */
     private Logger logger;
     
@@ -89,8 +95,16 @@ public class RedboxIngestFilesGenerator implements SessionEventListener
         db.persist(col);
         db.getTransaction().commit();
         
+        /* Get the storage location. */
+        Config property = new ConfigDao(db).getConfig(STORAGE_PROP_KEY);
+        if (property == null)
+        {
+            this.logger.warn("Unable to auto publish collection metadata for project '" + project.getActivity() + "'.");
+            return;
+        }
+        
         /* Generate the metadata. */
-        if (!new RedboxIngestFile().generateAndStore(col))
+        if (!new RedboxIngestFile().generateAndStore(col, property.getValue()))
         {
             this.logger.warn("Failed to generate metadata ingest data for project '" + project.getActivity() + "'. " +
             		"It will need to be manually created.");

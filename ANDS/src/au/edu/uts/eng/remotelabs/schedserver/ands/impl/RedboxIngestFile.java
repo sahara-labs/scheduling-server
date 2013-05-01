@@ -36,7 +36,9 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.ands.impl;
 
-import java.io.StringWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -74,9 +76,17 @@ public class RedboxIngestFile
         this.logger = LoggerActivator.getLogger(); 
     }
     
-    public boolean generateAndStore(Collection collection)
+    /**
+     * Generates and stores a RedBox ingest file in the specified location.
+     * 
+     * @param collection collection to generate ingest file from
+     * @param location location to store ingest file
+     * @return true if successfully generated and stored
+     */
+    public boolean generateAndStore(Collection collection, String location)
     {
         Document doc;
+        FileWriter fileWriter = null;
         
         try
         {
@@ -139,13 +149,20 @@ public class RedboxIngestFile
                     root.appendChild(e);
                 }
             }
+
+            File file = new File(location);
+            if (!(file.exists() && file.isDirectory()))
+            {
+                this.logger.error("Failed to generate Redbox metadata ingest file because the specified location does " +
+                		"not exist or is not a directory.");
+                return false;
+            }
+            fileWriter = new FileWriter(file);
             
+            /* Output the data. */
             Transformer trans = TransformerFactory.newInstance().newTransformer();
             trans.setParameter(OutputKeys.INDENT, "yes");
-            StringWriter writer = new StringWriter();
-            trans.transform(new DOMSource(doc), new StreamResult(writer));
-            
-            System.out.println(writer);
+            trans.transform(new DOMSource(doc), new StreamResult(fileWriter));
             
             return true;
         }
@@ -153,25 +170,37 @@ public class RedboxIngestFile
         {
             this.logger.error("Failed to generate Redbox metadata ingest file because a valid DOM implmentation does " +
                     "not exist. This should be built in to Java. Please check your Java installation.");
-            return false;
         }
         catch (TransformerConfigurationException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
+            this.logger.error("Failed to generated Redbox metadata ingest file because of a Java XML configuration " +
+            		"error. Please check your Java installation.");
         }
         catch (TransformerFactoryConfigurationError e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
+            this.logger.error("Failed to generated Redbox metadata ingest file because of a Java XML configuration " +
+            		"error. Please check your Java installation.");
         }
         catch (TransformerException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
+            this.logger.warn("Failed to generated Redbox metadata ingest file with error: " + e.getMessage());
         }
+        catch (IOException e)
+        {
+            this.logger.warn("Failed to write Redbox metadata ingest file with error: " + e.getMessage());
+        }
+        finally
+        {
+            try
+            {
+                if (fileWriter != null) fileWriter.close();
+            }
+            catch (IOException ex)
+            {
+                this.logger.warn("Failed to close Redbox metadata ingest gile with error: " + ex.getMessage());
+            }
+        }
+        
+        return false;
     }
 }
