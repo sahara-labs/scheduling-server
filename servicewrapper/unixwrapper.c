@@ -49,8 +49,8 @@ void *runSchedulingServer();
 void shutDownSchedulingServer();
 
 /* Setup functions. */
-void setupLogFiles(uid_t uid);
-int setupLogFile(const char *path, uid_t uid);
+void setupLogFiles(uid_t uid, gid_t gid);
+int setupLogFile(const char *path, uid_t uid, gid_t gid);
 
 
 /**
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
         }
         
         /* Make sure we can write to the log file(s). */
-        setupLogFiles(userRecord->pw_uid);
+        setupLogFiles(userRecord->pw_uid, userRecord->pw_gid);
 
         /* Drop root privileges. */
         if (setuid(userRecord->pw_uid) != 0)
@@ -167,9 +167,10 @@ void shutDownSchedulingServer()
  * have elevated privileges. This is to occur before we have dropped
  * privileges to the Scheduling Server system user.
  * 
- * @parm uid the uid 
+ * @param uid the users uid 
+ * @param gid the users gid
  */
-void setupLogFiles(uid_t uid)
+void setupLogFiles(uid_t uid, gid_t gid)
 {
     char buf[PATH_LEN], *line, *prop, logType[PATH_LEN], logFile[PATH_LEN];
     int logBackups, i;
@@ -212,7 +213,7 @@ void setupLogFiles(uid_t uid)
             return;
         }
         
-        if (!setupLogFile(logFile, uid)) return;
+        if (!setupLogFile(logFile, uid, gid)) return;
     }
     
     if (strcmp("RolledFile", logType) == 0 && logBackups > 0)
@@ -227,7 +228,7 @@ void setupLogFiles(uid_t uid)
         for (i = 1; i <= logBackups; i++)
         {
             snprintf(backupFile, PATH_LEN, "%s.%i", logFile, i);
-            if (!setupLogFile(backupFile, uid))
+            if (!setupLogFile(backupFile, uid, gid))
             {
                 logMessage("ERROR: Unable to setup backup log file %s\n.", backupFile);
                 perror("Unable to setup backup file");
@@ -243,10 +244,11 @@ void setupLogFiles(uid_t uid)
  * to the specified user.
  * 
  * @param logFile the path to the log file
- * @param uid the user identifier number
+ * @param uid the users uid
+ * @param gid the users gid
  * @return 1 if successful, 0 if failure
  */
-int setupLogFile(const char *logFile, uid_t uid)
+int setupLogFile(const char *logFile, uid_t uid, gid_t gid)
 {
     struct stat logStat;
     
@@ -279,7 +281,7 @@ int setupLogFile(const char *logFile, uid_t uid)
                         return 0;
                     }
                     
-                    if (chown(path, uid, 0))
+                    if (chown(path, uid, gid))
                     {
                         logMessage("ERROR: Failed to change ownership of parent directory %s.\n", path);
                         perror("Changing ownership failed");
@@ -302,7 +304,7 @@ int setupLogFile(const char *logFile, uid_t uid)
         fputc(' ', lf); /* Some dummy data. */
         fclose(lf);
         
-        if (chown(logFile, uid, 0))
+        if (chown(logFile, uid, gid))
         {
             logMessage("ERROR: Failed to change ownership of log file %s to uid %i with error code %i.\n", logFile, (int)uid, errno);
             perror("Failed to change ownership to log file");
@@ -312,7 +314,7 @@ int setupLogFile(const char *logFile, uid_t uid)
     else if (logStat.st_uid != uid)
     {
         /* Log file exists but is not owned by the Scheduling Server system user. */
-        if (chown(logFile, uid, logStat.st_gid))
+        if (chown(logFile, uid, gid))
         {
             logMessage("ERROR: Failed to change ownership of log file %s to uid %i with error code %i.\n", logFile, (int)uid, errno);
             perror("Failed to change ownership of log file");
