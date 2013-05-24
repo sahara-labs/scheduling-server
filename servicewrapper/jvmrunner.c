@@ -54,11 +54,11 @@ int loadConfig(void)
 
 	if ((config = fopen(CONFIG_FILE, "r")) == NULL)
 	{
-		logMessage("Unable to open configuration file %s.\n", CONFIG_FILE);
+		logMessage("ERROR: Unable to open configuration file %s.\n", CONFIG_FILE);
 		perror("Failed to open configuration file because");
 		return 0;
 	}
-	logMessage("Opened log file '%s' successfully.\n", CONFIG_FILE);
+	logMessage("NORMAL: Opened log file '%s' successfully.\n", CONFIG_FILE);
 
 	while (fgets(buf, 1023, config) != NULL)
 	{
@@ -74,7 +74,7 @@ int loadConfig(void)
 		while (*val != '=' && *val != '\0') val++;
 		if (*val == '\0')
 		{
-			logMessage("No value for prop %s.\n", line);
+			logMessage("NORMAL: No value for prop %s.\n", line);
 			continue;
 		}
 
@@ -83,8 +83,6 @@ int loadConfig(void)
 		trim(val);
 		val = val + 1;                               /* Equals sign. */
 		while (*val != '\0' && isspace(*val)) val++; /* Remaining left whitespace. */
-
-		logMessage("Prop=%s Value=%s\n", prop, val);
 
 		if (strcmp("JVM_Location", prop) == 0)
 		{
@@ -123,7 +121,7 @@ int loadConfig(void)
 		}
 		else
 		{
-			logMessage("Unknown property %s.\n", prop);
+			logMessage("WARNING: Unknown property %s.\n", prop);
 		}
 	}
 
@@ -156,7 +154,7 @@ int loadConfig(void)
 					regData[regDataSize + 1] = '\0';
 					jvmSo = (char *)malloc(strlen(regData));
 					strcpy(jvmSo, regData);
-					logMessage("The detected Java runtime library location is '%s'.\n", jvmSo);
+					logMessage("NORMAL: The detected Java runtime library location is '%s'.\n", jvmSo);
 					RegCloseKey(regKey);
 
 #ifdef _WIN64
@@ -175,12 +173,12 @@ int loadConfig(void)
 			}
 			else
 			{
-				logMessage("The version of Java you have installed (%.2f) is too old. It must be at least version 1.6.", atof(regData));
+				logMessage("ERROR: The version of Java you have installed (%.2f) is too old. It must be at least version 1.6.", atof(regData));
 			}
 		}
 		else
 		{
-			logMessage("Failed to read registry key (HKEY_LOCAL_MACHINE\\SOFTWARE\\JavaSoft\\Java Runtime Environment"
+			logMessage("ERROR: Failed to read registry key (HKEY_LOCAL_MACHINE\\SOFTWARE\\JavaSoft\\Java Runtime Environment"
 				"\\CurrentVersion). Error code %i.\n", err);
 		}
 	}
@@ -189,19 +187,19 @@ int loadConfig(void)
 	 * attempt to locate the JVM library. */
 	if (jvmSo == NULL && (jvmSo = getenv(JVM_SO_ENV)) == NULL)
 	{
-		logMessage("The JVM location was not found.\n");
+		logMessage("ERROR: The JVM location was not found.\n");
 		return 0;
 	}
 	else if ((jvmPath = fopen(jvmSo, "r")) == NULL)
 	{
-		logMessage("Unable to use configured JVM location '%s' as the file does not exist.\n", jvmSo);
+		logMessage("ERROR: Unable to use configured JVM location '%s' as the file does not exist.\n", jvmSo);
 		perror("Failed opening JVM library");
 		free(jvmSo);
 		jvmSo = NULL;
 		return 0;
 	}
 
-	logMessage("Using '%s' as the JVM to load.\n", jvmSo);
+	logMessage("NORMAL: Using '%s' as the JVM to load.\n", jvmSo);
 	fclose(jvmPath);
 	return 1;
 }
@@ -223,7 +221,7 @@ int generateClassPath(void)
 	memset(currentDir, 0, FILENAME_MAX);
 	if (getCWDir(currentDir, sizeof(currentDir)) == NULL)
 	{
-		logMessage("Unable to detect current working directory, failing...\n");
+		logMessage("ERROR: Unable to detect current working directory, failing...\n");
 		return 0;
 	}
 
@@ -243,7 +241,7 @@ int generateClassPath(void)
 		strcat(classPath, classPathExt);
 	}
 
-	logMessage("Class path argument for Java virtual machine is '%s'.\n", classPath);
+	logMessage("NORMAL: Class path argument for Java virtual machine is '%s'.\n", classPath);
 	return 1;
 }
 
@@ -302,7 +300,7 @@ int startJVM()
 		while ((pch = strstr(pch, "bin")) != NULL) bch = pch++;
 		if (bch == NULL)
 		{
-			logMessage("Unable to find 'bin/' directory in the Java installaion directory. This is "
+			logMessage("ERROR: Unable to find 'bin/' directory in the Java installaion directory. This is "
 				       "most likely a bug caused by a change in the Java installation layout. Please "
 					   "report this with the Java version in use.");
 			return 0;
@@ -313,12 +311,12 @@ int startJVM()
 		strncpy(javaBin, jvmSo, bch - jvmSo);
 		strcat(javaBin, "bin");
 
-		logMessage("Adding '%s' to the DLL search path.\n");
+		logMessage("NORMAL: Adding '%s' to the DLL search path.\n");
 		SetDllDirectory(javaBin);
 		hVM = LoadLibraryEx(jvmSo, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 		if (hVM == NULL)
 		{
-			logMessage("Unable to load library %s, error code %i.\n", jvmSo, GetLastError());
+			logMessage("ERROR: Unable to load library %s, error code %i.\n", jvmSo, GetLastError());
 			return 0;
 		}
 	}
@@ -327,7 +325,7 @@ int startJVM()
 	libVM = dlopen(jvmSo, RTLD_LAZY);
 	if (libVM == NULL)
 	{
-		logMessage("Unable to load library %s.\n", jvmSo);
+		logMessage("ERROR: Unable to load library %s.\n", jvmSo);
 		perror("Error loading JVM library");
 		return 0;
 	}
@@ -338,29 +336,29 @@ int startJVM()
 	res = createJVM(&vm, (void **)&env, &vm_args);
 	if (res < 0)
 	{
-		logMessage("Failed to create JVM, response code is %i.\n", res);
+		logMessage("ERROR: Failed to create JVM, response code is %i.\n", res);
 		return 0;
 	}
-	logMessage("Successfully created Java virtual machine.\n");
+	logMessage("NORMAL: Successfully created Java virtual machine.\n");
 
 	/* Find the start up class. */
 	if ((clazz = (*env)->FindClass(env, CLASS_NAME)) == NULL)
 	{
-		logMessage("Unable to find class %s.\n", CLASS_NAME);
+		logMessage("ERROR: Unable to find class %s.\n", CLASS_NAME);
 		return 0;
 	}
 
 	/* Find start up method and invoke it. */
 	if ((method = (*env)->GetStaticMethodID(env, clazz, STARTUP_METHOD, "()V")) == NULL)
 	{
-		logMessage("Unable to find method %s in class %s.\n", STARTUP_METHOD, CLASS_NAME);
+		logMessage("BUG: Unable to find method %s in class %s.\n", STARTUP_METHOD, CLASS_NAME);
 		return 0;
 	}
 	(*env)->CallStaticVoidMethod(env, clazz, method, NULL);
 
 	if ((*env)->ExceptionCheck(env))
 	{
-		logMessage("Exception thrown starting up rig client (called method %s on %s).\n", STARTUP_METHOD, CLASS_NAME);
+		logMessage("BUG: Exception thrown starting up rig client (called method %s on %s).\n", STARTUP_METHOD, CLASS_NAME);
 		return 0;
 	}
 
@@ -383,15 +381,15 @@ int shutDownJVM()
 	clazz = (*env)->FindClass(env, CLASS_NAME);
 	if ((method = (*env)->GetStaticMethodID(env, clazz, SHUTDOWN_METHOD, "()V")) == NULL)
 	{
-		logMessage("Unable to find shutdown method %s in class %s.\n", SHUTDOWN_METHOD, CLASS_NAME);
+		logMessage("BUG: Unable to find shutdown method %s in class %s.\n", SHUTDOWN_METHOD, CLASS_NAME);
 		return 0;
 	}
 
-	logMessage("Calling shutdown...\n");
+	logMessage("NORMAL: Calling shutdown...\n");
 	(*env)->CallStaticVoidMethod(env, clazz, method, NULL);
 	if ((*env)->ExceptionCheck(env))
 	{
-		logMessage("Exception thrown shutting down rig client.\n");
+		logMessage("BUG: Exception thrown shutting down rig client.\n");
 		return 0;
 	}
 
