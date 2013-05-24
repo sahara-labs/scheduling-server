@@ -81,20 +81,21 @@ int main(int argc, char *argv[])
     {
         if ((userRecord = getpwnam(user)) == NULL)
         {
-            logMessage("ERROR: Failed to find Scheduling Server system user: %s", user);
-            printf("Failed to find Scheduling Server system user: %s", user);
-            return 3;
-        }
-
-        if (setuid(userRecord->pw_uid) != 0)
-        {
-            logMessage("ERROR: Failed changed process ownership to user %s.", user);
-            perror("Failed to changed process ownership");
+            logMessage("ERROR: Failed to find Scheduling Server system user: %s\n", user);
+            printf("Failed to find Scheduling Server system user: %s\n", user);
             return 3;
         }
         
-        /* Make sure we can write to the log file. */
+        /* Make sure we can write to the log file(s). */
         setupLogFiles(userRecord->pw_uid);
+
+        /* Drop root privileges. */
+        if (setuid(userRecord->pw_uid) != 0)
+        {
+            logMessage("ERROR: Failed changed process ownership to user %s.\n", user);
+            perror("Failed to changed process ownership");
+            return 3;
+        }
     }
     else
     {
@@ -192,10 +193,10 @@ void setupLogFiles(uid_t uid)
         if (strlen(line) == 0 || line[0] == '#') continue;
         
         i = 0;
-        while (line[i] != '\0' && !isspace(line[i++]));
+        while (line[i] != '\0' && !isspace(line[i])) i++;
                
         if (strncmp("Logger_Type", line, i) == 0) strcpy(logType, trim(line + i));
-        else if (strncmp("Log_File_Name", line, i) == 0) strcpy(logFile, trim(line + 1));
+        else if (strncmp("Log_File_Name", line, i) == 0) strcpy(logFile, trim(line + i));
         else if (strncmp("Log_File_Backups", line, i) == 0) logBackups = atoi(trim(line + i));
     }
     
@@ -271,14 +272,14 @@ int setupLogFile(const char *logFile, uid_t uid)
                 if (stat(path, &dirStat))
                 {
                     /* Directory doesn't exist, so create it. */
-                    if (!mkdir(path, 700))
+                    if (mkdir(path, 0755))
                     {
                         logMessage("ERROR: Cannot create parent directory %s of log file %s\n", path, logFile);
                         perror("Creating parent directory failed");
                         return 0;
                     }
                     
-                    if (!chown(path, uid, 0))
+                    if (chown(path, uid, 0))
                     {
                         logMessage("ERROR: Failed to change ownership of parent directory %s.\n", path);
                         perror("Changing ownership failed");
@@ -301,7 +302,7 @@ int setupLogFile(const char *logFile, uid_t uid)
         fputc(' ', lf); /* Some dummy data. */
         fclose(lf);
         
-        if (!chown(logFile, uid, 0))
+        if (chown(logFile, uid, 0))
         {
             logMessage("ERROR: Failed to change ownership of log file %s to uid %i with error code %i.\n", logFile, (int)uid, errno);
             perror("Failed to change ownership to log file");
@@ -311,7 +312,7 @@ int setupLogFile(const char *logFile, uid_t uid)
     else if (logStat.st_uid != uid)
     {
         /* Log file exists but is not owned by the Scheduling Server system user. */
-        if (!chown(logFile, uid, logStat.st_gid))
+        if (chown(logFile, uid, logStat.st_gid))
         {
             logMessage("ERROR: Failed to change ownership of log file %s to uid %i with error code %i.\n", logFile, (int)uid, errno);
             perror("Failed to change ownership of log file");
