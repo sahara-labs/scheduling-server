@@ -107,7 +107,7 @@ public class ServerActivator implements BundleActivator
 	    velProps.setProperty("resource.loader", "class");
 	    velProps.setProperty("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.NullLogSystem");
 	    velProps.setProperty("class.resource.loader.class", "au.edu.uts.eng.remotelabs.schedserver.server.impl.BundleResourceLoader");
-	    velProps.setProperty("velocimacro.library=", ""); // Reset default macro library to stop ERROR log 
+	    velProps.setProperty("velocimacro.library", ""); // Reset default macro library to stop ERROR log 
 	    Velocity.init(velProps);
         
         /* Start the server. */
