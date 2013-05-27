@@ -166,7 +166,11 @@ start() {
         fi
         
         # Run the application
-        $INST_DIR/$EXEC &> /dev/null &
+        if [[ $SCHED_SERVER_SYSTEM_ERR == "true" ]] ; then
+            $INST_DIR/$EXEC &
+        else
+            $INST_DIR/$EXEC &> /dev/null &
+        fi
         popd &> /dev/null 
     else
         echo "Scheduling Server has already started. Process ID "$PID"."
