@@ -166,11 +166,16 @@ start() {
         fi
         
         # Run the application
-        if [[ $SCHED_SERVER_SYSTEM_ERR == "true" ]] ; then
-            $INST_DIR/$EXEC &
-        else
+        if [[ ! $SCHED_SERVER_FG ]] ; then
+            # Normal launch
             $INST_DIR/$EXEC &> /dev/null &
+        else
+            # Not sending the Scheduling Server to the background and not
+            # piping stdout and stderr to allow debugging of servicewrapper
+            # and system error logging in the application.
+            $INST_DIR/$EXEC 
         fi
+	    
         popd &> /dev/null 
     else
         echo "Scheduling Server has already started. Process ID "$PID"."
@@ -208,6 +213,12 @@ status() {
         echo "The Scheduling Server is not running."
     fi
 }
+
+if [[ $2 == "fg" ]] ; then
+    echo "Starting Scheduling Server in the foreground."	
+    echo "Use Ctrl-C to shutdown the Scheduling Server cleanly."
+    SCHED_SERVER_FG=true
+fi
 
 case "$1" in
 start)
