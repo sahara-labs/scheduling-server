@@ -157,7 +157,7 @@ public class RedboxIngestFile
                 		"not exist or is not a directory.");
                 return false;
             }
-            fileWriter = new FileWriter(file);
+            fileWriter = new FileWriter(new File(file, (System.currentTimeMillis() / 1000) + ".xml"));
             
             /* Output the data. */
             Transformer trans = TransformerFactory.newInstance().newTransformer();
