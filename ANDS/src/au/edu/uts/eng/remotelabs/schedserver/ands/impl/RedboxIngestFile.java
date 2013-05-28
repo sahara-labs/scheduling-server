@@ -39,6 +39,9 @@ package au.edu.uts.eng.remotelabs.schedserver.ands.impl;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -68,6 +71,9 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
  */
 public class RedboxIngestFile
 {
+    /** Format for collection date in metadata. */
+    public static final String COLLECTION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    
     /** Logger. */
     private final Logger logger;
     
@@ -121,6 +127,8 @@ public class RedboxIngestFile
             Date start = null;
             for (Session s : sessions) if (start == null || start.after(s.getAssignmentTime())) start = s.getAssignmentTime();
             e = doc.createElement("collectiondate");
+            e.setTextContent(new SimpleDateFormat(COLLECTION_DATE_FORMAT).format(start));
+            root.appendChild(e);
             
             /* Other metadata. */
             for (ProjectMetadata metadata : collection.getProject().getMetadata())
