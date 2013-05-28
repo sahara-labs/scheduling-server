@@ -38,11 +38,14 @@ package au.edu.uts.eng.remotelabs.schedserver.ands.impl;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ConfigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ProjectDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Collection;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Project;
@@ -56,7 +59,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 /**
  * Generates Redbox metadata ingest files for auto-publish sessions.
  */
-public class RedboxIngestFilesGenerator implements SessionEventListener, RigEventListener
+public class RedboxIngestFilesGenerator implements SessionEventListener, RigEventListener, Runnable
 {
     /** The name of the database configuration property that stores the location
      *  of the ANDS datastore. */
@@ -77,7 +80,11 @@ public class RedboxIngestFilesGenerator implements SessionEventListener, RigEven
     @Override
     public void eventOccurred(SessionEvent event, Session session, org.hibernate.Session db)
     {
-        /* We only care about sessions that are finished, */
+        /* Handles session events that are relevant to generating research
+         * metadata. Finishing a session checks tracks whether metadata
+         * should potentially be generated. Assigning a session is when 
+         * metadata is actually generated as there will be no more pending
+         * data file updates from the Rig Client. */
         switch (event)
         {
             case ASSIGNED:
@@ -104,14 +111,48 @@ public class RedboxIngestFilesGenerator implements SessionEventListener, RigEven
     @Override
     public void eventOccurred(RigStateChangeEvent event, Rig rig, org.hibernate.Session db)
     {
-        if ((event == RigStateChangeEvent.OFFLINE || event == RigStateChangeEvent.REMOVED) && 
-                this.pendingSessions.containsKey(rig))
+        /* Handles rig events that are relevant to generating rig metadata. If 
+         * a rig gets unregistered then it will no longer send session data and
+         * so we can safely generate metadata. */
+        if (event == RigStateChangeEvent.REMOVED && this.pendingSessions.containsKey(rig))
         {
             /* We will not receive any more files from this rig so we are free to generate
              * metadata. */
             this.logger.debug("Generating metadata for rig " + rig.getName() + " because it is going offline or " +
             		"being unregistered.");
             this.triggerGeneration(this.pendingSessions.remove(rig), db);
+        }
+    }
+    
+    @Override
+    public void run()
+    {
+        SessionDao dao = null;
+        Date earliestFin = new Date(System.currentTimeMillis() - 600000);
+        
+        /* If a rig is infrequently used, there may not be events that allow 
+         * metadata generation to proceed. This is periodically run and will
+         * generate metadata after 1 hour of the session finishing. */
+        try
+        {
+            Iterator<Entry<Rig, Session>> it = this.pendingSessions.entrySet().iterator();
+            while (it.hasNext())
+            {
+                Entry<Rig, Session> e = it.next();
+                if (e.getValue().getRemovalTime().before(earliestFin))
+                {
+                    /* Session finished greater than an hour ago, so we can generate 
+                     * metadata. */
+                    it.remove();
+                    if (dao == null) dao = new SessionDao();
+                    this.triggerGeneration(e.getValue(), dao.getSession());
+                }
+                
+            }
+        }
+        finally
+        {
+            if (dao != null) dao.closeSession();
         }
     }
 
@@ -162,4 +203,6 @@ public class RedboxIngestFilesGenerator implements SessionEventListener, RigEven
             		"It will need to be manually created.");
         }
     }
+
+    
 }

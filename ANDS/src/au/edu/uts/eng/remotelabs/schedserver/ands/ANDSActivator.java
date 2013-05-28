@@ -35,6 +35,9 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.ands;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -52,10 +55,13 @@ public class ANDSActivator implements BundleActivator
 {
     /** Service registration for the session event listener to generate
      *  metadata ingest files. */
-    private ServiceRegistration<SessionEventListener> sessionListenerReg;
+    private ServiceRegistration<SessionEventListener> mdSessionListenerReg;
     
     /** Rig event listener to generate metadata ingest files. */
-    private ServiceRegistration<RigEventListener> rigListenerReg;
+    private ServiceRegistration<RigEventListener> mdRigListenerReg;
+    
+    /** Runnable service to periodically generate metadata. */
+    private ServiceRegistration<Runnable> mdRunnableReg;
     
     /** Logger. */
     private Logger logger;
@@ -68,8 +74,12 @@ public class ANDSActivator implements BundleActivator
 
         /* Register a session notifier which auto-generates ingest files. */
         RedboxIngestFilesGenerator generator = new RedboxIngestFilesGenerator();
-        this.sessionListenerReg = context.registerService(SessionEventListener.class, generator, null);
-        this.rigListenerReg = context.registerService(RigEventListener.class, generator, null);
+        this.mdSessionListenerReg = context.registerService(SessionEventListener.class, generator, null);
+        this.mdRigListenerReg = context.registerService(RigEventListener.class, generator, null);
+        
+        Dictionary<String, String> props = new Hashtable<String, String>();
+        props.put("period", "600");
+        this.mdRunnableReg = context.registerService(Runnable.class, generator, props);
 	}
 
     @Override
@@ -78,7 +88,8 @@ public class ANDSActivator implements BundleActivator
         this.logger.debug("ANDS module shutting down...");
         
         /* Unregister bundle services. */
-        this.rigListenerReg.unregister();
-        this.sessionListenerReg.unregister();
+        this.mdRigListenerReg.unregister();
+        this.mdSessionListenerReg.unregister();
+        this.mdRunnableReg.unregister();
 	}
 }
