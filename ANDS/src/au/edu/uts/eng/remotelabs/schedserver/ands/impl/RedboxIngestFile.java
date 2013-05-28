@@ -39,9 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.ands.impl;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -165,7 +163,7 @@ public class RedboxIngestFile
                 		"not exist or is not a directory.");
                 return false;
             }
-            fileWriter = new FileWriter(new File(file, (System.currentTimeMillis() / 1000) + ".xml"));
+            fileWriter = new FileWriter(new File(file, "metadata-" + System.currentTimeMillis() + ".xml"));
             
             /* Output the data. */
             Transformer trans = TransformerFactory.newInstance().newTransformer();

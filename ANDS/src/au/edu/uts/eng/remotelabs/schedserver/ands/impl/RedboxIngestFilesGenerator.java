@@ -38,13 +38,17 @@ package au.edu.uts.eng.remotelabs.schedserver.ands.impl;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ConfigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ProjectDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Collection;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Project;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -52,11 +56,14 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 /**
  * Generates Redbox metadata ingest files for auto-publish sessions.
  */
-public class RedboxIngestFilesGenerator implements SessionEventListener
+public class RedboxIngestFilesGenerator implements SessionEventListener, RigEventListener
 {
     /** The name of the database configuration property that stores the location
      *  of the ANDS datastore. */
     public static final String STORAGE_PROP_KEY = "ANDS_Storage_Mount";
+    
+    /** List of pending sessions to generate metadata from. */
+    private final Map<Rig, Session> pendingSessions;
     
     /** Logger. */
     private Logger logger;
@@ -64,22 +71,67 @@ public class RedboxIngestFilesGenerator implements SessionEventListener
     public RedboxIngestFilesGenerator()
     {
         this.logger = LoggerActivator.getLogger();
+        this.pendingSessions = new ConcurrentHashMap<Rig, Session>();
     }
     
     @Override
     public void eventOccurred(SessionEvent event, Session session, org.hibernate.Session db)
     {
         /* We only care about sessions that are finished, */
-        if (event != SessionEvent.FINISHED) return;
+        switch (event)
+        {
+            case ASSIGNED:
+                if (this.pendingSessions.containsKey(session.getRig()))
+                {
+                    /* A rig will no longer transfer data files for the previous 
+                     * session if it starting a new session as the only transmits 
+                     * data files during session. */
+                    this.triggerGeneration(this.pendingSessions.remove(session.getRig()), db);
+                }
+                break;
+                
+            case FINISHED:
+                /* and we only care about sessions that have a project 
+                 * that is published and auto-publishes metadata. */
+                Project project = new ProjectDao(db).getProject(session);
+                if (project == null || project.getPublishTime() == null || !project.isAutoPublishCollections()) return; 
+                
+                this.pendingSessions.put(session.getRig(), session);
+                break;
+        }
+    }
+    
+    @Override
+    public void eventOccurred(RigStateChangeEvent event, Rig rig, org.hibernate.Session db)
+    {
+        if ((event == RigStateChangeEvent.OFFLINE || event == RigStateChangeEvent.REMOVED) && 
+                this.pendingSessions.containsKey(rig))
+        {
+            /* We will not receive any more files from this rig so we are free to generate
+             * metadata. */
+            this.logger.debug("Generating metadata for rig " + rig.getName() + " because it is going offline or " +
+            		"being unregistered.");
+            this.triggerGeneration(this.pendingSessions.remove(rig), db);
+        }
+    }
+
+    /**
+     * Trigger generation of data.
+     * 
+     * @param session session to generate metadata from
+     * @param db database session
+     */
+    private void triggerGeneration(Session session, org.hibernate.Session db)
+    {
+        /* We need to get a persistent instance of session. */
+        session = (Session)db.load(Session.class, session.getId());
         
-        /* and we only care about sessions that have a project 
-         * that is published and auto-publishes metadata. */
         Project project = new ProjectDao(db).getProject(session);
-        if (project == null || project.getPublishTime() == null || !project.isAutoPublishCollections()) return;
+        if (project == null) return;
         
         /* We only need to publish a collection if the session
          * produced files. */
-        if (session.getFiles().size() == 0) return;  
+        if (session.getFiles().size() == 0) return; 
         
         this.logger.info("Auto publishing collection metadata for project '" + project.getActivity() + "'.");
         

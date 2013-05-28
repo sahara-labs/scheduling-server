@@ -40,6 +40,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import au.edu.uts.eng.remotelabs.schedserver.ands.impl.RedboxIngestFilesGenerator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -53,6 +54,9 @@ public class ANDSActivator implements BundleActivator
      *  metadata ingest files. */
     private ServiceRegistration<SessionEventListener> sessionListenerReg;
     
+    /** Rig event listener to generate metadata ingest files. */
+    private ServiceRegistration<RigEventListener> rigListenerReg;
+    
     /** Logger. */
     private Logger logger;
     
@@ -63,7 +67,9 @@ public class ANDSActivator implements BundleActivator
         this.logger.debug("ANDS module starting up...");
 
         /* Register a session notifier which auto-generates ingest files. */
-        this.sessionListenerReg = context.registerService(SessionEventListener.class, new RedboxIngestFilesGenerator(), null);
+        RedboxIngestFilesGenerator generator = new RedboxIngestFilesGenerator();
+        this.sessionListenerReg = context.registerService(SessionEventListener.class, generator, null);
+        this.rigListenerReg = context.registerService(RigEventListener.class, generator, null);
 	}
 
     @Override
@@ -72,6 +78,7 @@ public class ANDSActivator implements BundleActivator
         this.logger.debug("ANDS module shutting down...");
         
         /* Unregister bundle services. */
+        this.rigListenerReg.unregister();
         this.sessionListenerReg.unregister();
 	}
 }
