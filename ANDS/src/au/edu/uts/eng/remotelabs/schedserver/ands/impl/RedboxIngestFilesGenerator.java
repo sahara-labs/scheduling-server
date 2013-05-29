@@ -100,7 +100,7 @@ public class RedboxIngestFilesGenerator implements SessionEventListener, RigEven
             case FINISHED:
                 /* and we only care about sessions that have a project 
                  * that is published and auto-publishes metadata. */
-                Project project = new ProjectDao(db).getProject(session);
+                Project project = new ProjectDao(db).getLatestProject(session, true);
                 if (project == null || project.getPublishTime() == null || !project.isAutoPublishCollections()) return; 
                 
                 this.pendingSessions.put(session.getRig(), session);
@@ -167,7 +167,7 @@ public class RedboxIngestFilesGenerator implements SessionEventListener, RigEven
         /* We need to get a persistent instance of session. */
         session = (Session)db.load(Session.class, session.getId());
         
-        Project project = new ProjectDao(db).getProject(session);
+        Project project = new ProjectDao(db).getLatestProject(session, true);
         if (project == null) return;
         
         /* We only need to publish a collection if the session

@@ -36,6 +36,7 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Project;
@@ -70,18 +71,21 @@ public class ProjectDao extends GenericDao<Project>
     }
     
     /**
-     * Gets the project that is related to the session. A project is attached to  
-     * a session through is user and user class that contains the permission
-     * that allowed the session to run.
+     * Gets the latest created project that is related to the specified 
+     * session. 
      * 
      * @param session session to find the session from
+     * @param autogenerate whether the project is set to auto generate 
      * @return project or null if no project exists
      */
-    public Project getProject(Session session)
+    public Project getLatestProject(Session session, boolean autogenerate)
     {
         return (Project) this.session.createCriteria(Project.class)
                 .add(Restrictions.eq("user", session.getUser()))                                   // User constraint
                 .add(Restrictions.eq("userClass", session.getResourcePermission().getUserClass())) // User class constraint
+                .add(Restrictions.eq("autoPublishCollections", autogenerate))
+                .addOrder(Order.desc("creationTime"))
+                .setMaxResults(1)
                 .uniqueResult();
     }
 }
