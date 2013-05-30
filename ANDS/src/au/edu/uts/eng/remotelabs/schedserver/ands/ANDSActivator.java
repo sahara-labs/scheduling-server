@@ -42,11 +42,14 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import au.edu.uts.eng.remotelabs.schedserver.ands.impl.ANDSServlet;
 import au.edu.uts.eng.remotelabs.schedserver.ands.impl.RedboxIngestFilesGenerator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
 /**
  * Activator for the ANDS module.
@@ -63,6 +66,9 @@ public class ANDSActivator implements BundleActivator
     /** Runnable service to periodically generate metadata. */
     private ServiceRegistration<Runnable> mdRunnableReg;
     
+    /** REST Interface. */
+    private ServiceRegistration<ServletContainerService> restReg;
+    
     /** Logger. */
     private Logger logger;
     
@@ -72,7 +78,7 @@ public class ANDSActivator implements BundleActivator
         this.logger = LoggerActivator.getLogger();
         this.logger.debug("ANDS module starting up...");
 
-        /* Register a session notifier which auto-generates ingest files. */
+        /* Register a notifiers and tasks to auto-generate metadata. */
         RedboxIngestFilesGenerator generator = new RedboxIngestFilesGenerator();
         this.mdSessionListenerReg = context.registerService(SessionEventListener.class, generator, null);
         this.mdRigListenerReg = context.registerService(RigEventListener.class, generator, null);
@@ -80,6 +86,10 @@ public class ANDSActivator implements BundleActivator
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put("period", "600");
         this.mdRunnableReg = context.registerService(Runnable.class, generator, props);
+        
+        ServletContainerService hosting = new ServletContainerService();
+        hosting.addServlet(new ServletContainer(new ANDSServlet()));
+        this.restReg = context.registerService(ServletContainerService.class, hosting, null);
 	}
 
     @Override
@@ -88,6 +98,7 @@ public class ANDSActivator implements BundleActivator
         this.logger.debug("ANDS module shutting down...");
         
         /* Unregister bundle services. */
+        this.restReg.unregister();
         this.mdRigListenerReg.unregister();
         this.mdSessionListenerReg.unregister();
         this.mdRunnableReg.unregister();
