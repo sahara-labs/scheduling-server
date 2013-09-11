@@ -16,3 +16,5 @@ Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  javax.servlet.http,
  org.hibernate,
  org.osgi.framework;version="1.4.0"
+Bundle-ClassPath: lib/com.eclipsesource.json-0.9.0-SNAPSHOT.jar,
+ .

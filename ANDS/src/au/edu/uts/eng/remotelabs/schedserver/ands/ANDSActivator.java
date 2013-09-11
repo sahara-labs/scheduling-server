@@ -56,6 +56,9 @@ import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
  */
 public class ANDSActivator implements BundleActivator 
 {
+    /** Bundle name. */
+    public static final String BUNDLE = "SchedulingServer-ANDS";
+    
     /** Service registration for the session event listener to generate
      *  metadata ingest files. */
     private ServiceRegistration<SessionEventListener> mdSessionListenerReg;

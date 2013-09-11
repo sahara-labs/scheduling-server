@@ -36,7 +36,10 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.ands.impl;
 
+import static au.edu.uts.eng.remotelabs.schedserver.ands.ANDSActivator.BUNDLE;
+
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,6 +47,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ConfigDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.GenericDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Collection;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
+import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
+import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+
+import com.eclipsesource.json.JsonObject;
 
 
 /**
@@ -53,6 +64,13 @@ public class ANDSServlet extends HttpServlet
 {
     /** Serializable class. */
     private static final long serialVersionUID = 194451676306707157L;
+    
+    private final Logger logger;
+    
+    public ANDSServlet()
+    {
+        this.logger = LoggerActivator.getLogger();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
@@ -64,15 +82,34 @@ public class ANDSServlet extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        String action = req.getRequestURI().substring(req.getRequestURI().lastIndexOf('/'));
+        /* The response will always be JSON. */
+        JsonObject json = new JsonObject();
+        resp.setContentType("application/json");
         
-        org.hibernate.Session db = DataAccessActivator.getNewSession();
+        org.hibernate.Session db = DataAccessActivator.getNewSession();        
         try
         {
-            if ("generate".equals(action))
+            /* Determine the action requested with follows the bundle route in 
+             * the request URI. */
+            String uri = req.getRequestURI();
+            String action = uri.substring(uri.indexOf(BUNDLE) + BUNDLE.length());            
+            if (action.indexOf('/', 1) > 0) action = action.substring(0, action.indexOf('/', 1));            
+            
+            if ("/publish".equals(action))
             {
-                this.serviceGenerate(req, resp, db);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                this.serviceGenerate(req, json, db);
             }
+            else
+            {
+                this.logger.warn("Unknown ANDS request action: " + action);
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                json.add("success", false);
+                json.add("reason", "Unknown action");
+            }
+            
+            /* Add the response. */
+            json.writeTo(resp.getWriter());
         }
         finally
         {
@@ -89,10 +126,68 @@ public class ANDSServlet extends HttpServlet
      * @throws ServletException 
      * @throws IOException
      */
-    private void serviceGenerate(HttpServletRequest req, HttpServletResponse resp, org.hibernate.Session db) 
+    private void serviceGenerate(HttpServletRequest req, JsonObject resp, org.hibernate.Session db) 
             throws ServletException, IOException
     {
+        /* Check inputs. */
+        long cID;
+        try
+        {
+            cID = Long.parseLong(req.getParameter("collection"));
+        }
+        catch (NumberFormatException ex)
+        {
+            this.logger.warn("Collection key not supplied or was not a valid record key.");
+            resp.set("success", false);
+            resp.set("reason", "Param not provided.");
+            return;
+        }
         
+        GenericDao<Collection> dao = new GenericDao<Collection>(db, Collection.class);
+        Collection collection = dao.get(cID);
+        if (collection == null)
+        {
+            this.logger.warn("Collection record not found from key " + cID + ".");
+            resp.set("success", false);
+            resp.set("reason", "Collection not found.");
+            return;
+        }
+        
+        /* A collection can only be published once. If it already been  
+         * published, the publish will be non-null. */
+        if (collection.getPublishTime() != null)
+        {
+            this.logger.warn("Cannot republish a collection that already has been published.");
+            resp.set("success", false);
+            resp.set("reason", "Collection already published.");
+            return;
+        }
+        
+        /* Looks like we can publish the collection so we will publish it. */
+        Config property = new ConfigDao(db).getConfig(RedboxIngestFilesGenerator.STORAGE_PROP_KEY);
+        if (property == null)
+        {
+            this.logger.warn("Unable to publish collection with key " + cID + " because the ingest file storage " +
+            		"location was not configured."); 
+            resp.set("success", false);
+            resp.set("reason", "Ingest location not configured.");
+            return;
+        }
+        
+        
+        this.logger.info("Manually publishing collection with key '" + cID + "'.");
+        if (new RedboxIngestFile().generateAndStore(collection, property.getValue()))
+        {
+            collection.setPublishTime(new Date());
+            dao.flush();
+            
+            resp.set("success", true);
+        }
+        else
+        {
+            resp.set("success", false);
+            resp.set("reason", "Ingest generation failed.");
+        }
     }
 }
 
