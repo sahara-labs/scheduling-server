@@ -39,7 +39,7 @@ Date: 18th March 2013
 	<property name="component.name" value="ANDS Module"/>
 	<property name="service.archive.name" value="ands.aar" />
 	
-    <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle">
+    <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,serverBundle">
         <buildProject/>
     </target>
 </project>
