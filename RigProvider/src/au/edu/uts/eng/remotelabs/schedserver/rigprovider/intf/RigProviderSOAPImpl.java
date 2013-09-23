@@ -38,10 +38,17 @@ package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
 import java.util.Date;
 
+import javax.activation.DataHandler;
+
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SessionFile;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -51,6 +58,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTo
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RegisterLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.RemoveLocalRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.UpdateLocalRigStatus;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFiles;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFilesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.CallbackRequestType;
@@ -64,6 +73,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.ReleaseCallb
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRig;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RemoveRigType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.SessionFiles;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.StatusType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatus;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.UpdateRigStatusResponse;
@@ -85,261 +95,394 @@ public class RigProviderSOAPImpl implements RigProvider
     @Override
     public RegisterRigResponse registerRig(RegisterRig request)
     {
-        /* Request parameters. */
-        RegisterRigType rig = request.getRegisterRig();
-        StatusType status = rig.getStatus();
+        RegisterLocalRig register = null;
         
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#registerRig with parameters: name=" + rig.getName()
-                + ", type=" + rig.getType() + ", capabilities=" + rig.getCapabilities() + 
-                ", contact URL=" + rig.getContactUrl().toString() + ", isOnline=" + 
-                status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + ".");
-        
-        /* Response parameters. */
-        RegisterRigResponse response = new RegisterRigResponse();
-        ProviderResponse providerResp = new ProviderResponse();
-        response.setRegisterRigResponse(providerResp);
-
-        RegisterLocalRig register = new RegisterLocalRig();
-        if (register.registerRig(rig.getName(), rig.getType(), rig.getCapabilities(), rig.getContactUrl().toString()))
+        try
         {
-            Rig registeredRig = register.getRegisteredRig();
+            /* Request parameters. */
+            RegisterRigType rig = request.getRegisterRig();
+            StatusType status = rig.getStatus();
             
-            /* Rig register so update its status. */
-            UpdateLocalRigStatus updater = new UpdateLocalRigStatus(register.getSession());
-            if (updater.updateStatus(registeredRig.getName(), status.getIsOnline(), status.getOfflineReason()))
+            this.logger.debug("Received " + this.getClass().getSimpleName() + "#registerRig with parameters: name=" + rig.getName()
+                    + ", type=" + rig.getType() + ", capabilities=" + rig.getCapabilities() + 
+                    ", contact URL=" + rig.getContactUrl().toString() + ", isOnline=" + 
+                    status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + ".");
+            
+            /* Response parameters. */
+            RegisterRigResponse response = new RegisterRigResponse();
+            ProviderResponse providerResp = new ProviderResponse();
+            response.setRegisterRigResponse(providerResp);
+    
+            register = new RegisterLocalRig();
+            if (register.registerRig(rig.getName(), rig.getType(), rig.getCapabilities(), rig.getContactUrl().toString()))
+            {
+                Rig registeredRig = register.getRegisteredRig();
+                
+                /* Rig register so update its status. */
+                UpdateLocalRigStatus updater = new UpdateLocalRigStatus(register.getSession());
+                if (updater.updateStatus(registeredRig.getName(), status.getIsOnline(), status.getOfflineReason()))
+                {
+                    providerResp.setSuccessful(true);
+                    providerResp.setIdentityToken(IdentityTokenRegister.getInstance().getIdentityToken(
+                            registeredRig.getName()));
+                }
+                else
+                {
+                    providerResp.setSuccessful(false);
+                    providerResp.setErrorReason(updater.getFailedReason());
+                }
+            }
+            else
+            {
+                providerResp.setSuccessful(false);
+                providerResp.setErrorReason(register.getFailedReason());
+            }
+            
+            return response;
+        }
+        finally 
+        {
+            if (register != null) register.getSession().close();
+        }
+    }
+
+    @Override
+    public RemoveRigResponse removeRig(RemoveRig request)
+    {
+        RemoveLocalRig remover = null;
+        
+        try
+        {
+            /* Request parameters. */
+            RemoveRigType remRig = request.getRemoveRig();
+            this.logger.debug("Received " + this.getClass().getSimpleName() + "#removeRig with parameters: name=" + remRig.getName() 
+                    + ", removal " + "reason=" + remRig.getRemovalReason() + '.');
+            
+            /* Response parameters. */
+            RemoveRigResponse response = new RemoveRigResponse();
+            ProviderResponse providerResp = new ProviderResponse();
+            response.setRemoveRigResponse(providerResp);
+            
+            remover = new RemoveLocalRig();
+            if (remover.removeRig(remRig.getName(), remRig.getRemovalReason()))
             {
                 providerResp.setSuccessful(true);
-                providerResp.setIdentityToken(IdentityTokenRegister.getInstance().getIdentityToken(
-                        registeredRig.getName()));
+            }
+            else
+            {
+                providerResp.setSuccessful(false);
+                providerResp.setErrorReason(remover.getFailedReason());
+            }
+            
+            return response;
+        }
+        finally
+        {
+            if (remover != null) remover.getSession().close();
+        }
+    }
+
+    @Override
+    public UpdateRigStatusResponse updateRigStatus(UpdateRigStatus request)
+    {
+        UpdateLocalRigStatus updater = null;
+        
+        try
+        {
+            /* Request parameters. */
+            UpdateRigType upRig = request.getUpdateRigStatus();
+            StatusType status = upRig.getStatus();
+            this.logger.debug("Received " + this.getClass().getSimpleName() + "#updateRigStatus with parameters: name=" + upRig.getName()
+                    + ", isOnline=" + status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + '.');
+            
+            /* Response parameters. */
+            UpdateRigStatusResponse response = new UpdateRigStatusResponse();
+            ProviderResponse providerResp = new ProviderResponse();
+            response.setUpdateRigStatusResponse(providerResp);
+            
+            updater = new UpdateLocalRigStatus();
+            if (updater.updateStatus(upRig.getName(), status.getIsOnline(), status.getOfflineReason()))
+            {
+                providerResp.setSuccessful(true);
+                providerResp.setIdentityToken(IdentityTokenRegister.getInstance().getOrGenerateIdentityToken(
+                        upRig.getName()));
             }
             else
             {
                 providerResp.setSuccessful(false);
                 providerResp.setErrorReason(updater.getFailedReason());
             }
+            
+            return response;
         }
-        else
+        finally
         {
-            providerResp.setSuccessful(false);
-            providerResp.setErrorReason(register.getFailedReason());
+            if (updater != null) updater.getSession().close();
         }
-        
-        register.getSession().close();
-        return response;
-    }
-
-    @Override
-    public RemoveRigResponse removeRig(RemoveRig request)
-    {
-        /* Request parameters. */
-        RemoveRigType remRig = request.getRemoveRig();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#removeRig with parameters: name=" + remRig.getName() 
-                + ", removal " + "reason=" + remRig.getRemovalReason() + '.');
-        
-        /* Response parameters. */
-        RemoveRigResponse response = new RemoveRigResponse();
-        ProviderResponse providerResp = new ProviderResponse();
-        response.setRemoveRigResponse(providerResp);
-        
-        RemoveLocalRig remover = new RemoveLocalRig();
-        if (remover.removeRig(remRig.getName(), remRig.getRemovalReason()))
-        {
-            providerResp.setSuccessful(true);
-        }
-        else
-        {
-            providerResp.setSuccessful(false);
-            providerResp.setErrorReason(remover.getFailedReason());
-        }
-        
-        remover.getSession().close();
-        return response;
-    }
-
-    @Override
-    public UpdateRigStatusResponse updateRigStatus(UpdateRigStatus request)
-    {
-        /* Request parameters. */
-        UpdateRigType upRig = request.getUpdateRigStatus();
-        StatusType status = upRig.getStatus();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#updateRigStatus with parameters: name=" + upRig.getName()
-                + ", isOnline=" + status.getIsOnline() + ", offlineReason=" + status.getOfflineReason() + '.');
-        
-        /* Response parameters. */
-        UpdateRigStatusResponse response = new UpdateRigStatusResponse();
-        ProviderResponse providerResp = new ProviderResponse();
-        response.setUpdateRigStatusResponse(providerResp);
-        
-        UpdateLocalRigStatus updater = new UpdateLocalRigStatus();
-        if (updater.updateStatus(upRig.getName(), status.getIsOnline(), status.getOfflineReason()))
-        {
-            providerResp.setSuccessful(true);
-            providerResp.setIdentityToken(IdentityTokenRegister.getInstance().getOrGenerateIdentityToken(
-                    upRig.getName()));
-        }
-        else
-        {
-            providerResp.setSuccessful(false);
-            providerResp.setErrorReason(updater.getFailedReason());
-        }
-        
-        updater.getSession().close();
-        return response;
     }
 
     @Override
     public AllocateCallbackResponse allocateCallback(AllocateCallback allocateCallback)
     {
-        CallbackRequestType request = allocateCallback.getAllocateCallback();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#allocateCallback with params: rigname=" + request.getName() + ", success=" +
-                request.getSuccess() + '.');
+        RigDao dao = null;
         
-        AllocateCallbackResponse response = new AllocateCallbackResponse();
-        ProviderResponse status = new ProviderResponse();
-        response.setAllocateCallbackResponse(status);
-        
-        /* Load session from rig. */
-        RigDao dao = new RigDao();
-        Rig rig = dao.findByName(request.getName());
-        Session ses = null;
-        if (rig == null)
+        try
         {
-            /* If the rig wasn't found, something is seriously wrong. */
-            this.logger.error("Received allocate callback for rig '" + request.getName() + "' that doesn't exist.");
-            status.setSuccessful(false);
-        }
-        else if ((ses = rig.getSession()) == null)
-        {
-            this.logger.warn("Received allocate callback for session that doesn't exist. Rig who sent callback " +
-            		"response was '" + request.getName() + "'.");
-            status.setSuccessful(false);
+            CallbackRequestType request = allocateCallback.getAllocateCallback();
+            this.logger.debug("Received " + this.getClass().getSimpleName() + "#allocateCallback with params: rigname=" + request.getName() + ", success=" +
+                    request.getSuccess() + '.');
             
-            /* Make sure the rig is no marked as in session. */
-            rig.setInSession(false);
-            rig.setLastUpdateTimestamp(new Date());
-        }
-        else if (request.getSuccess())
-        {
-           /* If the response from allocate is successful, put the session to ready. */
-           ses.setReady(true);
-           status.setSuccessful(true);
-           rig.setLastUpdateTimestamp(new Date());
-           
-           RigProviderActivator.notifySessionEvent(SessionEvent.READY, ses, dao.getSession());
-        }
-        else
-        {
-            ErrorType err = request.getError();
-            this.logger.error("Received allocate response for " + ses.getUserNamespace() + ':' + 
-                    ses.getUserName() + ", allocation not successful. Error reason is '" + err.getReason() + "'.");
+            AllocateCallbackResponse response = new AllocateCallbackResponse();
+            ProviderResponse status = new ProviderResponse();
+            response.setAllocateCallbackResponse(status);
             
-            /* Allocation failed so end the session and take the rig offline depending on error. */
-            ses.setActive(false);
-            ses.setReady(false);
-            ses.setRemovalReason("Allocation failure with reason: " + err.getReason());
-            ses.setRemovalTime(new Date());
-            
-            RigProviderActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
-        
-            if (err.getCode() == 4) // Error code 4 is an existing session exists
+            /* Load session from rig. */
+            dao = new RigDao();
+            Rig rig = dao.findByName(request.getName());
+            Session ses = null;
+            if (rig == null)
             {
-                this.logger.error("Allocation failure reason was caused by an existing session, so not putting rig offline " +
-                        "because a session already has it.");
+                /* If the rig wasn't found, something is seriously wrong. */
+                this.logger.error("Received allocate callback for rig '" + request.getName() + "' that doesn't exist.");
+                status.setSuccessful(false);
+            }
+            else if ((ses = rig.getSession()) == null)
+            {
+                this.logger.warn("Received allocate callback for session that doesn't exist. Rig who sent callback " +
+                		"response was '" + request.getName() + "'.");
+                status.setSuccessful(false);
+                
+                /* Make sure the rig is no marked as in session. */
+                rig.setInSession(false);
+                rig.setLastUpdateTimestamp(new Date());
+            }
+            else if (request.getSuccess())
+            {
+               /* If the response from allocate is successful, put the session to ready. */
+               ses.setReady(true);
+               status.setSuccessful(true);
+               rig.setLastUpdateTimestamp(new Date());
+               
+               RigProviderActivator.notifySessionEvent(SessionEvent.READY, ses, dao.getSession());
             }
             else
             {
-                rig.setInSession(false);
-                rig.setOnline(false);
-                rig.setOfflineReason("Allocation failed with reason: " + err.getReason());
-                rig.setSession(null);
+                ErrorType err = request.getError();
+                this.logger.error("Received allocate response for " + ses.getUserNamespace() + ':' + 
+                        ses.getUserName() + ", allocation not successful. Error reason is '" + err.getReason() + "'.");
                 
-                /* Log the rig going offline. */
-                RigLogDao logDao = new RigLogDao(dao.getSession());
-                logDao.addOfflineLog(rig, "Allocation failed with reason: " + err.getReason() + "");
+                /* Allocation failed so end the session and take the rig offline depending on error. */
+                ses.setActive(false);
+                ses.setReady(false);
+                ses.setRemovalReason("Allocation failure with reason: " + err.getReason());
+                ses.setRemovalTime(new Date());
                 
-                RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
+                RigProviderActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
+            
+                if (err.getCode() == 4) // Error code 4 is an existing session exists
+                {
+                    this.logger.error("Allocation failure reason was caused by an existing session, so not putting rig offline " +
+                            "because a session already has it.");
+                }
+                else
+                {
+                    rig.setInSession(false);
+                    rig.setOnline(false);
+                    rig.setOfflineReason("Allocation failed with reason: " + err.getReason());
+                    rig.setSession(null);
+                    
+                    /* Log the rig going offline. */
+                    RigLogDao logDao = new RigLogDao(dao.getSession());
+                    logDao.addOfflineLog(rig, "Allocation failed with reason: " + err.getReason() + "");
+                    
+                    RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
+                }
+                
+                rig.setLastUpdateTimestamp(new Date());
+                
+                /* Whilst allocation was not successful, the process was clean. */
+                status.setSuccessful(true);
             }
-            
-            rig.setLastUpdateTimestamp(new Date());
-            
-            /* Whilst allocation was not successful, the process was clean. */
-            status.setSuccessful(true);
+
+            dao.flush();
+            return response;
         }
-        
-        dao.flush();
-        dao.closeSession();
-        return response;
+        finally
+        {
+            if (dao != null) dao.closeSession();
+        }
     }
 
     @Override
     public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback)
     {
-        CallbackRequestType request = releaseCallback.getReleaseCallback();
-        this.logger.debug("Received " + this.getClass().getSimpleName() + "#releaseCallback with params: rigname=" + 
-                request.getName() + ", success=" + request.getSuccess());
-
-        ReleaseCallbackResponse response = new ReleaseCallbackResponse();
-        ProviderResponse status = new ProviderResponse();
-        response.setReleaseCallbackResponse(status);
-        
-        /* Load rig information. */
-        RigDao dao = new RigDao();
-        Rig rig = dao.findByName(request.getName());
-        if (rig == null)
+        RigDao dao = null;
+        try
         {
-            /* If the rig wasn't found something is seriously wrong. */
-            this.logger.error("Received release notification from rig '" + request.getName() + "' which does not " +
-            		"exist.");
-            status.setSuccessful(false);
-        }
-        else if (request.getSuccess())
-        {
-            status.setSuccessful(true);
+            CallbackRequestType request = releaseCallback.getReleaseCallback();
+            this.logger.debug("Received " + this.getClass().getSimpleName() + "#releaseCallback with params: rigname=" + 
+                    request.getName() + ", success=" + request.getSuccess());
+    
+            ReleaseCallbackResponse response = new ReleaseCallbackResponse();
+            ProviderResponse status = new ProviderResponse();
+            response.setReleaseCallbackResponse(status);
             
-            /* Release was successful so provide the rig back to the queue. */
-            this.logger.debug("Release of rig '" + request.getName() + "' successful, going to requeue rig.");
-            rig.setInSession(false);
-            rig.setSession(null);
-            rig.setLastUpdateTimestamp(new Date());
-            dao.flush();
-            
-            /* Provide notification a new rig is free. */
-            RigProviderActivator.notifyRigEvent(RigStateChangeEvent.ONLINE, rig, dao.getSession());
-        }
-        else
-        {
-            status.setSuccessful(true);
-            
-            /* Allocation failed so take the rig off line. */
-            rig.setInSession(false);
-            rig.setSession(null);
-            rig.setLastUpdateTimestamp(new Date());
-            rig.setOnline(false);
-            
-            RigLogDao logDao = new RigLogDao(dao.getSession());
-            
-            ErrorType err = request.getError();
-            if (err == null)
+            /* Load rig information. */
+            dao = new RigDao();
+            Rig rig = dao.findByName(request.getName());
+            if (rig == null)
             {
-                this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed.");
-                rig.setOfflineReason("Release failed.");
-                logDao.addOfflineLog(rig, "Release failed.");
+                /* If the rig wasn't found something is seriously wrong. */
+                this.logger.error("Received release notification from rig '" + request.getName() + "' which does not " +
+                		"exist.");
+                status.setSuccessful(false);
+            }
+            else if (request.getSuccess())
+            {
+                status.setSuccessful(true);
+                
+                /* Release was successful so provide the rig back to the queue. */
+                this.logger.debug("Release of rig '" + request.getName() + "' successful, going to requeue rig.");
+                rig.setInSession(false);
+                rig.setSession(null);
+                rig.setLastUpdateTimestamp(new Date());
+                dao.flush();
+                
+                /* Provide notification a new rig is free. */
+                RigProviderActivator.notifyRigEvent(RigStateChangeEvent.ONLINE, rig, dao.getSession());
             }
             else
             {
-                this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed with reason '" +
-                        err.getReason() + "'.");
-                rig.setOfflineReason("Release failed with reason: " + err.getReason());
-                logDao.addOfflineLog(rig, "Release failed with reason: " + err.getReason());
+                status.setSuccessful(true);
+                
+                /* Allocation failed so take the rig off line. */
+                rig.setInSession(false);
+                rig.setSession(null);
+                rig.setLastUpdateTimestamp(new Date());
+                rig.setOnline(false);
+                
+                RigLogDao logDao = new RigLogDao(dao.getSession());
+                
+                ErrorType err = request.getError();
+                if (err == null)
+                {
+                    this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed.");
+                    rig.setOfflineReason("Release failed.");
+                    logDao.addOfflineLog(rig, "Release failed.");
+                }
+                else
+                {
+                    this.logger.warn("Taking rig '" + request.getName() + "' offline because release failed with reason '" +
+                            err.getReason() + "'.");
+                    rig.setOfflineReason("Release failed with reason: " + err.getReason());
+                    logDao.addOfflineLog(rig, "Release failed with reason: " + err.getReason());
+                }
+                
+                /* Provide notification a new rig is offline. */
+                RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
             }
             
-            /* Provide notification a new rig is offline. */
-            RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
+            dao.flush();
+            return response;
         }
-        
-        dao.flush();
-        dao.closeSession();
-        return response;
+        finally
+        {
+            if (dao != null) dao.closeSession();
+        }
     }
 
+    @Override
+    public AddSessionFilesResponse addSessionFiles(AddSessionFiles sessionFiles)
+    {
+        org.hibernate.Session db = null;
+        try
+        {
+            /* Request parameters. */
+            SessionFiles files = sessionFiles.getAddSessionFiles();                    
+            this.logger.debug("Received " + this.getClass().getSimpleName() + "#addSessionFiles with parameters name=" +
+                    files.getName() + ", user=" + files.getUser() + ", number of files=" + files.getFiles().length);
+            
+            /* Response parameters. */
+            AddSessionFilesResponse response = new AddSessionFilesResponse();
+            ProviderResponse status = new ProviderResponse();
+            response.setAddSessionFilesResponse(status);
+            
+            
+            db = DataAccessActivator.getNewSession();
+            
+            /* Load the session that generated the session file. This is the last 
+             * session the user was on the rig. */
+            Session session = (Session) db.createCriteria(Session.class)
+                            .createAlias("rig", "rig")
+                            .createAlias("user", "user")
+                            .add(Restrictions.eq("rig.name", files.getName()))
+                            .add(Restrictions.eq("user.name", files.getUser()))
+                            .addOrder(Order.desc("activityLastUpdated"))
+                            .setMaxResults(1)
+                            .uniqueResult();
+            
+            if (session == null)
+            {
+                this.logger.warn("Unable to store session files for user '" + files.getUser() + "' because their " +
+                		"session on rig '" + files.getName() + "' was not found.");
+                status.setSuccessful(false);
+                status.setErrorReason("Session not found");
+                return response;
+            }
+            
+            for (au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.SessionFile file : files.getFiles())
+            {
+                SessionFile sf = new SessionFile();
+                sf.setSession(session);
+                sf.setName(file.getName());
+                sf.setPath(file.getPath());
+                sf.setTimestamp(file.getTimestamp().getTime());
+                sf.setTransferMethod(file.getTransfer().toString());
+                
+                if (SessionFile.ATTACHMENT_TRANSFER.equals(sf.getTransferMethod()))
+                {
+                    /* The file needs to be download. */
+                    DataHandler data = file.getFile();
+                    if (data == null)
+                    {
+                        this.logger.warn("Cannot save session ile with name '" + sf.getName() + "' because it no " +
+                        		"attached file even though the transfer method is 'ATTACHMENT'.");
+                        continue;
+                    }
+                    
+                    // TODO The actual downloading of a file should be handled elsewhere
+                }
+                else if (SessionFile.FILESYSTEM_TRANSFER.equals(sf.getTransferMethod()))
+                {
+                    /* As the file is on a shared directory, it should already 
+                     * exist. */
+                    // FIXME There should be some form of verification here
+                    sf.setTransferred(true);
+                }
+                else if (SessionFile.WEBDAV_TRANSFER.equals(sf.getTransferMethod()))
+                {
+                    /* The file will be coming later. */
+                    sf.setTransferred(false);
+                }
+                else
+                {
+                    this.logger.warn("Cannot save session file with name '" + sf.getName() + "' because its transfer " +
+                    		"method '" + sf.getTransferMethod() + "' is unknown.");
+                    continue;
+                }
+                
+                /* Store the new session file record. */
+                db.beginTransaction();
+                db.persist(sf);
+                db.getTransaction().commit();
+            }
+            
+            status.setSuccessful(true);
+            return response;
+        }
+        finally
+        {
+            if (db != null) db.close();
+        }
+    }
 }

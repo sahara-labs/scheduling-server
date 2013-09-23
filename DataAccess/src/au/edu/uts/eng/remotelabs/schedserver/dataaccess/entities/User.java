@@ -97,13 +97,26 @@ public class User implements java.io.Serializable
     /** The users last name. */
     private String lastName;
     
+    /** A research identifier. */
+    private String researchIdentifier;
+    
     /** The email address of the user. */
     private String email;
     
+    /** Locks applied to this class. */
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
+    
+    /** The academic permission this user has. */
     private Set<AcademicPermission> academicPermissions = new HashSet<AcademicPermission>(0);
+    
+    /** Associations this class has with user classes. */
     private Set<UserAssociation> userAssociations = new HashSet<UserAssociation>(0);
+    
+    /** The sessions this user has performed. */
     private Set<Session> sessions = new HashSet<Session>(0);
+    
+    /** The projects this user has created. */
+    private Set<Project> projects = new HashSet<Project>(0);
 
     public User()
     {
@@ -115,21 +128,6 @@ public class User implements java.io.Serializable
         this.name = name;
         this.namespace = namespace;
         this.persona = persona;
-    }
-
-    public User(final String name, final String namespace,
-            final String persona, final Set<UserLock> userLocks,
-            final Set<AcademicPermission> academicPermissions,
-            final Set<UserAssociation> userAssociations,
-            final Set<Session> sessions)
-    {
-        this.name = name;
-        this.namespace = namespace;
-        this.persona = persona;
-        this.userLocks = userLocks;
-        this.academicPermissions = academicPermissions;
-        this.userAssociations = userAssociations;
-        this.sessions = sessions;
     }
 
     @Id
@@ -200,6 +198,17 @@ public class User implements java.io.Serializable
         this.lastName = lastName;
     }
 
+    @Column(name = "research_identifier", nullable = true, length = 50)
+    public String getResearchIdentifier()
+    {
+        return this.researchIdentifier;
+    }
+
+    public void setResearchIdentifier(String researchIdentifer)
+    {
+        this.researchIdentifier = researchIdentifer;
+    }
+
     @Column(name = "email", nullable = true, length = 100)
     public String getEmail()
     {
@@ -255,6 +264,23 @@ public class User implements java.io.Serializable
         this.sessions = sessions;
     }
     
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<Project> getProjects()
+    {
+        return this.projects;
+    }
+
+    public void setProjects(Set<Project> projects)
+    {
+        this.projects = projects;
+    }
+    
+    /**
+     * Utility method to provide the qualified name of this user in the form
+     * &lt;namespace&gt;:&lt;name&gt;
+     * 
+     * @return qualified name
+     */
     public String qName()
     {
         return this.namespace + ':' + this.name;

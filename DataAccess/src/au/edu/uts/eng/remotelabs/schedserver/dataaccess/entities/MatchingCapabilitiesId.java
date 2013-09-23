@@ -63,8 +63,7 @@ public class MatchingCapabilitiesId implements java.io.Serializable
         /* Bean style constructor. */
     }
 
-    public MatchingCapabilitiesId(final long rigCapabilities,
-            final long requestCapabilities)
+    public MatchingCapabilitiesId(final long rigCapabilities, final long requestCapabilities)
     {
         this.rigCapabilities = rigCapabilities;
         this.requestCapabilities = requestCapabilities;
@@ -95,11 +94,11 @@ public class MatchingCapabilitiesId implements java.io.Serializable
     @Override
     public boolean equals(final Object other)
     {
-        if ((this == other))
+        if (this == other)
         {
             return true;
         }
-        if ((other == null))
+        if (other == null)
         {
             return false;
         }
@@ -122,5 +121,4 @@ public class MatchingCapabilitiesId implements java.io.Serializable
         result = 37 * result + (int) this.getRequestCapabilities();
         return result;
     }
-
 }

@@ -36,9 +36,6 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.TestCase;
 
 import org.hibernate.Session;
@@ -97,34 +94,19 @@ public class ConfigDaoTester extends TestCase
     public void testGetConfig()
     {
         Config p1 = this.dao.persist(new Config("conf_test_key", "val1"));
-        Config p2 = this.dao.persist(new Config("conf_test_key", "val2"));
-        Config p3 = this.dao.persist(new Config("conf_test_key", "val3"));
-        
-        List<Config> conf = this.dao.getConfig("conf_test_key");
-        assertEquals(3, conf.size());
-        System.out.println(conf);
-        
-        List<String> str = new ArrayList<String>();
-        for (Config c : conf)
-        {
-            str.add(c.getValue());
-        }
-        
-        assertTrue(str.contains("val1"));
-        assertTrue(str.contains("val2"));
-        assertTrue(str.contains("val3"));
- 
+      
+        Config conf = this.dao.getConfig("conf_test_key");
+        assertNotNull(conf);
+        assertEquals(p1.getKey(), conf.getKey());
+        assertEquals(p1.getValue(), conf.getValue());
         this.dao.delete(p1);
-        this.dao.delete(p2);
-        this.dao.delete(p3);
     }
     
     @Test
     public void testGetConfigNotFound()
     {
-        List<Config> conf = this.dao.getConfig("does_not_exist");
-        assertNotNull(conf);
-        assertEquals(0, conf.size());
+        Config conf = this.dao.getConfig("does_not_exist");
+        assertNull(conf);
     }
     
     @Override

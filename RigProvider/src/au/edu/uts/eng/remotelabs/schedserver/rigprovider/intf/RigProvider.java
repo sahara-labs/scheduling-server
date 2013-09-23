@@ -36,6 +36,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFiles;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFilesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
@@ -92,4 +94,12 @@ public interface RigProvider
      * @return response parameters
      */
     public ReleaseCallbackResponse releaseCallback(ReleaseCallback releaseCallback);
+    
+    /**
+     * Notification a session files has been generated in a session.
+     * 
+     * @param sessionFiles request parameters
+     * @return response parameters
+     */
+    public AddSessionFilesResponse addSessionFiles(AddSessionFiles sessionFiles);
 }

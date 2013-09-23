@@ -100,7 +100,7 @@ public class ServletContainer
         this.servlet = _servlet;
         this.isAxis = axis;
         
-        if (path.length() < 2)
+        if (path == null || path.length() < 2)
         {
             this.path = "/*";
         }

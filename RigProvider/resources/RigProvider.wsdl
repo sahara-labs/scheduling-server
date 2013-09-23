@@ -148,6 +148,46 @@ Date: 5th February 2009
       		<xsd:element name="reason" type="xsd:string"></xsd:element>
       	</xsd:sequence>
       </xsd:complexType>
+      <xsd:element name="addSessionFiles" type="lrp:SessionFiles">
+      </xsd:element>
+      <xsd:element name="addSessionFilesResponse"
+      	type="lrp:ProviderResponse">
+      </xsd:element>
+
+      <xsd:complexType name="SessionFiles">
+      	<xsd:complexContent>
+      		<xsd:extension base="lrp:RigType">
+      			<xsd:sequence>
+      				<xsd:element name="files" type="lrp:SessionFile"
+      					maxOccurs="unbounded" minOccurs="1">
+      				</xsd:element>
+      				<xsd:element name="user"
+      					type="xsd:string">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+    
+      <xsd:complexType name="SessionFile">
+      	<xsd:sequence>
+      		<xsd:element name="name" type="xsd:string"></xsd:element>
+      		<xsd:element name="path" type="xsd:string"></xsd:element>
+      		<xsd:element name="transfer">
+      			<xsd:simpleType>
+      				<xsd:restriction base="xsd:string">
+      					<xsd:enumeration value="ATTACHMENT"></xsd:enumeration>
+      					<xsd:enumeration value="FILESYSTEM"></xsd:enumeration>
+      					<xsd:enumeration value="WEBDAV"></xsd:enumeration>
+      				</xsd:restriction>
+      			</xsd:simpleType>
+      		</xsd:element>
+      		<xsd:element name="timestamp" type="xsd:dateTime"></xsd:element>
+      		<xsd:element name="file" type="xsd:base64Binary"
+      			maxOccurs="1" minOccurs="0">
+      		</xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
     </xsd:schema>
   </wsdl:types>
   
@@ -182,6 +222,12 @@ Date: 5th February 2009
   <wsdl:message name="releaseCallbackResponse">
   	<wsdl:part name="parameters" element="lrp:releaseCallbackResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="addSessionFilesRequest">
+  	<wsdl:part name="parameters" element="lrp:addSessionFiles"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addSessionFilesResponse">
+  	<wsdl:part name="parameters" element="lrp:addSessionFilesResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="RigProvider">
     <wsdl:operation name="registerRig">
       <wsdl:input message="lrp:registerRigRequest"/>
@@ -202,6 +248,10 @@ Date: 5th February 2009
     <wsdl:operation name="releaseCallback">
     	<wsdl:input message="lrp:releaseCallbackRequest"></wsdl:input>
     	<wsdl:output message="lrp:releaseCallbackResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addSessionFiles">
+    	<wsdl:input message="lrp:addSessionFilesRequest"></wsdl:input>
+    	<wsdl:output message="lrp:addSessionFilesResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
   

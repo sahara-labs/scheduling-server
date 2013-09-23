@@ -91,7 +91,7 @@ public class Config implements java.io.Serializable
         this.id = id;
     }
 
-    @Column(name = "config_key", nullable = false, length = 200)
+    @Column(name = "config_key", nullable = false, length = 200, unique = true)
     public String getKey()
     {
         return this.key;

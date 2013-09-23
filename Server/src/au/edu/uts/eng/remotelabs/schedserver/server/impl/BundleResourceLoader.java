@@ -63,15 +63,20 @@ public class BundleResourceLoader extends ResourceLoader
 	@Override
 	public void init(ExtendedProperties props) 
 	{
-		this.logger.error("Initialising velocity bundle resource loader.");
+		this.logger.info("Initialising velocity bundle resource loader.");
 	}
 
 	@Override
 	public InputStream getResourceStream(String path) throws ResourceNotFoundException 
 	{
 		/* Check this bundles classloader for resource. */
-		InputStream is = BundleResourceLoader.class.getResourceAsStream(path);
-        
+	    if ("VM_global_library.vm".equals(path))
+	    {
+	        /* Special file requested during Velocity initialisation. */
+	        path = "/META-INF/" + path;
+	    }
+	    
+	    InputStream is = BundleResourceLoader.class.getResourceAsStream(path);
         if (is == null)
         {
         	/* Resource not found in this classloader, search through all registered

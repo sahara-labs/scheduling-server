@@ -83,7 +83,7 @@ public class TaskScheduler
      */
     public void addTask(Runnable task, int period)
     {
-        this.logger.info("Adding runnable task with type '" + task.getClass().getName() + "' to task scheduler to " +
+        this.logger.debug("Adding runnable task with type '" + task.getClass().getName() + "' to task scheduler to " +
         		"run every " + period + " seconds.");
         
         synchronized (this)
