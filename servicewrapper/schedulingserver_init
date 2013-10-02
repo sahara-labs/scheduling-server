@@ -13,145 +13,245 @@
 
 
 INST_DIR=/usr/lib/schedulingserver
-test -d $INST_DIR || exit 0
 
-# Executables
+# Configuration
 EXEC=schedulingservice
+USER=ss
 
-RETVAL=0
+function validateInstall() {
+    # Make sure the Scheduling Server is installed in the correct location
+    if [[ ! -d $INST_DIR ]] ; then
+        echo "The Scheduling Server is not installed in the expected location: $INST_DIR"
+        return 1
+    fi
+    
+    # If the Scheduling Server is to run as a non-root user, we need to check it 
+    # will run with reduced permissions
+    if [[ ! -z $USER &&  $USER != "root" ]] ; then
+        SSUID=`id -u $USER 2> /dev/null`
+        
+        # Check the user actually exists
+        if [[ ! $? -eq 0 ]] ; then
+            echo "The Scheduling Server system user $USER does not exist." 
+            echo "Create the user by runnnig (as root):"
+            echo "  # adduser $USER"
+            return 1
+        fi
+        
+        # Check the user is the owner of the configuration files
+        if [[ ! `stat -t -c %u $INST_DIR/conf/schedulingserver.properties` -eq $SSUID ||
+              ! `stat -t -c %u $INST_DIR/conf/scheduling_service.ini` -eq $SSUID ]] ; then
+            echo "The Scheduling Server system user $USER does own the Scheduling Server "
+            echo "configuration files. Change ownership of these files by running (as root):"
+            echo "  # chown $USER $INST_DIR/conf/schedulingserver.properties"
+            echo "  # chown $USER $INST_DIR/conf/scheduling_service.ini"
+            return 1
+        fi
+        
+        # Make sure the cache directory exists and is owned by the user
+        if [[ -d $INST_DIR/cache && ! `stat -t -c %u $INST_DIR/cache` -eq $SSUID ]] ; then
+            rm -rf $INST_DIR/cache
+        fi
+        
+        if [[ ! -d $INST_DIR/cache ]] ; then
+            mkdir $INST_DIR/cache
+            chown $USER $INST_DIR/cache
+        fi
+    fi
+    
+    return 0  
+}
 
 function exportLibJvmLocation() {
     JAVAPATH=`which java`
-    if [ $? -eq 0 ] ; then
-	
-	# Check the version of java is atleast Java 6
-	if [[ `java -version 2>&1 | head -n 1 | awk -F'"' '{ printf $2 }' | cut -d '.' -f2` -lt 6 ]]; then
-	    echo "Java version isn't Java 6 or above, so unable to use it."
-	    return;
-	fi
-	
-	# Resolve symbloic links to the actual file. This is likely going to be:
-	#     1) /usr/bin/java               -> /etc/alternatives/java
-        #     2) /etc/alternatives/java -> <actual java executable>
-	JAVAPATH=`readlink -f $JAVAPATH`
-
-	# Finding the java executable path, now find the base of the
-	# installation directory which is one up from the java 
-	# executable directory ('bin/')
-	JAVAPATH=`dirname $JAVAPATH`/../
-	JAVAPATH=`readlink -f $JAVAPATH`
-	
-	# If the 'jre' directory exists (i.e. this is a JDK installation),
-	# descend to the jre directory.
-	if [ -d $JAVAPATH/jre ]; then
-	    JAVAPATH=$JAVAPATH/jre
-	fi
-	
-	JAVAPATH=$JAVAPATH/lib
-	
-	# Now find the arch directory in the 'lib' directory.
-	# Known options are (if you know of any other please email
-	# mdiponio@eng.uts.edu.au):
-	#     1) i386     : x86 32 bit UNIX
-	#     2) amd64 : x86 64 bit UNIX
-	#     3) sparc   : sparc arch on Solaris 
-	#     4) arm      : arm (atleast on my N900)
-	ARCHS="i386 amd64 sparc amd"
-	for ARCH in $ARCHS ; do
-	    if [ -d $JAVAPATH/$ARCH ] ; then
-		JAVAPATH=$JAVAPATH/$ARCH
-		break;
-	    fi
-	done
-	
-	# Different JVMs are provided in the arch directory.
-	JVMS="server client" 
-	for JVM in $JVMS; do
-	    if [ -d $JAVAPATH/$JVM ] ; then
-		JAVAPATH=$JAVAPATH/$JVM
-		break;
-	    fi
-	done
+    if [ ! $? -eq 0 ] ; then
+        echo "No Java command found in PATH: $PATH"
+        echo "Make sure Java or OpenJDK is installed. On RHEL (or CentOS), the following"
+        echo "packages have an appropriate Java version: "
+        echo " * java-1.6.0-openjdk"
+        echo " * java-1.7.0-openjdk"
+        return 1;
     fi
     
+    # Check the version of java is atleast Java 6
+    if [[ `java -version 2>&1 | head -n 1 | awk -F'"' '{ printf $2 }' | cut -d '.' -f2` -lt 6 ]]; then
+        echo "Java version isn't Java 6 or above, so unable to use it."
+        echo "Make sure Java or OpenJDK is installed. On RHEL (or CentOS), the following"
+        echo "packages have an appropriate Java version: "
+        echo " * java-1.6.0-openjdk"
+        echo " * java-1.7.0-openjdk"
+        return 1;
+    fi
+    
+    # Resolve symbloic links to the actual file. This is likely going to be:
+    #     1) /usr/bin/java               -> /etc/alternatives/java
+    #     2) /etc/alternatives/java -> <actual java executable>
+    JAVAPATH=`readlink -f $JAVAPATH`
+
+    # Finding the java executable path, now find the base of the
+    # installation directory which is one up from the java 
+    # executable directory ('bin/')
+    JAVAPATH=`dirname $JAVAPATH`/../
+    JAVAPATH=`readlink -f $JAVAPATH`
+    
+    # If the 'jre' directory exists (i.e. this is a JDK installation),
+    # descend to the jre directory.
+    if [ -d $JAVAPATH/jre ]; then
+        JAVAPATH=$JAVAPATH/jre
+    fi
+    
+    JAVAPATH=$JAVAPATH/lib
+    
+    # Now find the arch directory in the 'lib' directory.
+    # Known options are (if you know of any other please email
+    # mdiponio@eng.uts.edu.au):
+    #     1) i386     : x86 32 bit UNIX
+    #     2) amd64 : x86 64 bit UNIX
+    #     3) sparc   : sparc arch on Solaris 
+    #     4) arm      : arm (atleast on my N900)
+    ARCHS="i386 amd64 sparc amd"
+    for ARCH in $ARCHS ; do
+        if [ -d $JAVAPATH/$ARCH ] ; then
+            JAVAPATH=$JAVAPATH/$ARCH
+            break;
+        fi
+    done
+    
+    # Different JVMs are provided in the arch directory.
+    JVMS="server client" 
+    for JVM in $JVMS; do
+        if [ -d $JAVAPATH/$JVM ] ; then
+            JAVAPATH=$JAVAPATH/$JVM
+            break;
+        fi
+    done
+
     # If 'libjvm.so' is present, export the location.
     JVMSO=$JAVAPATH/libjvm.so
     if [ -f $JVMSO ]; then	
-	export JVM_SO=$JVMSO
+        export JVM_SO=$JVMSO
+        return 0
+    else
+        echo "Failed to find the JVM library (libjvm.so) location in its ."
+        echo "expected location: $JVMPATH"
+        return 1
     fi
 }
 
 start() {
-	# Check whether user is root in order to stop or start tasks
-	if [[ `id -u` != 0 ]] ; then
-	    echo "Only root may start the Scheduling Server."
-	    return
-	fi
-	
-	exportLibJvmLocation
+    # Check whether user is root in order to stop or start tasks
+    if [[ `id -u` != 0 ]] ; then
+        echo "Only root may start the Scheduling Server."
+        return
+    fi
+    
+    # Make sure the Scheduling Server is installed correctly
+    validateInstall
+    test $? -eq 0 || return
+    
+    # Find where the JVM is located
+    exportLibJvmLocation
+    test $? -eq 0 || return
 
-	PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
-	if [[ ! "$PID" > 0 ]]; then
-	    echo "Starting the Scheduling Server..."
-		pushd . &> /dev/null 
-		cd $INST_DIR
-		$INST_DIR/$EXEC &> /dev/null &
-		popd &> /dev/null 
-	else
-	    echo "Scheduling Server has already started. Process ID "$PID"."
-	fi
+    PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
+    if [[ ! "$PID" > 0 ]] ; then
+        echo "Starting the Scheduling Server..."
+        pushd . &> /dev/null 
+        cd $INST_DIR
+        
+        if [[ ! -z $USER && $USER != "root" ]] ; then
+            # The executable will drop privileges to that user account when
+            # appropriate.
+            export SCHED_SERVER_USER=$USER
+        fi
+        
+        # Run the application
+        if [[ ! $SCHED_SERVER_FG ]] ; then
+            # Normal launch
+            $INST_DIR/$EXEC &> /dev/null &
+        else
+            # Not sending the Scheduling Server to the background and not
+            # piping stdout and stderr to allow debugging of servicewrapper
+            # and system error logging in the application.
+            $INST_DIR/$EXEC 
+        fi
+	    
+        popd &> /dev/null 
+    else
+        echo "Scheduling Server has already started. Process ID "$PID"."
+    fi
 }
 
 stop() {
-	# Check whether user is root in order to stop or start tasks
-	if [[ `id -u` != 0 ]] ; then
-		echo "Only root may stop the Scheduling Server."
-		return
-	fi 
-	
-	PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
-    	if [[ "$PID" > 0 ]]; then
-	    	echo "Shutting down Scheduling Server with PID "$PID"..."
-		kill -SIGTERM $PID &> /dev/null
-		
-		ps -C $EXEC &> /dev/null
-		while [[ $? -eq 0 ]]; do
-		    sleep 1
-		    ps -C $EXEC &> /dev/null
-		done
-		echo "Scheduling Server has shutdown."
-	else
-	    echo "No Scheduling Server found to shut down."
-	fi
+    # Check whether user is root in order to stop or start tasks
+    if [[ `id -u` != 0 ]] ; then
+        echo "Only root may stop the Scheduling Server."
+        return
+    fi 
+    
+    PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
+    if [[ "$PID" > 0 ]]; then
+            echo "Shutting down Scheduling Server with PID "$PID"..."
+        kill -SIGTERM $PID &> /dev/null
+        
+        ps -C $EXEC &> /dev/null
+        while [[ $? -eq 0 ]]; do
+            sleep 1
+            ps -C $EXEC &> /dev/null
+        done
+        echo "Scheduling Server has shutdown."
+    else
+        echo "No Scheduling Server found to shut down."
+    fi
 }
 
 status() {
     PID=`ps -C $EXEC | grep schedulingserv | awk -F' ' '{ printf $1 }' `
     if [[ "$PID" > 0 ]]; then
-	echo "The Scheduling Server is running.  PID is "$PID"."
+        echo "The Scheduling Server is running.  PID is "$PID"."
     else
-	echo "The Scheduling Server is not running."
+        echo "The Scheduling Server is not running."
     fi
 }
 
+if [[ $2 == "fg" ]] ; then
+    echo "Starting Scheduling Server in the foreground."	
+    echo "Use Ctrl-C to shutdown the Scheduling Server cleanly."
+    SCHED_SERVER_FG=true
+fi
 
 case "$1" in
 start)
-	start
-	;;
+    start
+    ;;
 stop)
-	stop
-	;;
+    stop
+    ;;
 status)
-	status
-	;;
+    status
+    ;;
 restart)
-	stop
-	start
-	;;
+    stop
+    start
+    ;;
+check-install)
+    validateInstall
+    if [[ $? -eq 0 ]] ; then
+        echo "Install OK."
+    else
+        echo "Errors with the Scheduling Server installation."
+    fi
+
+    exportLibJvmLocation
+    if [[ $? -eq 0 ]] ; then
+        echo "Java Runtime that will be used: $JVMSO"
+    else
+        echo "Java not found or not adequate version."
+    fi
+    ;;
 *)
-	echo $"Usage: $0 {start|restart|stop|status}"
-	exit 1
+    echo $"Usage: $0 {start|restart|stop|status|check-install}"
+    exit 1
 esac
 
 exit $?

@@ -42,6 +42,8 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 import static javax.persistence.GenerationType.AUTO;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,6 +52,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -132,6 +135,8 @@ public class Session implements java.io.Serializable
     /** The number of session extensions. */
     private short extensions;
 
+    /** List of generated session files. */
+    private Set<SessionFile> files = new HashSet<SessionFile>(0);
 
     public Session()
     {
@@ -387,5 +392,16 @@ public class Session implements java.io.Serializable
     public void setExtensions(final short extensions)
     {
         this.extensions = extensions;
+    }
+
+    @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)
+    public Set<SessionFile> getFiles()
+    {
+        return this.files;
+    }
+
+    public void setFiles(Set<SessionFile> files)
+    {
+        this.files = files;
     }
 }

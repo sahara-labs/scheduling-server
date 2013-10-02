@@ -39,6 +39,8 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 // Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -46,7 +48,7 @@ import javax.persistence.Embeddable;
  * Composite primary key for user_association table.
  */
 @Embeddable
-public class UserAssociationId implements java.io.Serializable
+public class UserAssociationId implements Serializable
 {
     /** Serializable class. */
     private static final long serialVersionUID = 2763184757998150139L;

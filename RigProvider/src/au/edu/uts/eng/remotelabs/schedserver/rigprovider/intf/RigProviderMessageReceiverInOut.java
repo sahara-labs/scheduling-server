@@ -52,6 +52,8 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFiles;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AddSessionFilesResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallback;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.AllocateCallbackResponse;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types.RegisterRig;
@@ -131,6 +133,14 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
                             msgContext.getEnvelope().getBody().getFirstElement(), ReleaseCallback.class, 
                             this.getEnvelopeNamespaces(msgContext.getEnvelope()));
                     ReleaseCallbackResponse response = skel.releaseCallback(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
+                }
+                else if ("addSessionFiles".equals(methodName))
+                {
+                    final AddSessionFiles wrappedParam = (AddSessionFiles) this.fromOM(
+                            msgContext.getEnvelope().getBody().getFirstElement(), AddSessionFiles.class,
+                            this.getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    AddSessionFilesResponse response = skel.addSessionFiles(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else
@@ -221,6 +231,21 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
             throw AxisFault.makeFault(e);
         }
     }
+    
+    public SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddSessionFilesResponse param, 
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddSessionFilesResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
 
     private Object fromOM(final OMElement param, final Class<? extends ADBBean> type, final Map<String, String> extraNamespaces) 
             throws AxisFault
@@ -275,6 +300,16 @@ public class RigProviderMessageReceiverInOut extends AbstractInOutMessageReceive
             if (ReleaseCallbackResponse.class.equals(type))
             {
                 return ReleaseCallbackResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (AddSessionFiles.class.equals(type))
+            {
+                return AddSessionFiles.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (AddSessionFilesResponse.class.equals(type))
+            {
+                return AddSessionFilesResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
         }
         catch (final Exception e)

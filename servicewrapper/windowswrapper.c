@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
     if (!initService())
 	{
-		logMessage("Failed to initialise service.\n");
+		logMessage("ERROR: Failed to initialise service.\n");
 		return 1;
 	}
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 			DWORD err = GetLastError();
 			if (err == ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)
 			{
-				logMessage("Can't run service as a command line program, it must be installed as a service and the '%s' service started.\n", SERVICE_NAME);
+				logMessage("ERROR: Can't run service as a command line program, it must be installed as a service and the '%s' service started.\n", SERVICE_NAME);
 				printf("Can't run service as a command line program, it must be installed as a service and the '%s' service started.\n\n", SERVICE_NAME);
 			}
 			else if (err == ERROR_INVALID_DATA)
@@ -70,11 +70,11 @@ int main(int argc, char* argv[])
 			}
 			else if (err == ERROR_SERVICE_ALREADY_RUNNING)
 			{
-				logMessage("Failed to start service %s because it is already running.\n", SERVICE_NAME);
+				logMessage("ERROR: Failed to start service %s because it is already running.\n", SERVICE_NAME);
 			}
 			else
 			{
-				logMessage("Failed to start service %s because it is already running.\n", SERVICE_NAME);
+				logMessage("ERROR: Failed to start service %s because it is already running.\n", SERVICE_NAME);
 			}
 		}
 	}
@@ -119,7 +119,7 @@ void WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv)
 {
 	if ((serviceHandle = RegisterServiceCtrlHandler(SERVICE_NAME, ServiceHandler)) == NULL)
 	{
-		logMessage("Failed to add service handle with error code %i.\n", GetLastError());
+		logMessage("ERROR: Failed to add service handle with error code %i.\n", GetLastError());
 		return;
 	}
 
@@ -144,7 +144,7 @@ void WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv)
 		&threadID); 
 	if (threadHandle == NULL)
 	{
-		logMessage("Failed to start the JVM thread, with exit code %i.\n", GetLastError());
+		logMessage("ERROR: Failed to start the JVM thread, with exit code %i.\n", GetLastError());
 		serviceStatus.dwCurrentState = SERVICE_STOPPED;
 		SetServiceStatus(serviceHandle, &serviceStatus);
 		return;
@@ -160,7 +160,7 @@ void WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv)
 	/* Wait forver for the JVM thread to terminate. */
 	WaitForSingleObject(threadHandle, INFINITE);
 
-	logMessage("Java virtual machine has successfully shutdown...\n\n");
+	logMessage("NORMAL: Java virtual machine has successfully shutdown.\n\n");
 
 	/* Shutdown service. */	
 	serviceStatus.dwCurrentState = SERVICE_STOPPED;
@@ -179,7 +179,7 @@ void WINAPI ServiceHandler(DWORD control)
 		/* Shutdown the service. */
 		case SERVICE_CONTROL_STOP:
 		case SERVICE_CONTROL_SHUTDOWN:
-			logMessage("Handling a stop/shutdown control request, shutting down...\n");
+			logMessage("NORMAL: Handling a stop/shutdown control request, shutting down...\n");
 
 			/* Set the status to stop pending and shutdown JVM. */
 			serviceStatus.dwCurrentState = SERVICE_STOP_PENDING;
@@ -201,13 +201,13 @@ DWORD WINAPI threadMain(LPVOID lpParam)
 {
 	if (!loadConfig())
     {
-		logMessage("Unable to load configuration.\n");
+		logMessage("ERROR: Unable to load configuration.\n");
 		return 0;
     }
 
 	if (!generateClassPath())
 	{
-		logMessage("Unable to generate classpath.\n");
+		logMessage("ERROR: Unable to generate classpath.\n");
 		return 0;
 	}
 	
@@ -226,13 +226,13 @@ int initService()
 
 	if (!GetModuleFileName(NULL, currentDir, FILENAME_MAX))
 	{
-		logMessage("Getting the programs file name with error code %i.\n", GetLastError());
+		logMessage("ERROR: Getting the programs file name with error code %i.\n", GetLastError());
 	}
 
 	lastSl = strrchr(currentDir, '\\');
 	if (lastSl == NULL)
 	{
-		logMessage("Unable to determine current directory.\n");
+		logMessage("ERROR: Unable to determine current directory.\n");
 		return 0;
 	}
 
@@ -241,7 +241,7 @@ int initService()
 	*lastSl = '\0';
 
 	SetCurrentDirectory(currentDir);
-	logMessage("Setting current working directory to %s.\n", currentDir);
+	logMessage("ERROR: Setting current working directory to %s.\n", currentDir);
 	return 1;
 }
 
@@ -268,7 +268,7 @@ int installService()
 		DWORD err = GetLastError();
 		if (err == ERROR_ACCESS_DENIED)
 		{
-			logMessage("Access denied opening service control manager. Please run this as a user with ");
+			logMessage("ERROR: Access denied opening service control manager. Please run this as a user with ");
 			logMessage("administrative privileges.\n");
 			printf("Access denied opening service control manager. Please run this as a user with\n");
 			printf("administrative privileges.\n");
@@ -282,7 +282,7 @@ int installService()
 		}
 		else
 		{
-			logMessage("Unknown error opening service control manager with code %i.\n", err);
+			logMessage("ERROR: Unknown error opening service control manager with code %i.\n", err);
 			printf("Unknown error opening service control manager with code %i.\n", err);
 		}
 		
@@ -309,7 +309,7 @@ int installService()
 		DWORD err = GetLastError();
 		if (err == ERROR_ACCESS_DENIED)
 		{
-			logMessage("Access denied to install service.\n");
+			logMessage("ERROR: Access denied to install service.\n");
 			printf("Access denied to install service.\n");
 		}
 		else if (err == ERROR_CIRCULAR_DEPENDENCY)
@@ -319,7 +319,7 @@ int installService()
 		}
 		else if (err == ERROR_DUPLICATE_SERVICE_NAME)
 		{
-			logMessage("Duplicate service name.\n");
+			logMessage("ERROR: Duplicate service name.\n");
 			printf("Duplicate service name.\n");
 		}
 		else if (err == ERROR_INVALID_HANDLE)
@@ -344,12 +344,12 @@ int installService()
 		}
 		else if (err == ERROR_SERVICE_EXISTS)
 		{
-			logMessage("Service %s already exists. Please uninstall the previous instance before reinstalling it.\n", SERVICE_NAME);
+			logMessage("ERROR: Service %s already exists. Please uninstall the previous instance before reinstalling it.\n", SERVICE_NAME);
 			printf("Service %s already exists. Please uninstall the previous instance before reinstalling it.\n", SERVICE_NAME);
 		}
 		else
 		{
-			logMessage("Unknown error installing service with code %i.\n", err);
+			logMessage("ERROR: Unknown error installing service with code %i.\n", err);
 			printf("Unknown error installing service with code %i.\n", err);
 		}
 
@@ -364,7 +364,7 @@ int installService()
 	
 	CloseServiceHandle(scManager);
 	CloseServiceHandle(service);
-	printf("Successfully installed the %s service.\n", SERVICE_NAME);
+	printf("NORMAL: Successfully installed the %s service.\n", SERVICE_NAME);
 	return 0;
 }
 
@@ -384,7 +384,7 @@ int uninstallService()
 		DWORD err = GetLastError();
 		if (err == ERROR_ACCESS_DENIED)
 		{
-			logMessage("Access denied opening service control manager. Please run this as a user with ");
+			logMessage("ERROR: Access denied opening service control manager. Please run this as a user with ");
 			logMessage("administrative privileges.\n");
 			printf("Access denied opening service control manager. Please run this as a user with\n");
 			printf("administrative privileges.\n");
@@ -398,7 +398,7 @@ int uninstallService()
 		}
 		else
 		{
-			logMessage("Unknown error opening service control manager with code %i.\n", err);
+			logMessage("ERROR: Unknown error opening service control manager with code %i.\n", err);
 			printf("Unknown error opening service control manager with code %i.\n", err);
 		}
 		
@@ -413,7 +413,7 @@ int uninstallService()
 		DWORD err = GetLastError();
 		if (err == ERROR_ACCESS_DENIED)
 		{
-			logMessage("Access denied opening service. Please run this as a user with ");
+			logMessage("ERROR: Access denied opening service. Please run this as a user with ");
 			logMessage("administrative privileges.\n");
 			printf("Access denied opening service. Please run this as a user with\n");
 			printf("administrative privileges.\n");
@@ -430,12 +430,12 @@ int uninstallService()
 		}
 		else if (err == ERROR_SERVICE_DOES_NOT_EXIST)
 		{
-			logMessage("The %s service is not currently installed.\n");
+			logMessage("ERROR: The %s service is not currently installed.\n");
 			printf("The %s service is not currently installed.\n");
 		}
 		else
 		{
-			logMessage("Unknown error opening service with code %i.\n", err);
+			logMessage("ERROR: Unknown error opening service with code %i.\n", err);
 			printf("Unknown error opening service with code %i.\n", err);
 		}
 
@@ -449,7 +449,7 @@ int uninstallService()
 		DWORD err = GetLastError();
 		if (err == ERROR_ACCESS_DENIED)
 		{
-			logMessage("Access denied deleting service. Please run this as a user with ");
+			logMessage("ERROR: Access denied deleting service. Please run this as a user with ");
 			logMessage("administrative privileges.\n");
 			printf("Access denied deleting service. Please run this as a user with\n");
 			printf("administrative privileges.\n");
@@ -461,12 +461,12 @@ int uninstallService()
 		}
 		else if (err == ERROR_SERVICE_MARKED_FOR_DELETE)
 		{
-			logMessage("Service %s already marked for deletion. Please reboot the computer.\n");
+			logMessage("ERROR: Service %s already marked for deletion. Please reboot the computer.\n");
 			printf("Service %s already marked for deletion. Please reboot the computer.\n");
 		}
 		else
 		{
-			logMessage("Unknown error deleting service with code %i.\n", err);
+			logMessage("ERROR: Unknown error deleting service with code %i.\n", err);
 			printf("Unknown error deleting service with code %i.\n", err);
 		}
 		CloseServiceHandle(scManager);
@@ -474,7 +474,7 @@ int uninstallService()
 	}
 
 	CloseServiceHandle(scManager);
-	printf("Successfully deleted service %s.\n", SERVICE_NAME);
+	printf("NORMAL: Successfully deleted service %s.\n", SERVICE_NAME);
 	return 0;
 }
 

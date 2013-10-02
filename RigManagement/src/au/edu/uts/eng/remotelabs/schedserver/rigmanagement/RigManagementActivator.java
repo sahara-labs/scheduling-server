@@ -132,7 +132,7 @@ public class RigManagementActivator implements BundleActivator
         /* Hosts interface pages. */
         this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(1);
 	    this.pageRegistrations.add(context.registerService(HostedPage.class, new HostedPage("Rigs", RigTypes.class, 
-	    		"rigs", "Allows rigs to be administered.", true, true), null));
+	    		"rigs", "Allows rigs to be administered.", false, false), null));
 	}
 
 	@Override

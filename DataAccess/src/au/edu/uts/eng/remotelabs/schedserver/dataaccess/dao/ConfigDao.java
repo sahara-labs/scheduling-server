@@ -36,8 +36,6 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
-import java.util.List;
-
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -92,16 +90,15 @@ public class ConfigDao extends GenericDao<Config>
     }
     
     /**
-     * Returns the configuration values with the specified configuration key.
+     * Returns the configuration value with the specified configuration key.
      * 
      * @param key configuration key
      * @return list of matching configuration values
      */
-    @SuppressWarnings("unchecked")
-    public List<Config> getConfig(String key)
+    public Config getConfig(String key)
     {
         Criteria crit = this.session.createCriteria(this.clazz);
         crit.add(Restrictions.eq("key", key));
-        return  crit.list();
+        return  (Config)crit.uniqueResult();
     }
 }
