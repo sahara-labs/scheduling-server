@@ -153,23 +153,6 @@ public class ServerImpl
 	                "not a valid port number. Using the default of " + ServerImpl.DEFAULT_HTTP_PORT + '.');
 	    }
 	    connectors.add(http);
-
-	    /* HTTPS connector. */
-//	    final SslSelectChannelConnector https = new SslSelectChannelConnector();
-//	    tmp = config.getProperty("Listening_Port_HTTPS", String.valueOf(ServerImpl.DEFAULT_HTTPS_PORT));
-//	    try
-//	    {
-//	        https.setPort(Integer.parseInt(tmp));
-//	    }
-//	    catch (NumberFormatException nfe)
-//	    {
-//	        https.setPort(ServerImpl.DEFAULT_HTTPS_PORT);
-//	        this.logger.info("Invalid configuration for the Scheduling Server HTTPS listening port." + tmp + " is " +
-//	                "not a valid port number. Using the default of " + ServerImpl.DEFAULT_HTTPS_PORT + '.');
-//	    }
-//	    /* TODO Set up SSL engine. */
-//	    connectors.add(https);
-
 	    this.server.setConnectors(connectors.toArray(new Connector[connectors.size()]));
 
 	    /* --------------------------------------------------------------------
@@ -201,6 +184,14 @@ public class ServerImpl
 	    this.server.addHandler(this.contextCollection);
 	    
 	    final Context context = new Context(Context.SESSIONS);
+
+	    /* Set the session cookie for the administrator interface. */
+        @SuppressWarnings("unchecked")
+        Map<String, String> initParams = context.getInitParams();
+        initParams.put("org.mortbay.jetty.servlet.SessionCookie", "session-schedulingserver");
+        initParams.put("org.mortbay.jetty.servlet.MaxAge", "3600");
+        context.setInitParams(initParams);
+	    
 	    context.setContextPath("/");
 	    this.contextCollection.addHandler(context);
 	    this.contexts.put(new Object(), context);
