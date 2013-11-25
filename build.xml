@@ -52,7 +52,7 @@ Date: 28th December 2009
 	<!-- NSIS tools classpath -->
 	<path id="nsis.tools"> 
 		<fileset dir="${tool.lib.dir}">
-			<include name="nsisant-1.2.jar" />
+			<include name="nsisant-1.3.jar" />
 		</fileset>
 	</path>
 	
@@ -84,7 +84,7 @@ Date: 28th December 2009
 			</fileset>
 		</copy>
 		<subant target="dist" verbose="true">
-			<fileset dir="." includes="Framework/build.xml"/>
+			<fileset dir="." includes="SchedServer-Framework/build.xml"/>
 		</subant>
 		<mkdir dir="${bin.dir}" />
 		<copy todir="${bin.dir}" flatten="yes">
@@ -161,10 +161,10 @@ Date: 28th December 2009
 
 	<!-- Windows Installer. -->
 	<property name="win.target.arch" value="x86" />
-	<property name="nsis.path" value="C:/Program Files/NSIS" />
+	<property name="nsis.path" value="C:/Program Files (x86)/NSIS" />
     <target name="win-package" depends="build,schema" if="isWindows">
         <mkdir dir="${package.dir}"/>
-        <taskdef name="nsis" classpathref="nsis.tools" classname="net.sf.nsisant.Task" />
+        <taskdef name="nsis" classpathref="nsis.tools" classname="com.danielreese.nsisant.Task" />
         <echo>Building arch ${win.target.arch}.</echo>
         <nsis script="schedulingserver.nsi" verbosity="3" out="${package.dir}/schedulingserver.log" path="${nsis.path}">
             <define name="Arch" value="${win.target.arch}" />

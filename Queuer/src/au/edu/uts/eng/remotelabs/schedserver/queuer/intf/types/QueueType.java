@@ -78,12 +78,10 @@ public class QueueType implements ADBBean
     protected boolean isQueueable;
     protected boolean isBookable;
     protected boolean isCodeAssignable;
+    protected boolean isSlaveable;
     protected ResourceIDType queuedResource;
     protected QueueTargetType[] queueTarget;
     protected boolean queueTargetTracker = false;
-    
-    protected RemoteLoadType remoteLoad;
-    protected boolean remoteLoadTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -132,6 +130,17 @@ public class QueueType implements ADBBean
     public void setIsBookable(final boolean param)
     {
         this.isBookable = param;
+    }
+    
+    public boolean getIsSlaveable()
+    {
+        return this.isSlaveable;
+    }
+    
+    
+    public void setIsSlaveable(final boolean param)
+    {
+        this.isSlaveable = param;
     }
     
     public boolean getIsCodeAssignable()
@@ -186,17 +195,6 @@ public class QueueType implements ADBBean
         final List<QueueTargetType> list = ConverterUtil.toList(this.queueTarget);
         list.add(param);
         this.queueTarget = list.toArray(new QueueTargetType[list.size()]);
-    }
-    
-    public RemoteLoadType getRemoteLoad()
-    {
-        return this.remoteLoad;
-    }
-    
-    public void setRemoteLoad(final RemoteLoadType param)
-    {
-        this.remoteLoad = param;
-        this.remoteLoadTracker = param != null;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -393,6 +391,30 @@ public class QueueType implements ADBBean
         }
         xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isCodeAssignable));
         xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = QueueType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "isSlaveable", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "isSlaveable");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("isSlaveable");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isSlaveable));
+        xmlWriter.writeEndElement();
+
 
         if (this.queuedResource == null)
         {
@@ -417,12 +439,6 @@ public class QueueType implements ADBBean
                 throw new ADBException("queueTarget cannot be null!!");
             }
         }
-        
-        if (this.remoteLoadTracker)
-        {
-            this.remoteLoad.serialize(new QName("", "remoteLoad"), factory, xmlWriter);
-        }
-        
         xmlWriter.writeEndElement();
     }
 
@@ -473,6 +489,9 @@ public class QueueType implements ADBBean
         elementList.add(new QName("", "isCodeAssignable"));
         elementList.add(ConverterUtil.convertToString(this.isCodeAssignable));
         
+        elementList.add(new QName("", "isSlaveable"));
+        elementList.add(ConverterUtil.convertToString(this.isSlaveable));
+        
         elementList.add(new QName("", "queuedResource"));
         if (this.queuedResource == null)
         {
@@ -497,12 +516,6 @@ public class QueueType implements ADBBean
             {
                 throw new ADBException("queueTarget cannot be null!!");
             }
-        }
-        
-        if (this.remoteLoadTracker)
-        {
-            elementList.add(new QName("", "remoteLoad"));
-            elementList.add(this.remoteLoad);
         }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), new Object[0]);
@@ -623,6 +636,23 @@ public class QueueType implements ADBBean
                 {
                     reader.next();
                 }
+                if (reader.isStartElement() && new QName("", "isSlaveable").equals(reader.getName()))
+                {
+
+                    final String content = reader.getElementText();
+                    object.setIsSlaveable(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                } 
+                
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
                 if (reader.isStartElement() && new QName("", "queuedResource").equals(reader.getName()))
                 {
                     object.setQueuedResource(ResourceIDType.Factory.parse(reader));
@@ -673,16 +703,6 @@ public class QueueType implements ADBBean
 
                     object.setQueueTarget((QueueTargetType[]) ConverterUtil
                             .convertToArray(QueueTargetType.class, targetList));
-                }
-                
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "remoteLoad").equals(reader.getName()))
-                {
-                    object.setRemoteLoad(RemoteLoadType.Factory.parse(reader));
-                    reader.next();
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

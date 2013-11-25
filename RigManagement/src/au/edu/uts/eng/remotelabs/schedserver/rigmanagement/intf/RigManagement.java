@@ -47,7 +47,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
@@ -58,7 +58,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
@@ -86,8 +85,8 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeIDType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypesType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigMaintenance;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigMaintenance;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 /**
  * Rig management SOAP service.
@@ -246,13 +245,13 @@ public class RigManagement implements RigManagementInterface
         rigParam.setRigType(typeID);
         rigParam.setCapabilities("Unknown.");
         response.setGetRigResponse(rigParam);
-        
+
         RigDao dao = new RigDao();
         try
         {
             Rig rig = dao.findByName(name);
             if (rig == null) return response;
-            
+            rig.getSessions();
             typeID.setName(rig.getRigType().getName());
             rigParam.setCapabilities(rig.getRigCapabilities().getCapabilities());
             
@@ -550,7 +549,6 @@ public class RigManagement implements RigManagementInterface
             ses.setRemovalTime(new Date());
             ses.setRemovalReason("User was kicked off by admin. Reason: " + param.getReason());
             dao.flush();
-            RigManagementActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
             
             if (this.notTest) new RigReleaser().release(ses, dao.getSession());
         }

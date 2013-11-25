@@ -122,6 +122,12 @@ Date: 5th February 2009
       <xsd:element name="allocateCallbackResponse"
       	type="lrp:ProviderResponse">
       </xsd:element>
+      <xsd:element name="slaveAllocateCallback"
+      	type="lrp:CallbackRequestType">
+      </xsd:element>
+      <xsd:element name="slaveAllocateCallbackResponse"
+      	type="lrp:ProviderResponse">
+      </xsd:element>
       <xsd:element name="releaseCallback"
       	type="lrp:CallbackRequestType">
       </xsd:element>
@@ -176,6 +182,12 @@ Date: 5th February 2009
   <wsdl:message name="allocateCallbackResponse">
   	<wsdl:part name="parameters" element="lrp:allocateCallbackResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="slaveAllocateCallbackRequest">
+  	<wsdl:part name="parameters" element="lrp:allocateCallback"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="slaveAllocateCallbackResponse">
+  	<wsdl:part name="parameters" element="lrp:allocateCallbackResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:message name="releaseCallbackRequest">
   	<wsdl:part name="parameters" element="lrp:releaseCallback"></wsdl:part>
   </wsdl:message>
@@ -198,6 +210,10 @@ Date: 5th February 2009
     <wsdl:operation name="allocateCallback">
     	<wsdl:input message="lrp:allocateCallbackRequest"></wsdl:input>
     	<wsdl:output message="lrp:allocateCallbackResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="slaveAllocateCallback">
+    	<wsdl:input message="lrp:slaveAllocateCallbackRequest"></wsdl:input>
+    	<wsdl:output message="lrp:slaveAllocateCallbackResponse"></wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="releaseCallback">
     	<wsdl:input message="lrp:releaseCallbackRequest"></wsdl:input>
@@ -241,6 +257,16 @@ Date: 5th February 2009
   	<wsdl:operation name="allocateCallback">
   		<soap:operation
   			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/allocateCallback" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	  	<wsdl:operation name="slaveAllocateCallback">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider/slaveAllocateCallback" />
   		<wsdl:input>
   			<soap:body use="literal" />
   		</wsdl:input>

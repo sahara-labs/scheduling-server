@@ -52,7 +52,7 @@ Date: 5th January 2009
 	<property name="reports.pmd.xml.dir" location="test/reports/pmd" /> <!-- PMD reports -->
 	<property name="reports.bugs.xml.dir" location="test/reports/bugs" /> <!-- Findbugs reports -->
 	<property name="reports.emma.dir" location="test/reports/coverage" /> <!-- Emma coverage report -->
-	<property name="bundle.dir" location="bundle" />
+	<property name="bundle.dir" location="./bundle" />
 
 	<!-- ##################################################################
 	  ##########  Classpath  ##############################################

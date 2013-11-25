@@ -100,9 +100,6 @@ public class PermissionType extends PermissionIDType implements ADBBean
     protected boolean expiryTracker = false;
     protected String displayName;
     protected boolean displayNameTracker = false;
-    
-    protected boolean remoteSiteTracker = false;
-    protected String remoteSite;
 
     private static String generatePrefix(final String namespace)
     {
@@ -350,17 +347,6 @@ public class PermissionType extends PermissionIDType implements ADBBean
         }
         
         this.displayName = param;
-    }
-    
-    public String getRemoteSite()
-    {
-        return this.remoteSite;
-    }
-    
-    public void setRemoteSite(final String param)
-    {
-        this.remoteSiteTracker = param != null;
-        this.remoteSite = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -952,34 +938,6 @@ public class PermissionType extends PermissionIDType implements ADBBean
             xmlWriter.writeEndElement();
         }
         
-        if (this.remoteSiteTracker)
-        {
-            namespace = "";
-            if (!namespace.equals(""))
-            {
-                prefix = xmlWriter.getPrefix(namespace);
-
-                if (prefix == null)
-                {
-                    prefix = PermissionType.generatePrefix(namespace);
-
-                    xmlWriter.writeStartElement(prefix, "remoteSite", namespace);
-                    xmlWriter.writeNamespace(prefix, namespace);
-                    xmlWriter.setPrefix(prefix, namespace);
-                }
-                else
-                {
-                    xmlWriter.writeStartElement(namespace, "remoteSite");
-                }
-            }
-            else
-            {
-                xmlWriter.writeStartElement("remoteSite");
-            }
-            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.remoteSite));
-            xmlWriter.writeEndElement();
-        }
-        
         xmlWriter.writeEndElement();
     }
 
@@ -1161,12 +1119,6 @@ public class PermissionType extends PermissionIDType implements ADBBean
             {
                 throw new ADBException("displayName cannot be null.");
             }
-        }
-        
-        if (this.remoteSiteTracker)
-        {
-            elementList.add(new QName("", "remoteSite"));
-            elementList.add(ConverterUtil.convertToString(this.remoteSite));
         }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
@@ -1465,17 +1417,6 @@ public class PermissionType extends PermissionIDType implements ADBBean
                 {
                     final String content = reader.getElementText();
                     object.setDisplayName(ConverterUtil.convertToString(content));
-                    reader.next();
-                }
-                
-                while (!reader.isStartElement() && !reader.isEndElement())
-                {
-                    reader.next();
-                }
-                if (reader.isStartElement() && new QName("", "remoteSite").equals(reader.getName()))
-                {
-                    final String content = reader.getElementText();
-                    object.setDisplayName(content);
                     reader.next();
                 }
 

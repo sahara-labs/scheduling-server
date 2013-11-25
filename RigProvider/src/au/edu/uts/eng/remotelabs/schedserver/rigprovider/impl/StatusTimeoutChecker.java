@@ -47,9 +47,10 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 
 /**
@@ -69,12 +70,12 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
  * <br />
  * The time out period may be configured with the <tt>Rig_Timeout_Period</tt>
  * which specifies the time out period in seconds. The default timeout period
- * is 180 seconds.
+ * is 300 seconds.
  */
 public class StatusTimeoutChecker implements Runnable
 {
     /** The default timeout in minutes. */
-    public static final int DEFAULT_TIMEOUT = 180;
+    public static final int DEFAULT_TIMEOUT = 100;
     
     /** The period a rig must provide a status update, otherwise the rig
      *  is put offline. */
@@ -90,7 +91,8 @@ public class StatusTimeoutChecker implements Runnable
     {
         this.logger = LoggerActivator.getLogger();
 
-        String tmStr = RigProviderActivator.getConfigurationProperty("Rig_Timeout_Period", String.valueOf(DEFAULT_TIMEOUT));
+        String tmStr = RigProviderActivator.getConfigurationProperty("Rig_Timeout_Period", 
+                String.valueOf(StatusTimeoutChecker.DEFAULT_TIMEOUT));
         try
         {
             this.timeout = Integer.parseInt(tmStr);
@@ -100,7 +102,7 @@ public class StatusTimeoutChecker implements Runnable
         catch (NumberFormatException nfe)
         {
             this.timeout = StatusTimeoutChecker.DEFAULT_TIMEOUT;
-            this.logger.warn("Configured rig time out period '" + tmStr + "' is not valid, using the default value " +
+            this.logger.debug("Configured rig time out period '" + tmStr + "' is not valid, using the default value " +
                     " of " + this.timeout + " seconds.");
         }
     }
@@ -177,7 +179,10 @@ public class StatusTimeoutChecker implements Runnable
                 db.getTransaction().commit();
                 
                 /* Fire a notification the rig has gone offline. */
-                RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, db);
+                for (RigEventListener list : RigProviderActivator.getRigEventListeners())
+                {
+                    list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, db);
+                }
             }
         }
         catch (HibernateException hex)

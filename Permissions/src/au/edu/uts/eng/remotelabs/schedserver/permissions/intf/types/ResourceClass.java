@@ -70,17 +70,17 @@ public class ResourceClass implements ADBBean
     
     protected String resourceClass;
     private static HashMap<String, ResourceClass> _table_ = new HashMap<String, ResourceClass>();
+
+
+    private static String generatePrefix(final String namespace)
+    {
+        if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/permissions"))
+        {
+            return "ns1";
+        }
+        return BeanUtil.getUniquePrefix();
+    }
     
-    public static final String _TYPE = ConverterUtil.convertToString("TYPE");
-    public static final String _RIG = ConverterUtil.convertToString("RIG");
-    public static final String _CAPABILITY = ConverterUtil.convertToString("CAPABILITY");
-    public static final String _CONSUMER = ConverterUtil.convertToString("CONSUMER");
-    public static final ResourceClass TYPE = new ResourceClass(ResourceClass._TYPE, true);
-    public static final ResourceClass RIG = new ResourceClass(ResourceClass._RIG, true);
-    public static final ResourceClass CAPABILITY = new ResourceClass(ResourceClass._CAPABILITY, true);
-    public static final ResourceClass CONSUMER = new ResourceClass(ResourceClass._CONSUMER, true);
-
-
     protected ResourceClass(final String value, final boolean isRegisterValue)
     {
         this.resourceClass = value;
@@ -90,15 +90,13 @@ public class ResourceClass implements ADBBean
         }
 
     }
-    
-    private static String generatePrefix(final String namespace)
-    {
-        if (namespace.equals("http://remotelabs.eng.uts.edu.au/schedserver/permissions"))
-        {
-            return "ns1";
-        }
-        return BeanUtil.getUniquePrefix();
-    }
+
+    public static final String _TYPE = ConverterUtil.convertToString("TYPE");
+    public static final String _RIG = ConverterUtil.convertToString("RIG");
+    public static final String _CAPABILITY = ConverterUtil.convertToString("CAPABILITY");
+    public static final ResourceClass TYPE = new ResourceClass(ResourceClass._TYPE, true);
+    public static final ResourceClass RIG = new ResourceClass(ResourceClass._RIG, true);
+    public static final ResourceClass CAPABILITY = new ResourceClass(ResourceClass._CAPABILITY, true);
 
     public String getValue()
     {

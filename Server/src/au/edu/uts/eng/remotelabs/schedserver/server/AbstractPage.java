@@ -243,7 +243,6 @@ public abstract class AbstractPage
     protected void addHead()
     {
         this.println("<head>");
-        this.println("	<meta http-equiv='Content-Type' content='text/html' charset='utf-8' />");
         this.println("  <title>Scheduling Server - " + this.getPageTitle() + "</title>");
         
         for (String css : this.headCss)
@@ -418,11 +417,11 @@ public abstract class AbstractPage
         this.println("<div id='footer' class='ui-corner-top'>");
         this.println("<a class='plaina' href='http://sourceforge.net/projects/labshare-sahara/' target='_blank'>" +
                 "<img src='/img/logo_small.png' alt='Logo' />" +
-        		"Powered by the open source <strong>SAHARA Labs r3.3</strong> system.</a>");
+        		"Powered by the open source <strong>SAHARA Labs r3.2</strong> system.</a>");
         this.println(
                 "<div>" +
                     "<a class='plaina' href='http://www.feit.uts.edu.au/facilities/remote-lab/index.html' target='_blank'>" +
-                    "&copy; UTS 2009-2013</a>" +
+                    "&copy; UTS 2009-2011</a>" +
                 "</div>");
         this.println("</div>");
     }

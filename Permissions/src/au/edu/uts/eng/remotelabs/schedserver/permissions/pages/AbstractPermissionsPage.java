@@ -119,18 +119,10 @@ public abstract class AbstractPermissionsPage extends AbstractPage
             
             this.flushOut();
             
-            Template template;
-            try
-            {
-                template = Velocity.getTemplate("/META-INF/templates/" + this.getClass().getSimpleName() + ".vm");
-                template.merge(this.context, this.out);
-            }
-            catch (Exception e)
-            {
-                this.logger.error("Failed to loaded view of permissions page: " + e.getMessage());
-                throw new IOException("Failed to loaded Velocity template.", e);
-            }
+            Template template = Velocity.getTemplate("/META-INF/templates/" + this.getClass().getSimpleName() + ".vm");
+            template.merge(this.context, this.out);
         }
+        
     }
     
     public abstract void setupView(HttpServletRequest req);

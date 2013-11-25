@@ -37,7 +37,6 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -45,26 +44,18 @@ import java.util.List;
 import org.apache.axis2.transport.http.AxisServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueListenerRun;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueStaleSessionTask;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl.QueuerServiceImpl;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -76,17 +67,11 @@ public class QueueActivator implements BundleActivator
     /** Service registration for the Permission SOAP interface. */
     private ServiceRegistration<ServletContainerService> soapReg;
     
-    /** Queuer service this bundle exports. */
-    private ServiceRegistration<QueuerService> queuerReg;
-    
     /** Service registration for the queue stale session timeout task. */
     private ServiceRegistration<Runnable> staleTimeoutTaskReg;
     
     /** Service registration for a rig event listener. */
     private ServiceRegistration<RigEventListener> rigListenerReg;
-    
-    /** The list of session event listeners. */
-    private static List<SessionEventListener> sessionListeners;
     
     /** Bookings service. */
     public static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
@@ -98,7 +83,7 @@ public class QueueActivator implements BundleActivator
     public void start(BundleContext context) throws Exception 
     {
         this.logger = LoggerActivator.getLogger();
-        this.logger.info("Starting Queuer bundle...");
+        this.logger.info("Starting queuer bundle...");
         
         /* Reload all the active queue sessions. */
         Queue queue = Queue.getInstance();
@@ -129,23 +114,8 @@ public class QueueActivator implements BundleActivator
         /* Register the rig event listener service. */
         this.rigListenerReg = context.registerService(RigEventListener.class, new QueueListenerRun(), null);
         
-        /* Set up the session event service listener to add and remove event listeners. */
-        QueueActivator.sessionListeners = new ArrayList<SessionEventListener>();
-        EventServiceListener<SessionEventListener> sesServListener = 
-                new EventServiceListener<SessionEventListener>(QueueActivator.sessionListeners, context);
-        context.addServiceListener(sesServListener, 
-                '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
-        for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))
-        {
-            sesServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-        }
-        
-        /* Register the Queuer POJO service. */
-        this.logger.debug("Registering the Queuer POJO service.");
-        this.queuerReg = context.registerService(QueuerService.class, new QueuerServiceImpl(), null);
-        
-        /* Register the Queuer SOAP service. */
-        this.logger.debug("Registering the Queuer SOAP service.");
+        /* Register the queuer service. */
+        this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
 	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
 	    this.soapReg = context.registerService(ServletContainerService.class, soapService, null);
@@ -154,10 +124,8 @@ public class QueueActivator implements BundleActivator
 	@Override
 	public void stop(BundleContext context) throws Exception 
 	{
-	    this.logger.info("Shutting down the Queuer bundle...");
+	    this.logger.info("Shutting down the queuer bundle.");
 	    this.soapReg.unregister();
-	    this.queuerReg.unregister();
-	    QueueActivator.sessionListeners = null;
 	    QueueActivator.bookingTracker.close();
 	    QueueActivator.bookingTracker = null;
 	    this.staleTimeoutTaskReg.unregister();
@@ -174,22 +142,5 @@ public class QueueActivator implements BundleActivator
 	    if (QueueActivator.bookingTracker == null) return null;
 	    
 	    return QueueActivator.bookingTracker.getService();
-	}
-	
-	/**
-	 * Notifies the session event listeners of an event.
-	 * 
-	 * @param event type of event
-	 * @param session session change
-	 * @param db database
-	 */
-	public static void notifySessionEvent(SessionEvent event, Session session, org.hibernate.Session db)
-	{
-	    if (QueueActivator.sessionListeners == null) return;
-	    
-	    for (SessionEventListener listener : QueueActivator.sessionListeners)
-	    {
-	        listener.eventOccurred(event, session, db);
-	    }
 	}
 }

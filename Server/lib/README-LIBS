@@ -13,13 +13,3 @@ Directory containing the libraries that need to be on the bundles classpath
                 * SSL extension library (jetty-sslengine-6.*.jar).
               
               Jetty has been tested with version 6.1.22.
-              
-   - Apache Velocity - Java web page template engine. This is released
-              under ther Apache License 2.0.
-              The required files are:
-              
-                * velocity-1.<x>-dep.jar
-                
-              Apache Velocity has been tested with version 1.7.
-   
-               

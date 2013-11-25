@@ -44,11 +44,9 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
 /**
  * Receives notifications when a rig is being shutdown and if that is assigned
@@ -98,8 +96,6 @@ public class RigShutdownSessonStopper implements RigEventListener
                 db.beginTransaction();
                 db.flush();
                 db.getTransaction().commit();
-                
-                SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
             }
         }
         catch (HibernateException ex)

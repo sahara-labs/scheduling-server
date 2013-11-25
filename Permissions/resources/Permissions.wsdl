@@ -25,6 +25,10 @@
 					</xsd:extension>
 				</xsd:complexContent>
 			</xsd:complexType>
+			<xsd:element name="addUserClass" type="pm:UserClassType">
+			</xsd:element>
+			<xsd:element name="addUserClassResponse" type="pm:OperationResponseType">
+			</xsd:element>
 
 			<xsd:complexType name="UserClassType">
 				<xsd:complexContent>
@@ -71,9 +75,21 @@
 					</xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
+			<xsd:element name="deleteUserClass" type="pm:UserClassIDType">
+			</xsd:element>
+			<xsd:element name="deleteUserClassResponse" type="pm:OperationResponseType">
+			</xsd:element>
 			<xsd:element name="getPermission" type="pm:PermissionIDType">
 			</xsd:element>
 			<xsd:element name="getPermissionResponse" type="pm:PermissionType">
+			</xsd:element>
+			<xsd:element name="addPermission" type="pm:PermissionType">
+			</xsd:element>
+			<xsd:element name="addPermissionResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="deletePermission" type="pm:PermissionIDType">
+			</xsd:element>
+			<xsd:element name="deletePermissionResponse" type="pm:OperationResponseType">
 			</xsd:element>
 
 			<xsd:complexType name="PermissionIDType">
@@ -113,9 +129,6 @@
 										<xsd:enumeration
 											value="CAPABILITY">
 										</xsd:enumeration>
-										<xsd:enumeration
-											value="CONSUMER">
-										</xsd:enumeration>
 									</xsd:restriction>
 								</xsd:simpleType>
 							</xsd:element>
@@ -132,10 +145,9 @@
 							<xsd:element name="timeHorizon"
 								type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="maxBookings"
-								type="xsd:int" maxOccurs="1" minOccurs="0">
+                            <xsd:element name="maxBookings" type="xsd:int" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="sessionDuration"
+                            <xsd:element name="sessionDuration"
 								type="xsd:int" maxOccurs="1" minOccurs="0">
 								<xsd:annotation>
 									<xsd:documentation>
@@ -164,9 +176,6 @@
 							<xsd:element name="displayName"
 								type="xsd:string" maxOccurs="1" minOccurs="0">
 							</xsd:element>
-							<xsd:element name="remoteSite"
-								type="xsd:string" maxOccurs="1" minOccurs="0">
-							</xsd:element>
 						</xsd:sequence>
 					</xsd:extension>
 				</xsd:complexContent>
@@ -183,6 +192,13 @@
 			</xsd:complexType>
 			<xsd:element name="getUser" type="pm:UserIDType"></xsd:element>
 			<xsd:element name="getUserResponse" type="pm:UserType">
+			</xsd:element>
+			<xsd:element name="addUser" type="pm:UserType">
+			</xsd:element>
+			<xsd:element name="addUserResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="deleteUser" type="pm:UserIDType"></xsd:element>
+			<xsd:element name="deleteUserResponse" type="pm:OperationResponseType">
 			</xsd:element>
 
 			<xsd:complexType name="UserIDType">
@@ -237,7 +253,38 @@
 					</xsd:extension>
 				</xsd:complexContent>
 			</xsd:complexType>
+			<xsd:element name="addUserAssociation" type="pm:UserAssociationType">
+			</xsd:element>
+			<xsd:element name="addUserAssociationResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="deleteUserAssociation"
+				type="pm:UserAssociationType">
+			</xsd:element>
+			<xsd:element name="deleteUserAssociationResponse" type="pm:OperationResponseType">
+			</xsd:element>
 
+			<xsd:complexType name="UserAssociationType">
+				<xsd:complexContent>
+					<xsd:extension base="pm:OperationRequestType">
+						<xsd:sequence>
+							<xsd:element name="user"
+								type="pm:UserIDType">
+							</xsd:element>
+							<xsd:element name="userClass"
+								type="pm:UserClassIDType">
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:extension>
+				</xsd:complexContent>
+			</xsd:complexType>
+			<xsd:element name="addUserLock" type="pm:UserLockType">
+			</xsd:element>
+			<xsd:element name="addUserLockResponse" type="pm:UserLockResponseType">
+			</xsd:element>
+			<xsd:element name="deleteUserLock" type="pm:UserLockIDType">
+			</xsd:element>
+			<xsd:element name="deleteUserLockResponse" type="pm:OperationResponseType">
+			</xsd:element>
 			<xsd:element name="unlockUserLock" type="pm:UserLockType">
 			</xsd:element>
 			<xsd:element name="unlockUserLockResponse" type="pm:OperationResponseType">
@@ -289,6 +336,15 @@
 					</xsd:extension>
 				</xsd:complexContent>
 			</xsd:complexType>
+			<xsd:element name="addAcademicPermission" type="pm:AcademicPermissionType">
+			</xsd:element>
+			<xsd:element name="addAcademicPermissionResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="deleteAcademicPermission" type="pm:AcademicPermissionIDType">
+			</xsd:element>
+			<xsd:element name="deleteAcademicPermissionResponse"
+				type="pm:OperationResponseType">
+			</xsd:element>
 			<xsd:element name="getAcademicPermission" type="pm:AcademicPermissionIDType">
 			</xsd:element>
 			<xsd:element name="getAcademicPermissionResponse" type="pm:AcademicPermissionType">
@@ -344,10 +400,34 @@
 						maxOccurs="unbounded" minOccurs="0"></xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
+			<xsd:element name="editUserClass" type="pm:UserClassType">
+			</xsd:element>
+			<xsd:element name="editUserClassResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="editUser" type="pm:UserType"></xsd:element>
+			<xsd:element name="editUserResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="editPermission" type="pm:PermissionType">
+			</xsd:element>
+			<xsd:element name="editPermissionResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="editAcademicPermission" type="pm:AcademicPermissionType">
+			</xsd:element>
+			<xsd:element name="editAcademicPermissionResponse" type="pm:OperationResponseType">
+			</xsd:element>
+			<xsd:element name="getUsersInUserClass" type="pm:UserClassIDType">
+			</xsd:element>
+			<xsd:element name="getUsersInUserClassResponse" type="pm:UserListType">
+			</xsd:element>
 			<xsd:element name="getPermissionsForUserClass" type="pm:UserClassIDType">
 			</xsd:element>
 			<xsd:element name="getPermissionsForUserClassResponse"
 				type="pm:PermissionListType">
+			</xsd:element>
+			<xsd:element name="getAcademicPermissionsForUserClass" type="pm:UserClassIDType">
+			</xsd:element>
+			<xsd:element name="getAcademicPermissionsForUserClassResponse"
+				type="pm:AcademicPermissionListType">
 			</xsd:element>
 			<xsd:element name="getPermissionsForUser" type="pm:UserIDType">
 			</xsd:element>
@@ -356,6 +436,10 @@
 			<xsd:element name="getUserClassesForUser" type="pm:UserIDType">
 			</xsd:element>
 			<xsd:element name="getUserClassesForUserResponse" type="pm:UserClassListType">
+			</xsd:element>
+			<xsd:element name="bulkAddUserClassUsers" type="pm:BulkAddUserClassUsersType">
+			</xsd:element>
+			<xsd:element name="bulkAddUserClassUsersResponse" type="pm:OperationResponseType">
 			</xsd:element>
 
 			<xsd:complexType name="OperationRequestType">
@@ -374,6 +458,11 @@
 				</xsd:sequence>
 			</xsd:complexType>
 			
+            <xsd:complexType name="UserListType">
+            	<xsd:sequence>
+            		<xsd:element name="user" type="pm:UserIDType" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
     
             <xsd:complexType name="AcademicPermissionListType">
             	<xsd:sequence>
@@ -400,13 +489,43 @@
             	</xsd:sequence>
             </xsd:complexType>
     
+            <xsd:complexType name="BulkAddUserClassUsersType">
+            	<xsd:complexContent>
+            		<xsd:extension base="pm:OperationRequestType">
+            			<xsd:sequence>
+            				<xsd:element name="userClass"
+            					type="pm:UserClassIDType">
+            				</xsd:element>
+            				<xsd:element name="userList"
+            					type="pm:UserListType">
+            				</xsd:element>
+            				<xsd:element name="lockUsers"
+            					type="xsd:boolean">
+            				</xsd:element>
+            			</xsd:sequence>
+            		</xsd:extension>
+            	</xsd:complexContent>
+            </xsd:complexType>
 
            <xsd:element name="getAcademicPermissionsForAcademic" type="pm:UserIDType">
             </xsd:element>
             <xsd:element name="getAcademicPermissionsForAcademicResponse"
             	type="pm:AcademicPermissionListType">
             </xsd:element>
+            <xsd:element name="getUserClasses"
+            	type="pm:UserClassesRequestType">
+            </xsd:element>
+            <xsd:element name="getUserClassesResponse"
+            	type="pm:UserClassListType">
+            </xsd:element>
 		
+            <xsd:complexType name="UserClassesRequestType">
+            	<xsd:sequence>
+            		<xsd:element name="notActive" type="xsd:boolean" maxOccurs="1" minOccurs="0"></xsd:element>
+            		<xsd:element name="all" type="xsd:boolean" maxOccurs="1" minOccurs="0"></xsd:element>
+            		<xsd:element name="letterRange" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
 		</xsd:schema>
   </wsdl:types>
   <wsdl:message name="getUserClassRequest">
@@ -415,11 +534,35 @@
   <wsdl:message name="getUserClassResponse">
   	<wsdl:part name="parameters" element="pm:getUserClassResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="addUserClassRequest">
+  	<wsdl:part name="parameters" element="pm:addUserClass"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserClassResponse">
+  	<wsdl:part name="parameters" element="pm:addUserClassResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserClassRequest">
+  	<wsdl:part name="parameters" element="pm:deleteUserClass"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserClassResponse">
+  	<wsdl:part name="parameters" element="pm:deleteUserClassResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getPermissionRequest">
   	<wsdl:part name="parameters" element="pm:getPermission"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="getPermissionResponse">
   	<wsdl:part name="parameters" element="pm:getPermissionResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addPermissionRequest">
+  	<wsdl:part name="parameters" element="pm:addPermission"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addPermissionResponse">
+  	<wsdl:part name="parameters" element="pm:addPermissionResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deletePermissionRequest">
+  	<wsdl:part name="parameters" element="pm:deletePermission"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deletePermissionResponse">
+  	<wsdl:part name="parameters" element="pm:deletePermissionResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="getUserRequest">
   	<wsdl:part name="parameters" element="pm:getUser"></wsdl:part>
@@ -427,11 +570,59 @@
   <wsdl:message name="getUserResponse">
   	<wsdl:part name="parameters" element="pm:getUserResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="addUserRequest">
+  	<wsdl:part name="parameters" element="pm:addUser"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserResponse">
+  	<wsdl:part name="parameters" element="pm:addUserResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserRequest">
+  	<wsdl:part name="parameters" element="pm:deleteUser"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserResponse">
+  	<wsdl:part name="parameters" element="pm:deleteUserResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserAssociationRequest">
+  	<wsdl:part name="parameters" element="pm:addUserAssociation"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserAssociationResponse">
+  	<wsdl:part name="parameters" element="pm:addUserAssociationResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserAssociationRequest">
+  	<wsdl:part name="parameters" element="pm:deleteUserAssociation"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserAssociationResponse">
+  	<wsdl:part name="parameters" element="pm:deleteUserAssociationResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserLockRequest">
+  	<wsdl:part name="parameters" element="pm:addUserLock"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserLockResponse">
+  	<wsdl:part name="parameters" element="pm:addUserLockResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserLockRequest">
+  	<wsdl:part name="parameters" element="pm:deleteUserLock"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteUserLockResponse">
+  	<wsdl:part name="parameters" element="pm:deleteUserLockResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:message name="unlockUserLockRequest">
   	<wsdl:part name="parameters" element="pm:unlockUserLock"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="unlockUserLockResponse">
   	<wsdl:part name="parameters" element="pm:unlockUserLockResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addAcademicPermissionRequest">
+  	<wsdl:part name="parameters" element="pm:addAcademicPermission"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addAcademicPermissionResponse">
+  	<wsdl:part name="parameters" element="pm:addAcademicPermissionResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteAcademicPermissionRequest">
+  	<wsdl:part name="parameters" element="pm:deleteAcademicPermission"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteAcademicPermissionResponse">
+  	<wsdl:part name="parameters" element="pm:deleteAcademicPermissionResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="getAcademicPermissionRequest">
   	<wsdl:part name="parameters" element="pm:getAcademicPermission"></wsdl:part>
@@ -439,11 +630,47 @@
   <wsdl:message name="getAcademicPermissionResponse">
   	<wsdl:part name="parameters" element="pm:getAcademicPermissionResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="editUserClassRequest">
+  	<wsdl:part name="parameters" element="pm:editUserClass"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="editUserClassResponse">
+  	<wsdl:part name="parameters" element="pm:editUserClassResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="editUserRequest">
+  	<wsdl:part name="parameters" element="pm:editUser"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="editUserResponse">
+  	<wsdl:part name="parameters" element="pm:editUserResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="editPermissionRequest">
+  	<wsdl:part name="parameters" element="pm:editPermission"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="editPermissionResponse">
+  	<wsdl:part name="parameters" element="pm:editPermissionResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="editAcademicPermissionRequest">
+  	<wsdl:part name="parameters" element="pm:editAcademicPermission"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="editAcademicPermissionResponse">
+  	<wsdl:part name="parameters" element="pm:editAcademicPermissionResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUsersInUserClassRequest">
+  	<wsdl:part name="parameters" element="pm:getUsersInUserClass"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUsersInUserClassResponse">
+  	<wsdl:part name="parameters" element="pm:getUsersInUserClassResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getPermissionsForUserClassRequest">
   	<wsdl:part name="parameters" element="pm:getPermissionsForUserClass"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="getPermissionsForUserClassResponse">
   	<wsdl:part name="parameters" element="pm:getPermissionsForUserClassResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAcademicPermissionsForUserClassRequest">
+  	<wsdl:part name="parameters" element="pm:getAcademicPermissionsForUserClass"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAcademicPermissionsForUserClassResponse">
+  	<wsdl:part name="parameters" element="pm:getAcademicPermissionsForUserClassResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="getPermissionsForUserRequest">
   	<wsdl:part name="parameters" element="pm:getPermissionsForUser"></wsdl:part>
@@ -457,25 +684,88 @@
   <wsdl:message name="getUserClassesForUserResponse">
   	<wsdl:part name="parameters" element="pm:getUserClassesForUserResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="bulkAddUserClassUsersRequest">
+  	<wsdl:part name="parameters" element="pm:bulkAddUserClassUsers"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="bulkAddUserClassUsersResponse">
+  	<wsdl:part name="parameters" element="pm:bulkAddUserClassUsersResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getAcademicPermissionsForAcademicRequest">
   	<wsdl:part name="parameters" element="pm:getAcademicPermissionsForAcademic"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="getAcademicPermissionsForAcademicResponse">
   	<wsdl:part name="parameters" element="pm:getAcademicPermissionsForAcademicResponse"></wsdl:part>
   </wsdl:message>
-
+  <wsdl:message name="getUserClassesRequest">
+  	<wsdl:part name="parameters" element="pm:getUserClasses"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserClassesResponse">
+  	<wsdl:part name="parameters" element="pm:getUserClassesResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="Permissions">
     <wsdl:operation name="getUserClass">
     	<wsdl:input message="pm:getUserClassRequest"></wsdl:input>
     	<wsdl:output message="pm:getUserClassResponse"></wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="addUserClass">
+    	<wsdl:input message="pm:addUserClassRequest"></wsdl:input>
+    	<wsdl:output message="pm:addUserClassResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editUserClass">
+    	<wsdl:input message="pm:editUserClassRequest"></wsdl:input>
+    	<wsdl:output message="pm:editUserClassResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserClass">
+    	<wsdl:input message="pm:deleteUserClassRequest"></wsdl:input>
+    	<wsdl:output message="pm:deleteUserClassResponse"></wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getPermission">
     	<wsdl:input message="pm:getPermissionRequest"></wsdl:input>
     	<wsdl:output message="pm:getPermissionResponse"></wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="addPermission">
+    	<wsdl:input message="pm:addPermissionRequest"></wsdl:input>
+    	<wsdl:output message="pm:addPermissionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editPermission">
+    	<wsdl:input message="pm:editPermissionRequest"></wsdl:input>
+    	<wsdl:output message="pm:editPermissionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePermission">
+    	<wsdl:input message="pm:deletePermissionRequest"></wsdl:input>
+    	<wsdl:output message="pm:deletePermissionResponse"></wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getUser">
     	<wsdl:input message="pm:getUserRequest"></wsdl:input>
     	<wsdl:output message="pm:getUserResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addUser">
+    	<wsdl:input message="pm:addUserRequest"></wsdl:input>
+    	<wsdl:output message="pm:addUserResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editUser">
+    	<wsdl:input message="pm:editUserRequest"></wsdl:input>
+    	<wsdl:output message="pm:editUserResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUser">
+    	<wsdl:input message="pm:deleteUserRequest"></wsdl:input>
+    	<wsdl:output message="pm:deleteUserResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addUserAssociation">
+    	<wsdl:input message="pm:addUserAssociationRequest"></wsdl:input>
+    	<wsdl:output message="pm:addUserAssociationResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserAssociation">
+    	<wsdl:input message="pm:deleteUserAssociationRequest"></wsdl:input>
+    	<wsdl:output message="pm:deleteUserAssociationResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addUserLock">
+    	<wsdl:input message="pm:addUserLockRequest"></wsdl:input>
+    	<wsdl:output message="pm:addUserLockResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserLock">
+    	<wsdl:input message="pm:deleteUserLockRequest"></wsdl:input>
+    	<wsdl:output message="pm:deleteUserLockResponse"></wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="unlockUserLock">
     	<wsdl:input message="pm:unlockUserLockRequest"></wsdl:input>
@@ -485,9 +775,29 @@
     	<wsdl:input message="pm:getAcademicPermissionRequest"></wsdl:input>
     	<wsdl:output message="pm:getAcademicPermissionResponse"></wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="addAcademicPermission">
+    	<wsdl:input message="pm:addAcademicPermissionRequest"></wsdl:input>
+    	<wsdl:output message="pm:addAcademicPermissionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editAcademicPermission">
+    	<wsdl:input message="pm:editAcademicPermissionRequest"></wsdl:input>
+    	<wsdl:output message="pm:editAcademicPermissionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteAcademicPermission">
+    	<wsdl:input message="pm:deleteAcademicPermissionRequest"></wsdl:input>
+    	<wsdl:output message="pm:deleteAcademicPermissionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUsersInUserClass">
+    	<wsdl:input message="pm:getUsersInUserClassRequest"></wsdl:input>
+    	<wsdl:output message="pm:getUsersInUserClassResponse"></wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getPermissionsForUserClass">
     	<wsdl:input message="pm:getPermissionsForUserClassRequest"></wsdl:input>
     	<wsdl:output message="pm:getPermissionsForUserClassResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAcademicPermissionsForUserClass">
+    	<wsdl:input message="pm:getAcademicPermissionsForUserClassRequest"></wsdl:input>
+    	<wsdl:output message="pm:getAcademicPermissionsForUserClassResponse"></wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getPermissionsForUser">
     	<wsdl:input message="pm:getPermissionsForUserRequest"></wsdl:input>
@@ -501,6 +811,14 @@
     	<wsdl:input message="pm:getAcademicPermissionsForAcademicRequest"></wsdl:input>
     	<wsdl:output message="pm:getAcademicPermissionsForAcademicResponse"></wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="bulkAddUserClassUsers">
+    	<wsdl:input message="pm:bulkAddUserClassUsersRequest"></wsdl:input>
+    	<wsdl:output message="pm:bulkAddUserClassUsersResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserClasses">
+    	<wsdl:input message="pm:getUserClassesRequest"></wsdl:input>
+    	<wsdl:output message="pm:getUserClassesResponse"></wsdl:output>
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="PermissionsSOAP" type="pm:Permissions">
   	<soap:binding style="document"
@@ -508,6 +826,36 @@
   	<wsdl:operation name="getUserClass">
   		<soap:operation
   			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUserClass" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="addUserClass">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUserClass" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="editUserClass">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/editUserClass" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteUserClass">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUserClass" />
   		<wsdl:input>
   			<soap:body use="literal" />
   		</wsdl:input>
@@ -525,9 +873,109 @@
   			<soap:body use="literal" />
   		</wsdl:output>
   	</wsdl:operation>
+  	<wsdl:operation name="addPermission">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/addPermission" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="editPermission">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/editPermission" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deletePermission">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/deletePermission" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   	<wsdl:operation name="getUser">
   		<soap:operation
   			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUser" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="addUser">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUser" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="editUser">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/editUser" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteUser">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUser" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="addUserAssociation">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUserAssociation" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteUserAssociation">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUserAssociation" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="addUserLock">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUserLock" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteUserLock">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUserLock" />
   		<wsdl:input>
   			<soap:body use="literal" />
   		</wsdl:input>
@@ -555,9 +1003,59 @@
   			<soap:body use="literal" />
   		</wsdl:output>
   	</wsdl:operation>
+  	<wsdl:operation name="addAcademicPermission">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/addAcademicPermission" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="editAcademicPermission">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/editAcademicPermission" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="deleteAcademicPermission">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteAcademicPermission" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getUsersInUserClass">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUsersInUserClass" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
   	<wsdl:operation name="getPermissionsForUserClass">
   		<soap:operation
   			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/getPermissionsForUserClass" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="getAcademicPermissionsForUserClass">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/getAcademicsForUserClass" />
   		<wsdl:input>
   			<soap:body use="literal" />
   		</wsdl:input>
@@ -585,9 +1083,9 @@
   			<soap:body use="literal" />
   		</wsdl:output>
   	</wsdl:operation>
-  	<wsdl:operation name="getAcademicPermissionsForAcademic">
+  	<wsdl:operation name="bulkAddUserClassUsers">
   		<soap:operation
-  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/getAcademicPermissionsForAcademic" />
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/permissions/bulkAddUserClassUsers" />
   		<wsdl:input>
   			<soap:body use="literal" />
   		</wsdl:input>
@@ -595,7 +1093,7 @@
   			<soap:body use="literal" />
   		</wsdl:output>
   	</wsdl:operation>
-  </wsdl:binding>
+    </wsdl:binding>
   <wsdl:service name="Permissions">
     <wsdl:port binding="pm:PermissionsSOAP" name="PermissionsSOAP">
       <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-Permissions/services/Permissions"/>

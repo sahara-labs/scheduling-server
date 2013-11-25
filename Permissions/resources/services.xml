@@ -6,24 +6,84 @@
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.permissions.intf.PermissionsSOAPImpl</parameter>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.permissions.intf.Permissions</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="addUserLock" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUserLock</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/addUserLockResponse</outputActionMapping>
+        </operation>
+        <operation name="addPermission" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/addPermission</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/addPermissionResponse</outputActionMapping>
+        </operation>
+        <operation name="addUser" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUser</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/addUserResponse</outputActionMapping>
+        </operation>
+        <operation name="deleteUser" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUser</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/deleteUserResponse</outputActionMapping>
+        </operation>
         <operation name="getUserClassesForUser" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUserClassesForUser</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getUserClassesForUserResponse</outputActionMapping>
+        </operation>
+        <operation name="deleteAcademicPermission" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteAcademicPermission</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/deleteAcademicPermissionResponse</outputActionMapping>
         </operation>
         <operation name="getAcademicPermissionsForAcademic" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getAcademicPermissionsForAcademic</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getAcademicPermissionsForAcademicResponse</outputActionMapping>
         </operation>
+        <operation name="deleteUserAssociation" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUserAssociation</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/deleteUserAssociationResponse</outputActionMapping>
+        </operation>
         <operation name="getPermissionsForUserClass" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getPermissionsForUserClass</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getPermissionsForUserClassResponse</outputActionMapping>
         </operation>
+        <operation name="editPermission" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/editPermission</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/editPermissionResponse</outputActionMapping>
+        </operation>
+        <operation name="editUserClass" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/editUserClass</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/editUserClassResponse</outputActionMapping>
+        </operation>
+        <operation name="deleteUserLock" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUserLock</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/deleteUserLockResponse</outputActionMapping>
+        </operation>
+        <operation name="editAcademicPermission" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/editAcademicPermission</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/editAcademicPermissionResponse</outputActionMapping>
+        </operation>
+        <operation name="deleteUserClass" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/deleteUserClass</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/deleteUserClassResponse</outputActionMapping>
+        </operation>
+        <operation name="addUserClass" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUserClass</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/addUserClassResponse</outputActionMapping>
+        </operation>
+        <operation name="deletePermission" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/deletePermission</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/deletePermissionResponse</outputActionMapping>
+        </operation>
         <operation name="getPermissionsForUser" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getPermissionsForUser</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getPermissionsForUserResponse</outputActionMapping>
+        </operation>
+        <operation name="getUsersInUserClass" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUsersInUserClass</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getUsersInUserClassResponse</outputActionMapping>
+        </operation>
+        <operation name="addUserAssociation" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/addUserAssociation</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/addUserAssociationResponse</outputActionMapping>
         </operation>
         <operation name="getUser" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUser</actionMapping>
@@ -33,9 +93,25 @@
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getAcademicPermission</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getAcademicPermissionResponse</outputActionMapping>
         </operation>
+        <operation name="addAcademicPermission" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/addAcademicPermission</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/addAcademicPermissionResponse</outputActionMapping>
+        </operation>
         <operation name="unlockUserLock" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/unlockUserLock</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/unlockUserLockResponse</outputActionMapping>
+        </operation>
+        <operation name="getUserClasses" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUserClasses</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getUserClassesResponse</outputActionMapping>
+        </operation>
+        <operation name="bulkAddUserClassUsers" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/bulkAddUserClassUsers</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/bulkAddUserClassUsersResponse</outputActionMapping>
+        </operation>
+        <operation name="getAcademicPermissionsForUserClass" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getAcademicPermissionsForUserClass</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getAcademicPermissionsForUserClassResponse</outputActionMapping>
         </operation>
         <operation name="getPermission" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getPermission</actionMapping>
@@ -44,6 +120,10 @@
         <operation name="getUserClass" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/getUserClass</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/getUserClassResponse</outputActionMapping>
+        </operation>
+        <operation name="editUser" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/permissions">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/editUser</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/permissions/Permissions/editUserResponse</outputActionMapping>
         </operation>
     </service>
 </serviceGroup>

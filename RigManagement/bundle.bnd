@@ -1,6 +1,6 @@
 Bundle-Name: RigManagement
 Bundle-SymbolicName: SchedulingServer-RigManagement
-Bundle-Version: 2.0.0
+Bundle-Version: 1.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -8,7 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.w3c.dom, \
 javax.xml, javax.xml.*, javax.xml.datatype, \
 javax.xml.namespace, javax.xml.xpath, !javax.portlet, \
-org.apache.log4j, org.apache.velocity, org.apache.velocity.*, \
+org.apache.log4j, \
 !org.jdom.*, !nu.xom, \
 !com.sun.*, !org.apache.*, !org.dom4j.*, !org.relaxng.*, \
 !au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup, \

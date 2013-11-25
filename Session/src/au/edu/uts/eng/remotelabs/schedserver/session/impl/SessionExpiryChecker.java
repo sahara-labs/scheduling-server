@@ -44,17 +44,16 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueInfo;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigNotifier;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigNotifier;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 
 /**
@@ -65,13 +64,6 @@ public class SessionExpiryChecker implements Runnable
 {
     /** Minimum extension duration. */
     public static final int TIME_EXT = 300;
-    
-    /** The types of checked sessions. */
-    public static final String[] CHECKED_SESSION_TYPES = new String[] { 
-        ResourcePermission.RIG_PERMISSION,
-        ResourcePermission.TYPE_PERMISSION,
-        ResourcePermission.CAPS_PERMISSION
-    };
     
     /** Logger. */
     private Logger logger;
@@ -103,7 +95,6 @@ public class SessionExpiryChecker implements Runnable
             
             Criteria query = db.createCriteria(Session.class);
             query.add(Restrictions.eq("active", Boolean.TRUE))
-                 .add(Restrictions.in("resourceType", CHECKED_SESSION_TYPES))
                  .add(Restrictions.isNotNull("assignmentTime"));
             
             Date now = new Date();
@@ -134,8 +125,6 @@ public class SessionExpiryChecker implements Runnable
                         
                         this.logger.info("Terminating session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
                                 ses.getAssignedRigName() + " because it is expired and the grace period has elapsed.");
-                        
-                        SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
                         if (this.notTest) new RigReleaser().release(ses, db);
                     }
                 }
@@ -164,7 +153,6 @@ public class SessionExpiryChecker implements Runnable
                         db.getTransaction().commit();
                         
                         /* Notification warning. */
-                        SessionActivator.notifySessionEvent(SessionEvent.GRACE, ses, db);
                         if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
                         		"Please finish and exit.", ses, db);
                     }
@@ -186,7 +174,6 @@ public class SessionExpiryChecker implements Runnable
                         db.getTransaction().commit();
                         
                         /* Notification warning. */
-                        SessionActivator.notifySessionEvent(SessionEvent.GRACE, ses, db);
                         if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
                         		"Please finish and exit. Please note, you have a reservation that starts after this" +
                         		" session so do not leave.", ses, db);
@@ -205,7 +192,6 @@ public class SessionExpiryChecker implements Runnable
                         db.getTransaction().commit();
                         
                         /* Notification warning. */
-                        SessionActivator.notifySessionEvent(SessionEvent.GRACE, ses, db);
                         if (this.notTest) new RigNotifier().notify("Your session will end in " + remaining + " seconds. " +
                                 "After this you be removed, so please logoff.", ses, db);
                     }
@@ -225,8 +211,6 @@ public class SessionExpiryChecker implements Runnable
                         db.beginTransaction();
                         db.flush();
                         db.getTransaction().commit();
-                        
-                        SessionActivator.notifySessionEvent(SessionEvent.EXTENDED, ses, db);
                     }
                 }
                 /******************************************************************
@@ -250,7 +234,6 @@ public class SessionExpiryChecker implements Runnable
                     db.flush();
                     db.getTransaction().commit();
                     
-                    SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
                     if (this.notTest) new RigReleaser().release(ses, db);
                 }
                 /******************************************************************

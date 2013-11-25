@@ -42,6 +42,8 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 import static javax.persistence.GenerationType.AUTO;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,6 +52,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -131,11 +134,72 @@ public class Session implements java.io.Serializable
     
     /** The number of session extensions. */
     private short extensions;
-
+    
+    /** Whether the session is a slave session */
+    private boolean isSlave = false;
+    
+    private Set<Rig> rigs = new HashSet<Rig>(0);
 
     public Session()
     {
         /* Bean style constructor. */
+    }
+
+    public Session(final String userName, final String userNamespace,
+            final Date requestTime, final String resourceType,
+            final String requestedResourceName, final short priority,
+            final Date activityLastUpdated, final String assignedRigName,
+            final Date assignmentTime, final boolean active,
+            final Date removalTime, final String removalReason,
+            final String codeReference, final short extensions)
+    {
+        this.userName = userName;
+        this.userNamespace = userNamespace;
+        this.requestTime = requestTime;
+        this.resourceType = resourceType;
+        this.requestedResourceName = requestedResourceName;
+        this.priority = priority;
+        this.activityLastUpdated = activityLastUpdated;
+        this.assignedRigName = assignedRigName;
+        this.assignmentTime = assignmentTime;
+        this.active = active;
+        this.removalTime = removalTime;
+        this.removalReason = removalReason;
+        this.codeReference = codeReference;
+        this.extensions = extensions;
+    }
+
+    public Session(
+            final User user,
+            final ResourcePermission resourcePermissionByResourcePermissionId,
+            final Rig rig, final String userName, final String userNamespace,
+            final Date requestTime, final String resourceType,
+            final Long requestedResourceId, final String requestedResourceName,
+            final short priority, final Date activityLastUpdated,
+            final String assignedRigName, final Date assignmentTime,
+            final boolean active, final Date removalTime,
+            final String removalReason, final String codeReference,
+            final short extensions, final Set<Rig> rigs)
+    {
+        this.user = user;
+        this.resourcePermission = resourcePermissionByResourcePermissionId;
+        this.rig = rig;
+        this.userName = userName;
+        this.userNamespace = userNamespace;
+        this.requestTime = requestTime;
+        this.resourceType = resourceType;
+        this.requestedResourceId = requestedResourceId;
+        this.requestedResourceName = requestedResourceName;
+        this.priority = priority;
+        this.activityLastUpdated = activityLastUpdated;
+        this.assignedRigName = assignedRigName;
+        this.assignmentTime = assignmentTime;
+        this.active = active;
+        this.removalTime = removalTime;
+        this.removalReason = removalReason;
+        this.codeReference = codeReference;
+        this.extensions = extensions;
+        this.rigs = rigs;
     }
 
     @Id
@@ -387,5 +451,27 @@ public class Session implements java.io.Serializable
     public void setExtensions(final short extensions)
     {
         this.extensions = extensions;
+    }
+    
+    @Column(name = "is_slave_session", nullable = true)
+    public boolean getIsSlave()
+    {
+        return this.isSlave;
+    }
+    
+    public void setIsSlave(final boolean isSlave)
+    {
+        this.isSlave = isSlave;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "session")
+    public Set<Rig> getRigs()
+    {
+        return this.rigs;
+    }
+
+    public void setRigs(final Set<Rig> rigs)
+    {
+        this.rigs = rigs;
     }
 }

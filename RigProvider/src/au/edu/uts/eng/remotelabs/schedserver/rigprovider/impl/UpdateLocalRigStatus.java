@@ -44,9 +44,10 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigOfflineScheduleDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigProviderActivator;
 
 /**
@@ -137,7 +138,10 @@ public class UpdateLocalRigStatus
             this.rigLogDao.addOnlineLog(rig, "Rig came online.");
 
             /* Fire online rig event. */
-            RigProviderActivator.notifyRigEvent(RigStateChangeEvent.ONLINE, rig, this.rigDao.getSession());
+            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
+            {
+                list.eventOccurred(RigStateChangeEvent.ONLINE, rig, this.rigDao.getSession());
+            }
         }
         else if (rig.isOnline() && !online)
         {
@@ -159,7 +163,10 @@ public class UpdateLocalRigStatus
             }
             
             /* Fire offline rig event. */
-            RigProviderActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, this.rigDao.getSession());
+            for (RigEventListener list : RigProviderActivator.getRigEventListeners())
+            {
+                list.eventOccurred(RigStateChangeEvent.OFFLINE, rig, this.rigDao.getSession());
+            }
         }
         else
         {
@@ -178,11 +185,19 @@ public class UpdateLocalRigStatus
         return true;
     }
 
+    /**
+     * @return the failedReason
+     */
     public String getFailedReason()
     {
         return this.failedReason;
     }
-
+    
+    /**
+     * Returns the in use database session.
+     * 
+     * @return database session
+     */
     public Session getSession()
     {
         return this.rigDao.getSession();

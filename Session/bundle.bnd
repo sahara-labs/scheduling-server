@@ -1,6 +1,6 @@
 Bundle-Name: Session
 Bundle-SymbolicName: SchedulingServer-Session
-Bundle-Version: 2.0.0
+Bundle-Version: 1.1.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -16,13 +16,10 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.session.intf,\
-	au.edu.uts.eng.remotelabs.schedserver.session.intf.types,\
-	au.edu.uts.eng.remotelabs.schedserver.session.impl,\
-	au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl
-
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.session, \
-au.edu.uts.eng.remotelabs.schedserver.session.pojo
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.session.intf, \
+au.edu.uts.eng.remotelabs.schedserver.session.intf.types, \
+au.edu.uts.eng.remotelabs.schedserver.session.impl
+Export-Package: au.edu.uts.eng.remotelabs.schedserver.session
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn

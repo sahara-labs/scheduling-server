@@ -38,9 +38,9 @@ package au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine;
 
 import org.hibernate.Session;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 
 /**
  * Listener for rigs that have been registered.
@@ -52,7 +52,7 @@ public class RigRegisteredListener implements RigEventListener
     {
         if (event == RigStateChangeEvent.REGISTERED)
         {
-            ((SlotBookingEngine)BookingsActivator.getBookingEngine()).rigRegistered(rig, db);
+            ((SlotBookingEngine)BookingActivator.getBookingEngine()).rigRegistered(rig, db);
         }
     }
 }

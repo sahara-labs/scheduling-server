@@ -37,37 +37,27 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.session;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.apache.axis2.transport.http.AxisServlet;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.RigShutdownSessonStopper;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionExpiryChecker;
-import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
-import au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl.SessionServiceImpl;
 
 /**
  * Activator for the Session bundle which handles running sessions.
@@ -78,19 +68,13 @@ public class SessionActivator implements BundleActivator
     private ServiceRegistration<ServletContainerService> soapReg;
     
     /** Session expiry checked runnable task service. */
-    private ServiceRegistration<Runnable> checkerTask;
+    private ServiceRegistration<Runnable> sessionCheckerReg;
     
     /** Shutdown event notifier session terminator service. */
     private ServiceRegistration<RigEventListener> terminatorService;
     
-    /** Session POJO service registration. */
-    private ServiceRegistration<SessionService> pojoReg;
-    
     /** Booking service tracker. */
     private static ServiceTracker<BookingEngineService, BookingEngineService> bookingsTracker;
-    
-    /** The list of session event listeners. */
-    private static List<SessionEventListener> sessionListeners;
     
     /** Logger. */
     private Logger logger;
@@ -111,26 +95,12 @@ public class SessionActivator implements BundleActivator
         props.put("period", "10");
         SessionExpiryChecker task = new SessionExpiryChecker();
         task.run(); // Expire any old sessions
-        this.checkerTask = context.registerService(Runnable.class, task, props);
+        this.sessionCheckerReg = context.registerService(Runnable.class, task, props);
         
         /* Register the rig event notifier. */
         this.terminatorService = context.registerService(RigEventListener.class, new RigShutdownSessonStopper(), null);
         
-        /* Add service listener to add and remove registered session event listeners. */
-        SessionActivator.sessionListeners = new ArrayList<SessionEventListener>();
-        EventServiceListener<SessionEventListener> sesServListener = 
-                new EventServiceListener<SessionEventListener>(sessionListeners, context);
-        context.addServiceListener(sesServListener, 
-                '(' + Constants.OBJECTCLASS + '=' + SessionEventListener.class.getName() + ')');
-        for (ServiceReference<SessionEventListener> ref : context.getServiceReferences(SessionEventListener.class, null))
-        {
-            sesServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
-        }
-        
-        /* Register the Session POJO service. */
-        this.pojoReg = context.registerService(SessionService.class, new SessionServiceImpl(), null);
-        
-        /* Register the Session SOAP service. */
+        /* Register the queuer service. */
         this.logger.debug("Registering the Queuer SOAP interface service.");
         ServletContainerService soapService = new ServletContainerService();
         soapService.addServlet(new ServletContainer(new AxisServlet(), true));
@@ -142,13 +112,12 @@ public class SessionActivator implements BundleActivator
 	{
 	    this.logger.info("Stopping the Session bundle...");
 	    this.soapReg.unregister();
-	    this.pojoReg.unregister();
 	    this.terminatorService.unregister();
-	    this.checkerTask.unregister();
+	    this.sessionCheckerReg.unregister();
 	    SessionActivator.bookingsTracker.close();
 	    
 	    /* Terminate all in progress sessions. */
-	    org.hibernate.Session ses = DataAccessActivator.getNewSession();
+	    Session ses = DataAccessActivator.getNewSession();
         if (ses != null)
         {
             Query qu = ses.createQuery("UPDATE Session SET active=:false, removal_reason=:reason, removal_time=:time " +
@@ -164,8 +133,6 @@ public class SessionActivator implements BundleActivator
             this.logger.info("Terminated " + num + " sessions for shutdown.");
             ses.close();
         }
-        
-        SessionActivator.sessionListeners = null;
 	}
 	
 	/**
@@ -179,21 +146,4 @@ public class SessionActivator implements BundleActivator
 	    
 	    return SessionActivator.bookingsTracker.getService();
 	}
-	
-	/**
-     * Notifies the session event listeners of an event.
-     * 
-     * @param event type of event
-     * @param session session change
-     * @param db database
-     */
-    public static void notifySessionEvent(SessionEvent event, Session session, org.hibernate.Session db)
-    {
-        if (sessionListeners == null) return;
-        
-        for (SessionEventListener listener : sessionListeners)
-        {
-            listener.eventOccurred(event, session, db);
-        }
-    }
 }

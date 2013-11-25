@@ -14,6 +14,11 @@
       <xsd:element name="addUserToQueueResponse"
       	type="qu:InQueueType">
       </xsd:element>
+      <xsd:element name="addUserAsSlave" type="qu:SlaveRequestType">
+      </xsd:element>
+      <xsd:element name="addUserAsSlaveResponse"
+      	type="qu:InQueueType">
+      </xsd:element>
       <xsd:element name="getUserQueuePosition" type="qu:UserIDType">
       </xsd:element>
       <xsd:element name="getUserQueuePositionResponse"
@@ -147,7 +152,28 @@
       	</xsd:complexContent>
       </xsd:complexType>
     
-    
+      <xsd:complexType name="SlaveRequestType">
+      	<xsd:complexContent>
+      		<xsd:extension base="qu:OperationRequestType">
+      			<xsd:sequence>
+      				<xsd:element name="userID" type="qu:UserIDType">
+      				</xsd:element>
+      				<xsd:element name="permissionID"
+      					type="qu:PermissionIDType" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+					<xsd:element name="rigID" type="xsd:string"
+      					maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+					<xsd:element name="password" type="xsd:string"
+      					maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:element name="code"
+      					type="xsd:base64Binary" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
       <xsd:complexType name="UserQueueType">
       	<xsd:complexContent>
       		<xsd:extension base="qu:InQueueType">
@@ -170,6 +196,7 @@
       		<xsd:element name="isQueueable" type="xsd:boolean"></xsd:element>
       		<xsd:element name="isBookable" type="xsd:boolean"></xsd:element>
       		<xsd:element name="isCodeAssignable" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="isSlaveable" type="xsd:boolean"></xsd:element>
       		<xsd:element name="queuedResource"
       			type="qu:ResourceIDType">
       		</xsd:element>
@@ -200,6 +227,12 @@
   </wsdl:message>
   <wsdl:message name="addUserToQueueResponse">
   	<wsdl:part name="parameters" element="qu:addUserToQueueResponse"></wsdl:part>
+  </wsdl:message>
+    <wsdl:message name="addUserAsSlaveRequest">
+  	<wsdl:part name="parameters" element="qu:addUserAsSlave"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addUserAsSlaveResponse">
+  	<wsdl:part name="parameters" element="qu:addUserAsSlaveResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="getUserQueuePositionRequest">
   	<wsdl:part name="parameters" element="qu:getUserQueuePosition"></wsdl:part>
@@ -241,6 +274,10 @@
     <wsdl:operation name="addUserToQueue">
     	<wsdl:input message="qu:addUserToQueueRequest"></wsdl:input>
     	<wsdl:output message="qu:addUserToQueueResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addUserAsSlave">
+    	<wsdl:input message="qu:addUserAsSlaveRequest"></wsdl:input>
+    	<wsdl:output message="qu:addUserAsSlaveResponse"></wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getUserQueuePosition">
     	<wsdl:input message="qu:getUserQueuePositionRequest"></wsdl:input>
@@ -291,6 +328,17 @@
   	<wsdl:operation name="addUserToQueue">
   		<soap:operation
   			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/addUserToQueue">
+  		</soap:operation>
+  		<wsdl:input>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal"></soap:body>
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="addUserAsSlave">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/queuer/addUserAsSlave">
   		</soap:operation>
   		<wsdl:input>
   			<soap:body use="literal"></soap:body>

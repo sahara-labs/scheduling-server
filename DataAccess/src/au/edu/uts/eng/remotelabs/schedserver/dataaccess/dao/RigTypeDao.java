@@ -36,14 +36,11 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao;
 
-import java.util.List;
-
+import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 
 /**
@@ -75,17 +72,6 @@ public class RigTypeDao extends GenericDao<RigType>
     }
     
     /**
-     * Returns the list of rig types ordered by name.
-     * 
-     * @return list of entities
-     */
-    @SuppressWarnings("unchecked")
-	public List<RigType> orderedList()
-    {
-        return this.session.createCriteria(this.clazz).addOrder(Order.asc("name")).list();
-    }
-    
-    /**
      * Returns the rig type with the specified name. If non exist, 
      * <code>null</code> is returned.
      * 
@@ -94,65 +80,29 @@ public class RigTypeDao extends GenericDao<RigType>
      */
     public RigType findByName(String name)
     {
-        return (RigType) this.session.createCriteria(this.clazz)
-                .add(Restrictions.eq("name", name))
-                .uniqueResult();
-    }
-    
-    /**
-     * Finds a meta rig with the specified name and meta data.
-     * 
-     * @param name name of rig type
-     * @param meta meta data
-     * @return rig type or null if not found
-     */
-    public RigType findMetaType(String name, String meta)
-    {
-        return (RigType) this.session.createCriteria(this.clazz)
-                .add(Restrictions.eq("name", name))
-                .add(Restrictions.like("meta", '%' + meta + '%'))
-                .uniqueResult();
+        Criteria cri = this.session.createCriteria(this.clazz);
+        cri.add(Restrictions.eq("name", name));
+        return (RigType) cri.uniqueResult();
     }
     
     /**
      * If a rig type exists, a persistent instance of it's record is returned,
      * if not a new rig type is created with all default parameters and 
      * returned.
-     * <br />
-     * If the managed flag already exists, the managed flag is ignored.
      * 
-     * @param name the name of a rig type
-     * @param managed whether the rig type is managed
+     * @param typeName the name of a rig type
      * @return rig type persistent instance
      */
-    public RigType loadOrCreate(final String name, boolean managed)
+    public RigType loadOrCreate(final String typeName)
     {
-        return this.loadOrCreate(name, managed, null, null);
-    }
-    
-    /**
-     * If a rig type exists, a persistent instance of it's record is returned,
-     * if not a new rig type is created with all default parameters and 
-     * returned.
-     * <br />
-     * If the rig type already exists, the managed flag is ignored.
-     * 
-     * @param name the name of a rig type
-     * @param managed whether the rig type is managed
-     * @param meta meta data about rig (optional)
-     * @param site the site the rig type resides
-     * @return rig type persistent instance
-     */
-    public RigType loadOrCreate(final String name, boolean managed, String meta, RemoteSite site)
-    {
-        RigType rigType = this.findByName(name);
+        RigType rigType = this.findByName(typeName);
+        
         if (rigType == null)
         {
             rigType = new RigType();
-            rigType.setName(name);
+            rigType.setName(typeName);
             rigType.setCodeAssignable(Boolean.parseBoolean(
                     DataAccessActivator.getProperty("Default_Rig_Type_Is_Code_Assignable", "false")));
-            rigType.setManaged(managed);
             
             /* Load the default log off grace period. */
             try
@@ -169,17 +119,7 @@ public class RigTypeDao extends GenericDao<RigType>
             rigType.setSetUpTime(0);
             rigType.setTearDownTime(0);
             
-            if (meta != null)
-            {
-                rigType.setMeta(meta);
-            }
-            
-            if (site != null)
-            {
-                rigType.setSite(site);
-            }
-            
-            this.logger.debug("Rig type '" + name + "' does not exist, creating a new rig type with parameters: " +
+            this.logger.debug("Rig type '" + typeName + "' does not exist, creating a new rig type with parameters: " +
                     "name=" + rigType.getName() + ", code assignable=" + rigType.isCodeAssignable() + 
                     ". logoff grace=" + rigType.getLogoffGraceDuration() + " seconds.");
             rigType = this.persist(rigType);

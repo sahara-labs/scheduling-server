@@ -91,8 +91,8 @@ public class Bookings implements Serializable
     /** The namespace of the user. */
     private String userNamespace;
     
-    /** The type of resource that has been booked, either 'RIG', 'TYPE',
-     *  'CAPABILITY' or 'CONSUMER'. */
+    /** The type of resource that has been booked, either 'RIG', 'TYPE' or
+     *  'CAPABILITY'. */
     private String resourceType;
     
     /** The booked rig, if it is a rig booking. */
@@ -103,9 +103,6 @@ public class Bookings implements Serializable
     
     /** The booking request capabilities, if it is a rig capability booking. */
     private RequestCapabilities requestCapabilities;
-    
-    /** Provider identifier if this is a consumer permission. */
-    private Integer providerId;
     
     /** The session that was started from this booking. */
     private Session session;
@@ -276,17 +273,6 @@ public class Bookings implements Serializable
     public void setRequestCapabilities(RequestCapabilities requestCapability)
     {
         this.requestCapabilities = requestCapability;
-    }
-    
-    @Column(name = "provider_id", nullable = true)
-    public Integer getProviderId()
-    {
-        return this.providerId;
-    }
-    
-    public void setProviderId(final Integer providerId)
-    {
-        this.providerId = providerId;
     }
 
     @OneToOne(optional = true)

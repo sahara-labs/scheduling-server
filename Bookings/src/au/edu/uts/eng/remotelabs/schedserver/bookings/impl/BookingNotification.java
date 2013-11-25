@@ -41,7 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
@@ -73,7 +73,7 @@ public class BookingNotification
      */
     public void notifyCancel()
     {
-        MessengerService service = BookingsActivator.getMessengerService();
+        MessengerService service = BookingActivator.getMessengerService();
         if (service == null)
         {
             this.logger.warn("Unable send booking cancellation email to user " + this.booking.getUser().qName() + 
@@ -99,7 +99,7 @@ public class BookingNotification
      */
     public void notifyUserCancel()
     {
-        MessengerService service = BookingsActivator.getMessengerService();
+        MessengerService service = BookingActivator.getMessengerService();
         if (service == null)
         {
             this.logger.warn("Unable send booking cancellation email to user " + this.booking.getUser().qName() + 
@@ -124,7 +124,7 @@ public class BookingNotification
      */
     public void notifyCreation()
     {
-        MessengerService service = BookingsActivator.getMessengerService();
+        MessengerService service = BookingActivator.getMessengerService();
         if (service == null)
         {
             this.logger.warn("Unable send booking confirmation email to user " + this.booking.getUser().qName() + 
@@ -150,7 +150,7 @@ public class BookingNotification
      */
     public void notifyStarting()
     {
-        MessengerService service = BookingsActivator.getMessengerService();
+        MessengerService service = BookingActivator.getMessengerService();
         if (service == null)
         {
             this.logger.warn("Unable send booking starting email to user " + this.booking.getUser().qName() + 

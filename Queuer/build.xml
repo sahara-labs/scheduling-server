@@ -40,7 +40,7 @@ Date: 28th March 2010
 	<property name="service.archive.name" value="Queuer.aar" />
 	
     <target name="build" depends="configurationBundle,loggerBundle,dataAccessBundle,
-									rigProviderBundle,bookingsBundle,serverBundle">
+									rigOperationsBundle,rigProviderBundle,bookingsBundle,serverBundle">
         <buildProject/>
     </target>
 </project>

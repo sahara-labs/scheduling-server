@@ -2,18 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RigManagement
 Bundle-SymbolicName: SchedulingServer-RigManagement
-Bundle-Version: 2.0.0
+Bundle-Version: 1.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings,
- au.edu.uts.eng.remotelabs.schedserver.bookings.pojo,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
- au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener,
  au.edu.uts.eng.remotelabs.schedserver.logger,
- au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy,
- au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types,
- au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests,
+ au.edu.uts.eng.remotelabs.schedserver.rigoperations,
+ au.edu.uts.eng.remotelabs.schedserver.rigproxy,
  au.edu.uts.eng.remotelabs.schedserver.server,
  javax.activation,
  javax.mail,
@@ -49,9 +46,6 @@ Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings,
  javax.xml.ws.spi,
  javax.xml.ws.wsaddressing,
  javax.xml.xpath,
- org.apache.velocity,
- org.apache.velocity.app,
- org.apache.velocity.context,
  org.hibernate,
  org.hibernate.criterion,
  org.osgi.framework;version="1.3.0",

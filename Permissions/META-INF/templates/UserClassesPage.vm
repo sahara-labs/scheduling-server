@@ -19,8 +19,8 @@
 	</ul>
 </div>
 
-<div id="userclasses" class="box">
-	<div class="perm-pagetitle box-title">
+<div id="userclasses" class="perm-page">
+	<div class="perm-pagetitle">
 		<span class="ui-icon ui-icon-person"></span>
 		<span id="secondclassicon" class="ui-icon ui-icon-person"></span>
         User Classes:
@@ -31,15 +31,15 @@
 	</div>
 	
 	#if ( $userClasses.size() > 0 )
-	<ul id="userclasslist" class="box-list">
+	<ul id="userclasslist" class="perm-list">
         #foreach( $uc in $userClasses )
 			#set( $id = $uc.getName() )
         <li id="$id" class="perm-userclass">
-            <a class="box-list-title #if( $uc.isActive() ) activeclass #else inactiveclass #end">
+            <a class="perm-userclasstitle #if( $uc.isActive() ) activeclass #else inactiveclass #end">
 				<span class="ui-icon ui-icon-circle-arrow-e"></span>
 				#removeUnderscores( $uc.getName().replaceAll(" ", "") )
 			</a>
-			<div class="perm-userclassdetails box-list-details">
+			<div class="perm-userclassdetails">
 				
 				## User class section.
 				<div class="perm-userclasssection">
@@ -168,7 +168,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	/* Event handler for the accordian. */
-	$(".box-list-title").click(function() {
+	$(".perm-userclasstitle").click(function() {
 		var details = $(this).next();
 		var isClosed = details.css("display") == "none";
 		

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:rcp="http://remotelabs.eng.uts.edu.au/schedserver/rigclientproxy" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="RigClientProxy" targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/rigclientproxy">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://remotelabs.eng.uts.edu.au/schedserver/rigclientproxy">
+      <xsd:element name="allocateCallback"
+      	type="rcp:CallbackRequestType">
+      </xsd:element>
+      <xsd:element name="allocateCallbackResponse"
+      	type="rcp:CallbackResponseType">
+      </xsd:element>
+      <xsd:element name="slaveAllocateCallback"
+      	type="rcp:CallbackRequestType">
+      </xsd:element>
+      <xsd:element name="slaveAllocateCallbackResponse"
+      	type="rcp:CallbackResponseType">
+      </xsd:element>
+      <xsd:element name="releaseCallback"
+      	type="rcp:CallbackRequestType">
+      </xsd:element>
+      <xsd:element name="releaseCallbackResponse"
+      	type="rcp:CallbackResponseType">
+      </xsd:element>
+      <xsd:element name="slaveReleaseCallback"
+      	type="rcp:SlaveCallbackRequestType">
+      </xsd:element>
+      <xsd:element name="slaveReleaseCallbackResponse"
+      	type="rcp:SlaveCallbackResponseType">
+      </xsd:element>
+
+      <xsd:complexType name="CallbackResponseType">
+      	<xsd:sequence>
+      		<xsd:element name="success" type="xsd:boolean" maxOccurs="1" minOccurs="0"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="CallbackRequestType">
+      	<xsd:sequence>
+      		<xsd:element name="rigname" type="xsd:string"></xsd:element>
+      		<xsd:element name="success" type="xsd:boolean"></xsd:element>
+      		<xsd:element name="error" type="rcp:ErrorType" maxOccurs="1" minOccurs="0"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    
+      <xsd:complexType name="ErrorType">
+      	<xsd:sequence>
+      		<xsd:element name="code" type="xsd:int"></xsd:element>
+      		<xsd:element name="operation" type="xsd:string"></xsd:element>
+      		<xsd:element name="reason" type="xsd:string"></xsd:element>
+      		<xsd:element name="trace" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      	</xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="allocateCallbackRequest">
+    <wsdl:part element="rcp:allocateCallback" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="allocateCallbackResponse">
+    <wsdl:part element="rcp:allocateCallbackResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="slaveAllocateCallbackRequest">
+    <wsdl:part element="rcp:slaveAllocateCallback" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="slaveAllocateCallbackResponse">
+    <wsdl:part element="rcp:slaveAllocateCallbackResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="releaseCallbackRequest">
+  	<wsdl:part name="parameters" element="rcp:releaseCallback"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="releaseCallbackResponse">
+  	<wsdl:part name="parameters" element="rcp:releaseCallbackResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="slaveReleaseCallbackRequest">
+  	<wsdl:part name="parameters" element="rcp:slaveReleaseCallback"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="slaveReleaseCallbackResponse">
+  	<wsdl:part name="parameters" element="rcp:slaveReleaseCallbackResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="RigClientProxy">
+    <wsdl:operation name="allocateCallback">
+      <wsdl:input message="rcp:allocateCallbackRequest"/>
+      <wsdl:output message="rcp:allocateCallbackResponse"/>
+    </wsdl:operation>
+     <wsdl:operation name="slaveAllocateCallback">
+      <wsdl:input message="rcp:slaveAllocateCallbackRequest"/>
+      <wsdl:output message="rcp:slaveAllocateCallbackResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="releaseCallback">
+    	<wsdl:input message="rcp:releaseCallbackRequest"></wsdl:input>
+    	<wsdl:output message="rcp:releaseCallbackResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="slaveReleaseCallback">
+    	<wsdl:input message="rcp:slaveReleaseCallbackRequest"></wsdl:input>
+    	<wsdl:output message="rcp:slaveReleaseCallbackResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="RigClientProxySOAP" type="rcp:RigClientProxy">
+  	<soap:binding style="document"
+  		transport="http://schemas.xmlsoap.org/soap/http" />
+  	<wsdl:operation name="allocateCallback">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/rigclientproxy/NewOperation" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="releaseCallback">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/rigclientproxy/releaseCallback" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RigClientProxy">
+    <wsdl:port binding="rcp:RigClientProxySOAP" name="RigClientProxySOAP">
+      <soap:address location="http://remotelabs.eng.uts.edu.au:8080/SchedulingServer-RigClientProxy/services/RigClientProxy"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

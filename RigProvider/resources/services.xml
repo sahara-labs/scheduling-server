@@ -6,7 +6,7 @@
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProviderMessageReceiverInOut"/>
         </messageReceivers>
-        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProviderSOAPImpl</parameter>
+        <parameter name="ServiceClass">au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.RigProvider</parameter>
         <parameter name="useOriginalwsdl">true</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="removeRig" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/localrigprovider">

@@ -43,18 +43,17 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
-import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigMaintenance;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigMaintenance;
+import au.edu.uts.eng.remotelabs.schedserver.rigoperations.RigReleaser;
 
 /**
  * Notifies a rig to go into maintenance if a it is in a maintenance 
@@ -122,7 +121,6 @@ public class RigMaintenanceNotifier implements Runnable
                     ses.setActive(false);
                     ses.setRemovalTime(pe);
                     ses.setRemovalReason("Rig going into maintenance.");
-                    RigManagementActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
 
                     if (this.notTest) new RigReleaser().release(ses, db);
                 }

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Permissions
 Bundle-SymbolicName: SchedulingServer-Permissions
-Bundle-Version: 2.0.0
+Bundle-Version: 1.1.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.permissions.PermissionActivator
 Bundle-Vendor: University of Technology, Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -47,9 +47,6 @@ Import-Package: au.edu.uts.eng.remotelabs.schedserver.config,
  javax.xml.ws.spi,
  javax.xml.ws.wsaddressing,
  javax.xml.xpath,
- org.apache.velocity,
- org.apache.velocity.app,
- org.apache.velocity.context,
  org.hibernate,
  org.hibernate.criterion,
  org.osgi.framework;version="0.0.0",
@@ -83,4 +80,5 @@ Bundle-ClassPath: .,
  lib/woden-impl-dom-1.0M8.jar,
  lib/wsdl4j-1.6.2.jar,
  lib/wstx-asl-3.2.4.jar,
- lib/XmlSchema-1.4.3.jar
+ lib/XmlSchema-1.4.3.jar,
+ lib/velocity-1.7-dep.jar

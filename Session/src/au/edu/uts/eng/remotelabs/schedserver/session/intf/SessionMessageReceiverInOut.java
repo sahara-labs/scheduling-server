@@ -52,6 +52,8 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.EnableCollaboration;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.EnableCollaborationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
@@ -69,7 +71,7 @@ public class SessionMessageReceiverInOut extends AbstractInOutMessageReceiver
         try
         {
             final Object obj = this.getTheImplementationObject(msgContext);
-            final SessionSOAP impl = (SessionSOAP) obj;
+            final SessionSkeletonInterface impl = (SessionSkeletonInterface) obj;
             SOAPEnvelope envelope = null;
             
             final AxisOperation op = msgContext.getOperationContext().getAxisOperation();
@@ -101,6 +103,16 @@ public class SessionMessageReceiverInOut extends AbstractInOutMessageReceiver
                             .getEnvelopeNamespaces(msgContext.getEnvelope()));
 
                     response = impl.getSessionInformation(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
+                }
+                else if ("enableCollaboration".equals(methodName))
+                {
+                    EnableCollaborationResponse response = null;
+                    final EnableCollaboration wrappedParam = (EnableCollaboration) this.fromOM(msgContext
+                            .getEnvelope().getBody().getFirstElement(), EnableCollaboration.class, this
+                            .getEnvelopeNamespaces(msgContext.getEnvelope()));
+
+                    response = impl.enableCollaboration(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else
@@ -146,6 +158,21 @@ public class SessionMessageReceiverInOut extends AbstractInOutMessageReceiver
             throw AxisFault.makeFault(e);
         }
     }
+    
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final EnableCollaborationResponse param, 
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(EnableCollaborationResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
 
     private Object fromOM(final OMElement param, final Class<?> type, final Map<String, String> extraNamespaces) throws AxisFault
     {
@@ -161,6 +188,16 @@ public class SessionMessageReceiverInOut extends AbstractInOutMessageReceiver
                 return FinishSessionResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
+            if (EnableCollaboration.class.equals(type))
+            {
+                return EnableCollaboration.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (EnableCollaborationResponse.class.equals(type))
+            {
+                return EnableCollaborationResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
             if (GetSessionInformation.class.equals(type))
             {
                 return GetSessionInformation.Factory.parse(param.getXMLStreamReaderWithoutCaching());

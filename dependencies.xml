@@ -62,103 +62,103 @@ Date: 28th December 2009
 	<!-- ### Configuration Bundle. -->
 	<detectIfBundlePresent property="missing.conf" bundle="SchedulingServer-Configuration.jar" />
 	<target name="configurationBundle" if="missing.conf">
-		<buildRequiredBundle bundle="SchedulingServer-Configuration.jar" bundleProject="Configuration" />
+		<buildRequiredBundle bundle="SchedulingServer-Configuration.jar" bundleProject="SchedServer-Configuration" />
 	</target>
 
 	<!-- ### Logger Bundle. -->
 	<detectIfBundlePresent property="missing.logger" bundle="SchedulingServer-Logger.jar" />
 	<target name="loggerBundle" if="missing.logger">
-		<buildRequiredBundle bundle="SchedulingServer-Logger.jar" bundleProject="Logger" />
+		<buildRequiredBundle bundle="SchedulingServer-Logger.jar" bundleProject="SchedServer-Logger" />
 	</target>
 
 	<!-- ### Server Bundle. -->
 	<detectIfBundlePresent property="missing.server" bundle="SchedulingServer-Server.jar" />
 	<target name="serverBundle" if="missing.server" >
-		<buildRequiredBundle bundle="SchedulingServer-Server.jar" bundleProject="Server" />
+		<buildRequiredBundle bundle="SchedulingServer-Server.jar" bundleProject="SchedServer-Server" />
 	</target>
 
 	<!-- ### Data Access Bundle. -->
 	<detectIfBundlePresent property="missing.dataaccess" bundle="SchedulingServer-DataAccess.jar" />
 	<target name="dataAccessBundle" if="missing.dataaccess">
-		<buildRequiredBundle bundle="SchedulingServer-DataAccess.jar" bundleProject="DataAccess" />
+		<buildRequiredBundle bundle="SchedulingServer-DataAccess.jar" bundleProject="SchedServer-DataAccess" />
 	</target>
 
 	<!-- ### Task Scheduler Bundle. -->
 	<detectIfBundlePresent property="missing.taskscheduler" bundle="SchedulingServer-TaskScheduler.jar" />
 	<target name="taskSchedulerBundle" if="missing.taskscheduler">
-		<buildRequiredBundle bundle="SchedulingServer-TaskScheduler.jar" bundleProject="TaskScheduler" />
+		<buildRequiredBundle bundle="SchedulingServer-TaskScheduler.jar" bundleProject="SchedServer-TaskScheduler" />
 	</target>
 
 	<!-- ### Permissions Bundle. -->
 	<detectIfBundlePresent property="missing.permissions" bundle="SchedulingServer-Permissions.jar" />
 	<target name="permissionsBundle" if="missing.permissions">
-		<buildRequiredBundle bundle="SchedulingServer-Permissions.jar" bundleProject="Permissions" />
+		<buildRequiredBundle bundle="SchedulingServer-Permissions.jar" bundleProject="SchedServer-Permissions" />
 	</target>
 
 	<!-- ### Queuer Bundle. -->
 	<detectIfBundlePresent property="missing.queuer" bundle="SchedulingServer-Queuer.jar" />
 	<target name="queuerBundle" if="missing.queuer">
-		<buildRequiredBundle bundle="SchedulingServer-Queuer.jar" bundleProject="Queuer" />
+		<buildRequiredBundle bundle="SchedulingServer-Queuer.jar" bundleProject="SchedServer-Queuer" />
 	</target>
 	
 	<!-- ### Rig Operations Bundle. -->
 	<detectIfBundlePresent property="missing.rigoperations" bundle="SchedulingServer-RigOperations.jar" />
 	<target name="rigOperationsBundle" if="missing.rigoperations">
-		<buildRequiredBundle bundle="SchedulingServer-RigOperations.jar" bundleProject="RigOperations" />
+		<buildRequiredBundle bundle="SchedulingServer-RigOperations.jar" bundleProject="SchedServer-RigOperations" />
 	</target>
 
 	<!-- ### Rig Provider Bundle. -->
 	<detectIfBundlePresent property="missing.rigprovider" bundle="SchedulingServer-RigProvider.jar" />
 	<target name="rigProviderBundle" if="missing.rigprovider">
-		<buildRequiredBundle bundle="SchedulingServer-RigProvider.jar" bundleProject="RigProvider" />
+		<buildRequiredBundle bundle="SchedulingServer-RigProvider.jar" bundleProject="SchedServer-RigProvider" />
 	</target>
 
 	<!-- ### Rig Proxy Bundle. -->
 	<detectIfBundlePresent property="missing.rigproxy" bundle="SchedulingServer-RigProxy.jar" />
 	<target name="rigProxyBundle" if="missing.rigproxy">
-		<buildRequiredBundle bundle="SchedulingServer-RigProxy.jar" bundleProject="RigProxy" />
+		<buildRequiredBundle bundle="SchedulingServer-RigProxy.jar" bundleProject="SchedServer-RigProxy" />
 	</target>
 	
 	<!-- ### Session Bundle. -->
 	<detectIfBundlePresent property="missing.session" bundle="SchedulingServer-Session.jar" />
 	<target name="sessionBundle" if="missing.session">
-		<buildRequiredBundle bundle="SchedulingServer-Session.jar" bundleProject="Session" />
+		<buildRequiredBundle bundle="SchedulingServer-Session.jar" bundleProject="SchedServer-Session" />
 	</target>
 	
 	<!-- ### Bookings Bundle. -->
 	<detectIfBundlePresent property="missing.bookings" bundle="SchedulingServer-Bookings.jar" />
 	<target name="bookingsBundle" if="missing.bookings">
-		<buildRequiredBundle bundle="SchedulingServer-Bookings.jar" bundleProject="Bookings" />
+		<buildRequiredBundle bundle="SchedulingServer-Bookings.jar" bundleProject="SchedServer-Bookings" />
 	</target>
 	
 	<!-- ### Messenger Bundle. -->
 	<detectIfBundlePresent property="missing.messenger" bundle="SchedulingServer-Messenger.jar" />
 	<target name="messengerBundle" if="missing.messenger">
-		<buildRequiredBundle bundle="SchedulingServer-Messenger.jar" bundleProject="Messenger" />
+		<buildRequiredBundle bundle="SchedulingServer-Messenger.jar" bundleProject="SchedServer-Messenger" />
 	</target>
 	
 	<!-- ### Rig Management Bundle. -->
 	<detectIfBundlePresent property="missing.rigmanagement" bundle="SchedulingServer-RigManagement.jar" />
 	<target name="rigManagementBundle" if="missing.rigmanagement">
-		<buildRequiredBundle bundle="SchedulingServer-RigManagement.jar" bundleProject="RigManagement" />
+		<buildRequiredBundle bundle="SchedulingServer-RigManagement.jar" bundleProject="SchedServer-RigManagement" />
 	</target>
 
 	<!-- ### Reports Bundle. -->
 	<detectIfBundlePresent property="missing.reports" bundle="SchedulingServer-Reports.jar" />
 	<target name="reportsBundle" if="missing.reports">
-		<buildRequiredBundle bundle="SchedulingServer-Reports.jar" bundleProject="Reports" />
+		<buildRequiredBundle bundle="SchedulingServer-Reports.jar" bundleProject="SchedServer-Reports" />
 	</target>
 
 	<!-- ### MultiSite Bundle. -->
 	<detectIfBundlePresent property="missing.multisite" bundle="SchedulingServer-MultiSite.jar" />
 	<target name="multiSiteBundle" if="missing.multisite">
-		<buildRequiredBundle bundle="SchedulingServer-MultiSite.jar" bundleProject="MultiSite" />
+		<buildRequiredBundle bundle="SchedulingServer-MultiSite.jar" bundleProject="SchedServer-MultiSite" />
 	</target>
 	
 	<!-- ### MultiSite Provider Bundle. -->
 	<detectIfBundlePresent property="missing.multisiteprovider" bundle="SchedulingServer-MultiSiteProvider.jar" />
 	<target name="multiSiteProviderBundle" if="missing.multisiteprovider">
-		<buildRequiredBundle bundle="SchedulingServer-MultiSiteProvider.jar" bundleProject="MultiSiteProvider" />
+		<buildRequiredBundle bundle="SchedulingServer-MultiSiteProvider.jar" bundleProject="SchedServer-MultiSiteProvider" />
 	</target>
 
 </project>
