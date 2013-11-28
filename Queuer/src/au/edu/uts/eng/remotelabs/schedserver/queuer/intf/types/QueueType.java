@@ -78,6 +78,7 @@ public class QueueType implements ADBBean
     protected boolean isQueueable;
     protected boolean isBookable;
     protected boolean isCodeAssignable;
+    protected boolean isSlaveable;
     protected ResourceIDType queuedResource;
     protected QueueTargetType[] queueTarget;
     protected boolean queueTargetTracker = false;
@@ -132,6 +133,17 @@ public class QueueType implements ADBBean
     public void setIsBookable(final boolean param)
     {
         this.isBookable = param;
+    }
+    
+    public boolean getIsSlaveable()
+    {
+        return this.isSlaveable;
+    }
+    
+    
+    public void setIsSlaveable(final boolean param)
+    {
+        this.isSlaveable = param;
     }
     
     public boolean getIsCodeAssignable()
@@ -393,6 +405,30 @@ public class QueueType implements ADBBean
         }
         xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isCodeAssignable));
         xmlWriter.writeEndElement();
+        
+        namespace = "";
+        if (!namespace.equals(""))
+        {
+            prefix = xmlWriter.getPrefix(namespace);
+            if (prefix == null)
+            {
+                prefix = QueueType.generatePrefix(namespace);
+                xmlWriter.writeStartElement(prefix, "isSlaveable", namespace);
+                xmlWriter.writeNamespace(prefix, namespace);
+                xmlWriter.setPrefix(prefix, namespace);
+            }
+            else
+            {
+                xmlWriter.writeStartElement(namespace, "isSlaveable");
+            }
+        }
+        else
+        {
+            xmlWriter.writeStartElement("isSlaveable");
+        }
+        xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isSlaveable));
+        xmlWriter.writeEndElement();
+        
 
         if (this.queuedResource == null)
         {
@@ -472,6 +508,9 @@ public class QueueType implements ADBBean
         
         elementList.add(new QName("", "isCodeAssignable"));
         elementList.add(ConverterUtil.convertToString(this.isCodeAssignable));
+        
+        elementList.add(new QName("", "isSlaveable"));
+        elementList.add(ConverterUtil.convertToString(this.isSlaveable));
         
         elementList.add(new QName("", "queuedResource"));
         if (this.queuedResource == null)
@@ -612,6 +651,22 @@ public class QueueType implements ADBBean
                 {
                     final String content = reader.getElementText();
                     object.setIsCodeAssignable(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+                else
+                {
+                    throw new ADBException("Unexpected subelement " + reader.getLocalName());
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "isSlaveable").equals(reader.getName()))
+                {
+
+                    final String content = reader.getElementText();
+                    object.setIsSlaveable(ConverterUtil.convertToBoolean(content));
                     reader.next();
                 }
                 else

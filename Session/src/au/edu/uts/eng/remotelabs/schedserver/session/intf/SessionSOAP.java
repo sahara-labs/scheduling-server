@@ -37,6 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.session.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.EnableCollaboration;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.EnableCollaborationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
@@ -64,4 +66,12 @@ public interface SessionSOAP
      * @return response
      */
     public GetSessionInformationResponse getSessionInformation(GetSessionInformation request);
+    
+    /**
+     * Enables collaboration for the current rig session.
+     * 
+     * @param request
+     * @return response
+     */
+    public EnableCollaborationResponse enableCollaboration(EnableCollaboration request);
 }

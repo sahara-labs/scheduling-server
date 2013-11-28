@@ -98,6 +98,12 @@ public class SessionType extends InSessionType implements ADBBean
 
     protected String warningMessage;
     protected boolean warningMessageTracker = false;
+    
+    protected boolean isSlaveable;
+    protected boolean isSlaveableTracker;
+    
+    protected boolean isCollaborable;
+    protected boolean isCollaborableTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -117,6 +123,28 @@ public class SessionType extends InSessionType implements ADBBean
     {
         this.isReadyTracker = true;
         this.isReady = param;
+    }
+    
+    public boolean getIsSlaveable()
+    {
+        return this.isSlaveable;
+    }
+
+    public void setIsSlaveable(final boolean param)
+    {
+        this.isSlaveableTracker = true;
+        this.isSlaveable = param;
+    }
+    
+    public boolean getIsCollaborable()
+    {
+        return this.isCollaborable;
+    }
+
+    public void setIsCollaborable(final boolean param)
+    {
+        this.isCollaborableTracker = true;
+        this.isCollaborable = param;
     }
 
     public boolean getIsCodeAssigned()
@@ -391,6 +419,60 @@ public class SessionType extends InSessionType implements ADBBean
             xmlWriter.writeEndElement();
         }
 
+        if (this.isSlaveableTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = SessionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "isSlaveable", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "isSlaveable");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("isSlaveable");
+            }
+
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isSlaveable));
+            xmlWriter.writeEndElement();
+        }
+
+        if (this.isCollaborableTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = SessionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "isCollaborable", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "isCollaborable");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("isCollaborable");
+            }
+
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.isCollaborable));
+            xmlWriter.writeEndElement();
+        }
+        
         if (this.isCodeAssignedTracker)
         {
             namespace = "";
@@ -686,6 +768,18 @@ public class SessionType extends InSessionType implements ADBBean
             elementList.add(ConverterUtil.convertToString(this.isReady));
         }
 
+        if (this.isSlaveableTracker)
+        {
+            elementList.add(new QName("", "isSlaveable"));
+            elementList.add(ConverterUtil.convertToString(this.isSlaveable));
+        }
+
+        if (this.isCollaborableTracker)
+        {
+            elementList.add(new QName("", "isCollaborable"));
+            elementList.add(ConverterUtil.convertToString(this.isCollaborable));
+        }
+        
         if (this.isCodeAssignedTracker)
         {
             elementList.add(new QName("", "isCodeAssigned"));
@@ -818,6 +912,29 @@ public class SessionType extends InSessionType implements ADBBean
                     object.setIsReady(ConverterUtil.convertToBoolean(content));
                     reader.next();
                 }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "isSlaveable").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setIsSlaveable(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+             
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "isCollaborable").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setIsCollaborable(ConverterUtil.convertToBoolean(content));
+                    reader.next();
+                }
+             
 
                 while (!reader.isStartElement() && !reader.isEndElement())
                 {

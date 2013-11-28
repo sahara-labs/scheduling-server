@@ -37,6 +37,8 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserAsSlave;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserAsSlaveResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -62,9 +64,23 @@ public interface QueuerSOAP
      * @return resposne
      */
     public AddUserToQueueResponse addUserToQueue(AddUserToQueue request);
-
+    
+    /**
+     * Removes a user from the queue.
+     * 
+     * @param request
+     * @return response
+     */
     public RemoveUserFromQueueResponse removeUserFromQueue(RemoveUserFromQueue request);
-
+    
+    /**
+     * Adds a user as a slave
+     * 
+     * @param request 
+     * @return response
+     */
+    public AddUserAsSlaveResponse addUserAsSlave(AddUserAsSlave request);
+    
     /**
      * Returns information about the availability of a permission. The information
      * returned is:

@@ -77,6 +77,11 @@ public class ResourcePermission implements java.io.Serializable
     /** Consumer permission. */
     public static final String CONSUMER_PERMISSION = "CONSUMER";
     
+    /** Types of allowed collaboration. */
+    public enum ControlLevel {
+        SLAVE, SOLO, SLAVE_SOLO, MASTER_SOLO, MASTER_SOLO_SLAVE;
+    }
+    
     /** Serializable class. */
     private static final long serialVersionUID = -2292524825260205119L;
     
@@ -85,6 +90,9 @@ public class ResourcePermission implements java.io.Serializable
 
     /** User class this resource permission refers to. */
     private UserClass userClass;
+    
+    /** The allowed collaboration control level. */
+    private ControlLevel controlLevel;
     
     /** Whether the resource permission is remote. */
     private boolean remote;
@@ -141,7 +149,10 @@ public class ResourcePermission implements java.io.Serializable
     /** The details for this remote permission. */
     private RemotePermission remotePermission;
 
+    /** List of locks applied to the permisison. */
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
+    
+    /** List of sessions from this permission. */
     private Set<Session> sessionsForResourcePermission = new HashSet<Session>(0);
 
     public ResourcePermission()
@@ -374,5 +385,16 @@ public class ResourcePermission implements java.io.Serializable
     public void setRemotePermission(final RemotePermission remotePermission)
     {
         this.remotePermission = remotePermission;
+    }
+    
+    @Column(name = "resource_control_level", nullable = true)
+    public ControlLevel getControlLevel()
+    {
+        return this.controlLevel;
+    }
+
+    public void setControlLevel(final ControlLevel lvl)
+    {
+        this.controlLevel = lvl;
     }
 }

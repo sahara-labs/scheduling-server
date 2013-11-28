@@ -12,7 +12,12 @@
       <xsd:element name="finishSessionResponse"
       	type="ses:InSessionType">
       </xsd:element>
-
+      <xsd:element name="enableCollaboration" type="ses:ColEnableType">
+      </xsd:element>
+      <xsd:element name="enableCollaborationResponse"
+      	type="ses:InCollaborativeSessionType">
+      </xsd:element>
+      
       <xsd:complexType name="UserIDType">
       	<xsd:complexContent>
       		<xsd:extension base="ses:OperationRequestType">
@@ -34,6 +39,32 @@
       		</xsd:extension>
       	</xsd:complexContent>
       </xsd:complexType>
+      
+      <xsd:complexType name="ColEnableType">
+      	<xsd:complexContent>
+      		<xsd:extension base="ses:OperationRequestType">
+      			<xsd:sequence>
+      				<xsd:element name="userID" type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:sequence maxOccurs="1" minOccurs="0">
+      					<xsd:element name="userName"
+      						type="xsd:string" maxOccurs="1" minOccurs="0">
+      					</xsd:element>
+      					<xsd:element name="userNamespace"
+      						type="xsd:string" maxOccurs="1" minOccurs="0">
+      					</xsd:element>
+      				</xsd:sequence>
+      				<xsd:element name="userQName"
+      					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:element name="password"
+      					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      			</xsd:sequence>
+      		</xsd:extension>
+      	</xsd:complexContent>
+      </xsd:complexType>
+      
 
       <xsd:complexType name="OperationRequestType">
       	<xsd:sequence>
@@ -53,6 +84,12 @@
       		<xsd:extension base="ses:InSessionType">
       			<xsd:sequence>
       				<xsd:element name="isReady" type="xsd:boolean"
+      					maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:element name="isSlaveable" type="xsd:boolean"
+      					maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+					<xsd:element name="isCollaborable" type="xsd:boolean"
       					maxOccurs="1" minOccurs="0">
       				</xsd:element>
       				<xsd:element name="isCodeAssigned"
@@ -110,6 +147,12 @@
   <wsdl:message name="finishSessionResponse">
   	<wsdl:part name="parameters" element="ses:finishSessionResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="enableCollaborationRequest">
+  	<wsdl:part name="parameters" element="ses:enableCollaboration"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="enableCollaborationResponse">
+  	<wsdl:part name="parameters" element="ses:enableCollaborationResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="Session">
     <wsdl:operation name="getSessionInformation">
       <wsdl:input message="ses:getSessionInformationRequest"/>
@@ -118,6 +161,10 @@
     <wsdl:operation name="finishSession">
     	<wsdl:input message="ses:finishSessionRequest"></wsdl:input>
     	<wsdl:output message="ses:finishSessionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="enableCollaboration">
+    	<wsdl:input message="ses:enableCollaborationRequest"></wsdl:input>
+    	<wsdl:output message="ses:enableCollaborationResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SessionSOAP" type="ses:Session">
@@ -136,6 +183,16 @@
   	<wsdl:operation name="finishSession">
   		<soap:operation
   			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/session/finishSession" />
+  		<wsdl:input>
+  			<soap:body use="literal" />
+  		</wsdl:input>
+  		<wsdl:output>
+  			<soap:body use="literal" />
+  		</wsdl:output>
+  	</wsdl:operation>
+  	<wsdl:operation name="enableCollaboration">
+  		<soap:operation
+  			soapAction="http://remotelabs.eng.uts.edu.au/schedserver/session/enableCollaboration" />
   		<wsdl:input>
   			<soap:body use="literal" />
   		</wsdl:input>

@@ -64,6 +64,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSched
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SessionFile;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ShibbolethUsersMap;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SlaveableRigs;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
@@ -143,6 +144,7 @@ public class DataAccessTestSetup
             cfg.addAnnotatedClass(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session.class);
             cfg.addAnnotatedClass(SessionFile.class);
             cfg.addAnnotatedClass(ShibbolethUsersMap.class);
+            cfg.addAnnotatedClass(SlaveableRigs.class);
             cfg.addAnnotatedClass(User.class);
             cfg.addAnnotatedClass(UserAssociation.class);
             cfg.addAnnotatedClass(UserAssociationId.class);

@@ -68,6 +68,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSched
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SessionFile;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ShibbolethUsersMap;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SlaveableRigs;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
@@ -137,6 +138,7 @@ public class DataAccessActivator implements BundleActivator
         cfg.addAnnotatedClass(UserClassKeyConstraint.class);
         cfg.addAnnotatedClass(UserClassKeyRedemption.class);
         cfg.addAnnotatedClass(UserLock.class);
+        cfg.addAnnotatedClass(SlaveableRigs.class);
         this.logger.debug("Hibernate properties: " + cfg.getProperties().toString());
 
         DataAccessActivator.sessionFactory = cfg.buildSessionFactory();

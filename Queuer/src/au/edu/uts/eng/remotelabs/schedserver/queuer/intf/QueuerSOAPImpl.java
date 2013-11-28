@@ -38,6 +38,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.queuer.intf;
 
 import java.util.Date;
+import java.util.List;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
@@ -46,6 +47,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDa
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SlaveableRigsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -55,6 +57,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermiss
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SlaveableRigs;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -62,6 +65,8 @@ import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.Permiss
 import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest.QueueTarget;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserAsSlave;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserAsSlaveResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -84,6 +89,7 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.UserQueueType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl.QueuerServiceImpl;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigSlaveAllocator;
 
 /**
  * Queuer SOAP interface implementation.
@@ -201,6 +207,223 @@ public class QueuerSOAPImpl implements QueuerSOAP
                 inQu.setFailureReason(entry.getErrorMessage());
             }
             else
+            {
+                ResourceIDType resource = new ResourceIDType();
+                resource.setType(activeSes.getResourceType());
+                if (activeSes.getRig() == null)
+                {
+                    inQu.setInQueue(true);
+                    resource.setResourceID(activeSes.getRequestedResourceId().intValue());
+                    resource.setResourceName(activeSes.getRequestedResourceName());
+                    inQu.setQueuedResouce(resource);
+                }
+                else
+                {
+                    inQu.setInSession(true);
+                    resource.setResourceID(activeSes.getRig().getId().intValue());
+                    resource.setResourceName(activeSes.getRig().getName());
+                    inQu.setAssignedResource(resource);
+                }
+            }
+        }
+        finally
+        {
+            db.close();
+        }
+        return resp;
+    }
+    
+    @Override
+    public AddUserAsSlaveResponse addUserAsSlave(AddUserAsSlave request)
+    {
+        // FIXME Overlook this
+        
+        
+        /* Request parameters. */
+        UserIDType uId = request.getAddUserAsSlave().getUserID();
+        PermissionIDType pId = request.getAddUserAsSlave().getPermissionID();
+
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#addUserAsSlave from user (id=" + 
+                uId.getUserID() + ", namespace=" + uId.getUserNamespace() + ", name=" + uId.getUserName() + ") for " +
+                (pId != null ? "permission with identifier " + pId.getPermissionID() :
+                "neither a permission or a resource (this will invalid and will fail)") + '.');
+        
+        String password = request.getAddUserAsSlave().getPassword();
+        String rigID = request.getAddUserAsSlave().getRigID();
+
+        /* Response parameters. */
+        AddUserAsSlaveResponse resp = new AddUserAsSlaveResponse();
+        InQueueType inQu = new InQueueType();
+        resp.setAddUserAsSlaveResponse(inQu);
+        inQu.setInQueue(false);
+        inQu.setInSession(false);
+        inQu.setQueueSuccessful(false);
+
+        if (!this.checkPermission(request.getAddUserAsSlave()))
+        {
+            this.logger.warn("Cannot enslave user because of invalid permission.");
+            inQu.setFailureReason("Invalid permission.");
+            return resp;
+        }
+        
+        org.hibernate.Session db = new UserDao().getSession();
+        
+        ResourcePermissionDao rpd = new ResourcePermissionDao();
+        ResourcePermission rp = rpd.get(Long.valueOf(pId.getPermissionID()));
+        rpd.closeSession();
+       	RigDao rd = new RigDao();
+    	Rig r = rd.get(Long.parseLong(rigID));
+    	rd.closeSession();
+        
+    	if (rp.getRig() != null && rp.getRig().getId().equals(r.getId()))
+        {
+            this.logger.debug("matching Rig ID found in permission");
+        }
+        else if (rp.getRigType() != null && r.getRigType().getId().equals(rp.getRigType().getId()))
+        {
+        	this.logger.debug("matching Rig Type found in permission");
+        }
+        else{
+            this.logger.warn("Cannot enslave user because of invalid permission.");
+            inQu.setFailureReason("Invalid permission.");
+            return resp;
+        }
+        
+        List<Session> activeSessions = new SessionDao().findAllActiveSessions();
+        Session mainSession = null;
+        for (Session items:activeSessions){
+        	if (items.getCodeReference() == null && items.getRig().getId().equals(Long.parseLong(rigID))){
+        		mainSession = items;
+        	}
+        }
+        
+        if (mainSession == null)
+        {
+        	this.logger.warn("The master session cannot be found.");
+        	inQu.setFailureReason("Invalid permission.");
+        	return resp;
+        }
+        
+        this.logger.info("Found session data: " + mainSession.getId() + " " +
+        		mainSession.getRequestedResourceName() + " " + mainSession.getUserName());
+        
+        SlaveableRigsDao sdao = new SlaveableRigsDao();
+        SlaveableRigs slav = sdao.getInfo(mainSession.getRig());
+        if (slav == null){
+        	this.logger.warn("The master session cannot be found.");
+        	inQu.setFailureReason("Invalid permission.");
+        	return resp;
+        }
+        
+        if (!slav.getPassword().equals(password) || slav.getRig().getId()!=Integer.parseInt(rigID)){
+        	this.logger.warn("Wrong parameters.");
+        	inQu.setFailureReason("Incorrect credentials.");
+        	return resp;
+        }
+
+        sdao.closeSession();
+        try
+        {
+            QueueEntry entry = new QueueEntry(db);
+            User user;
+            Bookings booking;
+            /**********************************************************************
+             ** 1) Load user and continue if they exist.                         **
+             **********************************************************************/
+            if ((user = this.getUserFromUserID(uId, db)) == null)
+            {
+                this.logger.warn("Cannot queue user with with identifier=" + uId.getUserID() + " and name=" + 
+                        uId.getUserNamespace() + ':' + uId.getUserName() + " because not found.");
+                inQu.setFailureReason("User not found.");
+            }
+            /*********************************************************************
+             ** 2) Check the user isn't in queue and continue if they aren't    **
+             **    already in the queue.                                        **
+             *********************************************************************/
+            else if (entry.isInQueue(user))
+            {
+                this.logger.warn("Cannot queue user " + user.qName() + " because already in queue.");
+                inQu.setFailureReason("Already in queue.");
+            }
+            /**********************************************************************
+             ** 3) Check the user has permission to use either the requested     **
+             **    resource permission or requested resource.                    **
+             **********************************************************************/
+            else if ((pId == null || !entry.hasPermission(pId.getPermissionID())))
+            {            
+                this.logger.warn("Cannot queue user " + user.qName()  + " because does not have permission to access " +
+                		"requested resource permission or resource.");
+                inQu.setFailureReason("No permission.");
+            }
+            /**********************************************************************
+             ** 4) Check the user doesn't have a bookingService starting before  **
+             **    the queued session would finish.                              **
+             **********************************************************************/
+//            else if ((booking = this.getNextBooking(user, entry.getResourcePermission().getSessionDuration(), db)) != null)
+//            {
+//                this.logger.info("Cannot queue user " + user.qName() + " because has a booking starting before queued " +
+//                		"session would end.");
+//                inQu.setFailureReason("Booking: " + ((booking.getStartTime().getTime() - System.currentTimeMillis()) / 1000) + 
+//                        " seconds until booking starts.");
+//                inQu.setInBooking(true);
+//                inQu.setBookingID(booking.getId().intValue());
+//            }
+            /**********************************************************************
+             ** 5) Check the user can queue.                                     **
+             **********************************************************************/
+            else if (!entry.canUserQueue())
+            {
+                this.logger.warn("Cannot queue user " + user.qName() + " because the user cannot queue. This may be " +
+                		"because the requested resource is offline or the user does not have the queue permission " +
+                		"for in use resources.");
+                inQu.setFailureReason("Cannot queue.");
+            }
+            /**********************************************************************
+             ** 6) Every pre-queue predicate is satisfied so add the user to the **
+             *     queue.                                                        **
+             **********************************************************************/
+            else
+            {
+            	this.logger.info("Made it to the slave allocation stage, for user " + user.qName());
+                // TODO Queue entry - Upload batch code.
+
+                //mainSession.setUser(entry.getUser());
+                //mainSession.setUserNamespace(entry.getUser().getNamespace());
+                //mainSession.setUserName(entry.getUser().getName());
+                
+                Session n = new Session();
+                n.setActive(mainSession.isActive());
+                n.setActivityLastUpdated(mainSession.getActivityLastUpdated());
+                n.setAssignedRigName(mainSession.getAssignedRigName());
+                n.setAssignmentTime(mainSession.getAssignmentTime());
+                n.setDuration(mainSession.getDuration());
+                n.setExtensions(mainSession.getExtensions());
+                n.setInGrace(mainSession.isInGrace());
+                n.setPriority(mainSession.getPriority());
+                n.setReady(mainSession.isReady());
+                n.setRemovalReason(mainSession.getRemovalReason());
+                n.setRemovalTime(mainSession.getRemovalTime());
+                n.setRequestedResourceId(mainSession.getRequestedResourceId());
+                n.setRequestedResourceName(mainSession.getRequestedResourceName());
+                n.setRequestTime(mainSession.getRequestTime());
+                n.setResourcePermission(mainSession.getResourcePermission());
+                n.setResourceType(mainSession.getResourceType());
+                n.setRig(mainSession.getRig());
+                n.setUser(entry.getUser());
+                n.setUserNamespace(entry.getUser().getNamespace());
+                n.setUserName(entry.getUser().getName());
+                n.setCodeReference(mainSession.getCodeReference());
+                n.setIsSlave(true);
+                
+                this.logger.info("About to call RigSlaveAllocator for " + user.qName());
+                new RigSlaveAllocator().slaveAllocate(n, db);
+                this.logger.info("Called RigSlaveAllocator for " + user.qName());
+                inQu.setQueueSuccessful(true);
+            }
+
+            /* Populate slave return details if successful. */
+            Session activeSes = entry.getActiveSession();
+            if (activeSes != null)
             {
                 ResourceIDType resource = new ResourceIDType();
                 resource.setType(activeSes.getResourceType());
@@ -837,4 +1060,6 @@ public class QueuerSOAPImpl implements QueuerSOAP
         // TODO Check request permissions for queuer
         return true;
     }
+
+    
 }

@@ -17,5 +17,9 @@
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/session/NewOperation</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/session/Session/getSessionInformationResponse</outputActionMapping>
         </operation>
+        <operation name="enableCollaboration" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/session">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/session/enableCollaboration</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/session/Session/enableCollaborationResponse</outputActionMapping>
+        </operation>
     </service>
 </serviceGroup>

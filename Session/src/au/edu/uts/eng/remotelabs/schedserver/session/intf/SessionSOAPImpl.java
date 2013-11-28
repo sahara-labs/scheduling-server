@@ -40,19 +40,25 @@ package au.edu.uts.eng.remotelabs.schedserver.session.intf;
 import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SlaveableRigsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SlaveableRigs;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.RigClientService;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.IsActivityDetectableResponse;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.ColEnableType;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.EnableCollaboration;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.EnableCollaborationResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformationResponse;
+import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.InCollaborativeSessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.InSessionType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.ResourceIDType;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.SessionType;
@@ -189,6 +195,49 @@ public class SessionSOAPImpl implements SessionSOAP
                 }
             }
         }
+        
+        dao.closeSession();
+        return resp;
+    }
+    
+    @Override
+    public EnableCollaborationResponse enableCollaboration(EnableCollaboration request)
+    {
+        /* Request parameters. */
+        ColEnableType cID = request.getEnableCollaboration();
+        this.logger.debug("Received " + this.getClass().getSimpleName() + "#enableCollaboration request for user " +
+                "with id=" + cID.getUserID() + ", namespace=" + cID.getUserNamespace() + ", name=" + 
+                cID.getUserName() + '.');
+        
+        EnableCollaborationResponse resp = new EnableCollaborationResponse();
+        InCollaborativeSessionType inCol = new InCollaborativeSessionType();
+        resp.setEnableCollaborationResponse(inCol);
+        inCol.setIsCollaborative(false);
+        this.logger.debug("The password that has been set is " + cID.getPassword());
+        SessionDao dao = new SessionDao();
+        Session ses;
+       
+        UserDao u = new UserDao();
+        User user = u.findByName(cID.getUserNamespace(), cID.getUserName());
+        u.closeSession();
+        if (user != null && (ses = dao.findActiveSession(user)) != null && ses.getRig() != null)
+        {
+            SlaveableRigsDao slavedao = new SlaveableRigsDao();
+            if (slavedao.getInfo(ses.getRig()) == null){
+                this.logger.debug("Nothing found. Doing stuff.");
+                SlaveableRigs srig = new SlaveableRigs();
+                srig.setRig(ses.getRig());
+                srig.setPassword(cID.getPassword());
+                srig.setNumSlaves(0);
+                inCol.setIsCollaborative(true);
+                slavedao.persist(srig);
+            }
+            else
+            {
+                this.logger.debug("Already registered "+ ses.getRig().getName()+ " with id " + ses.getRig().getId() + " as slaveableRig.");
+            }
+            slavedao.closeSession();
+        } 
         
         dao.closeSession();
         return resp;

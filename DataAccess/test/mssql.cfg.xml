@@ -31,6 +31,7 @@
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SessionFile" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ShibbolethUsersMap" />
+		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.SlaveableRigs" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation" />
 		<mapping class="au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass" />

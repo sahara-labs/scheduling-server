@@ -56,6 +56,9 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.Notify
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.NullType;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.Release;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.SetMaintenance;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.SlaveAllocate;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.SlaveUserType;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.TypeSlaveUser;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.UserType;
 
 /**
@@ -170,6 +173,52 @@ public class RigClientAsyncService
         user.setIdentityToken(this.tok.getIdentityToken(this.rig));
 
         this.service.callAllocate(request, callback);
+    }
+    
+    /**
+     * Request to allocate a specified user to the rig. This method allows a 
+     * async 'hint' to be specified.
+     * 
+     * @param name user to allocate
+     * @param active whether the user is to be an active slave or a passive slave
+     * @param async async hint 
+     * @param callback response call back handler
+     * @throws RemoteException 
+     */
+    public void slaveAllocate(String name, boolean active, boolean async, RigClientAsyncServiceCallbackHandler callback) 
+            throws RemoteException 
+    {        
+        SlaveAllocate request = new SlaveAllocate();
+        SlaveUserType user = new SlaveUserType();
+        request.setSlaveAllocate(user);
+        
+        user.setUser(name);
+        user.setType(active ? TypeSlaveUser.Active : TypeSlaveUser.Passive);
+        user.setIdentityToken(this.tok.getIdentityToken(this.rig));
+        user.setAsync(async);
+
+        this.service.callSlaveAllocate(request, callback);
+    }
+    
+    /**
+     * Request to allocate a specified user to the rig.
+     * 
+     * @param name user to allocate
+     * @param active whether the user is to be an active slave or a passive slave
+     * @param callback response call back handler
+     * @throws RemoteException 
+     */
+    public void slaveAllocate(String name, boolean active, RigClientAsyncServiceCallbackHandler callback) throws RemoteException 
+    {        
+        SlaveAllocate request = new SlaveAllocate();
+        SlaveUserType user = new SlaveUserType();
+        request.setSlaveAllocate(user);
+        
+        user.setUser(name);
+        user.setType(active ? TypeSlaveUser.Active : TypeSlaveUser.Passive);
+        user.setIdentityToken(this.tok.getIdentityToken(this.rig));
+
+        this.service.callSlaveAllocate(request, callback);
     }
     
     /**

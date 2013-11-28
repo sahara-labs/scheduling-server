@@ -13,6 +13,10 @@
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/addUserToQueue</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/addUserToQueueResponse</outputActionMapping>
         </operation>
+        <operation name="addUserAsSlave" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
+            <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/addUserAsSlave</actionMapping>
+            <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/addUserAsSlaveResponse</outputActionMapping>
+        </operation>
         <operation name="removeUserFromQueue" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://remotelabs.eng.uts.edu.au/schedserver/queuer">
             <actionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/removeUserFromQueue</actionMapping>
             <outputActionMapping>http://remotelabs.eng.uts.edu.au/schedserver/queuer/Queuer/removeUserFromQueueResponse</outputActionMapping>

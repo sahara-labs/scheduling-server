@@ -37,8 +37,6 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
-// Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
-
 import static javax.persistence.GenerationType.AUTO;
 
 import java.util.Date;
@@ -114,6 +112,9 @@ public class Session implements java.io.Serializable
     /** Whether the session is active (either in queue or on rig). */
     private boolean active;
     
+    /** Whether the session is a slave session */
+    private boolean isSlave = false;
+    
     /** Whether the session is ready for use or still allocating. */
     private boolean ready;
     
@@ -137,6 +138,8 @@ public class Session implements java.io.Serializable
 
     /** List of generated session files. */
     private Set<SessionFile> files = new HashSet<SessionFile>(0);
+    
+    private Set<Rig> rigs = new HashSet<Rig>(0);
 
     public Session()
     {
@@ -403,5 +406,27 @@ public class Session implements java.io.Serializable
     public void setFiles(Set<SessionFile> files)
     {
         this.files = files;
+    }
+    
+    @Column(name = "is_slave_session", nullable = false)
+    public boolean getIsSlave()
+    {
+        return this.isSlave;
+    }
+    
+    public void setIsSlave(final boolean isSlave)
+    {
+        this.isSlave = isSlave;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "session")
+    public Set<Rig> getRigs()
+    {
+        return this.rigs;
+    }
+
+    public void setRigs(final Set<Rig> rigs)
+    {
+        this.rigs = rigs;
     }
 }

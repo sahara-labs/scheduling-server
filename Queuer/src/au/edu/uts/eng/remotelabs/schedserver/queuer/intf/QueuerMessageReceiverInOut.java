@@ -52,6 +52,8 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserAsSlave;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserAsSlaveResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.CheckPermissionAvailability;
@@ -98,6 +100,16 @@ public class QueuerMessageReceiverInOut extends AbstractInOutMessageReceiver
                             .getEnvelope()));
 
                     response = skel.addUserToQueue(wrappedParam);
+                    envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
+                }
+                else if ("addUserAsSlave".equals(methodName))
+                {
+                    AddUserAsSlaveResponse response = null;
+                    final AddUserAsSlave wrappedParam = (AddUserAsSlave) this.fromOM(msgContext.getEnvelope().getBody()
+                            .getFirstElement(), AddUserAsSlave.class, this.getEnvelopeNamespaces(msgContext
+                            .getEnvelope()));
+
+                    response = skel.addUserAsSlave(wrappedParam);
                     envelope = this.toEnvelope(this.getSOAPFactory(msgContext), response, false);
                 }
                 else if ("removeUserFromQueue".equals(methodName))
@@ -171,6 +183,22 @@ public class QueuerMessageReceiverInOut extends AbstractInOutMessageReceiver
         {
             final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
             emptyEnvelope.getBody().addChild(param.getOMElement(AddUserToQueueResponse.MY_QNAME, factory));
+            return emptyEnvelope;
+        }
+        catch (final ADBException e)
+        {
+            throw AxisFault.makeFault(e);
+        }
+    }
+    
+
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final AddUserAsSlaveResponse param,
+            final boolean optimizeContent) throws AxisFault
+    {
+        try
+        {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(AddUserAsSlaveResponse.MY_QNAME, factory));
             return emptyEnvelope;
         }
         catch (final ADBException e)
@@ -266,6 +294,16 @@ public class QueuerMessageReceiverInOut extends AbstractInOutMessageReceiver
             if (AddUserToQueueResponse.class.equals(type))
             {
                 return AddUserToQueueResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            
+            if (AddUserAsSlave.class.equals(type))
+            {
+                return AddUserAsSlave.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+
+            if (AddUserAsSlaveResponse.class.equals(type))
+            {
+                return AddUserAsSlaveResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
 
             if (RemoveUserFromQueue.class.equals(type))
