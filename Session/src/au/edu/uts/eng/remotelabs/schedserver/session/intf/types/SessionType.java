@@ -98,6 +98,15 @@ public class SessionType extends InSessionType implements ADBBean
 
     protected String warningMessage;
     protected boolean warningMessageTracker = false;
+    
+    protected int userClass;
+    protected boolean userClassTracker = false;
+    
+    protected String userClassName;
+    protected boolean userClassNameTracker = false;
+    
+    protected int resourcePermission;
+    protected boolean resourcePermissionTracker = false;
 
     private static String generatePrefix(final String namespace)
     {
@@ -260,6 +269,39 @@ public class SessionType extends InSessionType implements ADBBean
         }
 
         this.warningMessage = param;
+    }
+    
+    public int getUserClass()
+    {
+        return this.userClass;
+    }
+    
+    public void setUserClass(final int param)
+    {
+        this.userClassTracker = param == Integer.MIN_VALUE;
+        this.userClass = param;
+    }
+    
+    public String getUserClassName()
+    {
+        return this.userClassName;
+    }
+    
+    public void setUserClassName(final String param)
+    {
+        this.userClassNameTracker = param == null;
+        this.userClassName = param;
+    }
+    
+    public int getResourcePermission()
+    {
+        return this.resourcePermission;
+    }
+    
+    public void setResourcePermission(final int param)
+    {
+        this.resourcePermissionTracker = param == Integer.MIN_VALUE;
+        this.resourcePermission = param;
     }
 
     public static boolean isReaderMTOMAware(final XMLStreamReader reader)
@@ -634,6 +676,87 @@ public class SessionType extends InSessionType implements ADBBean
             }
             xmlWriter.writeEndElement();
         }
+        
+        if (this.userClassTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = SessionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "userClass", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "userClass");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("userClass");
+            }
+
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.userClass));
+            xmlWriter.writeEndElement();
+        }
+        
+        if (this.userClassNameTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = SessionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "userClassName", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "userClassName");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("userClassName");
+            }
+
+            xmlWriter.writeCharacters(this.userClassName);
+            xmlWriter.writeEndElement();
+        }
+        
+        if (this.resourcePermissionTracker)
+        {
+            namespace = "";
+            if (!namespace.equals(""))
+            {
+                prefix = xmlWriter.getPrefix(namespace);
+                if (prefix == null)
+                {
+                    prefix = SessionType.generatePrefix(namespace);
+                    xmlWriter.writeStartElement(prefix, "resourcePermission", namespace);
+                    xmlWriter.writeNamespace(prefix, namespace);
+                    xmlWriter.setPrefix(prefix, namespace);
+                }
+                else
+                {
+                    xmlWriter.writeStartElement(namespace, "resourcePermission");
+                }
+            }
+            else
+            {
+                xmlWriter.writeStartElement("resourcePermission");
+            }
+
+            xmlWriter.writeCharacters(ConverterUtil.convertToString(this.resourcePermission));
+            xmlWriter.writeEndElement();
+        }
 
         xmlWriter.writeEndElement();
     }
@@ -754,6 +877,24 @@ public class SessionType extends InSessionType implements ADBBean
             {
                 throw new ADBException("warningMessage cannot be null!!");
             }
+        }
+        
+        if (this.userClassTracker)
+        {
+            elementList.add(new QName("", "userClass"));
+            elementList.add(ConverterUtil.convertToString(this.userClass));
+        }
+        
+        if (this.userClassNameTracker)
+        {
+            elementList.add(new QName("", "userClassName"));
+            elementList.add(this.userClassName);
+        }
+        
+        if (this.resourcePermissionTracker)
+        {
+            elementList.add(new QName("", "resourcePermission"));
+            elementList.add(ConverterUtil.convertToString(this.resourcePermission));
         }
 
         return new ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
@@ -915,6 +1056,39 @@ public class SessionType extends InSessionType implements ADBBean
                 {
                     final String content = reader.getElementText();
                     object.setWarningMessage(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "userClass").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setUserClass(ConverterUtil.convertToInt(content));
+                    reader.next();
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "userClassName").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setUserClassName(ConverterUtil.convertToString(content));
+                    reader.next();
+                }
+                
+                while (!reader.isStartElement() && !reader.isEndElement())
+                {
+                    reader.next();
+                }
+                if (reader.isStartElement() && new QName("", "resourcePermission").equals(reader.getName()))
+                {
+                    final String content = reader.getElementText();
+                    object.setResourcePermission(ConverterUtil.convertToInt(content));
                     reader.next();
                 }
 

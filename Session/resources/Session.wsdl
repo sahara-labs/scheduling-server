@@ -61,9 +61,10 @@
       				<xsd:element name="resource"
       					type="ses:ResourceIDType" maxOccurs="1" minOccurs="0">
       				</xsd:element>
-                            <xsd:element name="rigType" type="xsd:string" maxOccurs="1" minOccurs="0">
+      				<xsd:element name="rigType" type="xsd:string"
+      					maxOccurs="1" minOccurs="0">
       				</xsd:element>
-                            <xsd:element name="contactURL" type="xsd:string"
+      				<xsd:element name="contactURL" type="xsd:string"
       					maxOccurs="1" minOccurs="0">
       				</xsd:element>
       				<xsd:element name="time" type="xsd:int"
@@ -77,6 +78,14 @@
       				</xsd:element>
       				<xsd:element name="warningMessage"
       					type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+      				<xsd:element name="userClass" type="xsd:int"
+      					maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+                            <xsd:element name="userClassName" type="xsd:string" maxOccurs="1" minOccurs="0">
+      				</xsd:element>
+                            <xsd:element name="resourcePersmission"
+      					type="xsd:int" maxOccurs="1" minOccurs="0">
       				</xsd:element>
       			</xsd:sequence>
       		</xsd:extension>
