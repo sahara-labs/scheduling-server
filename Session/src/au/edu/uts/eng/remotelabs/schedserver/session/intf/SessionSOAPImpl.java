@@ -194,6 +194,11 @@ public class SessionSOAPImpl implements SessionSOAP
                             rig.getContactUrl() + ", error " + e.getMessage() + '.');
                 }
             }
+            
+            /* User class details. */
+            info.setUserClass(ses.getResourcePermission().getUserClass().getId().intValue());
+            info.setUserClassName(ses.getResourcePermission().getUserClass().getName());
+            info.setResourcePermission(ses.getResourcePermission().getId().intValue());
         }
         
         dao.closeSession();
