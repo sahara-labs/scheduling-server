@@ -1,0 +1,41 @@
+//
+// Build script for Scheduling Server Framework
+//
+// author: Michael Diponio <michael.diponio@uts.edu.au>
+// date: 27th march 2016
+//
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.felix:org.apache.felix.framework:5.4.0'
+}
+
+jar {
+    baseName = 'SchedulingServer-Framework'
+    version = '4.0.0'
+    manifest {
+        attributes (
+            'Main-Class': 'io.rln.ss.framework.SchedulingServerMain',
+        )
+    }
+    doFirst {
+        from (configurations.runtime.resolve().collect { it.isDirectory() ? it : zipTree(it) }) {
+            include 'org/**/*'
+            include 'default.properties'
+            include 'META-INF/services/*'
+        }
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+ 

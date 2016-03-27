@@ -20,3 +20,12 @@ package/*
 
 # Generated database documentation
 doc/db
+
+# Eclipse files
+.metadata/*
+.recommenders/*
+
+# Gradle files
+*/.gradle/*
+*/build/*
+*/bin/*
