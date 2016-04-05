@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 28th December 2009
  */
-package io.rln.ss.utils.logger.impl;
+package io.rln.ss.utils.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ import java.io.IOException;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.PatternLayout;
 
-import io.rln.ss.utils.logger.LoggerActivator;
+import io.rln.ss.utils.LoggerActivator;
 
 /**
  *  Appends messages to a file using Log4j. This does not roll the

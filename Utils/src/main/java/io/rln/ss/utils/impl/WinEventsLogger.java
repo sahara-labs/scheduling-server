@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 28th December 2009
  */
-package io.rln.ss.utils.logger.impl;
+package io.rln.ss.utils.impl;
 
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.nt.NTEventLogAppender;

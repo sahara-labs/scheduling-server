@@ -35,12 +35,12 @@
  * @date 28th December 2009
  */
 
-package io.rln.ss.utils.logger.impl;
+package io.rln.ss.utils.impl;
 
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.net.SyslogAppender;
 
-import io.rln.ss.utils.logger.LoggerActivator;
+import io.rln.ss.utils.LoggerActivator;
 
 /**
  * Syslog logger which appends log messages to a remote syslog host.

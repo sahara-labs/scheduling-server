@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 28th December 2009
  */
-package io.rln.ss.utils.logger.impl;
+package io.rln.ss.utils.impl;
 
 import java.util.Calendar;
 import java.util.HashMap;

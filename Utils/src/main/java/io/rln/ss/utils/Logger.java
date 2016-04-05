@@ -35,7 +35,7 @@
  * @date 28th December 2009
  */
 
-package io.rln.ss.utils.logger;
+package io.rln.ss.utils;
 
 /**
  * Logger interface.

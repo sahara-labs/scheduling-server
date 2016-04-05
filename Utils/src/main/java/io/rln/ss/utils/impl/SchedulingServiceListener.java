@@ -34,15 +34,15 @@
  * @author Michael Diponio (mdiponio)
  * @date 22nd February 2010
  */
-package io.rln.ss.utils.tasksched.impl;
+package io.rln.ss.utils.impl;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
-import io.rln.ss.utils.logger.Logger;
-import io.rln.ss.utils.logger.LoggerActivator;
+import io.rln.ss.utils.Logger;
+import io.rln.ss.utils.LoggerActivator;
 
 /**
  * Service listener for task scheduler bundle. Adds and removes the service

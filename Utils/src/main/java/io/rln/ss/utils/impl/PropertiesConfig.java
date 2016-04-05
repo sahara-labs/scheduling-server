@@ -35,7 +35,7 @@
  * @date 28th December 2009
  */
 
-package io.rln.ss.utils.config.impl;
+package io.rln.ss.utils.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import io.rln.ss.utils.config.Config;
+import io.rln.ss.utils.Config;
 
 /**
  * Java properties configuration. By default uses

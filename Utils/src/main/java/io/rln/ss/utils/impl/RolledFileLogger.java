@@ -35,7 +35,7 @@
  * @date 28th December 2009
  */
 
-package io.rln.ss.utils.logger.impl;
+package io.rln.ss.utils.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import java.io.IOException;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 
-import io.rln.ss.utils.logger.LoggerActivator;
+import io.rln.ss.utils.LoggerActivator;
 
 /**
  * Appends messages to a log file. The log file is rolled to backup files 

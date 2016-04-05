@@ -34,14 +34,14 @@
  * @author Michael Diponio (mdiponio)
  * @date 28th December 2009
  */
-package io.rln.ss.utils.logger.impl;
+package io.rln.ss.utils.impl;
 
 import java.io.IOException;
 
 import org.apache.log4j.Level;
 
-import io.rln.ss.utils.logger.Logger;
-import io.rln.ss.utils.logger.LoggerActivator;
+import io.rln.ss.utils.Logger;
+import io.rln.ss.utils.LoggerActivator;
 
 /**
  * Apache Log4j abstract logger.  Sub-classes implement the setAppender 

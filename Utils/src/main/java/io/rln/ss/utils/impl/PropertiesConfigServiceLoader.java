@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 28th December 2009
  */
-package io.rln.ss.utils.config.impl;
+package io.rln.ss.utils.impl;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -46,7 +46,7 @@ import java.util.Map.Entry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import io.rln.ss.utils.config.Config;
+import io.rln.ss.utils.Config;
 
 /**
  * Loads {@link PropertiesConfig} configuration classes.

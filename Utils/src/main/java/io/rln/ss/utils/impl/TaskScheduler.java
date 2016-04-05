@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 4th January 2010
  */
-package io.rln.ss.utils.tasksched.impl;
+package io.rln.ss.utils.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +42,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import io.rln.ss.utils.logger.Logger;
-import io.rln.ss.utils.logger.LoggerActivator;
+import io.rln.ss.utils.Logger;
+import io.rln.ss.utils.LoggerActivator;
 
 /**
  * The task scheduler contains a thread pool to run periodic tasks. The 

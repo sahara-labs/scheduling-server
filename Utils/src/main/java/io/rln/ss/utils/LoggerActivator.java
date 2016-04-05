@@ -35,7 +35,7 @@
  * @date 28th December 2009
  */
 
-package io.rln.ss.utils.logger;
+package io.rln.ss.utils;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -49,12 +49,11 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import io.rln.ss.utils.config.Config;
-import io.rln.ss.utils.logger.impl.FileLogger;
-import io.rln.ss.utils.logger.impl.RolledFileLogger;
-import io.rln.ss.utils.logger.impl.SyslogLogger;
-import io.rln.ss.utils.logger.impl.SystemErrLogger;
-import io.rln.ss.utils.logger.impl.WinEventsLogger;
+import io.rln.ss.utils.impl.FileLogger;
+import io.rln.ss.utils.impl.RolledFileLogger;
+import io.rln.ss.utils.impl.SyslogLogger;
+import io.rln.ss.utils.impl.SystemErrLogger;
+import io.rln.ss.utils.impl.WinEventsLogger;
 
 /**
  * Activator for the logger class which sets the logger singleton.

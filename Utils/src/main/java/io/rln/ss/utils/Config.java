@@ -35,7 +35,7 @@
  * @date 28th December 2009
  */
 
-package io.rln.ss.utils.config;
+package io.rln.ss.utils;
 
 import java.util.Map;
 

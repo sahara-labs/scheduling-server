@@ -34,7 +34,7 @@
  * @author Michael Diponio (mdiponio)
  * @date 28th December 2009
  */
-package io.rln.ss.utils.config;
+package io.rln.ss.utils;
 
 /**
  * Configuration service loader. 

@@ -34,9 +34,9 @@
  * @author Michael Diponio (mdiponio)
  * @date 28th December 2009
  */
-package io.rln.ss.utils.config.impl;
+package io.rln.ss.utils.impl;
 
-import io.rln.ss.utils.config.ConfigServiceLoader;
+import io.rln.ss.utils.ConfigServiceLoader;
 
 /**
  * Implementation interface (contains a method that shouldn't be exported
