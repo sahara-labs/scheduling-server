@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="output" path="bin"/>
 	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry sourcepath="/home/mdiponio/.gradle/caches/modules-2/files-2.1/org.apache.felix/org.apache.felix.framework/5.4.0/66ba4cc729dff5deb6a79fdeb392b4441ef10594/org.apache.felix.framework-5.4.0-sources.jar" kind="lib" path="/home/mdiponio/.gradle/caches/modules-2/files-2.1/org.apache.felix/org.apache.felix.framework/5.4.0/eb85121a1f35e8c03cb2a6024fc3101e641456e9/org.apache.felix.framework-5.4.0.jar"/>
-	<classpathentry sourcepath="/home/mdiponio/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.17/677abe279b68c5e7490d6d50c6951376238d7d3e/log4j-1.2.17-sources.jar" kind="lib" path="/home/mdiponio/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.17/5af35056b4d257e4b64b9e8069c0746e8b08629f/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="/home/mdiponio/.gradle/caches/modules-2/files-2.1/org.apache.felix/org.apache.felix.framework/5.4.0/eb85121a1f35e8c03cb2a6024fc3101e641456e9/org.apache.felix.framework-5.4.0.jar" sourcepath="/home/mdiponio/.gradle/caches/modules-2/files-2.1/org.apache.felix/org.apache.felix.framework/5.4.0/66ba4cc729dff5deb6a79fdeb392b4441ef10594/org.apache.felix.framework-5.4.0-sources.jar"/>
+	<classpathentry kind="lib" path="/home/mdiponio/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.17/5af35056b4d257e4b64b9e8069c0746e8b08629f/log4j-1.2.17.jar" sourcepath="/home/mdiponio/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.17/677abe279b68c5e7490d6d50c6951376238d7d3e/log4j-1.2.17-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

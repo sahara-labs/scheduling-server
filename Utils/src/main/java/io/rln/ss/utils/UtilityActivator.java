@@ -34,8 +34,6 @@ public class UtilityActivator implements BundleActivator
     
     /** Loader service registration. */
     private ServiceRegistration<ConfigServiceLoader> registration;
-    
-    
 
     /** The task scheduler. */
     private TaskScheduler scheduler;
@@ -43,19 +41,26 @@ public class UtilityActivator implements BundleActivator
     /** Runnable task service listener. */
     private SchedulingServiceListener listener;
     
+    /** Logger activator. */
+    private LoggerActivator loggerActivator;
+    
     /** Logger. */
     private Logger logger;
 
 	@Override
 	public void start(BundleContext context) throws Exception 
-	{
-		this.logger = LoggerActivator.getLogger();
-		this.logger.info("Starting Task Scheduler bundle.");
+	{		
 		
 		this.loader = new PropertiesConfigServiceLoader(context);
 	    this.loader.loadDefault();
 	    
 	    this.registration = context.registerService(ConfigServiceLoader.class, this.loader, null);
+	    
+	    this.loggerActivator = new LoggerActivator();
+	    this.loggerActivator.start(context);
+	    
+	    this.logger = LoggerActivator.getLogger();
+	    
 		
 		/* Set up task scheduler service listener. */
 		this.scheduler = new TaskScheduler();
