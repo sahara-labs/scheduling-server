@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TaskScheduler
+Bundle-SymbolicName: SchedulingServer-TaskScheduler
+Bundle-Version: 1.0.0
+Bundle-Activator: io.rln.ss.utils.tasksched.TaskSchedulerActivator
+Bundle-Vendor: University Of Technology, Sydney
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: io.rln.ss.utils.logger,
+ org.osgi.framework;version="1.3.0"
