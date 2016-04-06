@@ -6,8 +6,19 @@
 //
 
 apply plugin: 'java'
+apply plugin: 'biz.aQute.bnd.builder'
 apply plugin: 'eclipse'
 
+defaultTasks 'clean', 'build'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:3.1.0'
+    }
+}
 
 repositories {
     mavenCentral()
@@ -21,17 +32,21 @@ dependencies {
 }
 
 jar {
-    baseName = 'SchedulingServer-Framework'
+    baseName = 'io.rln.ss.utils'
     version = '4.0.0'
     manifest {
-        
-    }
-    doFirst {
-        from (configurations.runtime.resolve().collect { it.isDirectory() ? it : zipTree(it) }) {
-            include 'org/**/*'
-            include 'default.properties'
-            include 'META-INF/services/*'
-        }
+        attributes (
+            /* Package imports and exports. */
+            'Export-Package': 'io.rln.ss.utils',
+            'Import-Package': '!org.apache.*',
+            /* Bundle internal classpath. */
+            'Include-Resource': 'log4j-1.2.17.jar',
+            'Bundle-Classpath': '.,log4j-1.2.17.jar',
+            /* Other bundle meta-data. */
+            'Bundle-Activator': 'io.rln.ss.utils.UtilityActivator',
+            'Bundle-Vendor': 'UTS remotelabs',
+            'Bundle-Description': 'Logging, configuration and threading support.'
+        )
     }
 }
 

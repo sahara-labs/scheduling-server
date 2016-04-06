@@ -49,11 +49,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import io.rln.ss.utils.impl.FileLogger;
 import io.rln.ss.utils.impl.RolledFileLogger;
-import io.rln.ss.utils.impl.SyslogLogger;
 import io.rln.ss.utils.impl.SystemErrLogger;
-import io.rln.ss.utils.impl.WinEventsLogger;
 
 /**
  * Activator for the logger class which sets the logger singleton.
@@ -153,21 +150,15 @@ public class LoggerActivator implements BundleActivator
         /* Load up logger type. */
         switch (LoggerActivator.getLoggerType())
         {
-            case FILE:
-                LoggerActivator.logger = new FileLogger();
-                break;
+            
             case ROLLED_FILE:
                 LoggerActivator.logger = new RolledFileLogger();
                 break;
-            case SYSLOG:
-                LoggerActivator.logger = new SyslogLogger();
-                break;
+            
             case SYSTEM_ERROR:
                 LoggerActivator.logger = new SystemErrLogger();
                 break;
-            case WINEVENTS:
-                LoggerActivator.logger = new WinEventsLogger();
-                break;
+            
         }
         
         /* Register a logger confService. */        

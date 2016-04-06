@@ -7,18 +7,6 @@
 		b(n) - Bundle symbolic name.
 	The numbers 'n' must be sequential.
 	</comment>
-	<entry key="B1">SchedulingServer-Configuration</entry>
-	<entry key="B2">SchedulingServer-Logger</entry>
-	<entry key="B3">SchedulingServer-TaskScheduler</entry>
-	<entry key="B4">SchedulingServer-DataAccess</entry>
-	<entry key="B5">SchedulingServer-Messenger</entry>
-	<entry key="B6">SchedulingServer-RigProvider</entry>
-	<entry key="B7">SchedulingServer-Permissions</entry>
-	<entry key="B8">SchedulingServer-MultiSiteProvider</entry>
-	<entry key="B9">SchedulingServer-Bookings</entry>
-	<entry key="B10">SchedulingServer-RigManagement</entry>
-	<entry key="B11">SchedulingServer-Queuer</entry>
-	<entry key="B12">SchedulingServer-Session</entry>
-	<entry key="B13">SchedulingServer-Reports</entry>
-	<entry key="B14">SchedulingServer-Server</entry>
+	<entry key="B1">io.rln.ss.utils</entry>
+	
 </properties>
