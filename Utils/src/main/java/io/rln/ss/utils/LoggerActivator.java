@@ -68,9 +68,6 @@ public class LoggerActivator implements BundleActivator
     /** Logger bundle configuration bundle. */
     private static final Dictionary<String, String> loggerProperties = new Hashtable<String, String>();
     
-    /** Configuration confService tracker. */
-    private ServiceTracker<Config, Config> confService;
-    
     /** Logger object. */
     private static Logger logger = null;
     
@@ -120,11 +117,6 @@ public class LoggerActivator implements BundleActivator
         
         if (ref != null)
         {
-            /* Load all configuration properties. */
-            this.confService = new ServiceTracker<Config, Config>(context, ref, null);
-            this.confService.open();
-            conf = this.confService.getService();
-            
             /* Common configuration. */
             LoggerActivator.loggerProperties.put("Logger_Type", conf.getProperty("Logger_Type", "RolledFile"));
             LoggerActivator.loggerProperties.put("Log_Level", conf.getProperty("Log_Level", "WARN"));
@@ -168,7 +160,6 @@ public class LoggerActivator implements BundleActivator
     @Override
     public void stop(final BundleContext context) throws Exception
     {
-        this.confService.close();
         this.reg.unregister();
     }
 

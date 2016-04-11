@@ -1,0 +1,59 @@
+//
+// Build script for Scheduling Server Data bundle
+//
+// author: Michael Diponio <michael.diponio@uts.edu.au>
+// date: 11th April 2016
+//
+
+apply plugin: 'java'
+apply plugin: 'biz.aQute.bnd.builder'
+apply plugin: 'eclipse'
+apply plugin: 'org.hibernate.gradle.tools'
+
+defaultTasks 'clean', 'build'
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:3.1.0'
+        classpath 'gradle.plugin.org.hibernate.gradle.tools:hibernatetools-gradle-plugin:1.2.3'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.felix:org.apache.felix.framework:5.4.0'
+    compile 'org.hibernate:hibernate-core:5.1.0.Final'
+
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+jar {
+    baseName = 'io.rln.ss.data'
+    version = '4.0.0'
+    manifest {
+        attributes (
+            /* Package imports and exports. */
+            'Export-Package': 'io.rln.ss.data',
+            'Import-Package': '!org.apache.*',
+            /* Bundle internal classpath. */
+            'Include-Resource': '',
+            'Bundle-Classpath': '.',
+            /* Other bundle meta-data. */
+            //'Bundle-Activator': 'io.rln.ss.utils.DataActivator',
+            'Bundle-Vendor': 'UTS remotelabs',
+            'Bundle-Description': 'Database access and ORM implementation.'
+        )
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8

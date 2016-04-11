@@ -21,6 +21,7 @@ import org.osgi.framework.ServiceRegistration;
 import io.rln.ss.utils.impl.ConfigServiceLoaderImpl;
 import io.rln.ss.utils.impl.PropertiesConfigServiceLoader;
 import io.rln.ss.utils.impl.SchedulingServiceListener;
+import io.rln.ss.utils.impl.SystemErrLogger;
 import io.rln.ss.utils.impl.TaskScheduler;
 
 /**
@@ -41,9 +42,6 @@ public class UtilityActivator implements BundleActivator
     /** Runnable task service listener. */
     private SchedulingServiceListener listener;
     
-    /** Logger activator. */
-    private LoggerActivator loggerActivator;
-    
     /** Logger. */
     private Logger logger;
 
@@ -55,12 +53,8 @@ public class UtilityActivator implements BundleActivator
 	    this.loader.loadDefault();
 	    
 	    this.registration = context.registerService(ConfigServiceLoader.class, this.loader, null);
-	    
-	    this.loggerActivator = new LoggerActivator();
-	    this.loggerActivator.start(context);
-	    
-	    this.logger = LoggerActivator.getLogger();
-	    
+
+	    this.logger = new SystemErrLogger();
 		
 		/* Set up task scheduler service listener. */
 		this.scheduler = new TaskScheduler();
@@ -91,4 +85,6 @@ public class UtilityActivator implements BundleActivator
         this.loader.unloadAll();
 	}
 
+	
+	
 }

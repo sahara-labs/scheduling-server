@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+		<property name="hibernate.connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+        <property name="hibernate.connection.password">rootpasswd</property>
+        <property name="hibernate.connection.url">jdbc:oracle:root@localhost:1521:rootpasswd</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>
+		
+		<!-- Mapping -->	
+		<mapping class="io.rln.ss.data.entities.AcademicPermission" />
+		<mapping class="io.rln.ss.data.entities.Bookings" />
+		<mapping class="io.rln.ss.data.entities.Config" />
+		<mapping class="io.rln.ss.data.entities.Collection" />
+		<mapping class="io.rln.ss.data.entities.MatchingCapabilities" />
+		<mapping class="io.rln.ss.data.entities.Project" />			
+		<mapping class="io.rln.ss.data.entities.ProjectMetadata" />
+		<mapping class="io.rln.ss.data.entities.ProjectMetadataType" />
+		<mapping class="io.rln.ss.data.entities.RemotePermission" />
+		<mapping class="io.rln.ss.data.entities.RemotePermissionLog" />
+		<mapping class="io.rln.ss.data.entities.RemoteSite" />
+		<mapping class="io.rln.ss.data.entities.RequestCapabilities" />
+		<mapping class="io.rln.ss.data.entities.ResourcePermission" />
+		<mapping class="io.rln.ss.data.entities.RequestablePermissionPeriod" />
+		<mapping class="io.rln.ss.data.entities.Rig" />
+		<mapping class="io.rln.ss.data.entities.RigOfflineSchedule" />
+		<mapping class="io.rln.ss.data.entities.RigCapabilities" />
+		<mapping class="io.rln.ss.data.entities.RigLog" />
+		<mapping class="io.rln.ss.data.entities.RigType" />
+		<mapping class="io.rln.ss.data.entities.Session" />
+		<mapping class="io.rln.ss.data.entities.SessionFile" />
+		<mapping class="io.rln.ss.data.entities.ShibbolethUsersMap" />
+		<mapping class="io.rln.ss.data.entities.User" />
+		<mapping class="io.rln.ss.data.entities.UserAssociation" />
+		<mapping class="io.rln.ss.data.entities.UserClass" />
+		<mapping class="io.rln.ss.data.entities.UserClassKey" />
+		<mapping class="io.rln.ss.data.entities.UserClassKeyConstraint" />
+		<mapping class="io.rln.ss.data.entities.UserClassKeyRedemption" />
+		<mapping class="io.rln.ss.data.entities.UserLock" />
+    </session-factory>
+</hibernate-configuration>

@@ -1,0 +1,29 @@
+Bundle-Name: DataAccess
+Bundle-SymbolicName: SchedulingServer-DataAccess
+Bundle-Version: 2.0.0
+Bundle-Activator: io.rln.ss.data.DataActivator
+Bundle-Vendor: University of Technology, Sydney
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+
+Export-Package: io.rln.ss.data, \
+io.rln.ss.data.entities, \
+io.rln.ss.data.dao, \
+io.rln.ss.data.listener, \
+org.hibernate, org.hibernate.criterion, org.hibernate.type, \
+org.hibernate.transform
+
+Private-Package: io.rln.ss.data.impl, \
+io.rln.ss.data.testsetup
+
+Import-Package: !bitronix.tm, !com.ibm.ejs.jts.jta, \
+!com.ibm.websphere.jtaextensions, !com.ibm.ws.Transaction, \
+!com.opensymphony.oscache.base, !com.opensymphony.oscache.general, \
+!com.sun.*, !javax.swing.*, !net.sf.*, !org.apache.*, !org.jaxen.*, \
+!org.jboss.*, !org.gjt.xpp,org.ietf.jgss, !org.jgroups, \
+!org.logicalcobwebs.*, !org.objectweb.*, !org.relaxng.datatype, \
+!javax.resource.*, !javax.security.jacc, !org.xmlpull.*, !jcifs, !jcifs.smb, \
+!au.edu.uts.eng.remotelabs.schedserver.logger.impl, \
+!oracle.*, !org.ietf.jgss, *
+
+Include-Resource: lib/=lib/;-donotcopy=.svn
+Bundle-ClassPath: ., ${findpath;lib/.*.jar}
