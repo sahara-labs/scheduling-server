@@ -287,6 +287,7 @@ public class SchedulingServer
         {
             if (file.getName().endsWith(".jar"))
             {
+                @SuppressWarnings("resource")
                 final JarFile jar = new JarFile(file);
                 String name = jar.getManifest().getMainAttributes().getValue("Bundle-SymbolicName");
 

@@ -3,6 +3,7 @@
 
 # Ignore all class files
 *.class
+bin/
 
 # Ignore servicewrapper components
 *.o

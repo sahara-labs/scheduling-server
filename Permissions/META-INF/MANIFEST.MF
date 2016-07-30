@@ -5,7 +5,7 @@ Bundle-SymbolicName: SchedulingServer-Permissions
 Bundle-Version: 2.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.permissions.PermissionActivator
 Bundle-Vendor: University of Technology, Sydney
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.config,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,

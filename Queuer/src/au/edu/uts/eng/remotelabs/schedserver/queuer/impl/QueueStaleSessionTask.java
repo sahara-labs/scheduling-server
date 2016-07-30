@@ -44,13 +44,10 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSessionRequest;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 
 /**
@@ -116,30 +113,6 @@ public class QueueStaleSessionTask implements Runnable
                     
                     QueueActivator.notifySessionEvent(SessionEvent.FINISHED, s, db);
                     this.cancelledSessions.add(s);
-                }
-            }
-            
-            /* Notify the provider of each of the MultiSite session. */
-            for (Session ses : this.cancelledSessions)
-            {
-                if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourceType()))
-                {
-                    if (ses.getResourcePermission().getRemotePermission() == null)
-                    {
-                        this.logger.warn("Unable to notify provider of timed out session because it does not have " +
-                                "a mapped remote permission.");
-                        continue;
-                    }
-                    
-                    RemoteSite site = ses.getResourcePermission().getRemotePermission().getSite();
-                    this.logger.debug("Notifying provider site that a queued session '" + ses.getId() + 
-                            "' has timed out.");
-                    FinishSessionRequest request = new FinishSessionRequest();
-                    if (!request.finishSession(ses.getUser(), site, db) || request.isFailed())
-                    {
-                        this.logger.warn("Unable to notify consumer site '" + site.getName() + "' with reason: " + 
-                                (request.getFailureReason() == null ? request.getReason() : request.getFailureReason())); 
-                    }
                 }
             }
             

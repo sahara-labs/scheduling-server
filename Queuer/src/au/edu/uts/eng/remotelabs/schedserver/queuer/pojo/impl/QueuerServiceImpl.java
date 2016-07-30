@@ -36,8 +36,6 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.impl;
 
-
-
 import java.util.Date;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
@@ -50,10 +48,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSessionRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.QueuePositionRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest.QueueTarget;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.Queue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
@@ -148,34 +142,7 @@ public class QueuerServiceImpl implements QueuerService
                 }
             }
         }
-        else if (ResourcePermission.CONSUMER_PERMISSION.equals(perm.getType()))
-        {
-            /* Sanity check to make sure the permission actually has a mapping. */
-            if (perm.getRemotePermission() == null)
-            {
-                this.logger.warn("Consumer type permission does not have a mapping to a remote permission so cannot " +
-                		"make remote request to determine availability.");
-                return response;
-            }
-            
-            /* Make the remote call and populate the results. */
-            PermissionAvailabilityRequest check = new PermissionAvailabilityRequest();
-            if (check.checkAvailability(perm.getRemotePermission(), ses))
-            {
-                response.setViable(check.isViable());
-                response.setHasFree(check.hasFree());
-                response.setName(check.getResourceName());
-                response.setType(check.getResourceType());
                 
-                for (QueueTarget qt : check.getQueueTargets())
-                {
-                    Rig rig = new Rig();
-                    rig.setName(qt.getName());
-                    response.addTarget(rig, qt.isFree());
-                }
-            }
-        }
-        
         return response;
     }
 
@@ -222,36 +189,13 @@ public class QueuerServiceImpl implements QueuerService
     @Override
     public int getQueuePosition(Session ses, org.hibernate.Session db)
     {
-        if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourcePermission().getType()))
-        {
-            /* Consumer queuing so we need to request this information from the provider. */
-            QueuePositionRequest request = new QueuePositionRequest();
-            if (!request.getQueuePosition(ses.getUser(), 
-                    ses.getResourcePermission().getRemotePermission().getSite(), db) || request.isFailed())
-            {
-                this.logger.warn("Unable to determine queue position from provider for session '" + ses.getId() +  
-                        "'. Provided reason: " + request.getFailureReason());                
-                return -1;
-            }
-            else
-            {
-                return request.getPosition();
-            }
-        }
-        else return Queue.getInstance().getEntryPosition(ses, db);
+        return Queue.getInstance().getEntryPosition(ses, db);
     }
 
     @Override
     public boolean removeFromQueue(Session ses, String reason, org.hibernate.Session db)
     {
-        if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourcePermission().getType()))
-        {
-            /* Consumer queuing so we need to notify the provider to remove
-             * the user from the queue. */
-            new FinishSessionRequest().
-                    finishSession(ses.getUser(), ses.getResourcePermission().getRemotePermission().getSite(), db); 
-        }
-        else Queue.getInstance().removeEntry(ses, db);
+        Queue.getInstance().removeEntry(ses, db);
         
         db.beginTransaction();
         ses.setActive(false);

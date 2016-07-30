@@ -97,9 +97,6 @@ public class User implements java.io.Serializable
     /** The users last name. */
     private String lastName;
     
-    /** A research identifier. */
-    private String researchIdentifier;
-    
     /** The email address of the user. */
     private String email;
     
@@ -114,9 +111,6 @@ public class User implements java.io.Serializable
     
     /** The sessions this user has performed. */
     private Set<Session> sessions = new HashSet<Session>(0);
-    
-    /** The projects this user has created. */
-    private Set<Project> projects = new HashSet<Project>(0);
 
     public User()
     {
@@ -198,17 +192,6 @@ public class User implements java.io.Serializable
         this.lastName = lastName;
     }
 
-    @Column(name = "research_identifier", nullable = true, length = 50)
-    public String getResearchIdentifier()
-    {
-        return this.researchIdentifier;
-    }
-
-    public void setResearchIdentifier(String researchIdentifer)
-    {
-        this.researchIdentifier = researchIdentifer;
-    }
-
     @Column(name = "email", nullable = true, length = 100)
     public String getEmail()
     {
@@ -262,17 +245,6 @@ public class User implements java.io.Serializable
     public void setSessions(final Set<Session> sessions)
     {
         this.sessions = sessions;
-    }
-    
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<Project> getProjects()
-    {
-        return this.projects;
-    }
-
-    public void setProjects(Set<Project> projects)
-    {
-        this.projects = projects;
     }
     
     /**

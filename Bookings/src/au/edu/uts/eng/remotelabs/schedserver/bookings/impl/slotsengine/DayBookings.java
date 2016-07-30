@@ -829,6 +829,10 @@ public class DayBookings
                     next = next.getCapsLoopNext(mb.getRequestCapabilities());
                 }
                 break;
+                
+            case RIG:
+                /* Nothing to do. */
+                break;
         }
         
         return null;

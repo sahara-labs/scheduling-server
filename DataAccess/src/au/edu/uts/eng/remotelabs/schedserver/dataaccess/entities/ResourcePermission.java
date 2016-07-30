@@ -51,7 +51,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -73,9 +72,6 @@ public class ResourcePermission implements java.io.Serializable
     
     /** Capability resource permission type. */
     public static final String CAPS_PERMISSION = "CAPABILITY";
-    
-    /** Consumer permission. */
-    public static final String CONSUMER_PERMISSION = "CONSUMER";
     
     /** Serializable class. */
     private static final long serialVersionUID = -2292524825260205119L;
@@ -138,9 +134,6 @@ public class ResourcePermission implements java.io.Serializable
     /** Whether to use activity detection for sessions. */
     private boolean useActivityDetection;
     
-    /** The details for this remote permission. */
-    private RemotePermission remotePermission;
-
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
     private Set<Session> sessionsForResourcePermission = new HashSet<Session>(0);
 
@@ -364,15 +357,5 @@ public class ResourcePermission implements java.io.Serializable
     {
         this.sessionsForResourcePermission = sessionsForResourcePermission;
     }
-    
-    @OneToOne(optional = true, mappedBy = "permission")
-    public RemotePermission getRemotePermission()
-    {
-        return this.remotePermission;
-    }
-    
-    public void setRemotePermission(final RemotePermission remotePermission)
-    {
-        this.remotePermission = remotePermission;
-    }
+
 }

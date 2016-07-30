@@ -112,9 +112,6 @@ public class Rig implements java.io.Serializable
     /** Meta-information to find the providing rig service. */
     private String meta;
     
-    /** The site at which the rig resides if it isn't local. */
-    private RemoteSite site;
-    
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Session> sessions = new HashSet<Session>(0);
     private Set<RigLog> rigLogs = new HashSet<RigLog>(0);
@@ -290,18 +287,6 @@ public class Rig implements java.io.Serializable
     public void setMeta(final String meta)
     {
         this.meta = meta;
-    }
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "site_id", nullable = true)
-    public RemoteSite getSite()
-    {
-        return this.site;
-    }
-    
-    public void setSite(final RemoteSite site)
-    {
-        this.site = site;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "rig")

@@ -49,7 +49,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.MatchingCapabilities;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemotePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RequestCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -58,8 +57,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.PermissionAvailabilityRequest.QueueTarget;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueueEntry;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.AddUserToQueue;
@@ -77,7 +74,6 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.OperationRequestT
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.PermissionIDType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueTargetType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.QueueType;
-import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoteLoadType;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueue;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.RemoveUserFromQueueResponse;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.intf.types.ResourceIDType;
@@ -190,7 +186,6 @@ public class QueuerSOAPImpl implements QueuerSOAP
              **********************************************************************/
             else
             {
-                // TODO Queue entry - Upload batch code.
                 inQu.setQueueSuccessful(entry.addToQueue(null));
             }
             
@@ -325,13 +320,6 @@ public class QueuerSOAPImpl implements QueuerSOAP
                     res.setType(ses.getResourceType());
                     res.setResourceID(ses.getRequestedResourceId().intValue());
                     res.setResourceName(ses.getRequestedResourceName());
-                
-                    /* Disabled for MultiSite because the this will require 
-                     * another call to the provider. */
-                    if (!ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourceType()))
-                    {
-                        queue.setQueue(this.getQueueForPermission(ses.getResourcePermission(), dao.getSession()));
-                    }
                 }
                 else
                 {
@@ -583,57 +571,7 @@ public class QueuerSOAPImpl implements QueuerSOAP
                 }
             }
         }
-        else if (ResourcePermission.CONSUMER_PERMISSION.equals(type))
-        {
-            /* Sanity check to make sure the permission actually has a mapping. */
-            RemotePermission remotePerm = perm.getRemotePermission();
-            if (remotePerm == null)
-            {
-                this.logger.warn("Consumer type permission does not have a mapping to a remote permission so cannot " +
-                		"make remote request to determine availability.");
-                return queue;
-            }
-            
-            RemoteLoadType remoteLoad = new RemoteLoadType();
-            remoteLoad.setSite(remotePerm.getSite().getName());
-            queue.setRemoteLoad(remoteLoad);
-            
-            /* Make the remote call and populate the results. */
-            PermissionAvailabilityRequest remoteCheck = new PermissionAvailabilityRequest();
-            if (remoteCheck.checkAvailability(remotePerm, ses))
-            {
-                remoteLoad.setFailed(false);
-                
-                queue.setViable(remoteCheck.isViable());
-                queue.setHasFree(remoteCheck.hasFree());
-                queue.setIsBookable(remoteCheck.isBookable());
-                queue.setIsQueuable(remoteCheck.isQueueable());
-                queue.setIsCodeAssignable(remoteCheck.isCodeAssignable());
-                
-                ResourceIDType res = new ResourceIDType();
-                res.setResourceName(remoteCheck.getResourceName());
-                res.setType(remoteCheck.getResourceType());
-                queue.setQueuedResource(res);
-                
-                for (QueueTarget qt : remoteCheck.getQueueTargets())
-                {
-                    QueueTargetType target = new QueueTargetType();
-                    target.setViable(qt.isVaiable());
-                    target.setIsFree(qt.isFree());
-                    queue.addQueueTarget(target);
-                    ResourceIDType resTarget = new ResourceIDType();
-                    resTarget.setType(qt.getType());
-                    resTarget.setResourceName(qt.getName());
-                    target.setResource(resTarget);
-                }
-            }
-            else
-            {
-                remoteLoad.setFailed(true);
-                remoteLoad.setReason(remoteCheck.getFailureReason());
-            }
-        }
-
+        
         return queue;
     }
 

@@ -561,11 +561,6 @@ public class BookingsSOAPImpl implements BookingsSOAP
                 resource.setResourceID(caps.getId().intValue());
                 resource.setResourceName(caps.getCapabilities());
             }
-            else if (ResourcePermission.CONSUMER_PERMISSION.equalsIgnoreCase(perm.getType()))
-            {
-                resource.setResourceID(-1); // Faking ID.
-                resource.setResourceName("Fake");
-            }
             else
             {
                 this.logger.warn("Unable to provide free times because the permission with ID=" + perm.getId() + 

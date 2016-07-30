@@ -3,7 +3,7 @@ Bundle-SymbolicName: SchedulingServer-Bookings
 Bundle-Version: 3.0.0
 Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.bookings.BookingsActivator
 Bundle-Vendor: University of Technology, Sydney
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
 Import-Package: org.w3c.dom, \
 javax.xml, javax.xml.*, javax.xml.datatype, \

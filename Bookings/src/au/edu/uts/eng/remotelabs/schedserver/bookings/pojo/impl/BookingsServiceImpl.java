@@ -36,7 +36,6 @@
  */
 package au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.impl;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -54,17 +53,12 @@ import au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine.TimeUtil;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener.BookingsEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimesRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.BookingsTimesRequest.BookingTime;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.CancelBookingRequest;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.CreateBookingRequest;
 
 /**
  * Bookings service implementation.
@@ -166,25 +160,6 @@ public class BookingsServiceImpl implements BookingsService
         {
             free = this.engine.getFreeTimes(perm.getRequestCapabilities(), new TimePeriod(reqStart, searchEnd),
                     perm.getSessionDuration() / 2, db);
-        }
-        else if (ResourcePermission.CONSUMER_PERMISSION.equals(perm.getType()))
-        {
-            free = new ArrayList<BookingEngine.TimePeriod>();
-            /* We need to ask the remote site about times. */
-            BookingsTimesRequest multiSiteReq = new BookingsTimesRequest();
-            if (multiSiteReq.findFreeTimes(perm.getRemotePermission(), reqStart, searchEnd, db))
-            {
-                /* We are integrated the multisite result set with the local 
-                 * times so we are only interested in the free times. */
-                for (BookingTime t : multiSiteReq.getTimes())
-                {
-                    if (BookingsPeriod.FREE.equals(t.getState())) free.add(new TimePeriod(t.getStart(), t.getEnd()));
-                }
-            }
-            else
-            {
-                this.logger.warn("Unable to find free times because multisite call failed.");
-            }
         }
 
         /* ----------------------------------------------------------------
@@ -311,101 +286,52 @@ public class BookingsServiceImpl implements BookingsService
         /* ----------------------------------------------------------------
          * -- Create booking.                                            --
          * ---------------------------------------------------------------- */
-        if (ResourcePermission.CONSUMER_PERMISSION.equals(perm.getType()))
+        
+        BookingCreation bc = this.engine.createBooking(user, perm, new TimePeriod(start, end), db);
+        if (bc.wasCreated())
         {
-            CreateBookingRequest request = new CreateBookingRequest();
-            if (request.createBooking(user, perm.getRemotePermission(), start, end, db))
-            {
-                response.setSuccess(request.wasSuccessful());
-                response.setFailureReason(request.getReason());
-                if (request.wasSuccessful())
-                {
-                    /* Provider created booking so we now need to create it 
-                     * locally. */
-                    this.logger.debug("Successfullly created booking at provider with identifier " + 
-                            request.getBookingID() + '.');
-                    Bookings bk = new Bookings();
-                    bk.setActive(true);
-                    bk.setStartTime(startDate);
-                    bk.setEndTime(endDate);
-                    bk.setDuration((int)(end.getTimeInMillis() - start.getTimeInMillis()) / 1000);
-                    bk.setResourcePermission(perm);
-                    bk.setResourceType(ResourcePermission.CONSUMER_PERMISSION);
-                    bk.setProviderId(request.getBookingID());
-                    bk.setUser(user);
-                    bk.setUserNamespace(user.getNamespace());
-                    bk.setUserName(user.getName());
-                    response.setBooking(new BookingsDao(db).persist(bk));
-                    
-                    /* Notification emails are only sent to home users. */
-                    new BookingNotification(bk).notifyCreation();
-                }
-                else
-                {
-                    this.logger.info("Provider failed to create booking with reason " + request.getReason());
-                    
-                    /* Provider returned that it couldn't create booking. */
-                    for (BookingTime bt : request.getBestFits())
-                    {
-                        response.addBestFit(bt.getStart(), bt.getEnd());
-                    }
-                }
-            }
-            else
-            {
-                /* Provider call failed. */
-                this.logger.info("Provider call to create booking failed with reason " + request.getFailureReason());
-                response.setSuccess(false);
-                response.setFailureReason("Provider request failed (" + request.getFailureReason()  + ")");
-            }
+            response.setSuccess(true);
+            response.setBooking(bc.getBooking());
+
+            /* Notification emails are only sent to home users. */
+            new BookingNotification(bc.getBooking()).notifyCreation();
         }
         else
         {
-            BookingCreation bc = this.engine.createBooking(user, perm, new TimePeriod(start, end), db);
-            if (bc.wasCreated())
+            response.setSuccess(false);
+            response.setFailureReason("Resource not free.");
+
+            for (TimePeriod tp : bc.getBestFits())
             {
-                response.setSuccess(true);
-                response.setBooking(bc.getBooking());
-    
-                /* Notification emails are only sent to home users. */
-                if (perm.getRemotePermission() == null) new BookingNotification(bc.getBooking()).notifyCreation();
-            }
-            else
-            {
-                response.setSuccess(false);
-                response.setFailureReason("Resource not free.");
-    
-                for (TimePeriod tp : bc.getBestFits())
+                numBookings = (Integer) db.createCriteria(Bookings.class)
+                        .setProjection(Projections.rowCount())
+                        .add(Restrictions.eq("active", Boolean.TRUE))
+                        .add(Restrictions.eq("user", user))
+                        .add(Restrictions.disjunction()
+                                .add(Restrictions.and(
+                                        Restrictions.gt("startTime", tp.getStartTime().getTime()),
+                                        Restrictions.lt("startTime", tp.getEndTime().getTime())
+                                        ))       
+                                        .add(Restrictions.and(
+                                                Restrictions.gt("endTime", tp.getStartTime().getTime()),
+                                                Restrictions.le("endTime", tp.getEndTime().getTime())
+                                        ))
+                                        .add(Restrictions.and(
+                                                Restrictions.le("startTime", tp.getStartTime().getTime()),
+                                                Restrictions.gt("endTime", tp.getEndTime().getTime()))
+                                        )
+                                ).uniqueResult();
+                if (numBookings > 0)
                 {
-                    numBookings = (Integer) db.createCriteria(Bookings.class)
-                            .setProjection(Projections.rowCount())
-                            .add(Restrictions.eq("active", Boolean.TRUE))
-                            .add(Restrictions.eq("user", user))
-                            .add(Restrictions.disjunction()
-                                    .add(Restrictions.and(
-                                            Restrictions.gt("startTime", tp.getStartTime().getTime()),
-                                            Restrictions.lt("startTime", tp.getEndTime().getTime())
-                                            ))       
-                                            .add(Restrictions.and(
-                                                    Restrictions.gt("endTime", tp.getStartTime().getTime()),
-                                                    Restrictions.le("endTime", tp.getEndTime().getTime())
-                                            ))
-                                            .add(Restrictions.and(
-                                                    Restrictions.le("startTime", tp.getStartTime().getTime()),
-                                                    Restrictions.gt("endTime", tp.getEndTime().getTime()))
-                                            )
-                                    ).uniqueResult();
-                    if (numBookings > 0)
-                    {
-                        this.logger.debug("Excluding best fit option for user " + user.qName() + " because it is " +
-                                "concurrent with an existing.");
-                        continue;
-                    }
-                    
-                    response.addBestFit(tp.getStartTime(), tp.getEndTime());
+                    this.logger.debug("Excluding best fit option for user " + user.qName() + " because it is " +
+                            "concurrent with an existing.");
+                    continue;
                 }
+                
+                response.addBestFit(tp.getStartTime(), tp.getEndTime());
             }
         }
+
 
         return response;
     }
@@ -422,39 +348,13 @@ public class BookingsServiceImpl implements BookingsService
             return status;
         }
         
-        if (ResourcePermission.CONSUMER_PERMISSION.equals(booking.getResourcePermission().getType()))
+        if (!this.engine.cancelBooking(booking, reason, db))
         {
-            CancelBookingRequest multiSite = new CancelBookingRequest();
-            if (multiSite.cancelBooking(booking, db) && multiSite.wasSuccessful())
-            {
-                status.setSuccess(true);
-                this.logger.debug("Provider successfully cancelled booking with ID '" + booking.getId() + "'.");
-                
-                /* Since the provider has cancelled the booking, the local mapped
-                 * booked also needs to be cancelled. */
-                db.beginTransaction();
-                booking.setActive(false);
-                booking.setCancelReason(reason);
-                db.getTransaction().commit();
-            }
-            else
-            {
-                String error = multiSite.getFailureReason();
-                if (multiSite.getReason() != null) error = multiSite.getReason();
-                this.logger.warn("Failed to cancel booking because provider failed with reason: " + error);
-                status.setFailureReason(error);
-            }
+            status.setFailureReason("System error.");
         }
         else
         {
-            if (!this.engine.cancelBooking(booking, reason, db))
-            {
-                status.setFailureReason("System error.");
-            }
-            else
-            {
-                status.setSuccess(true);
-            }
+            status.setSuccess(true);
         }
         
         /* Fire event that a booking is cancelled. */

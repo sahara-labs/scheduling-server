@@ -38,14 +38,11 @@ package au.edu.uts.eng.remotelabs.schedserver.session.pojo.impl;
 
 import java.util.Date;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.multisite.provider.requests.FinishSessionRequest;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
-
 import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
@@ -85,29 +82,9 @@ public class SessionServiceImpl implements SessionService
         
         /* Fire session finished event. */
         SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
-        
-        if (ResourcePermission.CONSUMER_PERMISSION.equals(ses.getResourcePermission().getType()))
-        {
-            FinishSessionRequest multiSiteReq = new FinishSessionRequest();
-            if (!multiSiteReq.finishSession(ses.getUser(), ses.getRig().getSite(), db))
-            {
-                this.logger.warn("Failed to finish session at site '" + ses.getRig().getSite().getName() + "' because " +
-                		"the site could not be contacted.");
-                return false;
-            }
-            else if (!multiSiteReq.wasSuccessful())
-            {
-                this.logger.warn("Failed to finish session at site '" + ses.getRig().getSite().getName() + "' because " +
-                        "remote site returned " + multiSiteReq.getFailureReason());
-                return false;
-            }
-        }
-        else
-        {
-            /* Local session, release the rig. */
-            // TODO terminate code assigned
-            if (notTest) new RigReleaser().release(ses, db);
-        }
+
+        /* Local session, release the rig. */
+        if (notTest) new RigReleaser().release(ses, db);
         
         return true;
     }

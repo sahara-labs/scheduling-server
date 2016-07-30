@@ -7,7 +7,7 @@ Bundle-Activator: au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.config,
  org.osgi.framework;version="0.0.0",
  org.osgi.util.tracker
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Require-Bundle: SchedulingServer-Configuration;bundle-version="1.0.0"
 Export-Package: au.edu.uts.eng.remotelabs.schedserver.logger
