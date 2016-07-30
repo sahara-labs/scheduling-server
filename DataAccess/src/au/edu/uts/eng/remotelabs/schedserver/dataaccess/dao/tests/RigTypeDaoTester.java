@@ -139,7 +139,7 @@ public class RigTypeDaoTester extends TestCase
     @Test
     public void testLoadOrCreateNotExist()
     {
-        RigType type = this.dao.loadOrCreate("testType", true, "bar", null);
+        RigType type = this.dao.loadOrCreate("testType", true, "bar");
         assertNotNull(type);
         assertEquals("testType", type.getName());
         assertFalse(type.isCodeAssignable());

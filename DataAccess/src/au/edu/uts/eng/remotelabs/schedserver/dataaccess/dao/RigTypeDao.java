@@ -43,7 +43,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RemoteSite;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
 
 /**
@@ -127,7 +126,7 @@ public class RigTypeDao extends GenericDao<RigType>
      */
     public RigType loadOrCreate(final String name, boolean managed)
     {
-        return this.loadOrCreate(name, managed, null, null);
+        return this.loadOrCreate(name, managed, null);
     }
     
     /**
@@ -140,10 +139,9 @@ public class RigTypeDao extends GenericDao<RigType>
      * @param name the name of a rig type
      * @param managed whether the rig type is managed
      * @param meta meta data about rig (optional)
-     * @param site the site the rig type resides
      * @return rig type persistent instance
      */
-    public RigType loadOrCreate(final String name, boolean managed, String meta, RemoteSite site)
+    public RigType loadOrCreate(final String name, boolean managed, String meta)
     {
         RigType rigType = this.findByName(name);
         if (rigType == null)
@@ -172,11 +170,6 @@ public class RigTypeDao extends GenericDao<RigType>
             if (meta != null)
             {
                 rigType.setMeta(meta);
-            }
-            
-            if (site != null)
-            {
-                rigType.setSite(site);
             }
             
             this.logger.debug("Rig type '" + name + "' does not exist, creating a new rig type with parameters: " +
