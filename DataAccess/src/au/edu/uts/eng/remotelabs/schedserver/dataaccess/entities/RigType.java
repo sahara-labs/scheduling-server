@@ -44,6 +44,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -61,6 +63,15 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "rig_type", uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
 public class RigType implements java.io.Serializable
 {
+    /** Context of rig or more specifically what system will the 
+     *  rig be used in. */
+    public enum Context {
+        SAHARA,
+        RLN,
+        VAS,
+        HISTORICAL
+    }
+    
     /** Serializable class. */
     private static final long serialVersionUID = -3717782764245485528L;
     
@@ -89,6 +100,9 @@ public class RigType implements java.io.Serializable
     
     /** The duration in seconds that release is expected to take. */
     private int tearDownTime;
+    
+    /** The context the rig type belongs to. */
+    private Context context;
     
     /** Foreign key relations. */
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
@@ -232,6 +246,18 @@ public class RigType implements java.io.Serializable
         this.bookings = bookings;
     }
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "context", nullable = true)
+    public Context getContext()
+    {
+        return context;
+    }
+
+    public void setContext(Context context)
+    {
+        this.context = context;
+    }
+
     @Override
     public boolean equals(Object o)
     {

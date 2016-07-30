@@ -37,8 +37,6 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
-// Generated 06/01/2010 5:09:20 PM by Hibernate Tools 3.2.5.Beta
-
 import static javax.persistence.GenerationType.AUTO;
 
 import java.util.Date;
@@ -47,6 +45,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -57,6 +57,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType.Context;
 
 /**
  * Rig entity which maps to the rig table.
@@ -111,6 +113,12 @@ public class Rig implements java.io.Serializable
     
     /** Meta-information to find the providing rig service. */
     private String meta;
+    
+    /** The context this rig belongs to. */
+    private Context context;
+    
+    /** The certificate that authenticates node. */
+    private String cert;
     
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Session> sessions = new HashSet<Session>(0);
@@ -333,6 +341,29 @@ public class Rig implements java.io.Serializable
         this.bookings = bookings;
     }
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "context", nullable = true)
+    public Context getContext()
+    {
+        return context;
+    }
+
+    public void setContext(Context context)
+    {
+        this.context = context;
+    }
+    
+    @Column(name = "cert", columnDefinition = "text")
+    public String getCert()
+    {
+        return cert;
+    }
+
+    public void setCert(String cert)
+    {
+        this.cert = cert;
+    }
+
     @Override
     public boolean equals(Object o)
     {
