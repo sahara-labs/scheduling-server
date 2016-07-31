@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SchedServer-NodeProvider
 Bundle-SymbolicName: SchedServer-NodeProvider
 Bundle-Version: 1.0.0.alpha
-Bundle-Activator: io.rln.node.ss.NodeProviderActivator
+Bundle-Activator: io.rln.node.NodeProviderActivator
 Bundle-Vendor: UTS remotelabs
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess,

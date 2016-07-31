@@ -5,7 +5,7 @@
  * @date  30th July 2016
  */
 
-package io.rln.node.ss;
+package io.rln.node;
 
 import java.util.ArrayList;
 import java.util.List;
