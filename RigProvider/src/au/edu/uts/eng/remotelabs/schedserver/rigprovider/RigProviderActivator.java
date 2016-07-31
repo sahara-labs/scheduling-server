@@ -158,6 +158,7 @@ public class RigProviderActivator implements BundleActivator
         this.runnableReg.unregister();
         
         RigProviderActivator.sessionListeners = null;
+        RigProviderActivator.rigListeners = null;
         
         /* Take all rigs offline. */
         org.hibernate.Session ses = DataAccessActivator.getNewSession();
@@ -215,7 +216,7 @@ public class RigProviderActivator implements BundleActivator
      */
     public static void notifyRigEvent(RigStateChangeEvent event, Rig rig, org.hibernate.Session db)
     {
-        if (sessionListeners == null) return;
+        if (rigListeners == null) return;
         
         for (RigEventListener listener : rigListeners)
         {

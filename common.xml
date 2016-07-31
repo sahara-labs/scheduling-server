@@ -121,7 +121,7 @@ Date: 5th January 2009
 	  ##################################################################-->
 
 	<!-- Everything! -->
-	<target name="all" depends="clean,build,bundle,test,pmd,bugs,doc"/>
+	<target name="all" depends="clean,build,bundle,test,doc"/>
 
 	<!-- Bundle generation. -->
 	<target name="bundle" depends="build">
@@ -207,47 +207,6 @@ Date: 5th January 2009
 
 		<delete file="TESTS-TestSuites.xml" />
 		<delete dir="${instr.dir}" />
-	</target>
-
-	<!-- PMD results. -->
-	<target name="pmd" depends="build">
-		<mkdir dir="${reports.pmd.xml.dir}"/>
-		<taskdef name="pmd" classpathref="project.tools" classname="net.sourceforge.pmd.ant.PMDTask"/>
-		<pmd shortFilenames="true" targetjdk="1.6">
-		 	<ruleset>basic</ruleset>
-		 	<!-- <ruleset>braces</ruleset> --> <!-- False positives with curly braces. -->
-		 	<ruleset>codesize</ruleset>
-		 	<!-- <ruleset>controversial</ruleset>-->
-		 	<ruleset>coupling</ruleset>
-			<ruleset>migrating</ruleset>
-		 	<ruleset>optimizations</ruleset>
-		  	<formatter type="xml" toFile="${reports.pmd.xml.dir}/pmd_report.xml" />
-		  	<fileset dir="${src.dir}">
-				<include name="**/*.java" />
-				<exclude name="**/*Tester.java" />
-				<exclude name="**/*TestSuite.java" />
-			</fileset>
-		</pmd>
-		<xslt in="${reports.pmd.xml.dir}/pmd_report.xml" style="${tool.lib.dir}/pmd-4.2.5/etc/xslt/pmd-report-per-class.xslt" out="${reports.pmd.xml.dir}/pmd_report.html" />
-		<echo>PMD execution successful, report ${reports.pmd.xml.dir}/pmd_report.xml generated</echo>
-	</target>
-
-	<!-- Find bugs -->
-	<property name="findbugs.report.xml" value="${reports.bugs.xml.dir}/bug_report.xml" />
-	<property name="findbugs.report.html" value="${reports.bugs.xml.dir}/bug_report.html" />
-	<property name="findbugs.home" value="${tool.lib.dir}/findbugs-1.3.9" />
-	<target name="bugs" depends="build">
-		<mkdir dir="${reports.bugs.xml.dir}"/>
-		<taskdef name="findbugs" classpathref="project.tools"
-				classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-		<findbugs home="${findbugs.home}" output="xml:withMessages" outputFile="${findbugs.report.xml}">
-		    <sourcePath path="${src.dir}" />
-			<class location="${build.classes.dir}" />
-		</findbugs>
-		<findbugs home="${findbugs.home}" output="html" stylesheet="fancy-hist.xsl" outputFile="${findbugs.report.html}">
-			<sourcePath path="${src.dir}" />
-			<class location="${build.classes.dir}" />
-		</findbugs>
 	</target>
 
 	<!-- Javadoc -->
