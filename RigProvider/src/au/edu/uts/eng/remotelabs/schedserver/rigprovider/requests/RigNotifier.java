@@ -96,6 +96,8 @@ public class RigNotifier extends RigClientAsyncServiceCallbackHandler
         }
     }
     
+    
+    
     @Override
     public void notifyResponseCallback(final NotifyResponse response)
     {

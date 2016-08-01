@@ -39,8 +39,6 @@ package au.edu.uts.eng.remotelabs.schedserver.session.impl.tests;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,9 +53,8 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociation
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserAssociationId;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.ActivityDetectableType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.IsActivityDetectableResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionIdleKicker;
+import junit.framework.TestCase;
 
 /**
  * Tests the {@link SessionIdleKicker} class.
@@ -73,14 +70,10 @@ public class SessionIdleKickerTester extends TestCase
     {
         DataAccessTestSetup.setup();
         this.kicker = new SessionIdleKicker();
-        
-        Field f = SessionIdleKicker.class.getDeclaredField("notTest");
-        f.setAccessible(true);
-        f.set(this.kicker, Boolean.FALSE);
     }
 
     /**
-     * Test method for {@link au.edu.uts.eng.remotelabs.schedserver.session.impl.SessionIdleKicker#activityDetectionResponseCallback(au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.IsActivityDetectableResponse)}.
+     * Test method 
      */
     @Test
     public void testActivityDetectionResponseCallback() throws Exception
@@ -162,13 +155,8 @@ public class SessionIdleKickerTester extends TestCase
         Field f = SessionIdleKicker.class.getDeclaredField("session");
         f.setAccessible(true);
         f.set(this.kicker, ses);
-        
-        IsActivityDetectableResponse response = new IsActivityDetectableResponse();
-        ActivityDetectableType act = new ActivityDetectableType();
-        response.setIsActivityDetectableResponse(act);
-        act.setActivity(true);
-        
-        this.kicker.activityDetectionResponseCallback(response);
+
+        this.kicker.response(true);
         
         db.refresh(ses);
         

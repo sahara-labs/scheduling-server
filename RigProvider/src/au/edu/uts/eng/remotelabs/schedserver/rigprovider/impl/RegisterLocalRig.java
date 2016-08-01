@@ -46,6 +46,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigTypeDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigCapabilities;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType.Context;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
@@ -152,6 +153,7 @@ public class RegisterLocalRig
         this.rig.setInSession(false);
         this.rig.setSession(null);
         this.rig.setManaged(true); // All local rigs are managed
+        this.rig.setContext(Context.SAHARA);
         
         if (this.rig.getId() == null || this.rig.getId() < 1)
         {

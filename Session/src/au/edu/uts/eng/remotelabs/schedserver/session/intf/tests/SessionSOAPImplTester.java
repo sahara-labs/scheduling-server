@@ -83,11 +83,7 @@ public class SessionSOAPImplTester extends TestCase
         DataAccessTestSetup.setup();
         this.sessionIntf = new SessionSOAPImpl();
         
-        Field f = SessionSOAPImpl.class.getDeclaredField("notTest");
-        f.setAccessible(true);
-        f.set(this.sessionIntf, Boolean.FALSE);
-        
-        f = SessionServiceImpl.class.getDeclaredField("notTest");
+        Field f = SessionServiceImpl.class.getDeclaredField("notTest");
         f.setAccessible(true);
         f.set(null, Boolean.FALSE);
     }

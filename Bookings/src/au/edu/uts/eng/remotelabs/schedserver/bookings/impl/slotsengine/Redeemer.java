@@ -59,7 +59,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListene
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigAllocator;
 
 /**
  * Tasks that converts bookings to sessions (i.e. redeems the booking).
@@ -93,9 +92,6 @@ public class Redeemer implements BookingManagementTask, RigEventListener
     
     /** Logger. */
     private Logger logger;
-    
-    /** Flag to specify if this is a test run. */
-    private boolean notTest = true;
     
     public Redeemer(SlotBookingEngine engine, DayBookings startDay)
     {
@@ -489,7 +485,7 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         BookingsActivator.notifySessionEvent(SessionEvent.ASSIGNED, session, db);
         
         /* Allocate the rig to the user. */
-        if (this.notTest)  new RigAllocator().allocate(session, db);
+        BookingsActivator.allocate(session, db);
     }
     
     /**

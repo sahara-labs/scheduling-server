@@ -81,10 +81,6 @@ public class QueueRunTester extends TestCase
         f = Queue.class.getDeclaredField("capabilityQueues");
         f.setAccessible(true);
         f.set(queue, new HashMap<Long, InnerQueue>());
-        
-        f = Queue.class.getDeclaredField("notTest");
-        f.setAccessible(true);
-        f.set(queue, Boolean.FALSE);
     }
 
     /**

@@ -55,7 +55,6 @@ import au.edu.uts.eng.remotelabs.schedserver.queuer.impl.QueuerUtil;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueAvailability;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 
 /**
  * Implementation of the Queuer POJO service.
@@ -64,9 +63,6 @@ public class QueuerServiceImpl implements QueuerService
 {
     /** Logger. */
     private Logger logger;
-    
-    /** Flag for unit testing to disable rig client communication. */ 
-    private boolean notTest = true;
     
     public QueuerServiceImpl()
     {
@@ -206,7 +202,7 @@ public class QueuerServiceImpl implements QueuerService
         QueueActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
         
         /* If the user is assigned to a rig, free the rig. */
-        if (ses.getRig() != null && this.notTest) new RigReleaser().release(ses, db);
+        if (ses.getRig() != null) QueueActivator.release(ses, db);
 
         return true;
     }

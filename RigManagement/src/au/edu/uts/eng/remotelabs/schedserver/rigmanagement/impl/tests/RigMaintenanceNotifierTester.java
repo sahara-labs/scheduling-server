@@ -37,10 +37,7 @@
 package au.edu.uts.eng.remotelabs.schedserver.rigmanagement.impl.tests;
 
 
-import java.lang.reflect.Field;
 import java.util.Date;
-
-import junit.framework.TestCase;
 
 import org.junit.Before;
 
@@ -57,6 +54,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.testsetup.DataAccessTestSetup;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.impl.RigMaintenanceNotifier;
+import junit.framework.TestCase;
 
 /**
  * Tests the {@link RigMaintenanceNotifier} class.
@@ -74,10 +72,6 @@ public class RigMaintenanceNotifierTester extends TestCase
         DataAccessTestSetup.setup();
         
         this.notifier = new RigMaintenanceNotifier();
-        
-        Field f = RigMaintenanceNotifier.class.getDeclaredField("notTest");
-        f.setAccessible(true);
-        f.set(this.notifier, false);
     }
 
     public void testRun()

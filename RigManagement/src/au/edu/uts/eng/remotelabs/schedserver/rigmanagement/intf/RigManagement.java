@@ -86,8 +86,6 @@ import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeIDType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypeType;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.intf.types.RigTypesType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigMaintenance;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 
 /**
  * Rig management SOAP service.
@@ -96,9 +94,6 @@ public class RigManagement implements RigManagementInterface
 {
     /** Logger. */
     public Logger logger;
-    
-    /** Flag for unit testing to disable rig client communication. */ 
-    private boolean notTest = true;
     
     public RigManagement()
     {
@@ -197,7 +192,7 @@ public class RigManagement implements RigManagementInterface
                 
                 rigParam.setName(rig.getName());
                 rigParam.setRigType(typeID);
-                rigParam.setCapabilities(rig.getRigCapabilities().getCapabilities());
+                rigParam.setCapabilities(rig.getRigCapabilities() != null ? rig.getRigCapabilities().getCapabilities() : "");             
                 
                 rigParam.setIsRegistered(rig.isActive());
                 rigParam.setIsOnline(rig.isOnline());
@@ -412,7 +407,7 @@ public class RigManagement implements RigManagementInterface
                     offline.getStartTime().before(now) && offline.getEndTime().after(now))
             {
                 this.logger.info("Setting maintenance state on rig " + rig.getName() + '.');
-                if (this.notTest) new RigMaintenance().putMaintenance(rig, true, dao.getSession());
+                RigManagementActivator.putMaintenance(rig, true, dao.getSession());
                 
                 rig.setOnline(false);
                 rig.setOfflineReason("In maintenance.");
@@ -488,7 +483,7 @@ public class RigManagement implements RigManagementInterface
                     offline.getStartTime().before(now) && offline.getEndTime().after(now))
             {
                 this.logger.info("Clearning maintenance state on rig " + offline.getRig().getName() + '.');
-                if (this.notTest) new RigMaintenance().clearMaintenance(rig, dao.getSession());
+                RigManagementActivator.clearMaintenance(rig, dao.getSession());
             }
         }
         finally
@@ -551,8 +546,7 @@ public class RigManagement implements RigManagementInterface
             ses.setRemovalReason("User was kicked off by admin. Reason: " + param.getReason());
             dao.flush();
             RigManagementActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
-            
-            if (this.notTest) new RigReleaser().release(ses, dao.getSession());
+            RigManagementActivator.release(ses, dao.getSession());
         }
         finally
         {

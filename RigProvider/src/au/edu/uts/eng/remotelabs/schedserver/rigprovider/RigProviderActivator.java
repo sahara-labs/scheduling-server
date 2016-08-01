@@ -58,6 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigCommunicationProxy;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -65,6 +66,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.IdentityToken;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl.IdentityTokenRegister;
 import au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl.StatusTimeoutChecker;
+import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigClientCommunicationsProxy;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 
@@ -78,6 +80,9 @@ public class RigProviderActivator implements BundleActivator
 
     /** Identity token service registration. */
     private ServiceRegistration<IdentityToken> idenTokReg;
+    
+    /** Service registration for registered operations proxy. */
+    private ServiceRegistration<RigCommunicationProxy> opsProxyReg;
     
     /** Rig status message timeout checker. */
     private StatusTimeoutChecker tmChecker;
@@ -118,6 +123,9 @@ public class RigProviderActivator implements BundleActivator
         props.put("period", "30");
         this.runnableReg = context.registerService(Runnable.class, this.tmChecker, props);
         
+        /* Service to allow communication to be sent to Rig Clients. */
+        this.opsProxyReg = context.registerService(RigCommunicationProxy.class, new RigClientCommunicationsProxy(), null);
+        
         /* Add service listener to add and remove registered rig event listeners. */
         RigProviderActivator.rigListeners = new ArrayList<RigEventListener>();
         EventServiceListener<RigEventListener> rigServListener = 
@@ -155,7 +163,9 @@ public class RigProviderActivator implements BundleActivator
         this.idenTokReg.unregister();
         IdentityTokenRegister.getInstance().expunge();
         
+        /* Clean up other services. */
         this.runnableReg.unregister();
+        this.opsProxyReg.unregister();
         
         RigProviderActivator.sessionListeners = null;
         RigProviderActivator.rigListeners = null;

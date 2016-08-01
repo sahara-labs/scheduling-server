@@ -47,8 +47,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.RigClientService;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.IsActivityDetectableResponse;
+import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSession;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.FinishSessionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.session.intf.types.GetSessionInformation;
@@ -66,9 +65,6 @@ public class SessionSOAPImpl implements SessionSOAP
 {
     /** Logger. */
     private Logger logger;
-    
-    /** Flag for unit testing to disable rig client communication. */ 
-    private boolean notTest = true;
     
     public SessionSOAPImpl()
     {
@@ -160,35 +156,22 @@ public class SessionSOAPImpl implements SessionSOAP
             }
             else if (ses.isReady() && ses.getResourcePermission().isActivityDetected())
             {
-                /* Find out about activity, if not ignored. */
-                try
+                if (SessionActivator.hasActivity(ses, dao.getSession()))
                 {
-                    if (this.notTest)
-                    {
-                        IsActivityDetectableResponse detectResponse = new RigClientService(rig, dao.getSession()).isActivityDetectable();
-                        if (!detectResponse.getIsActivityDetectableResponse().getActivity())
-                        {
-                            int rmTime = perm.getSessionActivityTimeout() -  
-                                    (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
-                                     Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
-                            info.setWarningMessage(rmTime > 0 ?
-                                    "Your session will be terminated if you do not use this rig within " + rmTime + " seconds." :
-                                    "Your session is being terminated.");
-                        }
-                        else
-                        {
-                            ses.setActivityLastUpdated(new Date());
-                            dao.flush();
-                        }
-                    }
+                    int rmTime = perm.getSessionActivityTimeout() -  
+                            (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
+                                Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
+                    info.setWarningMessage(rmTime > 0 ?
+                            "Your session will be terminated if you do not use this rig within " + rmTime + " seconds." :
+                            "Your session is being terminated.");
                 }
-                catch (Exception e)
+                else
                 {
-                    this.logger.warn("Unable to call activity detection on rig client " + rig.getName() + " at " +
-                            rig.getContactUrl() + ", error " + e.getMessage() + '.');
+                    ses.setActivityLastUpdated(new Date());
+                    dao.flush();
                 }
             }
-            
+
             /* User class details. */
             info.setUserClass(ses.getResourcePermission().getUserClass().getId().intValue());
             info.setUserClassName(ses.getResourcePermission().getUserClass().getName());

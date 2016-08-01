@@ -120,6 +120,9 @@ public class Rig implements java.io.Serializable
     /** The certificate that authenticates node. */
     private String cert;
     
+    /** Whether the rig is removed. */
+    private boolean removed;
+    
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Session> sessions = new HashSet<Session>(0);
     private Set<RigLog> rigLogs = new HashSet<RigLog>(0);
@@ -325,7 +328,7 @@ public class Rig implements java.io.Serializable
         return this.rigLogs;
     }
     
-    public void  setRigLogs(final Set<RigLog> rigLogs)
+    public void setRigLogs(final Set<RigLog> rigLogs)
     {
         this.rigLogs = rigLogs;
     }
@@ -362,6 +365,17 @@ public class Rig implements java.io.Serializable
     public void setCert(String cert)
     {
         this.cert = cert;
+    }
+
+    @Column(name = "removed")
+    public boolean isRemoved()
+    {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed)
+    {
+        this.removed = removed;
     }
 
     @Override

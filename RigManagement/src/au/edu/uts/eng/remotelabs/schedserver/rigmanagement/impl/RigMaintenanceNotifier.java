@@ -53,8 +53,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventLis
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.rigmanagement.RigManagementActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigMaintenance;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 
 /**
  * Notifies a rig to go into maintenance if a it is in a maintenance 
@@ -65,9 +63,6 @@ public class RigMaintenanceNotifier implements Runnable
 {
     /** The period this is to run. */
     public static final int RUN_PERIOD = 60;
-    
-    /** Flag to stop SOAP calls going out in tests. */
-    private boolean notTest = true;
     
     /** Logger. */
     private Logger logger;
@@ -123,8 +118,7 @@ public class RigMaintenanceNotifier implements Runnable
                     ses.setRemovalTime(pe);
                     ses.setRemovalReason("Rig going into maintenance.");
                     RigManagementActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
-
-                    if (this.notTest) new RigReleaser().release(ses, db);
+                    RigManagementActivator.release(ses, db);
                 }
                 
                 rig.setOnline(false);
@@ -135,7 +129,7 @@ public class RigMaintenanceNotifier implements Runnable
                 db.flush();
                 db.getTransaction().commit();
                 
-                if (this.notTest) new RigMaintenance().putMaintenance(rig, true, db);
+                RigManagementActivator.putMaintenance(rig, true, db);
             }
             
             /* ----------------------------------------------------------------
@@ -157,7 +151,7 @@ public class RigMaintenanceNotifier implements Runnable
                 {
                     this.logger.info("Going to notify rig " + rig.getName()  + " to clear maintenance state at time " +
                             ps + '.');
-                    if (this.notTest) new RigMaintenance().clearMaintenance(rig, db);
+                    RigManagementActivator.clearMaintenance(rig, db);
                 }
                 else
                 {

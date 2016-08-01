@@ -38,32 +38,26 @@ package au.edu.uts.eng.remotelabs.schedserver.session.impl;
 
 import java.util.Date;
 
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigCommunicationProxy.ActivityAsyncCallback;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.RigClientAsyncService;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.RigClientAsyncServiceCallbackHandler;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.ActivityDetectableType;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.IsActivityDetectableResponse;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 
 /**
  * Kicks off users who have time expired.
  */
-public class SessionIdleKicker extends RigClientAsyncServiceCallbackHandler
+public class SessionIdleKicker extends ActivityAsyncCallback
 {
     /** Session. */
     private Session session;
     
     /** Logger. */
     private Logger logger;
-    
-    private boolean notTest = true;
     
     public SessionIdleKicker()
     {
@@ -73,38 +67,16 @@ public class SessionIdleKicker extends RigClientAsyncServiceCallbackHandler
     public void kickIfIdle(Session ses, org.hibernate.Session db)
     {
         this.session = ses;
-        Rig rig = ses.getRig();
-        
-        try
-        {
-            RigClientAsyncService service = new RigClientAsyncService(rig.getName(), db);
-            service.isActivityDetectable(this);
-        }
-        catch (Exception e)
-        {
-            this.logger.error("Failed calling rig client actiivty detection from " + rig.getName() + " at " + 
-                    rig.getContactUrl() + " because of error " + e.getMessage() + ".");
-
-            /* Put the rig offline. */
-            rig.setInSession(false);
-            rig.setOnline(false);
-            rig.setOfflineReason("Activity detection failed for session " + ses.getId() + ".");
-            db.beginTransaction();
-            db.flush();
-            db.getTransaction().commit();
-            
-            // FIXME Offline broadcast
-        }
+        SessionActivator.hasActivity(ses, db, this);
     }
     
     @Override
-    public void activityDetectionResponseCallback(final IsActivityDetectableResponse response)
+    public void response(boolean activity)
     {
         SessionDao dao = new SessionDao();
         Session ses = dao.merge(this.session);
-        
-        ActivityDetectableType act = response.getIsActivityDetectableResponse();
-        if (act.getActivity())
+       
+        if (activity)
         {
             /* If there is activty, update the activity time stamp. */
             ses.setActivityLastUpdated(new Date());
@@ -119,18 +91,18 @@ public class SessionIdleKicker extends RigClientAsyncServiceCallbackHandler
             dao.flush();
             
             SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
-            
-            if (this.notTest) new RigReleaser().release(ses, dao.getSession());
+            SessionActivator.release(ses, dao.getSession());
         }
         
         dao.closeSession();
     }
     
     @Override
-    public void activityDetectionErrorCallback(final Exception e)
+    public void error(final Exception e)
     {
-        RigDao dao = new RigDao();
-        Rig rig = dao.merge(this.session.getRig());
+        SessionDao dao = new SessionDao();
+        Session ses = dao.merge(this.session);
+        Rig rig = ses.getRig();
         
         this.logger.error("Received error response from is activity detection of rig " + rig.getName() + " at " 
                 + rig.getContactUrl() + ". Error message" + " is " + e.getMessage() + '.');
@@ -138,10 +110,15 @@ public class SessionIdleKicker extends RigClientAsyncServiceCallbackHandler
         /* Activity detection failed so take the rig offline. */
         rig.setOnline(false);
         rig.setOfflineReason("Activity detection failed with reason " + e.getMessage() + '.');
+        
+        ses.setActive(false);
+        ses.setRemovalReason("Idle timeout.");
+        ses.setRemovalTime(new Date());
         dao.flush();
         
-        // FIXME Offline broadcast
-        
+        SessionActivator.notifyRigEvent(RigStateChangeEvent.OFFLINE, rig, dao.getSession());
+        SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, dao.getSession());
+                
         dao.closeSession();
     }
 }

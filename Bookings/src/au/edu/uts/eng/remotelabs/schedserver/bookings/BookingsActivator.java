@@ -67,6 +67,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventLi
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.BookingsEventListener.BookingsEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigCommunicationProxy;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -82,85 +83,88 @@ public class BookingsActivator implements BundleActivator
 {
     /** Stand-off time for bookings. */
     public static final int BOOKING_STANDOFF = 1800;
-    
+
     /** SOAP interface hosting server service registration. */
     private ServiceRegistration<ServletContainerService> soapService;
-    
+
     /** POJO service service. */
     private ServiceRegistration<BookingsService> pojoService;
-    
+
     /** Engine management service registration tasks. */
     private Map<ServiceRegistration<Runnable>, BookingManagementTask> engineTasks;
-    
+
     /** Rig event notification tasks. */
     private List<ServiceRegistration<RigEventListener>> notifServices;
-    
+
     /** Booking engine implementation. */
     private static BookingEngine engine;
-    
+
     /** Booking engine service. */
     private static BookingEngineService service;
-    
+
     /** Booking engine service registration. */
     private ServiceRegistration<BookingEngineService> engineService;
-    
+
     /** Rig event listeners list. */
     private static List<RigEventListener> rigListeners;
-    
+
     /** The list of session event listeners. */
     private static List<SessionEventListener> sessionListeners;
-    
+
     /** The list of bookings event listeners. */
     private static List<BookingsEventListener> bookingsListeners;
     
+    /** The list of registered communication proxies. */
+    private static List<RigCommunicationProxy> commsProxies; 
+
     /** Service tracker for the messenger service. */
     private static ServiceTracker<MessengerService, MessengerService> messengerService;
-    
+
     /** Logger. */
     private Logger logger;
 
-	@Override
-	public void start(BundleContext context) throws Exception 
-	{
-		this.logger = LoggerActivator.getLogger();
-		this.logger.info("Starting bookings bundle...");
-		
-		/* Start listening for the messenger service. */
-		BookingsActivator.messengerService = 
-		        new ServiceTracker<MessengerService, MessengerService>(context, MessengerService.class, null);
-		BookingsActivator.messengerService.open();
-		
-		/* Initialise the booking engine and register the engine management 
-		 * tasks to periodically run. */
-		SlotBookingEngine slots = new SlotBookingEngine();
-		BookingInit init = slots.init();
-		BookingsActivator.engine = slots;
-		BookingsActivator.service = slots;
-		
-		this.engineTasks = new HashMap<ServiceRegistration<Runnable>, BookingManagementTask>();
-		Dictionary<String, String> props = new Hashtable<String, String>(1);
-		for (BookingManagementTask task : init.getTasks())
-		{
-		    props.put("period", String.valueOf(task.getPeriod()));
-		    this.engineTasks.put(context.registerService(Runnable.class, task, props), task);
-		}
-		
-		this.notifServices = new ArrayList<ServiceRegistration<RigEventListener>>();
-		for (RigEventListener listener : init.getListeners())
-		{
-		    this.notifServices.add(context.registerService(RigEventListener.class, listener, null));		    
-		}
-		
-		/* Add service listener to add and remove registered rig event listeners. */
-		BookingsActivator.rigListeners = new ArrayList<RigEventListener>();
-		EventServiceListener<RigEventListener> servListener = 
-		        new EventServiceListener<RigEventListener>(BookingsActivator.rigListeners, context);
+    @Override
+    public void start(BundleContext context) throws Exception 
+    {
+        this.logger = LoggerActivator.getLogger();
+        this.logger.info("Starting bookings bundle...");
+
+        /* Start listening for the messenger service. */
+        BookingsActivator.messengerService = 
+                new ServiceTracker<MessengerService, MessengerService>(context, MessengerService.class, null);
+        BookingsActivator.messengerService.open();
+
+        /* Initialise the booking engine and register the engine management 
+         * tasks to periodically run. */
+        SlotBookingEngine slots = new SlotBookingEngine();
+        BookingInit init = slots.init();
+        BookingsActivator.engine = slots;
+        BookingsActivator.service = slots;
+
+        this.engineTasks = new HashMap<ServiceRegistration<Runnable>, BookingManagementTask>();
+        Dictionary<String, String> props = new Hashtable<String, String>(1);
+        for (BookingManagementTask task : init.getTasks())
+        {
+            props.put("period", String.valueOf(task.getPeriod()));
+            this.engineTasks.put(context.registerService(Runnable.class, task, props), task);
+        }
+
+        this.notifServices = new ArrayList<ServiceRegistration<RigEventListener>>();
+        for (RigEventListener listener : init.getListeners())
+        {
+            this.notifServices.add(context.registerService(RigEventListener.class, listener, null));		    
+        }
+
+        /* Add service listener to add and remove registered rig event listeners. */
+        BookingsActivator.rigListeners = new ArrayList<RigEventListener>();
+        EventServiceListener<RigEventListener> servListener = 
+                new EventServiceListener<RigEventListener>(BookingsActivator.rigListeners, context);
         context.addServiceListener(servListener, '(' + Constants.OBJECTCLASS + '=' + RigEventListener.class.getName() + ')');
         for (ServiceReference<RigEventListener> ref : context.getServiceReferences(RigEventListener.class, null))
         {
             servListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
-        
+
         /* Add service listener to add and remove registered session event listeners. */
         BookingsActivator.sessionListeners = new ArrayList<SessionEventListener>();
         EventServiceListener<SessionEventListener> sesServListener = 
@@ -171,67 +175,78 @@ public class BookingsActivator implements BundleActivator
         {
             sesServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
-        
+
         /* Add service listener to add and remove registered bookings event listeners. */
         BookingsActivator.bookingsListeners = new ArrayList<BookingsEventListener>();
-        EventServiceListener<BookingsEventListener> bkServListener 
-                = new EventServiceListener<BookingsEventListener>(BookingsActivator.bookingsListeners, context);
+        EventServiceListener<BookingsEventListener> bkServListener =
+                new EventServiceListener<BookingsEventListener>(BookingsActivator.bookingsListeners, context);
         context.addServiceListener(bkServListener, 
                 '(' + Constants.OBJECTCLASS + '=' + BookingsEventListener.class.getName() + ')');
         for (ServiceReference<BookingsEventListener> ref : context.getServiceReferences(BookingsEventListener.class, null))
         {
             bkServListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
-		
-		/* Register the booking engine service. */
+        
+        /* Service listener for communication proxies. */
+        BookingsActivator.commsProxies = new ArrayList<RigCommunicationProxy>();
+        EventServiceListener<RigCommunicationProxy> commsServs = 
+                new EventServiceListener<RigCommunicationProxy>(BookingsActivator.commsProxies, context);
+        context.addServiceListener(commsServs, '(' + Constants.OBJECTCLASS + '=' + RigCommunicationProxy.class.getName() + ')');
+        for (ServiceReference<RigCommunicationProxy> ref : context.getServiceReferences(RigCommunicationProxy.class, null))
+        {
+            commsServs.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
+        }
+
+        /* Register the booking engine service. */
         this.engineService = context.registerService(BookingEngineService.class, BookingsActivator.service, null);
-		
-		/* Register the Bookings SOAP service. */
-		this.logger.debug("Registering the Bookings services.");
-		
-		this.pojoService = context.registerService(BookingsService.class, new BookingsServiceImpl(), null);
-		
-		ServletContainerService soapService = new ServletContainerService();
-	    soapService.addServlet(new ServletContainer(new AxisServlet(), true));
-	    this.soapService = context.registerService(ServletContainerService.class, soapService, null);
-	}
-	
-	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-	    this.logger.info("Shutting down bookings bundle.");
-		this.soapService.unregister();
-		this.pojoService.unregister();
-		this.engineService.unregister();
-		
-		for (ServiceRegistration<RigEventListener> s : this.notifServices) s.unregister();
-		
-		for (Entry<ServiceRegistration<Runnable>, BookingManagementTask> s : this.engineTasks.entrySet())
-		{
-		    s.getKey().unregister();
-		    s.getValue().cleanUp();
-		}
-		
-		BookingsActivator.rigListeners = null;
-		BookingsActivator.sessionListeners = null;
-		
-		BookingsActivator.engine.cleanUp();
-		
-		BookingsActivator.messengerService.close();
-		BookingsActivator.messengerService = null;
-	}
-	
-	/**
-	 * Returns the running booking engine.
-	 * 
-	 * @return booking engine.
-	 */
-	public static BookingEngine getBookingEngine()
-	{
-	    return BookingsActivator.engine;
-	}
-	
-	/**
+
+        /* Register the Bookings SOAP service. */
+        this.logger.debug("Registering the Bookings services.");
+
+        this.pojoService = context.registerService(BookingsService.class, new BookingsServiceImpl(), null);
+
+        ServletContainerService soapService = new ServletContainerService();
+        soapService.addServlet(new ServletContainer(new AxisServlet(), true));
+        this.soapService = context.registerService(ServletContainerService.class, soapService, null);
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception 
+    {
+        this.logger.info("Shutting down bookings bundle.");
+        this.soapService.unregister();
+        this.pojoService.unregister();
+        this.engineService.unregister();
+
+        for (ServiceRegistration<RigEventListener> s : this.notifServices) s.unregister();
+
+        for (Entry<ServiceRegistration<Runnable>, BookingManagementTask> s : this.engineTasks.entrySet())
+        {
+            s.getKey().unregister();
+            s.getValue().cleanUp();
+        }
+
+        BookingsActivator.rigListeners = null;
+        BookingsActivator.sessionListeners = null;
+        BookingsActivator.commsProxies = null;
+
+        BookingsActivator.engine.cleanUp();
+
+        BookingsActivator.messengerService.close();
+        BookingsActivator.messengerService = null;
+    }
+
+    /**
+     * Returns the running booking engine.
+     * 
+     * @return booking engine.
+     */
+    public static BookingEngine getBookingEngine()
+    {
+        return BookingsActivator.engine;
+    }
+
+    /**
      * Returns the list of registered rig state change event listeners.
      * 
      * @return list of event listeners
@@ -242,10 +257,10 @@ public class BookingsActivator implements BundleActivator
         {
             return new RigEventListener[0];
         }
-        
+
         return BookingsActivator.rigListeners.toArray(new RigEventListener[BookingsActivator.rigListeners.size()]);
     }
-    
+
     /**
      * Notifies the session event listeners of an event.
      * 
@@ -256,13 +271,13 @@ public class BookingsActivator implements BundleActivator
     public static void notifySessionEvent(SessionEvent event, Session session, org.hibernate.Session db)
     {
         if (BookingsActivator.sessionListeners == null) return;
-        
+
         for (SessionEventListener listener : BookingsActivator.sessionListeners)
         {
             listener.eventOccurred(event, session, db);
         }
     }
-    
+
     /**
      * Notifies the booking event listeners of an event.
      * 
@@ -273,13 +288,13 @@ public class BookingsActivator implements BundleActivator
     public static void notifyBookingsEvent(BookingsEvent event, Bookings booking, org.hibernate.Session db)
     {
         if (BookingsActivator.bookingsListeners == null) return;
-        
+
         for (BookingsEventListener listener : BookingsActivator.bookingsListeners)
         {
             listener.eventOccurred(event, booking, db);
         }
     }
-    
+
     /**
      * Returns a messenger service object.
      * 
@@ -288,7 +303,22 @@ public class BookingsActivator implements BundleActivator
     public static MessengerService getMessengerService()
     {
         if (BookingsActivator.messengerService == null) return null;
-        
+
         return BookingsActivator.messengerService.getService();
+    }
+    
+    /**
+     * Calls allocate operation on all communication proxies.
+     * 
+     * @param ses session information
+     * @param db database session
+     */
+    public static void allocate(Session ses, org.hibernate.Session db)
+    {
+        if (commsProxies == null) return;
+        for (RigCommunicationProxy proxy : commsProxies)
+        {
+            proxy.allocate(ses, db);
+        }
     }
 }

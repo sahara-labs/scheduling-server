@@ -44,6 +44,7 @@ import org.hibernate.criterion.Restrictions;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.DataAccessActivator;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType.Context;
 
 /**
  * Data access object for the {@link RigType} class.
@@ -166,6 +167,7 @@ public class RigTypeDao extends GenericDao<RigType>
             /* Add default setup and tear down times. */
             rigType.setSetUpTime(0);
             rigType.setTearDownTime(0);
+            rigType.setContext(Context.SAHARA);
             
             if (meta != null)
             {

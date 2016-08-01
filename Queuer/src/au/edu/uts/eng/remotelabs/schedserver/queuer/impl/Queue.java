@@ -63,7 +63,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigAllocator;
 
 /**
  * The queue.
@@ -87,9 +86,6 @@ public class Queue
     
     /** Logger. */
     private Logger logger;
-    
-    /** Flag to specify if this is a test run. */
-    private boolean notTest = true;
     
     private Queue()
     {
@@ -269,10 +265,7 @@ public class Queue
             /******************************************************************
              ** 5) Allocate the user to the rig.                             **
              ******************************************************************/
-            if (this.notTest)
-            {
-                new RigAllocator().allocate(targetSes, db);
-            }
+            QueueActivator.allocate(targetSes, db);
         }
     }
     

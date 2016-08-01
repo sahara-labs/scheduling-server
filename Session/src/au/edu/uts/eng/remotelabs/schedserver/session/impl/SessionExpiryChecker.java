@@ -53,8 +53,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventLis
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.QueueInfo;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigNotifier;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 
 /**
@@ -75,9 +73,6 @@ public class SessionExpiryChecker implements Runnable
     
     /** Logger. */
     private Logger logger;
-    
-    /** Flag to specify if this is a test run. */
-    private boolean notTest = true;
     
     public SessionExpiryChecker()
     {
@@ -136,7 +131,7 @@ public class SessionExpiryChecker implements Runnable
                                 ses.getAssignedRigName() + " because it is expired and the grace period has elapsed.");
                         
                         SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
-                        if (this.notTest) new RigReleaser().release(ses, db);
+                        SessionActivator.release(ses, db);
                     }
                 }
                 /******************************************************************
@@ -165,7 +160,7 @@ public class SessionExpiryChecker implements Runnable
                         
                         /* Notification warning. */
                         SessionActivator.notifySessionEvent(SessionEvent.GRACE, ses, db);
-                        if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
+                        SessionActivator.notify("Your session will expire in " + remaining + " seconds. " +
                         		"Please finish and exit.", ses, db);
                     }
                     else if ((Integer)db.createCriteria(Bookings.class)
@@ -187,7 +182,7 @@ public class SessionExpiryChecker implements Runnable
                         
                         /* Notification warning. */
                         SessionActivator.notifySessionEvent(SessionEvent.GRACE, ses, db);
-                        if (this.notTest) new RigNotifier().notify("Your session will expire in " + remaining + " seconds. " +
+                        SessionActivator.notify("Your session will expire in " + remaining + " seconds. " +
                         		"Please finish and exit. Please note, you have a reservation that starts after this" +
                         		" session so do not leave.", ses, db);
                     }
@@ -206,7 +201,7 @@ public class SessionExpiryChecker implements Runnable
                         
                         /* Notification warning. */
                         SessionActivator.notifySessionEvent(SessionEvent.GRACE, ses, db);
-                        if (this.notTest) new RigNotifier().notify("Your session will end in " + remaining + " seconds. " +
+                        SessionActivator.notify("Your session will end in " + remaining + " seconds. " +
                                 "After this you be removed, so please logoff.", ses, db);
                     }
                     else
@@ -251,7 +246,7 @@ public class SessionExpiryChecker implements Runnable
                     db.getTransaction().commit();
                     
                     SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
-                    if (this.notTest) new RigReleaser().release(ses, db);
+                    SessionActivator.release(ses, db);
                 }
                 /******************************************************************
                  * Finally, for sessions with time still remaining, check         *
@@ -262,7 +257,7 @@ public class SessionExpiryChecker implements Runnable
                         (System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000 > perm.getSessionActivityTimeout())
                 {
                     /* Check activity. */
-                    if (this.notTest) new SessionIdleKicker().kickIfIdle(ses, db);
+                    new SessionIdleKicker().kickIfIdle(ses, db);
                 }
             }
         }

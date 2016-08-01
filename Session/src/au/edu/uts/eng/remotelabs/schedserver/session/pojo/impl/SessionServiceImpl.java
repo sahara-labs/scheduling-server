@@ -42,7 +42,6 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests.RigReleaser;
 import au.edu.uts.eng.remotelabs.schedserver.session.SessionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 
@@ -53,10 +52,7 @@ public class SessionServiceImpl implements SessionService
 {
     /** Logger. */
     private Logger logger;
-    
-    /** Test case flag. */
-    private static boolean notTest = true;
-    
+
     public SessionServiceImpl()
     {
         this.logger = LoggerActivator.getLogger();
@@ -84,8 +80,7 @@ public class SessionServiceImpl implements SessionService
         SessionActivator.notifySessionEvent(SessionEvent.FINISHED, ses, db);
 
         /* Local session, release the rig. */
-        if (notTest) new RigReleaser().release(ses, db);
-        
+        SessionActivator.release(ses, db);        
         return true;
     }
 

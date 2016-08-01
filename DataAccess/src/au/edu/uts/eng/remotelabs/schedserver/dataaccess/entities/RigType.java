@@ -104,6 +104,12 @@ public class RigType implements java.io.Serializable
     /** The context the rig type belongs to. */
     private Context context;
     
+    /** Whether the type is locked out. */
+    private boolean lockedOut;
+    
+    /** Whether sign off is needed to access machine. */
+    private boolean needsSignOff;
+    
     /** Foreign key relations. */
     private Set<ResourcePermission> resourcePermissions = new HashSet<ResourcePermission>(0);
     private Set<Rig> rigs = new HashSet<Rig>(0);
@@ -256,6 +262,28 @@ public class RigType implements java.io.Serializable
     public void setContext(Context context)
     {
         this.context = context;
+    }
+
+    @Column(name = "locked_out")
+    public boolean isLockedOut()
+    {
+        return lockedOut;
+    }
+
+    public void setLockedOut(boolean lockedOut)
+    {
+        this.lockedOut = lockedOut;
+    }
+
+    @Column(name = "needs_sign_off")
+    public boolean isNeedsSignOff()
+    {
+        return needsSignOff;
+    }
+
+    public void setNeedsSignOff(boolean needsSignOff)
+    {
+        this.needsSignOff = needsSignOff;
     }
 
     @Override
