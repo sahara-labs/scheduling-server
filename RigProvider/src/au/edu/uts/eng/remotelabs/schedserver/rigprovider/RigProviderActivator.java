@@ -82,7 +82,7 @@ public class RigProviderActivator implements BundleActivator
     private ServiceRegistration<IdentityToken> idenTokReg;
     
     /** Service registration for registered operations proxy. */
-    private ServiceRegistration<RigCommunicationProxy> opsProxyReg;
+    private ServiceRegistration<RigCommunicationProxy> commsProxyReg;
     
     /** Rig status message timeout checker. */
     private StatusTimeoutChecker tmChecker;
@@ -124,7 +124,7 @@ public class RigProviderActivator implements BundleActivator
         this.runnableReg = context.registerService(Runnable.class, this.tmChecker, props);
         
         /* Service to allow communication to be sent to Rig Clients. */
-        this.opsProxyReg = context.registerService(RigCommunicationProxy.class, new RigClientCommunicationsProxy(), null);
+        this.commsProxyReg = context.registerService(RigCommunicationProxy.class, new RigClientCommunicationsProxy(), null);
         
         /* Add service listener to add and remove registered rig event listeners. */
         RigProviderActivator.rigListeners = new ArrayList<RigEventListener>();
@@ -165,7 +165,7 @@ public class RigProviderActivator implements BundleActivator
         
         /* Clean up other services. */
         this.runnableReg.unregister();
-        this.opsProxyReg.unregister();
+        this.commsProxyReg.unregister();
         
         RigProviderActivator.sessionListeners = null;
         RigProviderActivator.rigListeners = null;

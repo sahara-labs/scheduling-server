@@ -3,13 +3,20 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SchedServer-NodeProvider
 Bundle-SymbolicName: SchedServer-NodeProvider
 Bundle-Version: 1.0.0.alpha
-Bundle-Activator: io.rln.node.NodeProviderActivator
+Bundle-Activator: io.rln.node.ss.NodeProviderActivator
 Bundle-Vendor: UTS remotelabs
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: au.edu.uts.eng.remotelabs.schedserver.dataaccess,
+Import-Package: au.edu.uts.eng.remotelabs.schedserver.config,
+ au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener,
  au.edu.uts.eng.remotelabs.schedserver.logger,
  org.hibernate,
- org.osgi.framework;version="1.3.0"
+ org.osgi.framework;version="1.3.0",
+ org.osgi.util.tracker;version="1.5.1"
+Bundle-ClassPath: lib/jersey-bundle-1.19.1.jar,
+ .,
+ lib/jackson-core-2.8.1.jar,
+ lib/jackson-annotations-2.8.1.jar,
+ lib/jackson-databind-2.8.1.jar

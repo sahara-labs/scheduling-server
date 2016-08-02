@@ -39,6 +39,7 @@ package au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities;
 
 import static javax.persistence.GenerationType.AUTO;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -198,6 +199,11 @@ public class Rig implements java.io.Serializable
     public void setRigCapabilities(final RigCapabilities rigCapabilities)
     {
         this.rigCapabilities = rigCapabilities;
+    }
+    
+    public Set<MatchingCapabilities> matchingCapabilities()
+    {
+        return this.rigCapabilities != null ? this.rigCapabilities.getMatchingCapabilitieses() : Collections.emptySet();
     }
 
     @Column(name = "name", unique = true, nullable = false, length = 50)

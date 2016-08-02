@@ -16,19 +16,11 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Private-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.intf.types, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.impl, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.identok.impl
+Private-Package: io.rln.node.ss.impl
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
 
-Export-Package: au.edu.uts.eng.remotelabs.schedserver.rigprovider, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types, \
-au.edu.uts.eng.remotelabs.schedserver.rigprovider.requests
+Export-Package: io.rln.node.ss
 
 Bundle-ClassPath: ., ${findpath;lib/.*.jar}

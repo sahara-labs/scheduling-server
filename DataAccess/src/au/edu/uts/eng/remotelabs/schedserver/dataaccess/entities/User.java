@@ -100,6 +100,9 @@ public class User implements java.io.Serializable
     /** The email address of the user. */
     private String email;
     
+    /** The card ID associated with the user. */
+    private String card;
+    
     /** Locks applied to this class. */
     private Set<UserLock> userLocks = new HashSet<UserLock>(0);
     
@@ -247,6 +250,17 @@ public class User implements java.io.Serializable
         this.sessions = sessions;
     }
     
+    @Column(name = "card", nullable = true, unique = true)
+    public String getCard()
+    {
+        return card;
+    }
+
+    public void setCard(String card)
+    {
+        this.card = card;
+    }
+
     /**
      * Utility method to provide the qualified name of this user in the form
      * &lt;namespace&gt;:&lt;name&gt;

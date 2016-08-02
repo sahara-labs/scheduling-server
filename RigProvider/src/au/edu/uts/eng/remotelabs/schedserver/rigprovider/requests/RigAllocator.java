@@ -60,8 +60,7 @@ public class RigAllocator extends RigClientAsyncServiceCallbackHandler
 {
     /** The timeout in seconds before an asynchronous SOAP operation fails. */
     public static final int RIG_CLIENT_ASYNC_TIMEOUT = 120;
-    
-    
+
     /** Session that is being allocated. */
     private Session session;
     

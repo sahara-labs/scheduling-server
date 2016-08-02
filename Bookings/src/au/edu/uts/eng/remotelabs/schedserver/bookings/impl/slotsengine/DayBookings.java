@@ -1184,7 +1184,7 @@ public class DayBookings
             this.rigBookings.put(rig.getName(), rb);
             
             /* Add the capabilities that need to be loaded. */
-            for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
+            for (MatchingCapabilities match : rig.matchingCapabilities())
             {
                 capsToLoad.add(match.getRequestCapabilities());
             }
@@ -1215,7 +1215,7 @@ public class DayBookings
         String rigName = rig.getName();
         String rigType = rig.getRigType().getName();
         List<RequestCapabilities> rigCaps = new ArrayList<RequestCapabilities>();
-        for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses()) 
+        for (MatchingCapabilities match : rig.matchingCapabilities())
         {
             rigCaps.add(match.getRequestCapabilities());
         }
@@ -1768,7 +1768,7 @@ public class DayBookings
         Set<Rig> rigs = rigType.getRigs();
         for (Rig r : rigs)
         {
-            for (MatchingCapabilities match : r.getRigCapabilities().getMatchingCapabilitieses())
+            for (MatchingCapabilities match : r.matchingCapabilities())
             {
                 RequestCapabilities reqCaps = match.getRequestCapabilities();
                 if (!capsToLoad.contains(reqCaps))

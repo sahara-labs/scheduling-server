@@ -5,7 +5,7 @@
  * @date  30th July 2016
  */
 
-package io.rln.node;
+package io.rln.node.ss;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,27 +15,41 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
+import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigCommunicationProxy;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.RigEventListener.RigStateChangeEvent;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import io.rln.node.ss.impl.NodeCommunicationsProxy;
+import io.rln.node.ss.impl.NodeSSLFactory;
 
 /**
  * Activator for the node provider bundle.
  */
 public class NodeProviderActivator implements BundleActivator 
 {
+    /** Node communications service. */
+    private NodeCommunicationsProxy comms;
+    
+    /** Communication proxy to send messages to nodes. */
+    private ServiceRegistration<RigCommunicationProxy> commsReg;
+    
     /** Rig event listeners. */
     private static List<RigEventListener> rigListeners;
     
     /** List of registered event listeners. */
     private static List<SessionEventListener> sessionListeners;
+    
+    /** Factory to set up SSL factories that authenticate node communication. */
+    private static NodeSSLFactory nodeSSLFactory;
     
     /** Logger. */
     private Logger logger;
@@ -44,6 +58,19 @@ public class NodeProviderActivator implements BundleActivator
     {
         this.logger = LoggerActivator.getLogger();
         this.logger.info("Starting " + context.getBundle().getSymbolicName() + " bundle.");
+        
+        ServiceReference<Config> configService = context.getServiceReference(Config.class);
+        if (configService == null)
+        {
+            this.logger.error("Cannot start " + context.getBundle().getSymbolicName() + ", the configuration " +
+                    "service was not found.");
+            throw new Exception("Configuration not found.");
+        }
+        
+        nodeSSLFactory = new NodeSSLFactory();
+        nodeSSLFactory.init(context.getService(configService));
+        context.ungetService(configService);
+        
         
         rigListeners = new ArrayList<RigEventListener>();
         EventServiceListener<RigEventListener> rigServices = 
@@ -62,11 +89,21 @@ public class NodeProviderActivator implements BundleActivator
         {
             sessionServices.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref));
         }
+        
+        /* Register communication proxy class. */
+        this.comms = new NodeCommunicationsProxy();
+        this.commsReg = context.registerService(RigCommunicationProxy.class, this.comms, null);
     }
 
     public void stop(BundleContext context) throws Exception 
     {
         this.logger.info("Stopping " + context.getBundle().getSymbolicName() + " bundle.");
+        
+        this.commsReg.unregister();
+        this.comms.shutdown();
+        
+        nodeSSLFactory.shutdown();
+        nodeSSLFactory = null;
         
         sessionListeners = null;
         rigListeners = null;
@@ -104,5 +141,15 @@ public class NodeProviderActivator implements BundleActivator
         {
             listener.eventOccurred(event, session, db);
         }
+    }
+    
+    /**
+     * Returns the loaded node SSL factory.
+     * 
+     * @return node SSL factory
+     */
+    public static NodeSSLFactory getSocketFactory()
+    {
+        return nodeSSLFactory;
     }
 }

@@ -123,7 +123,7 @@ public class Queue
             return true;
         }
 
-        for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
+        for (MatchingCapabilities match : rig.matchingCapabilities())
         {
             RequestCapabilities caps = match.getRequestCapabilities();
             if (this.capabilityQueues.containsKey(caps.getId()) && 
@@ -187,7 +187,7 @@ public class Queue
          ** 3) Check each of the rig's rig capabilities matching request     **
          **    capabilities.                                                 **
          **********************************************************************/
-        for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
+        for (MatchingCapabilities match : rig.matchingCapabilities())
         {
             RequestCapabilities caps = match.getRequestCapabilities();
             if (this.capabilityQueues.containsKey(caps.getId()) && 
@@ -458,7 +458,7 @@ public class Queue
             }
             
             /* Position in the request capabilities queues. */
-            for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
+            for (MatchingCapabilities match : rig.matchingCapabilities())
             {
                 RequestCapabilities caps = match.getRequestCapabilities();
                 if (this.capabilityQueues.containsKey(caps.getId()))
@@ -487,19 +487,22 @@ public class Queue
                 }
                 
                 /* Check unique rig capabilities. */
-                Long capsID = rig.getRigCapabilities().getId();
-                if (!checkedCaps.contains(capsID))
+                if (rig.getRigCapabilities() != null)
                 {
-                   checkedCaps.add(capsID);
-                   /* Position in the request capabilities queues. */
-                   for (MatchingCapabilities match : rig.getRigCapabilities().getMatchingCapabilitieses())
-                   {
-                       RequestCapabilities caps = match.getRequestCapabilities();
-                       if (this.capabilityQueues.containsKey(caps.getId()))
-                       {
-                           pos += this.capabilityQueues.get(caps.getId()).numberBefore(ses);
-                       }
-                   }
+                    Long capsID = rig.getRigCapabilities().getId();
+                    if (!checkedCaps.contains(capsID))
+                    {
+                        checkedCaps.add(capsID);
+                        /* Position in the request capabilities queues. */
+                        for (MatchingCapabilities match : rig.matchingCapabilities())
+                        {
+                            RequestCapabilities caps = match.getRequestCapabilities();
+                            if (this.capabilityQueues.containsKey(caps.getId()))
+                            {
+                                pos += this.capabilityQueues.get(caps.getId()).numberBefore(ses);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -539,7 +542,7 @@ public class Queue
                     }
                     
                     /* The rig's rig capabilities queues. */
-                    for (MatchingCapabilities m : r.getRigCapabilities().getMatchingCapabilitieses())
+                    for (MatchingCapabilities m : r.matchingCapabilities())
                     {
                         Long capsID = m.getRequestCapabilities().getId();
                         if (!checkedCaps.contains(capsID))
