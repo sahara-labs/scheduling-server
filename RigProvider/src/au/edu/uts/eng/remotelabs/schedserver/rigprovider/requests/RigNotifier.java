@@ -54,7 +54,7 @@ import au.edu.uts.eng.remotelabs.schedserver.rigprovider.proxy.intf.types.Operat
  */
 public class RigNotifier extends RigClientAsyncServiceCallbackHandler
 {
-    /** Rig to release. */
+    /** Rig to notify. */
     private Rig rig;
     
     /** Logger. */

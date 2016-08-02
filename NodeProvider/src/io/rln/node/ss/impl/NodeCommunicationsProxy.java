@@ -49,8 +49,10 @@ public class NodeCommunicationsProxy implements RigCommunicationProxy
     @Override
     public void notify(String message, Session ses, org.hibernate.Session db)
     {
-        // TODO Auto-generated method stub
-
+        if (ses.getRig().getContext() == Context.VAS)
+        {
+            this.pool.execute(NodeNotifier.notify(message, ses, db));
+        }
     }
 
     @Override
