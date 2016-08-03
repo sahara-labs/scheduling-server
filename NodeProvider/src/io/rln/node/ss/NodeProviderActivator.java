@@ -8,6 +8,7 @@
 package io.rln.node.ss;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.osgi.framework.BundleActivator;
@@ -28,8 +29,11 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventLis
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
-import io.rln.node.ss.impl.NodeCommunicationsProxy;
-import io.rln.node.ss.impl.NodeSSLFactory;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
+import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import io.rln.node.ss.client.NodeCommunicationsProxy;
+import io.rln.node.ss.client.NodeSSLFactory;
+import io.rln.node.ss.service.NodeRegistrationApi;
 
 /**
  * Activator for the node provider bundle.
@@ -41,6 +45,9 @@ public class NodeProviderActivator implements BundleActivator
     
     /** Communication proxy to send messages to nodes. */
     private ServiceRegistration<RigCommunicationProxy> commsReg;
+    
+    /** Registration of hosted REST API. */
+    private ServiceRegistration<ServletContainerService> restReg;
     
     /** Rig event listeners. */
     private static List<RigEventListener> rigListeners;
@@ -66,11 +73,10 @@ public class NodeProviderActivator implements BundleActivator
                     "service was not found.");
             throw new Exception("Configuration not found.");
         }
+        Config config = context.getService(configService);
         
         nodeSSLFactory = new NodeSSLFactory();
-        nodeSSLFactory.init(context.getService(configService));
-        context.ungetService(configService);
-        
+        nodeSSLFactory.init(config);
         
         rigListeners = new ArrayList<RigEventListener>();
         EventServiceListener<RigEventListener> rigServices = 
@@ -93,11 +99,27 @@ public class NodeProviderActivator implements BundleActivator
         /* Register communication proxy class. */
         this.comms = new NodeCommunicationsProxy();
         this.commsReg = context.registerService(RigCommunicationProxy.class, this.comms, null);
+        
+        /* Register hosting for API. */
+        List<String> allowedHosts = new ArrayList<String>();
+        String configuredHosts = config.getProperty("API_Consumers");
+        if (configuredHosts != null)
+        {
+            allowedHosts.addAll(Arrays.asList(configuredHosts.split(",")));
+        }
+        
+        ServletContainerService service = new ServletContainerService();
+        service.addServlet(new ServletContainer(new NodeRegistrationApi(allowedHosts), false, NodeRegistrationApi.PATH));
+        this.restReg = context.registerService(ServletContainerService.class, service, null);
+        
+        context.ungetService(configService);
     }
 
     public void stop(BundleContext context) throws Exception 
     {
         this.logger.info("Stopping " + context.getBundle().getSymbolicName() + " bundle.");
+        
+        this.restReg.unregister();
         
         this.commsReg.unregister();
         this.comms.shutdown();

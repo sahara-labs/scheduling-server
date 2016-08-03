@@ -5,7 +5,7 @@
  * @date  30th July 2016
  */
 
-package io.rln.node.ss.impl;
+package io.rln.node.ss.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -136,6 +136,65 @@ public class NodeSSLFactory
         }
         
         return this.sslFactory;
+    }
+    
+    /**
+     * Add certificate for the specified node replacing any that exist.
+     * 
+     * @param name node name
+     * @param cert stored certificate in PEM format
+     */
+    public void addTrustCert(String name, String cert)
+    {
+        synchronized (this)
+        {
+            try
+            {
+                if (this.trustStore.isCertificateEntry(name))
+                {
+                    this.trustStore.deleteEntry(name);
+                }
+                
+                Certificate x509 = this.certFactory.generateCertificate(new ByteArrayInputStream(cert.getBytes()));
+                this.trustStore.setCertificateEntry(name, x509);
+            }
+            catch (KeyStoreException e)
+            {
+                this.logger.error("Failed to add certificate to trust store for node " + name + ", exception " +
+                        e.getClass() + ": " + e.getMessage());
+            }
+            catch (CertificateException e)
+            {
+                this.logger.error("Failed to convert PEM encoded certificate to X509 certificate object for node " + name + 
+                        ", exception " + e.getClass() + ": " + e.getMessage());
+            }
+
+            
+        }
+    }
+    
+    /**
+     * Remove certificate for the specified node.
+     * 
+     * @param name node name
+     */
+    public void removeTrustCert(String name)
+    {
+        synchronized (this)
+        {
+            try
+            {
+                if (this.trustStore.isCertificateEntry(name))
+                {
+                    this.trustStore.deleteEntry(name);
+                }
+            }
+            catch (KeyStoreException e)
+            {
+                this.logger.error("Failed to remove certificate for node " + name + " from trust store, exception " +
+                        e.getClass() + ": " + e.getMessage());
+            }
+        }
     }
     
     /**

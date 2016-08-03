@@ -249,7 +249,7 @@ public class RigManagement implements RigManagementInterface
             if (rig == null) return response;
             
             typeID.setName(rig.getRigType().getName());
-            rigParam.setCapabilities(rig.getRigCapabilities().getCapabilities());
+            rigParam.setCapabilities(rig.getRigCapabilities() != null ? rig.getRigCapabilities().getCapabilities() : "");
             
             rigParam.setIsRegistered(rig.isActive());
             rigParam.setIsOnline(rig.isOnline());

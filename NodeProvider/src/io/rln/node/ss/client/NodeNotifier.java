@@ -5,7 +5,7 @@
  * @date 2nd July 2016
  */
 
-package io.rln.node.ss.impl;
+package io.rln.node.ss.client;
 
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.RigLogDao;

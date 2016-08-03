@@ -5,7 +5,7 @@
  * @date  30th July 2016
  */
 
-package io.rln.node.ss.impl;
+package io.rln.node.ss.client;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

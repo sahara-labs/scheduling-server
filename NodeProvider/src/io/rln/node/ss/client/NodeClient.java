@@ -5,7 +5,7 @@
  * @date  30th July 2016
  */
 
-package io.rln.node.ss.impl;
+package io.rln.node.ss.client;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +15,6 @@ import java.net.URL;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
-import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -89,8 +88,8 @@ public class NodeClient
             conn.setRequestMethod("GET");
 
             /* Content types for request and response are JSON. */
-            conn.addRequestProperty("Content-Type", MediaType.APPLICATION_JSON);
-            conn.addRequestProperty("Accept", MediaType.APPLICATION_JSON);
+            conn.addRequestProperty("Content-Type", "application/json");
+            conn.addRequestProperty("Accept", "application/json");
 
             /* Open connection. */
             conn.connect();
