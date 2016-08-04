@@ -156,7 +156,7 @@ public class QueuerServiceImpl implements QueuerService
         else if (!entry.hasPermission(perm))
         {
             this.logger.warn("User '" + user.qName() + "' cannot queue because they do not have permission to use " +
-            		"the ri or the permission is inactive.");
+            		"the rig or the permission is inactive.");
             return new QueueSession(entry.getErrorMessage());
         }
         else if (!entry.canUserQueue())

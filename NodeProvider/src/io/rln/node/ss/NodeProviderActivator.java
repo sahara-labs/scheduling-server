@@ -17,7 +17,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -29,10 +31,12 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventLis
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
 import io.rln.node.ss.client.NodeCommunicationsProxy;
 import io.rln.node.ss.client.NodeSSLFactory;
+import io.rln.node.ss.service.AccessApi;
 import io.rln.node.ss.service.NodeRegistrationApi;
 
 /**
@@ -48,6 +52,12 @@ public class NodeProviderActivator implements BundleActivator
     
     /** Registration of hosted REST API. */
     private ServiceRegistration<ServletContainerService> restReg;
+    
+    /** Queuer service to obtain queue instances. */
+    private static ServiceTracker<QueuerService, QueuerService> queuerTracker; 
+
+    /** Bookings service. */
+    public static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
     
     /** Rig event listeners. */
     private static List<RigEventListener> rigListeners;
@@ -77,6 +87,11 @@ public class NodeProviderActivator implements BundleActivator
         
         nodeSSLFactory = new NodeSSLFactory();
         nodeSSLFactory.init(config);
+        
+        queuerTracker = new ServiceTracker<QueuerService, QueuerService>(context, QueuerService.class, null);
+        queuerTracker.open();
+        bookingTracker = new ServiceTracker<BookingEngineService, BookingEngineService>(context, BookingEngineService.class, null);
+        bookingTracker.open();
         
         rigListeners = new ArrayList<RigEventListener>();
         EventServiceListener<RigEventListener> rigServices = 
@@ -110,6 +125,7 @@ public class NodeProviderActivator implements BundleActivator
         
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new NodeRegistrationApi(allowedHosts), false, NodeRegistrationApi.PATH));
+        service.addServlet(new ServletContainer(new AccessApi(allowedHosts), false, AccessApi.PATH));
         this.restReg = context.registerService(ServletContainerService.class, service, null);
         
         context.ungetService(configService);
@@ -129,6 +145,11 @@ public class NodeProviderActivator implements BundleActivator
         
         sessionListeners = null;
         rigListeners = null;
+        
+        queuerTracker.close();
+        queuerTracker = null;
+        bookingTracker.close();
+        bookingTracker = null;
     }
     
     /**
@@ -164,14 +185,19 @@ public class NodeProviderActivator implements BundleActivator
             listener.eventOccurred(event, session, db);
         }
     }
-    
-    /**
-     * Returns the loaded node SSL factory.
-     * 
-     * @return node SSL factory
-     */
+
     public static NodeSSLFactory getSocketFactory()
     {
         return nodeSSLFactory;
+    }
+    
+    public static BookingEngineService getBookingEngine()
+    {
+        return bookingTracker.getService();
+    }
+    
+    public static QueuerService getQueuer()
+    {
+        return queuerTracker.getService();
     }
 }

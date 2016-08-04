@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 
@@ -49,5 +52,18 @@ public class ApiBase extends HttpServlet
             this.logger.warn("Not allowing remote host " + request.getRemoteHost() + " to call node API operations.");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
+    }
+    
+    /**
+     * Encodes a Java object as JSON.
+     * 
+     * @param o object to encode
+     * @return encoded JSON
+     * @throws JsonProcessingException error encoding
+     */
+    protected String getJson(Object o) throws JsonProcessingException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(o);
     }
 }

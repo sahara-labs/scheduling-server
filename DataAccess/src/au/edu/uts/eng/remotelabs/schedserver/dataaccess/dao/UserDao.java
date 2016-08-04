@@ -111,6 +111,13 @@ public class UserDao extends GenericDao<User>
             .uniqueResult();
     }
     
+    public User findByName(String name)
+    {
+        return (User) this.session.createCriteria(User.class)
+            .add(Restrictions.eq("name", name))
+            .uniqueResult();
+    }
+    
     @Override
     public void delete(Serializable id)
     {
