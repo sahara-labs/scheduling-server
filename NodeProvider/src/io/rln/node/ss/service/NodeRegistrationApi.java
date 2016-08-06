@@ -43,30 +43,35 @@ public class NodeRegistrationApi extends ApiBase
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        RigDao dao = new RigDao();
-        Rig rig = dao.findByName(name);
-        
-        if (rig == null)
+        RigDao dao = null;
+        try
         {
-            this.logger.info("Cannot register node, node with ID " + name + " not found.");
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
+            dao = new RigDao();        
+            Rig rig = dao.findByName(name);
+            
+            if (rig == null)
+            {
+                this.logger.info("Cannot register node, node with ID " + name + " not found.");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            if (rig.getContext() != RigType.Context.VAS)
+            {
+                this.logger.info("Cannot broadcast request for " + name + " as it is not a VAS node.");
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                return;
+            }
+            
+            /* Broadcast the node has been registered. */
+            this.logger.info("Registered node " + rig.getName() + ".");
+            NodeProviderActivator.notifyRigEvent(RigStateChangeEvent.REGISTERED, rig, dao.getSession());
+            response.setStatus(HttpServletResponse.SC_OK);
         }
-        
-        if (rig.getContext() != RigType.Context.VAS)
+        finally
         {
-            this.logger.info("Cannot broadcast request for " + name + " as it is not a VAS node.");
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            return;
+            if (dao != null) dao.closeSession();
         }
-        
-        /* Broadcast the node has been registered. */
-        this.logger.info("Registered node " + rig.getName() + ".");
-        NodeProviderActivator.notifyRigEvent(RigStateChangeEvent.REGISTERED, rig, dao.getSession());
-        response.setStatus(HttpServletResponse.SC_OK);
-        dao.closeSession();
-        
-        response.setStatus(HttpServletResponse.SC_OK);
     }
     
     @Override
@@ -81,31 +86,37 @@ public class NodeRegistrationApi extends ApiBase
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        RigDao dao = new RigDao();
-        Rig rig = dao.findByName(name);
-        
-        if (rig == null)
+        RigDao dao = null;
+        try
         {
-            this.logger.warn("Cannot update node, node " + name + " not found.");
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
+            dao = new RigDao();
+            Rig rig = dao.findByName(name);
+            
+            if (rig == null)
+            {
+                this.logger.warn("Cannot update node, node " + name + " not found.");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            if (rig.getContext() != RigType.Context.VAS)
+            {
+                this.logger.warn("Cannot broadcast request for " + name + " as it is not a VAS node.");
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                return;
+            }
+            
+            /* Broadcast the status update. */
+            this.logger.info("Changed status of node " + rig.getName() + " to " + (rig.isOnline() ? "online." : "offline."));
+            NodeProviderActivator.notifyRigEvent(
+                    "true".equals(status) ? RigStateChangeEvent.ONLINE : RigStateChangeEvent.OFFLINE, rig, dao.getSession());
+                        
+            response.setStatus(HttpServletResponse.SC_OK);
         }
-        
-        if (rig.getContext() != RigType.Context.VAS)
+        finally
         {
-            this.logger.warn("Cannot broadcast request for " + name + " as it is not a VAS node.");
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            return;
+            if (dao != null) dao.closeSession();
         }
-        
-        /* Broadcast the status update. */
-        this.logger.info("Changed status of node " + rig.getName() + " to " + (rig.isOnline() ? "online." : "offline."));
-        NodeProviderActivator.notifyRigEvent(
-                "true".equals(status) ? RigStateChangeEvent.ONLINE : RigStateChangeEvent.OFFLINE, rig, dao.getSession());
-        
-        dao.closeSession();
-        
-        response.setStatus(HttpServletResponse.SC_OK);
     }
     
     @Override
@@ -119,28 +130,36 @@ public class NodeRegistrationApi extends ApiBase
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        RigDao dao = new RigDao();
-        Rig node = dao.findByName(name);
-        
-        if (node == null)
+        RigDao dao = null;
+        try
         {
-            this.logger.warn("Cannot remove node, node " + name + " not found.");
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
+            dao = new RigDao();
+            Rig node = dao.findByName(name);
+            
+            if (node == null)
+            {
+                this.logger.warn("Cannot remove node, node " + name + " not found.");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            if (node.getContext() != RigType.Context.VAS)
+            {
+                this.logger.warn("Cannot broadcast request for " + name + " as it is not a VAS node.");
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                return;
+            }
+            
+            /* Broadcast the node has been removed. */
+            this.logger.info("Removed node " + node.getName() + ".");
+            NodeProviderActivator.notifyRigEvent(RigStateChangeEvent.REMOVED, node, dao.getSession());
+            dao.closeSession();
+            
+            response.setStatus(HttpServletResponse.SC_OK);
         }
-        
-        if (node.getContext() != RigType.Context.VAS)
+        finally
         {
-            this.logger.warn("Cannot broadcast request for " + name + " as it is not a VAS node.");
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            return;
+            if (dao != null) dao.closeSession();
         }
-        
-        /* Broadcast the node has been removed. */
-        this.logger.info("Removed node " + node.getName() + ".");
-        NodeProviderActivator.notifyRigEvent(RigStateChangeEvent.REMOVED, node, dao.getSession());
-        dao.closeSession();
-        
-        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
@@ -16,6 +17,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types.QueueSession;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 import io.rln.node.ss.NodeProviderActivator;
 
 /**
@@ -146,5 +148,56 @@ public class AccessApi extends ApiBase
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
     {
         /* Delete request is removing access. */
+        String sesId = request.getParameter("session");
+        String reason = request.getParameter("reason");
+        if (sesId == null || reason == null)
+        {
+            this.logger.warn("Bad session delete request, required parameters not specified.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        
+        SessionDao dao = null;
+        try
+        {
+            dao = new SessionDao();
+            
+            Session ses = dao.get(Long.parseLong(sesId));
+            if (ses == null)
+            {
+                this.logger.warn("Cannot end session " + sesId + " as the session was not found.");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            if (!ses.isActive())
+            {
+                this.logger.info("No need to end session " + ses.getId() + " as it not active.");
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
+            
+            SessionService service = NodeProviderActivator.getSession();
+            if (service == null)
+            {
+                this.logger.error("Unable to obtain Session service, cannot obtain session functions.");
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
+            
+            if (service.finishSession(ses, reason, dao.getSession()))
+            {
+                this.logger.debug("Successfully eneded not session for " + ses.getAssignedRigName() + ".");
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
+            else
+            {
+                this.logger.info("Failed session " + ses.getId() + " not successfully ended for " + ses.getAssignedRigName());
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+            }
+        }
+        finally
+        {
+            if (dao != null) dao.closeSession();
+        }
     }
 }

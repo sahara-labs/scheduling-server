@@ -34,6 +34,7 @@ import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
 import au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.QueuerService;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainer;
 import au.edu.uts.eng.remotelabs.schedserver.server.ServletContainerService;
+import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 import io.rln.node.ss.client.NodeCommunicationsProxy;
 import io.rln.node.ss.client.NodeSSLFactory;
 import io.rln.node.ss.service.AccessApi;
@@ -56,8 +57,11 @@ public class NodeProviderActivator implements BundleActivator
     /** Queuer service to obtain queue instances. */
     private static ServiceTracker<QueuerService, QueuerService> queuerTracker; 
 
-    /** Bookings service. */
+    /** Bookings service to check whether a node is free. */
     public static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
+    
+    /** Session service to finish sessions. */
+    private static ServiceTracker<SessionService, SessionService> sessionTracker;
     
     /** Rig event listeners. */
     private static List<RigEventListener> rigListeners;
@@ -92,6 +96,8 @@ public class NodeProviderActivator implements BundleActivator
         queuerTracker.open();
         bookingTracker = new ServiceTracker<BookingEngineService, BookingEngineService>(context, BookingEngineService.class, null);
         bookingTracker.open();
+        sessionTracker = new ServiceTracker<SessionService, SessionService>(context, SessionService.class, null);
+        sessionTracker.open();
         
         rigListeners = new ArrayList<RigEventListener>();
         EventServiceListener<RigEventListener> rigServices = 
@@ -150,6 +156,8 @@ public class NodeProviderActivator implements BundleActivator
         queuerTracker = null;
         bookingTracker.close();
         bookingTracker = null;
+        sessionTracker.close();
+        sessionTracker = null;
     }
     
     /**
@@ -199,5 +207,10 @@ public class NodeProviderActivator implements BundleActivator
     public static QueuerService getQueuer()
     {
         return queuerTracker.getService();
+    }
+    
+    public static SessionService getSession()
+    {
+        return sessionTracker.getService();
     }
 }
