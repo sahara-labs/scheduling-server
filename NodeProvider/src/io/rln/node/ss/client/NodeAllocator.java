@@ -70,8 +70,9 @@ public class NodeAllocator implements Runnable
         SessionDao dao = new SessionDao();
         this.session = dao.merge(this.session);
         
-        if (response.ok())
+        switch (response.getCode())
         {
+        case 200:
             this.logger.debug("Received allocate response for " + this.session.getUserNamespace() + ':' + 
                     this.session.getUserName() + ", allocation successful.");
             
@@ -80,9 +81,13 @@ public class NodeAllocator implements Runnable
             dao.flush();
             
             NodeProviderActivator.notifySessionEvent(SessionEvent.READY, this.session, dao.getSession());
-        }
-        else
-        {
+            
+        case 201:
+            this.logger.debug("Received allocate response, allocate is not complete. Node " + this.session.getRig().getName() + 
+                    " will callback when allocate complete is complete for " + this.session.getUserName());
+            break;
+           
+        default:
             this.logger.error("Received allocate response for " + this.session.getUserNamespace() + ':' + 
                     this.session.getUserName() + ", allocation not successful. Error response code is " +
                     response.getCode() + ": " + response.getMessage());

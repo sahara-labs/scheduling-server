@@ -39,6 +39,7 @@ import io.rln.node.ss.client.NodeCommunicationsProxy;
 import io.rln.node.ss.client.NodeSSLFactory;
 import io.rln.node.ss.service.AccessApi;
 import io.rln.node.ss.service.NodeRegistrationApi;
+import io.rln.node.ss.service.SessionApi;
 
 /**
  * Activator for the node provider bundle.
@@ -132,6 +133,7 @@ public class NodeProviderActivator implements BundleActivator
         ServletContainerService service = new ServletContainerService();
         service.addServlet(new ServletContainer(new NodeRegistrationApi(allowedHosts), false, NodeRegistrationApi.PATH));
         service.addServlet(new ServletContainer(new AccessApi(allowedHosts), false, AccessApi.PATH));
+        service.addServlet(new ServletContainer(new SessionApi(allowedHosts), false, SessionApi.PATH));
         this.restReg = context.registerService(ServletContainerService.class, service, null);
         
         context.ungetService(configService);

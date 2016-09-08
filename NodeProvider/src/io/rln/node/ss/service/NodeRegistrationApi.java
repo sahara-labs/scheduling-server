@@ -41,6 +41,7 @@ public class NodeRegistrationApi extends ApiBase
         {
             this.logger.debug("Not accepting node registration request name parameter not specified.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
         
         RigDao dao = null;
@@ -82,8 +83,9 @@ public class NodeRegistrationApi extends ApiBase
         String status = request.getParameter("online");
         if (name == null || status == null)
         {
-            this.logger.debug("Not accepting node registration parameters not specified.");
+            this.logger.info("Not accepting node status parameters not specified.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
         
         RigDao dao = null;
@@ -126,8 +128,9 @@ public class NodeRegistrationApi extends ApiBase
         String name = request.getParameter("name");
         if (name == null)
         {
-            this.logger.debug("Not accepting node removal, request name parameter not specified.");
+            this.logger.info("Not accepting node removal, request name parameter not specified.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
         
         RigDao dao = null;

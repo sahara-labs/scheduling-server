@@ -65,20 +65,26 @@ public class NodeReleaser implements Runnable
         RigDao dao = new RigDao();
         this.rig = dao.merge(this.rig);
 
-        if (response.ok())
+        switch (response.getCode())
         {
-            this.logger.debug("Received release callback, releasing " + this.rig.getName() + " was successful.");
+        case 200: // Release has successfully completed
+            this.logger.debug("Received release response, releasing " + this.rig.getName() + " was successful.");
             
             this.rig.setLastUpdateTimestamp(new Date());
             this.rig.setInSession(false);
             this.rig.setSession(null);
             dao.flush();
-
+            
             /* Fire event the rig is free. */
             NodeProviderActivator.notifyRigEvent(RigStateChangeEvent.FREE, this.rig, dao.getSession());
-        }
-        else
-        {
+            
+        case 201: // Release has successfully started but is not complete
+            this.logger.debug("Received release response, release is not complete. Node " + this.rig.getName() + 
+                    " will callback when release complete.");
+            this.rig.setLastUpdateTimestamp(new Date());            
+            break;
+            
+        default:   
             /* Failed release so take rig offline. */
             this.rig.setOnline(false);
             this.rig.setOfflineReason("Release failed with reason: " + response.error());
