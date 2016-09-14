@@ -27,4 +27,5 @@ au.edu.uts.eng.remotelabs.schedserver.queuer.pojo.types
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn
-Bundle-ClassPath: ., \ ${findpath;lib/.*.jar}
+Bundle-ClassPath: ., \
+${findpath;lib/.*.jar}

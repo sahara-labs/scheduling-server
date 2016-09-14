@@ -1,7 +1,7 @@
 Bundle-Name: NodeProvider
 Bundle-SymbolicName: SchedulingServer-NodeProvider
 Bundle-Version: 1.0.0.alpha
-Bundle-Activator: io.rln.node
+Bundle-Activator: io.rln.node.ss.NodeProviderActivator
 Bundle-Vendor: University of Technology Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
@@ -16,10 +16,10 @@ org.apache.log4j, \
 !org.junit, !junit.*, \
 *
 
-Private-Package: io.rln.node.ss.impl
+Private-Package: io.rln.node.ss.client,\
+io.rln.ss.node.ss.service
 
-Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
-lib/=lib/;-donotcopy=.svn
+Include-Resource: lib/=lib/;-donotcopy=.svn
 
 Export-Package: io.rln.node.ss
 
