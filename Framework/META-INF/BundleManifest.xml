@@ -13,8 +13,8 @@
 	<entry key="B4">SchedulingServer-DataAccess</entry>
 	<entry key="B5">SchedulingServer-Messenger</entry>
 	<entry key="B6">SchedulingServer-RigProvider</entry>
-	<entry key="B7">SchedulingServer-Permissions</entry>
-	<entry key="B8">SchedulingServer-MultiSiteProvider</entry>
+    <entry key="B7">SchedulingServer-NodeProvider</entry>
+	<entry key="B8">SchedulingServer-Permissions</entry>
 	<entry key="B9">SchedulingServer-Bookings</entry>
 	<entry key="B10">SchedulingServer-RigManagement</entry>
 	<entry key="B11">SchedulingServer-Queuer</entry>

@@ -37,6 +37,7 @@
 
 package au.edu.uts.eng.remotelabs.schedserver.framework;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,7 +86,18 @@ public class SchedulingServer
              * ---- 1) Load the list of mandatory bundles. The bundles are ----
              * ----    loaded in the order they need to be started in.     ----  
              * -------------------------------------------------------------- */
-            final InputStream mf = SchedulingServer.class.getResourceAsStream("/META-INF/BundleManifest.xml");
+            String file = System.getenv("BUNDLE_MANIFEST");
+            
+            InputStream mf = null;
+            if (file == null)
+            {
+                mf = SchedulingServer.class.getResourceAsStream("/META-INF/BundleManifest.xml");
+            }
+            else
+            {
+                mf = new BufferedInputStream(new FileInputStream(file));
+            }
+            
             if (mf == null)
             {
                 System.out.println("Unable to start Scheduling Server because the mandatory bundle manifest has not " +

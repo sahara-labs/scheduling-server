@@ -20,7 +20,11 @@ Export-Package: au.edu.uts.eng.remotelabs.schedserver.bookings, \
 au.edu.uts.eng.remotelabs.schedserver.bookings.pojo, \
 au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types
 
-Private-Package: !au.edu.uts.eng.remotelabs.schedserver.bookings, *
+Private-Package: au.edu.uts.eng.remotelabs.schedserver.bookings.impl, \
+au.edu.uts.eng.remotelabs.schedserver.bookings.impl.slotsengine, \
+au.edu.uts.eng.remotelabs.schedserver.bookings.intf, \
+au.edu.uts.eng.remotelabs.schedserver.bookings.intf.types, \
+au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.impl
 
 Include-Resource: META-INF/repo=META-INF/repo;-donotcopy=.svn, \
 lib/=lib/;-donotcopy=.svn

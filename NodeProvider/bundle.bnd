@@ -6,8 +6,7 @@ Bundle-Vendor: University of Technology Sydney
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
 Import-Package: org.w3c.dom, \
-javax.xml, javax.xml.*, javax.xml.datatype, \
-javax.xml.namespace, javax.xml.xpath, !javax.portlet, \
+javax.xml, javax.xml.*, !javax.portlet, \
 org.apache.log4j, \
 !org.jdom.*, !nu.xom, \
 !com.sun.*, !org.apache.*, !org.dom4j.*, !org.relaxng.*, \
@@ -17,7 +16,7 @@ org.apache.log4j, \
 *
 
 Private-Package: io.rln.node.ss.client,\
-io.rln.ss.node.ss.service
+io.rln.node.ss.service
 
 Include-Resource: lib/=lib/;-donotcopy=.svn
 
