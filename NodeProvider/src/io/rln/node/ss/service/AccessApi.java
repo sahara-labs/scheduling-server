@@ -165,14 +165,14 @@ public class AccessApi extends ApiBase
             Session ses = dao.get(Long.parseLong(sesId));
             if (ses == null)
             {
-                this.logger.warn("Cannot end session " + sesId + " as the session was not found.");
+                this.logger.warn("Cannot end node session " + sesId + " as the session was not found.");
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
             
             if (!ses.isActive())
             {
-                this.logger.info("No need to end session " + ses.getId() + " as it not active.");
+                this.logger.info("No need to end node session " + ses.getId() + " as it not active.");
                 response.setStatus(HttpServletResponse.SC_OK);
             }
             
@@ -186,7 +186,7 @@ public class AccessApi extends ApiBase
             
             if (service.finishSession(ses, reason, dao.getSession()))
             {
-                this.logger.debug("Successfully eneded not session for " + ses.getAssignedRigName() + ".");
+                this.logger.debug("Successfully ended node session for " + ses.getAssignedRigName() + ".");
                 response.setStatus(HttpServletResponse.SC_OK);
             }
             else

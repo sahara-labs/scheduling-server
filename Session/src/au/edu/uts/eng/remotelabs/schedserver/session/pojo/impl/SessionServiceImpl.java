@@ -69,6 +69,7 @@ public class SessionServiceImpl implements SessionService
         }
        
         /* Finish session. */
+        this.logger.debug("Finishing session '" + ses.getId() + "' with reason: " + reason);
         db.beginTransaction();
         ses.setActive(false);
         ses.setRemovalReason(reason);
