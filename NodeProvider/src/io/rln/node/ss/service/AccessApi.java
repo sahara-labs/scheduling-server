@@ -34,6 +34,9 @@ public class AccessApi extends ApiBase
         super(hosts);
     }
 
+    /**
+     * The PUT method assigns access to a node for a user.
+     */
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response)
     {
@@ -145,6 +148,87 @@ public class AccessApi extends ApiBase
         }
     }
     
+    /**
+     * The POST method sets the remaining duration for an existing session. 
+     */
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    {
+        String sesId = request.getParameter("session");
+        String extStr = request.getParameter("extension");
+        if (sesId == null || extStr == null)
+        {
+            this.logger.debug("Bad session extend request, required parameters not specified.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        
+        int extension = Integer.parseInt(extStr);
+        
+        SessionDao dao = null;
+        try
+        {
+            dao = new SessionDao();
+            
+            Session ses = dao.get(Long.parseLong(sesId));
+            if (ses == null)
+            {
+                this.logger.warn("Cannot extend session because session with id " + sesId + " was not found.");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            if (ses.isReady() || ses.getRig() == null)
+            {
+                this.logger.warn("Cannot extend session because sesssion with id " + ses.getId() + " has not been " +
+                        "allocated to a node.");
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                return;
+            }
+            
+            ResourcePermission perm = ses.getResourcePermission();
+            if (ses.getDuration() - (this.getElapsed(ses) + extension) > 0)
+            {
+                /* Requested extension is within the already assigned time block, no need to further extend
+                 * session . */
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
+            }
+            
+            
+            int remaining = ses.getDuration() + // The session time
+                    (perm.getAllowedExtensions() - ses.getExtensions()) * perm.getExtensionDuration() -  // Extension time
+                    this.getElapsed(ses); // In session time
+            if (remaining < extension)
+            {
+                this.logger.debug("Session extension for " + ses.getId() + " " + extension + " seconds is less than allowed " + 
+                        "permission remaining time. Reducing extension time to " + remaining + " seconds.");
+                extension = remaining;
+            }
+            
+            
+            
+        }
+        finally
+        {
+            if (dao != null) dao.closeSession();
+        }
+    }
+    
+    /**
+     * Gets the sessions elapsed time.
+     * 
+     * @param ses session
+     * @return elapsed time in seconds
+     */
+    private int getElapsed(Session ses)
+    {
+        return (int)(Math.round((System.currentTimeMillis() - ses.getAssignmentTime().getTime()) / 1000));
+    }
+    
+    /**
+     * The DELETE method finishes a session.
+     */
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
     {
         /* Delete request is removing access. */

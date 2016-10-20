@@ -71,6 +71,17 @@ public interface BookingEngineService
     public boolean putQueuedSession(Rig rig, Session ses, org.hibernate.Session db);
     
     /**
+     * Gets the maximum possible extension duration for the session up to a specified duration. 
+     * 
+     * @param rig rig to extend session on
+     * @param ses session to extend
+     * @param duration extension duration in seconds
+     * @param db database session
+     * @return maximum possible extension in seconds 
+     */
+    public int getPossibleExtension(Rig rig, Session ses, int duration, org.hibernate.Session db);
+    
+    /**
      * Attempts to extend an existing session on the rig.
      * 
      * @param rig rig to extend rig on

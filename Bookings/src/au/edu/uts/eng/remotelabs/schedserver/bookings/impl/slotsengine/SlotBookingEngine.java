@@ -423,6 +423,54 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         }
         return success;
     }
+    
+    @Override
+    public int getPossibleExtension(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
+            int duration, Session db)
+    {
+        MBooking mb = this.redeemer.getRunningSession(rig);
+        if (mb == null)
+        {
+            this.logger.error("Failed check extension for a session that doesn't exist.");
+            return 0;
+        }
+        
+        /* Work out the new end time and where this falls. */
+        Calendar end = mb.getEnd();
+        end.add(Calendar.SECOND, duration);
+        String extDay = TimeUtil.getDayKey(end);
+        int extEnd = TimeUtil.getSlotIndex(end);
+
+        DayBookings dayb;
+        if (mb.getDay().equals(extDay))
+        {
+            /* The booking and extension exist on the same day. */
+            dayb = this.getDayBookings(extDay);
+            if (dayb.isRigFree(rig, mb.getEndSlot() + 1, extEnd, db)) return duration;
+            
+            List<MRange> free = dayb.getFreeSlots(rig, mb.getEndSlot() + 1, extEnd, 1, db);
+            
+            /* No free slots. */
+            if (free.size() == 0) return 0;
+            
+            MRange first = free.get(0);
+            
+            /* The first free slot must be directly adjacent to the existing booking. */
+            if (first.getStartSlot() != mb.getEndSlot() + 1) return 0;
+            
+            /* The rig is free for the next slots so we can extend to them. */
+            return first.getNumSlots() * TIME_QUANTUM;
+        }
+        else
+        {
+            int freeSlots = 0;
+            
+            
+            
+            
+            return freeSlots * TIME_QUANTUM; 
+        }
+    }
 
     @Override
     public boolean extendQueuedSession(Rig rig, au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session ses,
