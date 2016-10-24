@@ -147,7 +147,8 @@ public class SessionExpiryChecker implements Runnable
                     BookingEngineService service;
                     
                     /* Need to make a decision whether to extend time or set for termination. */
-                    if (ses.getExtensions() <= 0 && ses.getDuration() >= perm.getSessionDuration())
+                    if (ses.isDisableExtensions() || 
+                            (ses.getExtensions() <= 0 && ses.getDuration() >= perm.getSessionDuration()))
                     {
                         this.logger.info("Session for " + ses.getUserNamespace() + ':' + ses.getUserName() + " on " +
                                 "rig " + ses.getAssignedRigName() + " is expired and cannot be extended. Marking " +

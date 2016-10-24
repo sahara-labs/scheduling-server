@@ -59,7 +59,7 @@ public interface BookingEngineService
     
     /**
      * Attempts to put a queued session to a rig. This returns <tt>true</tt> if
-     * the rig is free for the duration and the session can be put to it. If it
+     * the rig is free for the duration and the session can be put to it. If itm
      * returns <tt>false</tt> the rig cannot be allocated to the session because
      * the rig is already booked.
      * 

@@ -134,6 +134,9 @@ public class Session implements java.io.Serializable
     
     /** The number of session extensions. */
     private short extensions;
+    
+    /** Whether extensions are disabled. */
+    private boolean disableExtensions;
 
     /** List of generated session files. */
     private Set<SessionFile> files = new HashSet<SessionFile>(0);
@@ -392,6 +395,17 @@ public class Session implements java.io.Serializable
     public void setExtensions(final short extensions)
     {
         this.extensions = extensions;
+    }
+    
+    @Column(name = "disable_extensions", nullable = false)
+    public boolean isDisableExtensions()
+    {
+        return this.disableExtensions;
+    }
+    
+    public void setDisableExtensions(boolean disableExtensions)
+    {
+        this.disableExtensions = disableExtensions;
     }
 
     @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)

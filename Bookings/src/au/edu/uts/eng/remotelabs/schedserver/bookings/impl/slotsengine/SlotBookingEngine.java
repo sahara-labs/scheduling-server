@@ -246,7 +246,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             
             /* 1) If the booking is less than an hour each way of a hour divide,
              * give a best fit solution and not allow the booking to be created. */
-            // TODO multi-day
+            // TODO multi-day bookings
         }
         
         return response;
@@ -431,44 +431,59 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         MBooking mb = this.redeemer.getRunningSession(rig);
         if (mb == null)
         {
-            this.logger.error("Failed check extension for a session that doesn't exist.");
+            this.logger.debug("Failed check extension for a session that doesn't exist.");
             return 0;
         }
         
         /* Work out the new end time and where this falls. */
-        Calendar end = mb.getEnd();
+        ResourcePermission perm = ses.getResourcePermission();
+        Calendar end = Calendar.getInstance();
+        end.setTime(ses.getAssignmentTime());
+        end.add(Calendar.SECOND, ses.getDuration());
+        end.add(Calendar.SECOND, (perm.getAllowedExtensions() - ses.getExtensions()) * perm.getExtensionDuration());
         end.add(Calendar.SECOND, duration);
-        String extDay = TimeUtil.getDayKey(end);
-        int extEnd = TimeUtil.getSlotIndex(end);
-
-        DayBookings dayb;
-        if (mb.getDay().equals(extDay))
+                
+        String endKey = TimeUtil.getDayKey(end);
+        int endSlot = TimeUtil.getSlotIndex(end);
+        
+        if (endKey.equals(mb.getDay()) && endSlot <= mb.getEndSlot())
         {
-            /* The booking and extension exist on the same day. */
-            dayb = this.getDayBookings(extDay);
-            if (dayb.isRigFree(rig, mb.getEndSlot() + 1, extEnd, db)) return duration;
+            /* Extension fits within time already allocated by reservation system. */
+            return duration;
+        }
+        
+        int freeSlots = 0;
+        for (String dayKey : TimeUtil.getDayKeys(TimeUtil.coerceToNextSlotTime(mb.getEnd()), end))
+        {   
+            int ss = dayKey.equals(mb.getDay()) ? mb.getEndSlot() + 1 : 0;
+            int es = dayKey.equals(endKey) ? endSlot : NUM_SLOTS - 1;
             
-            List<MRange> free = dayb.getFreeSlots(rig, mb.getEndSlot() + 1, extEnd, 1, db);
-            
-            /* No free slots. */
-            if (free.size() == 0) return 0;
-            
-            MRange first = free.get(0);
-            
-            /* The first free slot must be directly adjacent to the existing booking. */
-            if (first.getStartSlot() != mb.getEndSlot() + 1) return 0;
-            
-            /* The rig is free for the next slots so we can extend to them. */
-            return first.getNumSlots() * TIME_QUANTUM;
+            DayBookings dayb = this.getDayBookings(dayKey);
+            if (dayb.isRigFree(rig, ss, es, db))
+            {
+                /* End slot is inclusive. */
+                freeSlots += es - ss + 1;
+            }
+            else
+            {
+                List<MRange> free = dayb.getFreeSlots(rig, ss, es, 1, db);
+                if (free.size() > 0 && free.get(0).getStartSlot() == ss)
+                { 
+                    freeSlots += free.get(0).getEndSlot() - ss + 1;
+                }
+                break;
+            }
+        }
+        
+        if (duration <= freeSlots * TIME_QUANTUM)
+        {
+            /* The entire requested extension time can be satisfied. */
+            return duration;
         }
         else
         {
-            int freeSlots = 0;
-            
-            
-            
-            
-            return freeSlots * TIME_QUANTUM; 
+            /* Extendable time is free slots plus the remaining time in the current slot. */
+            return freeSlots * TIME_QUANTUM + TIME_QUANTUM - (int)(System.currentTimeMillis() / 1000 % TIME_QUANTUM); 
         }
     }
 

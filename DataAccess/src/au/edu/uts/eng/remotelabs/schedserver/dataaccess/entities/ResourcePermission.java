@@ -128,6 +128,9 @@ public class ResourcePermission implements java.io.Serializable
     /** The maximum number of concurrent bookings that can be made. */
     private int maximumBookings;
     
+    /** The maximum duration for bookings in seconds. */
+    private int maximumBookingDuration;
+    
     /** The name of the permission. */
     private String displayName;
     
@@ -312,6 +315,17 @@ public class ResourcePermission implements java.io.Serializable
     public void setMaximumBookings(final int maximumBookings)
     {
         this.maximumBookings = maximumBookings;
+    }
+    
+    @Column(name = "maximum_booking_duration", columnDefinition = "int default '0' not null")
+    public int getMaximumBookingDuration()
+    {
+        return this.maximumBookingDuration;
+    }
+    
+    public void setMaximumBookingDuration(int maximumBookingDuration)
+    {
+        this.maximumBookingDuration = maximumBookingDuration;
     }
     
     @Column(name = "display_name", nullable = true, length = 255)

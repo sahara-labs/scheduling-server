@@ -7,6 +7,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.SessionDao;
@@ -133,6 +135,9 @@ public class AccessApi extends ApiBase
         }
     }
     
+    /**
+     * Session allocation response type. 
+     */
     public static class SessionResponse
     {
         private long session;
@@ -142,10 +147,123 @@ public class AccessApi extends ApiBase
             this.session = ses.getId();
         }
         
-        public long getSession()
+        public long getSession() { return this.session; }
+    }
+    
+    /**
+     * The GET method returns the session time limit allowable within the bounds of permissions and
+     * scheduling. 
+     */
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    {
+        String sesId = request.getParameter("session");
+        if (sesId == null)
         {
-            return this.session;
+            this.logger.debug("Bad session time limit, required parameters not specified.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
+        
+        SessionDao dao = null;
+        try
+        {
+            dao = new SessionDao();
+            
+            Session ses = dao.get(Long.parseLong(sesId));
+            if (ses == null)
+            {
+                this.logger.debug("Cannot find session time limit because session with id " + sesId + " was not found.");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            if (!ses.isActive() || ses.getRig() == null)
+            {
+                this.logger.debug("Cannot find session time limit because session with id " + sesId + " is not current running.");
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                return;
+            }
+            
+            /* The remaining permission allowed time will give the maximum time that 
+             * the session could be extended. */
+            SessionTimingResponse timing = new SessionTimingResponse(ses);
+            timing.remaining = this.getRemaining(ses);
+            timing.elapsed = this.getElapsed(ses);
+            
+            if (!ses.isDisableExtensions() && ses.getExtensions() > 0)
+            {
+                ResourcePermission perm = ses.getResourcePermission();
+                
+                /* The maximum allowed permission time. */
+                int duration = perm.getSessionDuration() + perm.getAllowedExtensions() * perm.getExtensionDuration();
+                
+                /* Minus the allowed extension period gives the possible extension period. */
+                duration -= timing.elapsed;
+                
+                if (perm.getMaximumBookingDuration() > 0 && duration > perm.getMaximumBookingDuration())
+                {
+                    /* If a maximum booking duration has been set and it is less than the maximum booking duration,
+                     * we will restrict the extension to that duration. */
+                    this.logger.debug("Possible extension duration " + duration + " seconds for session " + ses.getId() + " is " +
+                            "longer than the maximum booking duration, limiting duration to " + perm.getMaximumBookingDuration() + 
+                            "seconds.");
+                    duration = perm.getMaximumBookingDuration();
+                }
+                
+                BookingEngineService bookings = NodeProviderActivator.getBookingEngine();
+                timing.extendable = bookings.getPossibleExtension(ses.getRig(), ses, duration, dao.getSession());
+            }
+            else
+            {
+                timing.extendable = 0;
+            }
+            
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_OK);
+            
+            PrintWriter writer = response.getWriter();
+            writer.println(this.getJson(timing));
+        }
+        catch (JsonProcessingException e)
+        {
+            this.logger.error("Failed generating session timing JSON response message, error: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        catch (IOException e)
+        {
+            this.logger.warn("Failed to return session time limit for session " + sesId + ", exception: " + e.getClass().getSimpleName() + 
+                    ", error: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        finally
+        {
+            if (dao != null) dao.closeSession();
+        }
+    }
+    
+    /**
+     * Session timing response type. 
+     */
+    public static class SessionTimingResponse extends SessionResponse
+    {
+        /** Session elapsed time in seconds. */
+        private int elapsed;
+        
+        /** Session remaining time in seconds. */
+        private int remaining;
+        
+        /** Session possible time extensions. */
+        private int extendable;
+        
+        public SessionTimingResponse(Session ses) 
+        {
+            super(ses);
+        }
+        
+        public int getElapsed()    { return this.elapsed; }
+        public int getRemaining()  { return this.remaining; }
+        public int getExtendable() { return this.extendable; }
     }
     
     /**
@@ -169,6 +287,7 @@ public class AccessApi extends ApiBase
         try
         {
             dao = new SessionDao();
+            org.hibernate.Session db = dao.getSession();
             
             Session ses = dao.get(Long.parseLong(sesId));
             if (ses == null)
@@ -178,41 +297,114 @@ public class AccessApi extends ApiBase
                 return;
             }
             
-            if (ses.isReady() || ses.getRig() == null)
+            if (!ses.isActive() || ses.getRig() == null)
             {
                 this.logger.warn("Cannot extend session because sesssion with id " + ses.getId() + " has not been " +
                         "allocated to a node.");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+            
+            if (ses.isDisableExtensions())
+            {
+                this.logger.warn("Cannot extend session because session with id " + ses.getId() + " has " + 
+                        "extensions disabled.");
                 response.setStatus(HttpServletResponse.SC_CONFLICT);
                 return;
             }
             
             ResourcePermission perm = ses.getResourcePermission();
-            if (ses.getDuration() - (this.getElapsed(ses) + extension) > 0)
+            int remaining = this.getRemaining(ses);            
+            if (extension > remaining)
+            {                
+                if (perm.getSessionDuration() + perm.getAllowedExtensions() * perm.getExtensionDuration() 
+                        - this.getElapsed(ses) < extension)
+                {
+                    /* Make sure the session elapsed duration plus extension is within the permission allowed
+                     * maximum duration with all extensions applied. */
+                    this.logger.warn("Cannot extend session " + ses.getId() + " because an extension of " + extension + 
+                            "seconds will put the total session time outside permission allowed time.");
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    return;
+                }
+                
+                if (perm.getMaximumBookingDuration() > 0 && extension > perm.getMaximumBookingDuration())
+                {
+                    this.logger.warn("Cannot extend session " + ses.getId() + " because the extension is longed the maximum " +
+                            "allowed booking duration.");
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    return;
+                }
+                
+                BookingEngineService bookings = NodeProviderActivator.getBookingEngine();                
+                if (bookings.extendQueuedSession(ses.getRig(), ses, extension - remaining, db))
+                {
+                    this.logger.info("Extension time (" + extension + ") seconds for session " + ses.getId() + " has been " +
+                            "granted by the booking system.");
+                }
+                else
+                {
+                    this.logger.info("Extension time (" + extension + ") seconds for session " + ses.getId() + " was not granted by "
+                            + "the booking system.");
+                    
+                    response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                    return;
+                }
+            }
+            else
             {
-                /* Requested extension is within the already assigned time block, no need to further extend
-                 * session . */
-                response.setStatus(HttpServletResponse.SC_OK);
-                return;
+                this.logger.info("Extension time (" + extension + ") seconds for session " + ses.getId() + " is granted as " + 
+                        "it already within the allocated session time.");
             }
             
+            /* Are setting extension, the session will be locked to this period with no further extensions. */
+            db.beginTransaction();
+            ses.setDisableExtensions(true);
+            ses.setDuration(remaining + extension);
+            ses.setExtensions(perm.getAllowedExtensions());
+            db.flush();
+            db.getTransaction().commit();
             
-            int remaining = ses.getDuration() + // The session time
-                    (perm.getAllowedExtensions() - ses.getExtensions()) * perm.getExtensionDuration() -  // Extension time
-                    this.getElapsed(ses); // In session time
-            if (remaining < extension)
-            {
-                this.logger.debug("Session extension for " + ses.getId() + " " + extension + " seconds is less than allowed " + 
-                        "permission remaining time. Reducing extension time to " + remaining + " seconds.");
-                extension = remaining;
-            }
+            SessionTimingResponse timing = new SessionTimingResponse(ses);
+            timing.elapsed = this.getElapsed(ses);
+            timing.remaining = ses.getDuration() - timing.elapsed;
+            timing.extendable = 0;
             
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_OK);
             
-            
+            PrintWriter writer = response.getWriter();
+            writer.println(this.getJson(timing));
+        }
+        catch (JsonProcessingException e)
+        {
+            this.logger.error("Failed generating session timing JSON response message, error: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        catch (IOException e)
+        {
+            this.logger.error("Failed to extension session " + sesId + ", exception: " + e.getClass().getSimpleName() + ", error: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         finally
         {
             if (dao != null) dao.closeSession();
         }
+    }
+
+    
+    /**
+     * Gets the sessions remaining time.
+     * 
+     * @param ses session
+     * @return int remaining time in seconds
+     */
+    private int getRemaining(Session ses)
+    {
+        ResourcePermission perm = ses.getResourcePermission();
+        return ses.getDuration() + // The session time
+                (perm.getAllowedExtensions() - ses.getExtensions()) * perm.getExtensionDuration() -  // Extension time
+                this.getElapsed(ses); // In session time
     }
     
     /**

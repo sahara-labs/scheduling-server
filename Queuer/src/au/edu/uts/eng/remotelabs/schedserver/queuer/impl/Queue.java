@@ -249,13 +249,13 @@ public class Queue
                 }
             }
             
+            db.beginTransaction();
             targetSes.setAssignmentTime(new Date());
             targetSes.setAssignedRigName(rig.getName());
             targetSes.setActivityLastUpdated(new Date());
             targetSes.setRig(rig);
             rig.setInSession(true);
             rig.setSession(targetSes);
-            db.beginTransaction();
             db.flush();
             db.getTransaction().commit();
             
