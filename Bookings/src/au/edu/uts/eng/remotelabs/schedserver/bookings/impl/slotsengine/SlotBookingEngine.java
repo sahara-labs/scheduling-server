@@ -452,10 +452,15 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             return duration;
         }
         
+        /* We don't want to start checking the current day, not the session start day in cause it has
+         * elasped over days. */
+        String currentDay = TimeUtil.getDayKey(Calendar.getInstance());
+        
         int freeSlots = 0;
         for (String dayKey : TimeUtil.getDayKeys(TimeUtil.coerceToNextSlotTime(mb.getEnd()), end))
         {   
-            int ss = dayKey.equals(mb.getDay()) ? mb.getEndSlot() + 1 : 0;
+            
+            int ss = dayKey.equals(currentDay) ? mb.getEndSlot() + 1 : 0;
             int es = dayKey.equals(endKey) ? endSlot : NUM_SLOTS - 1;
             
             DayBookings dayb = this.getDayBookings(dayKey);
