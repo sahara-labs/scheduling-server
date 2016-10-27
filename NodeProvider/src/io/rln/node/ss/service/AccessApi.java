@@ -314,7 +314,8 @@ public class AccessApi extends ApiBase
             }
             
             ResourcePermission perm = ses.getResourcePermission();
-            int remaining = this.getRemaining(ses);            
+            int remaining = this.getRemaining(ses);      
+            int duration;
             if (extension > remaining)
             {                
                 if (perm.getSessionDuration() + perm.getAllowedExtensions() * perm.getExtensionDuration() 
@@ -336,8 +337,9 @@ public class AccessApi extends ApiBase
                     return;
                 }
                 
+                duration = extension - remaining;
                 BookingEngineService bookings = NodeProviderActivator.getBookingEngine();                
-                if (bookings.extendQueuedSession(ses.getRig(), ses, extension - remaining, db))
+                if (bookings.extendQueuedSession(ses.getRig(), ses, duration, db))
                 {
                     this.logger.info("Extension time (" + extension + ") seconds for session " + ses.getId() + " has been " +
                             "granted by the booking system.");
@@ -355,19 +357,20 @@ public class AccessApi extends ApiBase
             {
                 this.logger.info("Extension time (" + extension + ") seconds for session " + ses.getId() + " is granted as " + 
                         "it already within the allocated session time.");
+                duration = extension;
             }
             
             /* Are setting extension, the session will be locked to this period with no further extensions. */
             db.beginTransaction();
             ses.setDisableExtensions(true);
-            ses.setDuration(remaining + extension);
+            ses.setDuration(duration);
             ses.setExtensions(perm.getAllowedExtensions());
             db.flush();
             db.getTransaction().commit();
             
             SessionTimingResponse timing = new SessionTimingResponse(ses);
             timing.elapsed = this.getElapsed(ses);
-            timing.remaining = ses.getDuration() - timing.elapsed;
+            timing.remaining = ses.getDuration();
             timing.extendable = 0;
             
             response.setContentType("application/json");
