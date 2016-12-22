@@ -76,6 +76,9 @@ public class PermissionActivator implements BundleActivator
     /** Configuration service tracker. */
     private static ServiceTracker<Config, Config> configTracker;
     
+    /** Whether to remove non Sahara rig / rig type permissions. */
+    private static boolean keepNonSahara;
+    
     /** Logger. */
     private Logger logger;
 
@@ -87,6 +90,8 @@ public class PermissionActivator implements BundleActivator
 	    
 	    PermissionActivator.configTracker = new ServiceTracker<Config, Config>(context, Config.class, null);
 	    PermissionActivator.configTracker.open();
+	    
+	    keepNonSahara = "true".equals(getConfig("Permissions_Keep_Non_Sahara", "false"));
 	    
 	    PermissionActivator.messengerTracker =
 	            new ServiceTracker<MessengerService, MessengerService>(context, MessengerService.class, null);
@@ -145,5 +150,15 @@ public class PermissionActivator implements BundleActivator
         
         Config conf = PermissionActivator.configTracker.getService();
         return conf == null ? def : conf.getProperty(prop);
+    }
+    
+    /**
+     * Whether to remove non-Sahara contexts from permissions listing 
+     * 
+     * @return true if removing non Sahara
+     */
+    public static boolean pruneContexts()
+    {
+        return !keepNonSahara;
     }
 }

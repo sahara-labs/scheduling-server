@@ -56,6 +56,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserClass;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.UserLock;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
 import au.edu.uts.eng.remotelabs.schedserver.logger.LoggerActivator;
+import au.edu.uts.eng.remotelabs.schedserver.permissions.PermissionActivator;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermission;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionResponse;
 import au.edu.uts.eng.remotelabs.schedserver.permissions.intf.types.GetAcademicPermissionsForAcademic;
@@ -374,6 +375,13 @@ public class PermissionsSOAPImpl implements PermissionsSOAP
                         continue;
                     }
                     
+                    if (PermissionActivator.pruneContexts() &&
+                            rig.getContext() != null && rig.getContext() != RigType.Context.SAHARA) 
+                    {
+                        this.logger.debug("Excluding rig " + rig.getName() + " as it has a non Sahara context.");
+                        continue;
+                    }
+                    
                     perm.setResourceClass(ResourceClass.RIG);
                     resourceIdType.setResourceID(rig.getId().intValue());
                     resourceIdType.setResourceName(rig.getName());
@@ -385,6 +393,13 @@ public class PermissionsSOAPImpl implements PermissionsSOAP
                     {
                         this.logger.warn("Incorrect configuration of a rig type resource permission with " +
                                 "id " + resPerm.getId() + ", as no rig type is set.");
+                        continue;
+                    }
+
+                    if (PermissionActivator.pruneContexts() && 
+                            rigType.getContext() != null && rigType.getContext() != RigType.Context.SAHARA)
+                    {
+                        this.logger.debug("Excluding permission for rig type " + rigType.getName() + " as it has a non Sahara context.");
                         continue;
                     }
                     
