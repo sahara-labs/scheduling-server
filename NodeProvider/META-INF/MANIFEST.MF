@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SchedServer-NodeProvider
-Bundle-SymbolicName: SchedServer-NodeProvider
+Bundle-Name: SchedulingServer-NodeProvider
+Bundle-SymbolicName: SchedulingServer-NodeProvider
 Bundle-Version: 1.0.0.alpha
 Bundle-Activator: io.rln.node.ss.NodeProviderActivator
 Bundle-Vendor: UTS remotelabs

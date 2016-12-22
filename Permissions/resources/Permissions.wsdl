@@ -225,6 +225,8 @@
 										<xsd:enumeration value="USER"></xsd:enumeration>
 										<xsd:enumeration value="DEMO"></xsd:enumeration>
 										<xsd:enumeration value="NOTFOUND"></xsd:enumeration>
+                                        <xsd:enumeration value="TECH"></xsd:enumeration>
+                                        <xsd:enumeration value="SATECH"></xsd:enumeration>
 									</xsd:restriction>
 								</xsd:simpleType>
 							</xsd:element>
