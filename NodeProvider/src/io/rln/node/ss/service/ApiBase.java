@@ -8,6 +8,10 @@
 package io.rln.node.ss.service;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -31,6 +35,9 @@ public class ApiBase extends HttpServlet
     /** The list of hosts that are allowed to access machines. */
     private final List<String> authorizedHosts;
     
+    /** Date formatter. */
+    private final SimpleDateFormat isoDateFormat;
+    
     /** Logger. */
     protected final Logger logger;
     
@@ -38,6 +45,8 @@ public class ApiBase extends HttpServlet
     {
         this.authorizedHosts = hosts;   
         this.logger = LoggerActivator.getLogger();
+        
+        this.isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     }
     
     @Override
@@ -66,4 +75,30 @@ public class ApiBase extends HttpServlet
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(o);
     }
+    
+    
+    /**
+     * Parse date into a calendar.
+     * 
+     * @param str date string in ISO format.
+     * @return calendar or null if invalid.
+     */
+    protected Calendar parseDate(String str)
+    {
+        if (str == null) return null;
+        
+        try
+        {
+            Date date = this.isoDateFormat.parse(str);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            return cal;
+        }
+        catch (ParseException e)
+        {
+            this.logger.debug("Invalid ISO date string: " + str);
+            return null;
+        }
+    }
+
 }

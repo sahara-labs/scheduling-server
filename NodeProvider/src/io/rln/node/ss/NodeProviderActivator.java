@@ -20,6 +20,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingsService;
 import au.edu.uts.eng.remotelabs.schedserver.config.Config;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
@@ -38,6 +39,7 @@ import au.edu.uts.eng.remotelabs.schedserver.session.pojo.SessionService;
 import io.rln.node.ss.client.NodeCommunicationsProxy;
 import io.rln.node.ss.client.NodeSSLFactory;
 import io.rln.node.ss.service.AccessApi;
+import io.rln.node.ss.service.BookingsApi;
 import io.rln.node.ss.service.NodeRegistrationApi;
 import io.rln.node.ss.service.SessionApi;
 
@@ -58,8 +60,11 @@ public class NodeProviderActivator implements BundleActivator
     /** Queuer service to obtain queue instances. */
     private static ServiceTracker<QueuerService, QueuerService> queuerTracker; 
 
-    /** Bookings service to check whether a node is free. */
-    public static ServiceTracker<BookingEngineService, BookingEngineService> bookingTracker;
+    /** Bookings service tracker to perform booking operations. */
+    public static ServiceTracker<BookingsService, BookingsService> bookingsTracker;
+    
+    /** Bookings engine service to check whether a node is free. */
+    public static ServiceTracker<BookingEngineService, BookingEngineService> bookingServiceTracker;
     
     /** Session service to finish sessions. */
     private static ServiceTracker<SessionService, SessionService> sessionTracker;
@@ -95,8 +100,10 @@ public class NodeProviderActivator implements BundleActivator
         
         queuerTracker = new ServiceTracker<QueuerService, QueuerService>(context, QueuerService.class, null);
         queuerTracker.open();
-        bookingTracker = new ServiceTracker<BookingEngineService, BookingEngineService>(context, BookingEngineService.class, null);
-        bookingTracker.open();
+        bookingsTracker = new ServiceTracker<BookingsService, BookingsService>(context, BookingsService.class, null);
+        bookingsTracker.open();
+        bookingServiceTracker = new ServiceTracker<BookingEngineService, BookingEngineService>(context, BookingEngineService.class, null);
+        bookingServiceTracker.open();
         sessionTracker = new ServiceTracker<SessionService, SessionService>(context, SessionService.class, null);
         sessionTracker.open();
         
@@ -134,6 +141,7 @@ public class NodeProviderActivator implements BundleActivator
         service.addServlet(new ServletContainer(new NodeRegistrationApi(allowedHosts), false, NodeRegistrationApi.PATH));
         service.addServlet(new ServletContainer(new AccessApi(allowedHosts), false, AccessApi.PATH));
         service.addServlet(new ServletContainer(new SessionApi(allowedHosts), false, SessionApi.PATH));
+        service.addServlet(new ServletContainer(new BookingsApi(allowedHosts), false, BookingsApi.PATH));
         this.restReg = context.registerService(ServletContainerService.class, service, null);
         
         context.ungetService(configService);
@@ -156,8 +164,10 @@ public class NodeProviderActivator implements BundleActivator
         
         queuerTracker.close();
         queuerTracker = null;
-        bookingTracker.close();
-        bookingTracker = null;
+        bookingServiceTracker.close();
+        bookingServiceTracker = null;
+        bookingsTracker.close();
+        bookingsTracker = null;
         sessionTracker.close();
         sessionTracker = null;
     }
@@ -201,9 +211,14 @@ public class NodeProviderActivator implements BundleActivator
         return nodeSSLFactory;
     }
     
+    public static BookingsService getBookingService()
+    {
+        return bookingsTracker.getService();
+    }
+    
     public static BookingEngineService getBookingEngine()
     {
-        return bookingTracker.getService();
+        return bookingServiceTracker.getService();
     }
     
     public static QueuerService getQueuer()

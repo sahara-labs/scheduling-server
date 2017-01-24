@@ -7,6 +7,7 @@ Bundle-Activator: io.rln.node.ss.NodeProviderActivator
 Bundle-Vendor: UTS remotelabs
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: au.edu.uts.eng.remotelabs.schedserver.bookings.pojo,
+ au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types,
  au.edu.uts.eng.remotelabs.schedserver.config,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess,
  au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao,
