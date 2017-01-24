@@ -114,6 +114,8 @@ public class RigManagement implements RigManagementInterface
         try
         {
             
+            
+            
             for (au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType rigType : 
                 (List<au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType>)db.createCriteria(
                     au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType.class).addOrder(Order.asc("name")).list())
