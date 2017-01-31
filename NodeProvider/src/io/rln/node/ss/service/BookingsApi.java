@@ -42,8 +42,8 @@ public class BookingsApi extends ApiBase
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
     {
         String permId = req.getParameter("permission");
-        Calendar from = this.parseDate(req.getParameter("from"));
-        Calendar to = this.parseDate(req.getParameter("to"));
+        Calendar from = this.parseTimestamp(req.getParameter("from"));
+        Calendar to = this.parseTimestamp(req.getParameter("to"));
         if (permId == null || from == null || to == null)
         {
             this.logger.info("Not accepting machine free times request, parameters not specified.");
