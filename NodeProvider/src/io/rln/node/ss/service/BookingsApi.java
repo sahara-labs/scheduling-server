@@ -10,14 +10,19 @@ package io.rln.node.ss.service;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import io.rln.node.ss.NodeProviderActivator;
 
 /**
@@ -58,7 +63,7 @@ public class BookingsApi extends ApiBase
             ResourcePermission perm = dao.get(Long.parseLong(permId));
             if (perm == null)
             {
-                this.logger.info("Resource permission with identifier " + permId + " was not found");
+                this.logger.info("Failed booking free times request, resource permission with identifier " + permId + " was not found");
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
@@ -77,6 +82,78 @@ public class BookingsApi extends ApiBase
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         finally
+        {
+            if (dao != null) dao.closeSession();
+        }
+    }
+    
+    /**
+     * THe PUT method is to create a booking.
+     */
+    @Override
+    public void doPut(HttpServletRequest req, HttpServletResponse resp)
+    {
+        String permId = req.getParameter("permission");
+        String userId = req.getParameter("user");
+        Calendar start = this.parseTimestamp(req.getParameter("start"));
+        Calendar finish = this.parseTimestamp(req.getParameter("finish"));
+        if (permId == null || userId == null || start == null || finish == null)
+        {
+            this.logger.info("Not accepting create booking request, parameters not specified.");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        
+        ResourcePermissionDao dao = null;
+        try
+        {
+            dao = new ResourcePermissionDao();
+            
+            ResourcePermission perm = dao.get(Long.parseLong(permId));
+            if (perm == null)
+            {
+                this.logger.info("Failed create booking request, resource permission " + permId + " not found.");
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            User user = new UserDao(dao.getSession()).get(Long.parseLong(userId));
+            if (user == null)
+            {
+                this.logger.info("Failed create booking request, user " + userId + " not found.");
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            BookingOperation result = NodeProviderActivator.getBookingService().createBooking(start, finish, user, perm, dao.getSession());
+            
+            resp.setContentType("application/json");
+            resp.setStatus(HttpServletResponse.SC_OK);
+            
+            Map<String, Object> json = new HashMap<>();
+            json.put("success", result.successful());
+            if (result.successful())
+            {
+                json.put("booking", result.getBooking().getId());
+            }
+            else if (result.getBestFits().size() > 0)
+            {
+                json.put("bestFits", result.getBestFits());
+            }
+            else
+            {
+                json.put("failure", result.getFailureReason());
+            }
+            
+            PrintWriter writer = resp.getWriter();
+            writer.println(this.getJson(json));
+        }
+        catch (IOException e)
+        {
+            this.logger.error("Failed create booking JSON response, " + e.getClass() + ": " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        finally 
         {
             if (dao != null) dao.closeSession();
         }

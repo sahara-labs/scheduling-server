@@ -9,7 +9,6 @@ package io.rln.node.ss.service;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -81,7 +80,7 @@ public class ApiBase extends HttpServlet
         {
             if (ts == null) return null;
             Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date(Long.parseLong(ts)));
+            cal.setTimeInMillis(Long.parseLong(ts));
             return cal;
         }
         catch (NumberFormatException ex)
