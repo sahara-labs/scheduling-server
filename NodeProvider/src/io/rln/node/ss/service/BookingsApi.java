@@ -19,8 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingOperation;
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.types.BookingsPeriod;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.BookingsDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.ResourcePermissionDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Bookings;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.ResourcePermission;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import io.rln.node.ss.NodeProviderActivator;
@@ -154,6 +156,42 @@ public class BookingsApi extends ApiBase
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         finally 
+        {
+            if (dao != null) dao.closeSession();
+        }
+    }
+    
+    /**
+     * The DELETE method is used to delete a booking.
+     */
+    @Override
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp)
+    {
+        String bId = req.getParameter("booking");
+        if (bId == null)
+        {
+            this.logger.info("Not accepting booking cancel request, missing parameters.");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        
+        BookingsDao dao = null;
+        try
+        {
+            dao = new BookingsDao();
+            
+            Bookings booking = dao.get(Long.parseLong(bId));
+            if (booking == null)
+            {
+                this.logger.info("Failed cancel booking request, booking identifier " + bId + " not found.");
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            boolean success = !booking.isActive() || NodeProviderActivator.getBookingService().cancelBooking(booking, "User", true, dao.getSession()).successful();
+            resp.setStatus(success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        finally
         {
             if (dao != null) dao.closeSession();
         }
