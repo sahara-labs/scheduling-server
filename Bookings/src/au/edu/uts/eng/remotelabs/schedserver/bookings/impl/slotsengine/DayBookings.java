@@ -868,7 +868,10 @@ public class DayBookings
         int num = 0;
                 
         /* Load all the rigs that have bookings today. */
-        for (Rig rig : (List<Rig>)db.createCriteria(Rig.class).list())
+        Criteria qu = db.createCriteria(Rig.class);
+        qu.add(Restrictions.eq("removed", Boolean.FALSE));
+        qu.add(Restrictions.not(Restrictions.eq("context", RigType.Context.HISTORICAL)));
+        for (Rig rig : (List<Rig>)qu.list())
         {
             if (this.rigBookings.containsKey(rig.getName())) continue;
             
@@ -885,8 +888,9 @@ public class DayBookings
         }
         
         /* Load all the rig types that have bookings today. */
-        Criteria qu = db.createCriteria(RigType.class);
+        qu = db.createCriteria(RigType.class);
         if (this.typeTargets.size() > 0) qu.add(Restrictions.not(Restrictions.in("name", this.typeTargets.keySet())));
+        qu.add(Restrictions.not(Restrictions.eq("context", RigType.Context.HISTORICAL)));
         for (RigType type : (List<RigType>) qu.list())
         {
             if (this.typeTargets.containsKey(type.getName())) continue;
