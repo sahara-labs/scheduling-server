@@ -109,4 +109,9 @@ public interface BookingEngineService
      * @param db database connection
      */
     public void clearRigOffline(RigOfflineSchedule period, org.hibernate.Session db);
+    
+    /**
+     * Reload the booking engine.
+     */
+    public void reloadEngine();
 }

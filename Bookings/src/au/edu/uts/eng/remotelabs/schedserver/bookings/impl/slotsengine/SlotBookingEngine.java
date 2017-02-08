@@ -141,6 +141,7 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
         init.addListener(new RigRegisteredListener());
         init.addTask(new DayCleaner());
         
+        db.close();
         return init;
     }
 
@@ -874,8 +875,21 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
                     daysIt.remove();
                     this.dayHitCounts.remove(day);
                 }
-                
             }
+        }
+    }
+    
+    @Override
+    public void reloadEngine()
+    {
+        synchronized (this.days)
+        {
+            this.days.clear();
+            
+            Session db = DataAccessActivator.getNewSession();
+            DayBookings day = this.getDayBookings(TimeUtil.getDayKey(Calendar.getInstance()));
+            day.fullLoad(db);
+            db.close();
         }
     }
     

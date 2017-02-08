@@ -41,6 +41,7 @@ import io.rln.node.ss.client.NodeSSLFactory;
 import io.rln.node.ss.service.AccessApi;
 import io.rln.node.ss.service.BookingsApi;
 import io.rln.node.ss.service.NodeRegistrationApi;
+import io.rln.node.ss.service.SchedulingApi;
 import io.rln.node.ss.service.SessionApi;
 
 /**
@@ -142,6 +143,7 @@ public class NodeProviderActivator implements BundleActivator
         service.addServlet(new ServletContainer(new AccessApi(allowedHosts), false, AccessApi.PATH));
         service.addServlet(new ServletContainer(new SessionApi(allowedHosts), false, SessionApi.PATH));
         service.addServlet(new ServletContainer(new BookingsApi(allowedHosts), false, BookingsApi.PATH));
+        service.addServlet(new ServletContainer(new SchedulingApi(allowedHosts), false, SchedulingApi.PATH));
         this.restReg = context.registerService(ServletContainerService.class, service, null);
         
         context.ungetService(configService);
