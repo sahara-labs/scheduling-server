@@ -363,7 +363,7 @@ public class AccessApi extends ApiBase
             /* Are setting extension, the session will be locked to this period with no further extensions. */
             db.beginTransaction();
             ses.setDisableExtensions(true);
-            ses.setDuration(duration);
+            ses.setDuration(extension);
             ses.setExtensions(perm.getAllowedExtensions());
             db.flush();
             db.getTransaction().commit();
