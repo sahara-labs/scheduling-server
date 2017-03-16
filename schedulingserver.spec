@@ -39,8 +39,8 @@
 
 Name: SchedulingServer
 Summary: Schedules and assigns remote laboratory rigs.
-Version: 3.3
-Release: ANDS_Research
+Version: 4
+Release: vas
 License: BSD
 Group: Sahara
 
