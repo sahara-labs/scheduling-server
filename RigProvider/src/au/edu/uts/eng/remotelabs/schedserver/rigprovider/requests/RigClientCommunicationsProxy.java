@@ -113,7 +113,7 @@ public class RigClientCommunicationsProxy implements RigCommunicationProxy
     {
         if (this.isRigClient(ses.getRig()))
         {
-            new RigActivity().isActivityDetectable(ses, db);
+            new RigActivity().isActivityDetectable(ses, db, callback);
         }        
     }
     

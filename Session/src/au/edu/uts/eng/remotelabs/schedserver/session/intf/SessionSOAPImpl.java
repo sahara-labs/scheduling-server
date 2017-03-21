@@ -158,17 +158,17 @@ public class SessionSOAPImpl implements SessionSOAP
             {
                 if (SessionActivator.hasActivity(ses, dao.getSession()))
                 {
+                    ses.setActivityLastUpdated(new Date());
+                    dao.flush();
+                }
+                else
+                {
                     int rmTime = perm.getSessionActivityTimeout() -  
                             (ses.getActivityLastUpdated().before(ses.getAssignmentTime()) ? time :
                                 Math.round((System.currentTimeMillis() - ses.getActivityLastUpdated().getTime()) / 1000));
                     info.setWarningMessage(rmTime > 0 ?
                             "Your session will be terminated if you do not use this rig within " + rmTime + " seconds." :
                             "Your session is being terminated.");
-                }
-                else
-                {
-                    ses.setActivityLastUpdated(new Date());
-                    dao.flush();
                 }
             }
 

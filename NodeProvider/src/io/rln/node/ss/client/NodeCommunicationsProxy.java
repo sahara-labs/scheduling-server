@@ -72,15 +72,14 @@ public class NodeCommunicationsProxy implements RigCommunicationProxy
     @Override
     public boolean hasActivity(Session ses, org.hibernate.Session db)
     {
-        // FIXME Activity detection.
-        return true;
+        // FIXME check access request
+        return ses.getRig().getContext() == Context.VAS;
     }
 
     @Override
     public void hasActivity(Session ses, org.hibernate.Session db, ActivityAsyncCallback callback)
     {
-        // TODO Auto-generated method stub
-
+        if (ses.getRig().getContext() == Context.VAS) callback.response(false);
     }
 
     /**
