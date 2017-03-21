@@ -33,6 +33,7 @@ public class NodeClient
     public static final String ALLOCATE = "/session/allocate";
     public static final String RELEASE  = "/session/release";
     public static final String NOTIFY   = "/session/notify";
+    public static final String ACTIVITY = "/session/activity";
     
     /** Node to contact. */
     private final String nodeUrl;
@@ -55,12 +56,58 @@ public class NodeClient
     }
     
     /**
-     * Calls the Hub register operation.
+     * Call node operation returning response code.
+     * 
+     * @param operation operation name
+     * @return response code
+     */
+    public int requestCode(String operation)
+    {
+        try
+        {
+            /* Make request. */
+            URL url = new URL(this.nodeUrl + operation);
+            
+            HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
+            
+            /* Configure the connection to use the stored cert to authenticate
+             * the connection. */
+            conn.setSSLSocketFactory(NodeProviderActivator.getSocketFactory().getFactoryFor(this.nodeName, this.nodeCert));
+            conn.setHostnameVerifier(hostnameVerifier);
+            
+            /* Request method is always POST. */ 
+            conn.setRequestMethod("GET");
+            
+            conn.setDoInput(false);
+            conn.setDoOutput(false);
+            conn.setUseCaches(false);
+            
+            return conn.getResponseCode();
+        }
+        catch (MalformedURLException ex)
+        {
+            this.logger.error("Error generating node URL, this is probably caused by incorrect configuration of node address, exception " +
+                    ex.getClass().getSimpleName() + ": " + ex.getMessage());
+        }
+        catch (IOException ex)
+        {
+            this.logger.error("Communication error calling node request '" + operation + "', exception " + ex.getClass().getSimpleName() +  
+                    ": " + ex.getMessage());
+        }
+        catch (Exception e)
+        {
+            this.logger.error("Failed client set up, exception " + e.getClass() + ": " + e.getMessage());
+        }
+        
+        return 500;
+    }
+    
+    /**
+     * Calls the node operation.
      * 
      * @param operation operation name
      * @param request request parameter
-     * @return the Hub response
-     * @throws Exception error communication with Hub
+     * @return the node response
      */
     public <T> OperationResponse request(String operation, T request)
     {
@@ -85,7 +132,7 @@ public class NodeClient
             conn.setUseCaches(false);
 
             /* Request method is always POST. */ 
-            conn.setRequestMethod("GET");
+            conn.setRequestMethod("POST");
 
             /* Content types for request and response are JSON. */
             conn.addRequestProperty("Content-Type", "application/json");
@@ -102,14 +149,16 @@ public class NodeClient
             /* Check response code, if it is not 200, something about the request 
              * is invalid. */
             int code = conn.getResponseCode();
-            if (code != 200)
+            if (code == 200)
             {
-                this.logger.warn("Failed calling Hub operation " + operation + ", received response code " + code);
-                return new OperationResponse(code);
+                /* Load response type. */
+                return mapper.readValue(conn.getInputStream(), OperationResponse.class);
             }
-            
-            /* Load response type. */
-            return mapper.readValue(conn.getInputStream(), OperationResponse.class);
+            else
+            {
+                this.logger.debug("Failed calling node operation '" + operation + "', received response code " + code);
+                return new OperationResponse(code);
+            }            
         }
         catch (JsonProcessingException ex)
         {
@@ -117,12 +166,12 @@ public class NodeClient
         }
         catch (MalformedURLException ex)
         {
-            this.logger.error("Error generating HUB URL, this is probably caused by incorrect configuration of HUB address, exception " +
+            this.logger.error("Error generating node URL, this is probably caused by incorrect configuration of HUB address, exception " +
                     ex.getClass().getSimpleName() + ": " + ex.getMessage());
         }
         catch (IOException ex)
         {
-            this.logger.error("Communication error calling Hub request, exception " + ex.getClass().getSimpleName() +  
+            this.logger.error("Communication error calling node request '" + operation + "', exception " + ex.getClass().getSimpleName() +  
                     ": " + ex.getMessage());
         }
         catch (Exception e)
