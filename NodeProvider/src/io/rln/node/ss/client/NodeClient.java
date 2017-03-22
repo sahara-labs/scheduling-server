@@ -78,8 +78,8 @@ public class NodeClient
             /* Request method is always POST. */ 
             conn.setRequestMethod("GET");
             
-            conn.setDoInput(false);
-            conn.setDoOutput(false);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
             conn.setUseCaches(false);
             
             return conn.getResponseCode();
