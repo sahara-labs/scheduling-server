@@ -164,6 +164,10 @@ public class Reports implements ReportsSkeletonInterface
                  * ---------------------------------------------------------------- */
                 
                 cri = ses.createCriteria(Rig.class);
+                
+                /* Only SAHARA can be queried supported. */
+                cri.add(Restrictions.or(Restrictions.eq("context", RigType.Context.SAHARA), Restrictions.isNull("context")));
+                
                 if(query0.getQueryLike() != null)
                 {
                     cri.add(Restrictions.like("name", query0.getQueryLike(), MatchMode.ANYWHERE));
@@ -183,7 +187,10 @@ public class Reports implements ReportsSkeletonInterface
                  * -- mediated by interface. No criteria on Requestor            --
                  * ---------------------------------------------------------------- */
                 cri = ses.createCriteria(RigType.class);
-
+                
+                /* Only SAHARA can be queried. */
+                cri.add(Restrictions.or(Restrictions.isNull("context"), Restrictions.eq("context", RigType.Context.SAHARA)));
+                
                 if(query0.getQueryLike() != null)
                 {
                     cri.add(Restrictions.like("name", query0.getQueryLike(), MatchMode.ANYWHERE));
@@ -226,7 +233,7 @@ public class Reports implements ReportsSkeletonInterface
                          respType.addSelectionResult(o.getName());
                     }
                 }
-                else if(User.ADMIN.equals(persona))
+                else
                 {
                     for (final UserClass o : (List<UserClass>)cri.list())
                     {
@@ -268,7 +275,7 @@ public class Reports implements ReportsSkeletonInterface
                         respType.addSelectionResult(o.getNamespace() + ':' + o.getName());
                     }
                 }
-                else if(User.ADMIN.equals(persona))
+                else 
                 {
                     for (final User o : (List<User>)cri.list())
                     {
@@ -408,14 +415,6 @@ public class Reports implements ReportsSkeletonInterface
             }
             else if(filter.getTypeForQuery() == TypeForQuery.REQUEST_CAPABILITIES)
             {
-                /* Only administrators can do request capabilities queries. */
-                if (!User.ADMIN.equals(requestor.getPersona()))
-                {
-                    this.logger.warn("Cannot provide session report for user '" + requestor.qName() + "' because their persona '" +
-                            requestor.getPersona() + "' does not allow request capabilities reporting.");
-                    return response;
-                }
-
                 final RequestCapabilities reqCaps = new RequestCapabilitiesDao(db).findCapabilites(filter.getQueryLike());
                 if (reqCaps == null)
                 {
@@ -476,12 +475,6 @@ public class Reports implements ReportsSkeletonInterface
                     this.logger.debug("Academic " + requestor.qName() + " has permission to generate report from user class "
                             + userClass.getName() + '.');
                 }
-                else if (!User.ADMIN.equals(requestor.getPersona()))
-                {
-                    this.logger.warn("Cannot provide a user session report for user '" + requestor.qName() +
-                            "' because their persona '" + requestor.getPersona() + "' does not allow reporting.");
-                    return response;
-                }
 
                 query.createCriteria("resourcePermission").add(Restrictions.eq("userClass", userClass));
             }
@@ -519,12 +512,6 @@ public class Reports implements ReportsSkeletonInterface
                     }
                     
                     query.add(Restrictions.in("resourcePermission", perms));
-                }
-                else if (!User.ADMIN.equals(requestor.getPersona()))
-                {
-                    this.logger.warn("Cannot provide a user session report for user '" + requestor.qName() +
-                            "' because their persona '" + requestor.getPersona() + "' does not allow reporting.");
-                    return response;
                 }
                 
                 query.add(Restrictions.eq("user", user));
