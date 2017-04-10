@@ -52,7 +52,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 import au.edu.uts.eng.remotelabs.schedserver.bookings.pojo.BookingEngineService;
-import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Config;
+
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Session;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.EventServiceListener;
@@ -90,9 +90,6 @@ public class RigManagementActivator implements BundleActivator
     /** The list of registered communication proxies. */
     private static List<RigCommunicationProxy> commsProxies; 
     
-    /** Whether to remove non Sahara rig / rig type permissions. */
-    private static boolean keepNonSahara;
-
     /** Logger. */
     private Logger logger;
 
@@ -143,10 +140,6 @@ public class RigManagementActivator implements BundleActivator
         this.pageRegistrations = new ArrayList<ServiceRegistration<HostedPage>>(1);
         this.pageRegistrations.add(context.registerService(HostedPage.class, new HostedPage("Rigs", RigTypes.class, 
                 "rigs", "Allows rigs to be administered.", false, false), null));
-        
-        // TODO remove VAS rigs from admin page.
-//        ServiceReference<Config> configService = context.getServiceReference(Config.class);
-//        Config config = context.getService(configService);
     }
 
     @Override
@@ -246,6 +239,6 @@ public class RigManagementActivator implements BundleActivator
      */
     public static boolean pruneContexts()
     {
-        return !keepNonSahara;
+        return true;
     }
 }

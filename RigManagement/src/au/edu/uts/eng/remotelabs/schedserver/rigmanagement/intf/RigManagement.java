@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -57,6 +58,7 @@ import au.edu.uts.eng.remotelabs.schedserver.dataaccess.dao.UserDao;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.Rig;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigLog;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigOfflineSchedule;
+import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType.Context;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.User;
 import au.edu.uts.eng.remotelabs.schedserver.dataaccess.listener.SessionEventListener.SessionEvent;
 import au.edu.uts.eng.remotelabs.schedserver.logger.Logger;
@@ -114,11 +116,15 @@ public class RigManagement implements RigManagementInterface
         try
         {
             
+            Criteria qu = db.createCriteria(au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType.class);
             
+            if (RigManagementActivator.pruneContexts())
+            {
+                qu.add(Restrictions.or(Restrictions.isNull("context"), Restrictions.eq("context", Context.SAHARA)));
+            }
             
             for (au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType rigType : 
-                (List<au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType>)db.createCriteria(
-                    au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType.class).addOrder(Order.asc("name")).list())
+                (List<au.edu.uts.eng.remotelabs.schedserver.dataaccess.entities.RigType>)qu.addOrder(Order.asc("name")).list())
            {
                RigTypeType rigTypeParam = new RigTypeType();
                rigTypeParam.setName(rigType.getName());
@@ -582,6 +588,6 @@ public class RigManagement implements RigManagementInterface
         
         if (user == null) return false;
         
-        return User.ADMIN.equals(user.getPersona());
+        return User.ADMIN.equals(user.getPersona()) || User.SATECH.equals(user.getPersona());
     }
 }

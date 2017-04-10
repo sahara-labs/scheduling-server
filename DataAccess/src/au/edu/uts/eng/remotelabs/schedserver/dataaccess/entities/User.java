@@ -67,6 +67,9 @@ public class User implements java.io.Serializable
     /** Administrator user persona. */
     public static final String ADMIN = "ADMIN";
     
+    /** SAHARA specific technican user, enables all SAHARA admin features. */
+    public static final String SATECH = "SATECH";
+    
     /** Academic user persona. */
     public static final String ACADEMIC = "ACADEMIC";
     
