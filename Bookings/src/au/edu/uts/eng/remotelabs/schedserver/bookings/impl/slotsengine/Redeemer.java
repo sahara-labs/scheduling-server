@@ -510,6 +510,17 @@ public class Redeemer implements BookingManagementTask, RigEventListener
         this.runningBookings.put(rig.getName(), mb);
     }
     
+    /**
+     * Relaod memory state.
+     */
+    public void reload()
+    {
+        synchronized (this)
+        {
+            this.currentDay = this.engine.getDayBookings(this.currentDay.getDay());
+        }
+    }
+    
     @Override
     public int getPeriod()
     {

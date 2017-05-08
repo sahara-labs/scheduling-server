@@ -889,6 +889,9 @@ public class SlotBookingEngine implements BookingEngine, BookingEngineService
             Session db = DataAccessActivator.getNewSession();
             DayBookings day = this.getDayBookings(TimeUtil.getDayKey(Calendar.getInstance()));
             day.fullLoad(db);
+            
+            this.redeemer.reload();
+           
             db.close();
         }
     }
