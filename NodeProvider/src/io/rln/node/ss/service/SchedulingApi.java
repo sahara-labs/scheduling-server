@@ -29,7 +29,6 @@ public class SchedulingApi extends ApiBase
         super(hosts);
     }
 
-    
     /**
      * The HEAD method reloads the booking engine.
      */

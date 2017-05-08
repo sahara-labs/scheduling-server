@@ -35,10 +35,12 @@ public class SessionApi extends ApiBase
         super(hosts);
     }
 
+    /**
+     * Put request is node session allocation has completed. 
+     */
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response)
     {
-        /* Put request is node session allocation has completed. */
         String id = request.getParameter("session");
         String name = request.getParameter("node");
         if (id == null || name == null)
@@ -95,10 +97,12 @@ public class SessionApi extends ApiBase
         }
     }
 
+    /**
+     * DELETE request is node session release has completed.
+     */
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
     {
-        /* Delete request is node session release has completed. */
         String name = request.getParameter("node");
         if (name == null)
         {

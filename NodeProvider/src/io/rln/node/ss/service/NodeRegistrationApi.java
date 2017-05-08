@@ -32,10 +32,12 @@ public class NodeRegistrationApi extends ApiBase
         super(hosts);
     }
 
+    /**
+     * Put requests are a node has been registered.
+     */
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response)
     {
-        /* Put requests are a node has been registered. */
         String name = request.getParameter("name");
         if (name == null)
         {
@@ -75,10 +77,12 @@ public class NodeRegistrationApi extends ApiBase
         }
     }
     
+    /**
+     * POST requests are status updates.
+     */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     {
-        /* Post requests are status updates. */
         String name = request.getParameter("name");
         String status = request.getParameter("online");
         if (name == null || status == null)
@@ -121,10 +125,12 @@ public class NodeRegistrationApi extends ApiBase
         }
     }
     
+    /**
+     * DELETE requests are a node has been removed. 
+     */
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
     {
-        /* Delete requests are a node has been removed. */
         String name = request.getParameter("name");
         if (name == null)
         {
